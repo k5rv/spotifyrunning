@@ -1,0 +1,26 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: spotifyRunning
+  security:
+    oauth2:
+      client:
+        registration:
+          spotify:
+            client-id:
+            client-secret:
+            provider: spotify
+            client-authentication-method: basic
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: user-read-email, user-top-read, playlist-modify-public, playlist-modify-private
+        provider:
+          spotify:
+            authorization-uri: https://accounts.spotify.com/authorize?show_dialog=false
+            token-uri: https://accounts.spotify.com/api/token
+            user-info-uri: https://api.spotify.com/v1/me
+            user-name-attribute: display_name
+logging:
+  level:
+    com.ksaraev.spotifyrunning.client.SpotifyClient: DEBUG
