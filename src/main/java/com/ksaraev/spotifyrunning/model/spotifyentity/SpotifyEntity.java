@@ -1,0 +1,21 @@
+package com.ksaraev.spotifyrunning.model.spotifyentity;
+
+import javax.validation.constraints.NotNull;
+import java.net.URI;
+
+public interface SpotifyEntity {
+
+  @NotNull
+  String getId();
+
+  void setId(String id);
+
+  String getName();
+
+  void setName(String name);
+
+  @NotNull
+  URI getUri();
+
+  void setUri(URI uri);
+}
