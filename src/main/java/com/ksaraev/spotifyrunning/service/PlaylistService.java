@@ -7,7 +7,7 @@ import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItemDetails;
 import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichItemRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichSpotifyItemRequest;
-import com.ksaraev.spotifyrunning.model.playlist.AbstractPlaylistMapper;
+import com.ksaraev.spotifyrunning.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrunning.model.playlist.Playlist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
@@ -25,7 +25,6 @@ import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -35,14 +34,14 @@ import java.util.stream.IntStream;
 public class PlaylistService {
 
   private final SpotifyClient spotifyClient;
-  private final AbstractPlaylistMapper abstractPlaylistMapper;
+  private final PlaylistMapper playlistMapper;
 
   @Valid
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyUser user, @NotNull SpotifyPlaylistDetails playlistDetails) {
 
     SpotifyItemDetails spotifyItemDetails =
-        abstractPlaylistMapper.toPlaylistItemDetails(playlistDetails);
+        playlistMapper.toPlaylistItemDetails(playlistDetails);
 
     SpotifyItem spotifyItem = spotifyClient.createPlaylist(user.getId(), spotifyItemDetails);
 
@@ -52,7 +51,7 @@ public class PlaylistService {
 
     PlaylistItem playlistItem = (PlaylistItem) spotifyItem;
 
-    Playlist playlist = abstractPlaylistMapper.toPlaylist(playlistItem);
+    Playlist playlist = playlistMapper.toPlaylist(playlistItem);
     log.info("Playlist created: {}", playlist);
     return playlist;
   }
@@ -60,8 +59,7 @@ public class PlaylistService {
   public SpotifyPlaylist addTracks(
       @NotNull SpotifyPlaylist playlist, @NotEmpty List<SpotifyTrack> tracks) {
 
-    List<SpotifyEntity> spotifyEntities =
-        tracks.stream().map(SpotifyEntity.class::cast).collect(Collectors.toList());
+    List<SpotifyEntity> spotifyEntities = tracks.stream().map(SpotifyEntity.class::cast).toList();
 
     List<List<SpotifyEntity>> entityBatchList = Lists.partition(spotifyEntities, 99);
 
@@ -101,7 +99,7 @@ public class PlaylistService {
                     tracks.stream()
                         .anyMatch(
                             trackToAdd -> trackToAdd.getId().equals(updatedPlaylistTrack.getId())))
-            .collect(Collectors.toList());
+            .toList();
 
     if (diffTracks.isEmpty()) {
       log.warn("Playlist tracks haven't changed");
@@ -115,43 +113,23 @@ public class PlaylistService {
   private String addPlaylistEntities(
       @NotNull SpotifyPlaylist playlist, @NotEmpty List<SpotifyEntity> entities) {
 
-    List<URI> entityUris =
-        entities.stream().map(SpotifyEntity::getUri).collect(Collectors.toList());
+    List<URI> entityUris = entities.stream().map(SpotifyEntity::getUri).toList();
 
     EnrichSpotifyItemRequest request = EnrichItemRequest.builder().uris(entityUris).build();
-
-    log.info(
-        "Prepared {} entities for updating playlist {}: {}", entities.size(), playlist, entities);
+    log.info("Prepared entities for playlist update: {},{}", playlist, entities);
 
     String snapshotId = spotifyClient.addPlaylistItems(playlist.getId(), request);
-
-    if (Objects.isNull(snapshotId)) {
-      throw new IllegalArgumentException("Spotify playlist add tracks response is null");
-    }
+    log.info("Spotify playlist updated, snapshot id: {}", snapshotId);
 
     if (playlist.getSnapshotId().equals(snapshotId)) {
-      log.warn(
-          "Spotify playlist tracks updated successfully but snapshotId:{} hasn't changed, check back later",
-          snapshotId);
-      return snapshotId;
+      log.warn("Spotify playlist snapshot id wasn't changed");
     }
 
-    playlist.setSnapshotId(snapshotId);
-
-    log.info(
-        "Spotify playlist (id: {}, name: {}, user: {}, snapshotId: {}) entities updated",
-        playlist.getId(),
-        playlist.getName(),
-        playlist.getOwner().getId(),
-        playlist.getSnapshotId());
     return snapshotId;
   }
 
   public SpotifyPlaylist getPlaylist(@Valid @NotNull SpotifyPlaylist playlist) {
 
-    if (Objects.isNull(playlist)) {
-      throw new IllegalArgumentException("Playlist is null");
-    }
     return getPlaylist(playlist.getId());
   }
 
@@ -165,7 +143,7 @@ public class PlaylistService {
 
     PlaylistItem playlistItem = (PlaylistItem) spotifyItem;
 
-    SpotifyPlaylist playlist = abstractPlaylistMapper.toPlaylist(playlistItem);
+    SpotifyPlaylist playlist = playlistMapper.toPlaylist(playlistItem);
 
     log.info("Playlist received: {}", playlist);
     return playlist;

@@ -11,17 +11,16 @@ import org.mapstruct.MappingConstants;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public abstract class AbstractRecommendationMapper {
+public interface RecommendationMapper {
 
   @Mapping(source = "spotifyTracks", target = "seedTracks")
   @Mapping(source = "spotifyArtists", target = "seedArtists")
   @Mapping(source = "genres", target = "seedGenres")
   @Mapping(source = "limit", target = "limit")
   @Mapping(source = "offset", target = "offset")
-  public abstract GetRecommendationItemsRequest toSpotifyRequest(
+  GetRecommendationItemsRequest toSpotifyRequest(
       List<SpotifyTrack> spotifyTracks,
       List<SpotifyArtist> spotifyArtists,
       List<String> genres,
@@ -29,20 +28,20 @@ public abstract class AbstractRecommendationMapper {
       Integer limit,
       Integer offset);
 
-  private List<String> mapSpotifyEntitiesToSeedIds(List<SpotifyEntity> spotifyEntities) {
+  default List<String> mapSpotifyEntitiesToSeedIds(List<SpotifyEntity> spotifyEntities) {
     if (spotifyEntities == null) {
       return Collections.emptyList();
     }
-    return spotifyEntities.stream().map(SpotifyEntity::getId).collect(Collectors.toList());
+    return spotifyEntities.stream().map(SpotifyEntity::getId).toList();
   }
 
-  public List<String> mapSpotifyTracksToSeedIds(List<SpotifyTrack> spotifyTrackList) {
+  default List<String> mapSpotifyTracksToSeedIds(List<SpotifyTrack> spotifyTrackList) {
     return mapSpotifyEntitiesToSeedIds(
-        spotifyTrackList.stream().map(t -> ((SpotifyEntity) t)).collect(Collectors.toList()));
+        spotifyTrackList.stream().map(SpotifyEntity.class::cast).toList());
   }
 
-  public List<String> mapSpotifyArtistsToSeedIds(List<SpotifyArtist> spotifyArtistList) {
+  default List<String> mapSpotifyArtistsToSeedIds(List<SpotifyArtist> spotifyArtistList) {
     return mapSpotifyEntitiesToSeedIds(
-        spotifyArtistList.stream().map(t -> ((SpotifyEntity) t)).collect(Collectors.toList()));
+        spotifyArtistList.stream().map(SpotifyEntity.class::cast).toList());
   }
 }

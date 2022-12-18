@@ -31,16 +31,16 @@ public class GetUserTopItemsRequest implements GetSpotifyUserItemsRequest {
     MEDIUM_TERM("medium_term"),
     SHORT_TERM("short_term");
 
-    private final String timeRange;
+    private final String term;
 
     @Override
     public String toString() {
-      return this.timeRange;
+      return this.term;
     }
 
     @Override
     public String getParameter() {
-      return this.timeRange;
+      return this.term;
     }
   }
 }

@@ -2,15 +2,14 @@ package com.ksaraev.spotifyrunning.service;
 
 import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
 import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
 import com.ksaraev.spotifyrunning.client.dto.responses.UserRecommendedItemsResponse;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrunning.model.recommendation.AbstractRecommendationMapper;
-import com.ksaraev.spotifyrunning.model.track.AbstractTrackMapper;
+import com.ksaraev.spotifyrunning.model.recommendation.RecommendationMapper;
+import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -31,8 +29,8 @@ import java.util.stream.IntStream;
 @AllArgsConstructor
 public class RecommendationService {
   private final SpotifyClient spotifyClient;
-  private final AbstractTrackMapper trackMapper;
-  private final AbstractRecommendationMapper recommendationMapper;
+  private final TrackMapper trackMapper;
+  private final RecommendationMapper recommendationMapper;
 
   public List<SpotifyTrack> getTracksRecommendation(
       @NotEmpty List<SpotifyTrack> tracksSeed,
@@ -45,10 +43,7 @@ public class RecommendationService {
     }
 
     List<String> genresSeed =
-        artistsSeed.stream()
-            .map(SpotifyArtist::getGenres)
-            .flatMap(List::stream)
-            .collect(Collectors.toList());
+        artistsSeed.stream().map(SpotifyArtist::getGenres).flatMap(List::stream).toList();
 
     List<List<String>> genresSeedList = Lists.partition(genresSeed, 1);
 
@@ -114,23 +109,12 @@ public class RecommendationService {
         "Spotify tracks recommendation seed received {}",
         ((UserRecommendedItemsResponse) response).getSeeds());
 
-    List<SpotifyItem> spotifyItems = response.getItems();
-
-    if (Objects.isNull(spotifyItems)) {
-      log.error("Spotify tracks recommendation is null");
-      throw new RuntimeException();
-    }
-
-    if (spotifyItems.isEmpty()) {
-      log.warn("Spotify tracks recommendation is empty");
-      return Collections.emptyList();
-    }
-
     List<SpotifyTrack> tracksRecommendation =
-        spotifyItems.stream()
+        response.getItems().stream()
             .map(TrackItem.class::cast)
             .map(trackMapper::toTrack)
-            .collect(Collectors.toList());
+            .map(SpotifyTrack.class::cast)
+            .toList();
 
     log.info("Spotify tracks recommendation received: {}", tracksRecommendation);
     return tracksRecommendation;

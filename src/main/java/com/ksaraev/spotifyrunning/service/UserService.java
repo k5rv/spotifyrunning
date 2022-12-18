@@ -6,7 +6,7 @@ import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
-import com.ksaraev.spotifyrunning.model.track.AbstractTrackMapper;
+import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
 import com.ksaraev.spotifyrunning.model.user.User;
@@ -20,7 +20,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,7 +28,7 @@ import java.util.stream.Collectors;
 public class UserService {
   private final SpotifyClient spotifyClient;
   private final UserMapper userMapper;
-  private final AbstractTrackMapper trackMapper;
+  private final TrackMapper trackMapper;
 
   public SpotifyUser getUser() {
 
@@ -55,16 +54,13 @@ public class UserService {
       return Collections.emptyList();
     }
 
-    List<SpotifyItem> spotifyItems = response.getItems();
-    if (spotifyItems == null) {
-      throw new RuntimeException("Spotify top tracks list is null");
-    }
-
     List<SpotifyTrack> spotifyTracks =
-        spotifyItems.stream()
+        response.getItems().stream()
             .map(TrackItem.class::cast)
             .map(trackMapper::toTrack)
-            .collect(Collectors.toList());
+            .map(SpotifyTrack.class::cast)
+            .toList();
+
     log.info("Top user tracks received: {}", spotifyTracks);
     return spotifyTracks;
   }

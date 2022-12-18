@@ -34,12 +34,9 @@ public class SpotifyRunningService {
 
   public SpotifyPlaylist getPlaylist() {
 
-    /*
-    TODO: Should be database verification
-     */
-    boolean IS_EXIST = false;
+    boolean isExist = false;
 
-    if (!IS_EXIST) {
+    if (!isExist) {
       SpotifyRecommendationFeatures features =
           RecommendationFeatures.builder()
               .minEnergy(BigDecimal.valueOf(0.65))

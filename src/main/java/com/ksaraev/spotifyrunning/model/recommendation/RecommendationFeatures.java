@@ -48,7 +48,7 @@ public class RecommendationFeatures implements SpotifyRecommendationFeatures {
   private Integer popularity;
   private BigDecimal maxSpeechiness;
   private BigDecimal minSpeechiness;
-  private BigDecimal Speechiness;
+  private BigDecimal speechiness;
   private Integer maxTimeSignature;
   private Integer minTimeSignature;
   private Integer timeSignature;

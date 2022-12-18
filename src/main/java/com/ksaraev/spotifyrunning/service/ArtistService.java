@@ -16,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,7 +32,7 @@ public class ArtistService {
             .map(SpotifyTrack::getArtists)
             .flatMap(List::stream)
             .map(SpotifyArtist::getId)
-            .collect(Collectors.toList());
+            .toList();
 
     return getSeveralArtists(ids);
   }
@@ -48,17 +47,13 @@ public class ArtistService {
       throw new RuntimeException("Spotify artists response is null");
     }
 
-    List<SpotifyItem> spotifyItems = response.getItems();
-
-    if (spotifyItems == null) {
-      throw new RuntimeException("Spotify artist list is null");
-    }
-
     List<SpotifyArtist> spotifyArtists =
-        spotifyItems.stream()
+        response.getItems().stream()
             .map(ArtistItem.class::cast)
             .map(artistMapper::toArtist)
-            .collect(Collectors.toList());
+            .map(SpotifyArtist.class::cast)
+            .toList();
+
     log.info("Spotify artists received: {}", spotifyArtists);
     return spotifyArtists;
   }
