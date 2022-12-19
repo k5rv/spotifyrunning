@@ -33,4 +33,4 @@ build/
 .vscode/
 
 /features.txt
-/src/main/resources/application-local.yml
+/src/main/resources/application-default.yml
