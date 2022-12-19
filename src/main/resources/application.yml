@@ -8,8 +8,8 @@ spring:
       client:
         registration:
           spotify:
-            client-id:
-            client-secret:
+            client-id: add_spotify_app_client_id
+            client-secret: add_spotify_app_client_secret
             provider: spotify
             client-authentication-method: basic
             authorization-grant-type: authorization_code
