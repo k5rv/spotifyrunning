@@ -7,8 +7,8 @@ import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItemDetails;
 import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichItemRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichSpotifyItemRequest;
-import com.ksaraev.spotifyrunning.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrunning.model.playlist.Playlist;
+import com.ksaraev.spotifyrunning.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.spotifyentity.SpotifyEntity;
@@ -31,17 +31,16 @@ import java.util.stream.IntStream;
 @Service
 @Validated
 @AllArgsConstructor
-public class PlaylistService {
+public class PlaylistService implements SpotifyPlaylistService {
 
   private final SpotifyClient spotifyClient;
   private final PlaylistMapper playlistMapper;
 
-  @Valid
+  @Override
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyUser user, @NotNull SpotifyPlaylistDetails playlistDetails) {
 
-    SpotifyItemDetails spotifyItemDetails =
-        playlistMapper.toPlaylistItemDetails(playlistDetails);
+    SpotifyItemDetails spotifyItemDetails = playlistMapper.toPlaylistItemDetails(playlistDetails);
 
     SpotifyItem spotifyItem = spotifyClient.createPlaylist(user.getId(), spotifyItemDetails);
 
@@ -56,6 +55,7 @@ public class PlaylistService {
     return playlist;
   }
 
+  @Override
   public SpotifyPlaylist addTracks(
       @NotNull SpotifyPlaylist playlist, @NotEmpty List<SpotifyTrack> tracks) {
 
@@ -119,7 +119,7 @@ public class PlaylistService {
     log.info("Prepared entities for playlist update: {},{}", playlist, entities);
 
     String snapshotId = spotifyClient.addPlaylistItems(playlist.getId(), request);
-    log.info("Spotify playlist updated, snapshot id: {}", snapshotId);
+    log.info("Spotify playlist updated: {}", snapshotId);
 
     if (playlist.getSnapshotId().equals(snapshotId)) {
       log.warn("Spotify playlist snapshot id wasn't changed");
@@ -128,6 +128,7 @@ public class PlaylistService {
     return snapshotId;
   }
 
+  @Override
   public SpotifyPlaylist getPlaylist(@Valid @NotNull SpotifyPlaylist playlist) {
 
     return getPlaylist(playlist.getId());

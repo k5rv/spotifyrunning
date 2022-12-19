@@ -17,7 +17,6 @@ public interface TrackMapper {
 
   Track toTrack(TrackItem trackItem);
 
-
   default List<SpotifyTrack> playlistTracksToSpotifyTracks(
       PlaylistContent<AddableTrackItem> playlistContent) {
 

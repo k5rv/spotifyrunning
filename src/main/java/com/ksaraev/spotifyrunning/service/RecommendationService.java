@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrunning.service;
 
-import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
 import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
@@ -9,72 +8,29 @@ import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
 import com.ksaraev.spotifyrunning.client.dto.responses.UserRecommendedItemsResponse;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
 import com.ksaraev.spotifyrunning.model.recommendation.RecommendationMapper;
-import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.IntStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Service
 @Validated
 @AllArgsConstructor
-public class RecommendationService {
+public class RecommendationService implements SpotifyRecommendationService {
   private final SpotifyClient spotifyClient;
   private final TrackMapper trackMapper;
   private final RecommendationMapper recommendationMapper;
 
-  public List<SpotifyTrack> getTracksRecommendation(
-      @NotEmpty List<SpotifyTrack> tracksSeed,
-      @NotEmpty List<SpotifyArtist> artistsSeed,
-      @NotNull SpotifyRecommendationFeatures recommendationFeatures) {
-
-    if (artistsSeed.stream().allMatch(artist -> Objects.isNull(artist.getGenres()))) {
-      throw new RuntimeException(
-          String.format("Artists genres are null, check artists seed: %s", artistsSeed));
-    }
-
-    List<String> genresSeed =
-        artistsSeed.stream().map(SpotifyArtist::getGenres).flatMap(List::stream).toList();
-
-    List<List<String>> genresSeedList = Lists.partition(genresSeed, 1);
-
-    List<List<SpotifyTrack>> tracksSeedList = Lists.partition(tracksSeed, 1);
-
-    List<List<SpotifyArtist>> artistsSeedList = Lists.partition(artistsSeed, 1);
-
-    AtomicReference<Set<SpotifyTrack>> trackSetAtomicReference = new AtomicReference<>();
-    trackSetAtomicReference.set(new HashSet<>());
-
-    IntStream.range(0, 1 /*Math.min(
-                Math.min(tracksSeedList.size(), artistsSeedList.size()), genresSeedList.size())*/)
-        .forEach(
-            index -> {
-              List<SpotifyTrack> tracksRecommendation =
-                  getTracksRecommendation(
-                      tracksSeedList.get(index),
-                      artistsSeedList.get(index),
-                      genresSeedList.get(index),
-                      recommendationFeatures);
-
-              trackSetAtomicReference.get().addAll(new HashSet<>(tracksRecommendation));
-            });
-
-    log.info(
-        "{} Tracks recommendations are ready: {}",
-        trackSetAtomicReference.get().size(),
-        trackSetAtomicReference.get());
-    return trackSetAtomicReference.get().stream().toList();
-  }
-
+  @Override
   public List<SpotifyTrack> getTracksRecommendation(
       @Size(min = 1, max = 5) List<SpotifyTrack> tracksSeed,
       @Size(min = 1, max = 5) List<SpotifyArtist> artistsSeed,

@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
 import com.ksaraev.spotifyrunning.client.dto.items.artist.ArtistItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyItemsRequest;
@@ -21,10 +20,11 @@ import java.util.List;
 @Service
 @Validated
 @AllArgsConstructor
-public class ArtistService {
+public class ArtistService implements SpotifyArtistService {
   private final SpotifyClient spotifyClient;
   private final ArtistMapper artistMapper;
 
+  @Override
   public List<SpotifyArtist> getArtists(@NotEmpty List<SpotifyTrack> tracks) {
 
     List<String> ids =
@@ -33,11 +33,6 @@ public class ArtistService {
             .flatMap(List::stream)
             .map(SpotifyArtist::getId)
             .toList();
-
-    return getSeveralArtists(ids);
-  }
-
-  public List<SpotifyArtist> getSeveralArtists(@NotEmpty List<String> ids) {
 
     GetSpotifyItemsRequest request = GetItemsRequest.builder().ids(ids).build();
 

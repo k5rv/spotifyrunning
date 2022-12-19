@@ -6,8 +6,8 @@ import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
-import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
 import com.ksaraev.spotifyrunning.model.user.User;
 import com.ksaraev.spotifyrunning.model.user.UserMapper;
@@ -25,11 +25,12 @@ import java.util.List;
 @Service
 @Validated
 @AllArgsConstructor
-public class UserService {
+public class UserService implements SpotifyUserService {
   private final SpotifyClient spotifyClient;
   private final UserMapper userMapper;
   private final TrackMapper trackMapper;
 
+  @Override
   public SpotifyUser getUser() {
 
     SpotifyItem spotifyItem = spotifyClient.getCurrentUserProfile();
@@ -45,6 +46,7 @@ public class UserService {
     return user;
   }
 
+  @Override
   public List<SpotifyTrack> getTopTracks(@Valid @NotNull GetSpotifyUserItemsRequest request) {
 
     SpotifyItemsResponse response = spotifyClient.getUserTopTracks(request);
