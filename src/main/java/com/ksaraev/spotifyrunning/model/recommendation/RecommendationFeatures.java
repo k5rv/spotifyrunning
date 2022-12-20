@@ -55,4 +55,10 @@ public class RecommendationFeatures implements SpotifyRecommendationFeatures {
   private BigDecimal maxValence;
   private BigDecimal minValence;
   private BigDecimal valence;
+
+  @Override
+  public String toString() {
+    return "min_tempo=%s,max_tempo=%s,min_energy=%s"
+        .formatted(this.minTempo, this.maxTempo, this.minEnergy);
+  }
 }

@@ -39,6 +39,56 @@ public class GetRecommendationItemsRequest
   @Min(0)
   Integer offset;
 
+  public static class GetRecommendationItemsRequestBuilder {
+
+    public GetRecommendationItemsRequestBuilder spotifyRecommendationFeatures(
+        SpotifyRecommendationFeatures spotifyRecommendationFeatures) {
+      this.maxTempo = spotifyRecommendationFeatures.getMaxTempo();
+      this.minTempo = spotifyRecommendationFeatures.getMinTempo();
+      this.tempo = spotifyRecommendationFeatures.getTempo();
+      this.maxPopularity = spotifyRecommendationFeatures.getMaxPopularity();
+      this.minPopularity = spotifyRecommendationFeatures.getMinPopularity();
+      this.popularity = spotifyRecommendationFeatures.getPopularity();
+      this.maxKey = spotifyRecommendationFeatures.getMaxKey();
+      this.minKey = spotifyRecommendationFeatures.getMinKey();
+      this.key = spotifyRecommendationFeatures.getKey();
+      this.maxMode = spotifyRecommendationFeatures.getMaxMode();
+      this.minMode = spotifyRecommendationFeatures.getMinMode();
+      this.mode = spotifyRecommendationFeatures.getMode();
+      this.maxDurationMs = spotifyRecommendationFeatures.getMaxDurationMs();
+      this.minDurationMs = spotifyRecommendationFeatures.getMinDurationMs();
+      this.durationMs = spotifyRecommendationFeatures.getDurationMs();
+      this.maxTimeSignature = spotifyRecommendationFeatures.getTimeSignature();
+      this.minTimeSignature = spotifyRecommendationFeatures.getMinTimeSignature();
+      this.timeSignature = spotifyRecommendationFeatures.getTimeSignature();
+      this.minEnergy = spotifyRecommendationFeatures.getMinEnergy();
+      this.maxEnergy = spotifyRecommendationFeatures.getMaxEnergy();
+      this.energy = spotifyRecommendationFeatures.getEnergy();
+      this.minAcousticness = spotifyRecommendationFeatures.getMinAcousticness();
+      this.maxAcousticness = spotifyRecommendationFeatures.getMaxAcousticness();
+      this.acousticness = spotifyRecommendationFeatures.getAcousticness();
+      this.minDanceability = spotifyRecommendationFeatures.getMinDanceability();
+      this.maxDanceability = spotifyRecommendationFeatures.getMaxDanceability();
+      this.danceability = spotifyRecommendationFeatures.getDanceability();
+      this.maxInstrumentalness = spotifyRecommendationFeatures.getMaxInstrumentalness();
+      this.minInstrumentalness = spotifyRecommendationFeatures.getMinInstrumentalness();
+      this.instrumentalness = spotifyRecommendationFeatures.getInstrumentalness();
+      this.maxLiveness = spotifyRecommendationFeatures.getMaxLiveness();
+      this.minLiveness = spotifyRecommendationFeatures.getMinLiveness();
+      this.liveness = spotifyRecommendationFeatures.getLiveness();
+      this.minLoudness = spotifyRecommendationFeatures.getMinLoudness();
+      this.maxLoudness = spotifyRecommendationFeatures.getMaxLoudness();
+      this.loudness = spotifyRecommendationFeatures.getLoudness();
+      this.maxSpeechiness = spotifyRecommendationFeatures.getMaxSpeechiness();
+      this.minSpeechiness = spotifyRecommendationFeatures.getMinSpeechiness();
+      this.speechiness = spotifyRecommendationFeatures.getSpeechiness();
+      this.maxValence = spotifyRecommendationFeatures.getMaxValence();
+      this.minValence = spotifyRecommendationFeatures.getMinValence();
+      this.valence = spotifyRecommendationFeatures.getValence();
+      return this;
+    }
+  }
+
   @Param("max_popularity")
   Integer maxPopularity;
 

@@ -11,8 +11,8 @@ import java.util.List;
 public interface SpotifyRecommendationService {
 
   List<SpotifyTrack> getTracksRecommendation(
-      @Size(min = 1, max = 5) List<SpotifyTrack> tracksSeed,
-      @Size(min = 1, max = 5) List<SpotifyArtist> artistsSeed,
-      @Size(min = 1, max = 5) List<String> genresSeed,
+      @Size(min = 1, max = 5) List<SpotifyTrack> seedTracks,
+      @Size(min = 1, max = 5) List<SpotifyArtist> seedArtists,
+      @Size(min = 1, max = 5) List<String> seedGenres,
       @NotNull SpotifyRecommendationFeatures recommendationFeatures);
 }

@@ -62,32 +62,31 @@ public class SpotifyRunningService implements SpotifyRunning {
 
     if (artists.stream().allMatch(artist -> Objects.isNull(artist.getGenres()))) {
       throw new RuntimeException(
-          String.format("Artists genres are null, check artists seed: %s", artists));
+          String.format("Artists genres are null, check seed artists: %s", artists));
     }
 
-    List<String> genresSeed =
+    List<String> seedGenres =
         artists.stream().map(SpotifyArtist::getGenres).flatMap(List::stream).toList();
 
-    List<List<String>> genresSeedList = Lists.partition(genresSeed, 1);
+    List<List<String>> seedGenresList = Lists.partition(seedGenres, 1);
 
-    List<List<SpotifyTrack>> tracksSeedList = Lists.partition(tracks, 1);
+    List<List<SpotifyTrack>> seedTracksList = Lists.partition(tracks, 1);
 
-    List<List<SpotifyArtist>> artistsSeedList = Lists.partition(artists, 1);
+    List<List<SpotifyArtist>> seedArtistsList = Lists.partition(artists, 1);
 
     AtomicReference<Set<SpotifyTrack>> trackSetAtomicReference = new AtomicReference<>();
     trackSetAtomicReference.set(new HashSet<>());
 
-    IntStream.range(
-            0,1/*
+    IntStream.range(0, 1 /*
             Math.min(
                 Math.min(tracksSeedList.size(), artistsSeedList.size()), genresSeedList.size())*/)
         .forEach(
             index -> {
               List<SpotifyTrack> tracksRecommendation =
                   recommendationService.getTracksRecommendation(
-                      tracksSeedList.get(index),
-                      artistsSeedList.get(index),
-                      genresSeedList.get(index),
+                      seedTracksList.get(index),
+                      seedArtistsList.get(index),
+                      seedGenresList.get(index),
                       features);
 
               trackSetAtomicReference.get().addAll(new HashSet<>(tracksRecommendation));

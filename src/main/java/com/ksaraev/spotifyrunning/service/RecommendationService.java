@@ -3,6 +3,7 @@ package com.ksaraev.spotifyrunning.service;
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
 import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
+import com.ksaraev.spotifyrunning.client.dto.requests.GetRecommendationItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
 import com.ksaraev.spotifyrunning.client.dto.responses.UserRecommendedItemsResponse;
@@ -32,37 +33,37 @@ public class RecommendationService implements SpotifyRecommendationService {
 
   @Override
   public List<SpotifyTrack> getTracksRecommendation(
-      @Size(min = 1, max = 5) List<SpotifyTrack> tracksSeed,
-      @Size(min = 1, max = 5) List<SpotifyArtist> artistsSeed,
-      @Size(min = 1, max = 5) List<String> genresSeed,
+      @Size(min = 1, max = 5) List<SpotifyTrack> seedTracks,
+      @Size(min = 1, max = 5) List<SpotifyArtist> seedArtists,
+      @Size(min = 1, max = 5) List<String> seedGenres,
       @NotNull SpotifyRecommendationFeatures recommendationFeatures) {
 
     log.info(
         "Prepared seed tracks: {}, seed artists: {}, seed genres: {} and recommendation features: {}",
-        tracksSeed,
-        artistsSeed,
-        genresSeed,
+        seedTracks,
+        seedArtists,
+        seedGenres,
         recommendationFeatures);
 
     GetSpotifyUserItemsRequest request =
-        recommendationMapper.toSpotifyRequest(
-            tracksSeed, artistsSeed, genresSeed, recommendationFeatures, 50, 0);
+        GetRecommendationItemsRequest.builder()
+            .seedTracks(seedTracks.stream().map(SpotifyTrack::getId).toList())
+            .seedArtists(seedArtists.stream().map(SpotifyArtist::getId).toList())
+            .seedGenres(seedGenres)
+            .spotifyRecommendationFeatures(recommendationFeatures)
+            .build();
 
     SpotifyItemsResponse response = spotifyClient.getRecommendations(request);
-
-    if (response == null) {
-      throw new RuntimeException("Spotify tracks recommendation response is null");
-    }
 
     List<Map<String, Object>> spotifySeed = ((UserRecommendedItemsResponse) response).getSeeds();
 
     if (Objects.isNull(spotifySeed)) {
-      log.warn("Spotify tracks recommendation seed is null");
+      log.warn("Spotify seed tracks recommendation is null");
       throw new RuntimeException();
     }
 
     log.info(
-        "Spotify tracks recommendation seed received {}",
+        "Spotify seed tracks recommendation received: {}",
         ((UserRecommendedItemsResponse) response).getSeeds());
 
     List<SpotifyTrack> tracksRecommendation =
