@@ -31,6 +31,6 @@ public class FeignClientConfig {
 
   @Bean
   public Logger.Level feignLoggerLevel() {
-    return Logger.Level.NONE;
+    return Logger.Level.FULL;
   }
 }

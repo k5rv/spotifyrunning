@@ -60,4 +60,8 @@ public interface SpotifyClient {
   String addPlaylistItems(
       @NotNull @PathVariable(value = "playlist_id") String playlistId,
       @Valid @NotNull @RequestBody EnrichSpotifyItemRequest spotifyAddItemRequest);
+
+  @GetMapping(path = "audio-features")
+  SpotifyItemsResponse getAudioFeatures(
+      @RequestParam(value = "ids") GetSpotifyItemsRequest spotifyItemsRequest);
 }

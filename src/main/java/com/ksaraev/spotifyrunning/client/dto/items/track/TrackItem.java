@@ -2,8 +2,8 @@ package com.ksaraev.spotifyrunning.client.dto.items.track;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyNamed;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyPopularity;
+import com.ksaraev.spotifyrunning.client.dto.items.SpotifyPublished;
 import com.ksaraev.spotifyrunning.client.dto.items.album.AlbumItem;
 import com.ksaraev.spotifyrunning.client.dto.items.artist.ArtistItem;
 import lombok.Value;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-public class TrackItem implements SpotifyItem, SpotifyNamed, SpotifyPopularity {
+public class TrackItem implements SpotifyItem, SpotifyPublished, SpotifyPopularity {
 
   @JsonProperty("album")
   AlbumItem album;

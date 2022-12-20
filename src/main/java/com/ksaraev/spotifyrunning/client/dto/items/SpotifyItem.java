@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ksaraev.spotifyrunning.client.dto.items.album.AlbumItem;
 import com.ksaraev.spotifyrunning.client.dto.items.artist.ArtistItem;
+import com.ksaraev.spotifyrunning.client.dto.items.audiofeatures.AudioFeaturesItem;
 import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItem;
 import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
@@ -11,7 +12,6 @@ import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URL;
-import java.util.Map;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type", visible = true)
 @JsonSubTypes({
@@ -19,7 +19,8 @@ import java.util.Map;
   @JsonSubTypes.Type(value = ArtistItem.class, name = "artist"),
   @JsonSubTypes.Type(value = AlbumItem.class, name = "album"),
   @JsonSubTypes.Type(value = UserProfileItem.class, name = "user"),
-  @JsonSubTypes.Type(value = PlaylistItem.class, name = "playlist")
+  @JsonSubTypes.Type(value = PlaylistItem.class, name = "playlist"),
+  @JsonSubTypes.Type(value = AudioFeaturesItem.class, name = "audio_features")
 })
 public interface SpotifyItem {
 
@@ -33,6 +34,4 @@ public interface SpotifyItem {
   URI getUri();
 
   URL getHref();
-
-  Map<String, Object> getExternalUrls();
 }

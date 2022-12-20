@@ -13,7 +13,7 @@ import java.util.Map;
 @Value
 public class PlaylistItem
     implements SpotifyItem,
-        SpotifyNamed,
+        SpotifyPublished,
         SpotifyIllustrated,
         SpotifyFollowable,
         SpotifyItemDetails {

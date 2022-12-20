@@ -3,7 +3,7 @@ package com.ksaraev.spotifyrunning.client.dto.items.album;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyIllustrated;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyNamed;
+import com.ksaraev.spotifyrunning.client.dto.items.SpotifyPublished;
 import com.ksaraev.spotifyrunning.client.dto.items.artist.ArtistItem;
 import lombok.Value;
 
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-public class AlbumItem implements SpotifyItem, SpotifyNamed, SpotifyIllustrated {
+public class AlbumItem implements SpotifyItem, SpotifyPublished, SpotifyIllustrated {
 
   @JsonProperty("album_type")
   String albumType;

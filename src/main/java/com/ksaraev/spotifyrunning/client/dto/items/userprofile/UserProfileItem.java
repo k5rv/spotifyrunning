@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyFollowable;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyIllustrated;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyNamed;
+import com.ksaraev.spotifyrunning.client.dto.items.SpotifyPublished;
 import lombok.Value;
 
 import java.net.URI;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 @Value
 public class UserProfileItem
-    implements SpotifyItem, SpotifyNamed, SpotifyIllustrated, SpotifyFollowable {
+    implements SpotifyItem, SpotifyPublished, SpotifyIllustrated, SpotifyFollowable {
   @JsonProperty("display_name")
   String displayName;
 

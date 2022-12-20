@@ -11,7 +11,8 @@ import java.util.List;
 @JsonSubTypes({
   @JsonSubTypes.Type(value = ArtistItemsResponse.class),
   @JsonSubTypes.Type(value = UserRecommendedItemsResponse.class),
-  @JsonSubTypes.Type(value = TopUserItemsResponse.class)
+  @JsonSubTypes.Type(value = TopUserItemsResponse.class),
+  @JsonSubTypes.Type(value = AudioFeaturesItemsResponse.class)
 })
 public interface SpotifyItemsResponse {
   @NotNull
