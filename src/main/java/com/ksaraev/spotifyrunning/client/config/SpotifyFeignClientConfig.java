@@ -1,6 +1,8 @@
 package com.ksaraev.spotifyrunning.client.config;
 
+import com.ksaraev.spotifyrunning.client.config.encoders.NestedObjectQueryMapEncoder;
 import feign.Logger;
+import feign.QueryMapEncoder;
 import feign.RequestInterceptor;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,7 +15,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 
 @Configuration
 @AllArgsConstructor
-public class FeignClientConfig {
+public class SpotifyFeignClientConfig {
   private final OAuth2AuthorizedClientService authorizedClientService;
 
   @Bean
@@ -27,6 +29,11 @@ public class FeignClientConfig {
     OAuth2AuthorizedClient client =
         this.authorizedClientService.loadAuthorizedClient("spotify", authentication.getName());
     return client.getAccessToken().getTokenValue();
+  }
+
+  @Bean
+  public QueryMapEncoder queryMapEncoder() {
+    return new NestedObjectQueryMapEncoder();
   }
 
   @Bean

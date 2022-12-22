@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrunning.client;
 
-import com.ksaraev.spotifyrunning.client.config.FeignClientConfig;
+import com.ksaraev.spotifyrunning.client.config.SpotifyFeignClientConfig;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItemDetails;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichSpotifyItemRequest;
@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 @FeignClient(
     name = "spotify",
     url = "https://api.spotify.com/v1",
-    configuration = FeignClientConfig.class)
+    configuration = SpotifyFeignClientConfig.class)
 public interface SpotifyClient {
   @GetMapping(path = "me")
   @Valid
