@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrunning.client.dto.requests;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
-import feign.Param;
 import lombok.Builder;
 import lombok.Value;
 
@@ -17,17 +16,14 @@ public class GetRecommendationItemsRequest implements GetSpotifyUserItemsRequest
 
   @NotNull
   @Size(min = 1, max = 5)
-  @Param("seed_artists")
   List<String> seedArtists;
 
   @NotNull
   @Size(min = 1, max = 5)
-  @Param("seed_tracks")
   List<String> seedTracks;
 
   @NotNull
   @Size(min = 1, max = 5)
-  @Param("seed_genres")
   List<String> seedGenres;
 
   @Min(0)

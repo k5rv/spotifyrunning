@@ -1,15 +1,13 @@
 package com.ksaraev.spotifyrunning.client.config.encoders;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.Maps;
 import feign.Param;
 import feign.QueryMapEncoder;
 import feign.codec.EncodeException;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
 
@@ -23,7 +21,7 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
 
   private Map<String, Object> encode(Object object, Map<String, Object> fieldNameToValue) {
 
-    if (null == fieldNameToValue) {
+    if (Objects.isNull(fieldNameToValue)) {
       fieldNameToValue = Maps.newHashMap();
     }
 
@@ -36,7 +34,10 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
         if (value != null && value != object) {
           Param alias = field.getAnnotation(Param.class);
 
-          String name = alias != null ? alias.value() : field.getName();
+          String name =
+              alias != null
+                  ? alias.value()
+                  : CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
 
           ClassLoader classLoader = value.getClass().getClassLoader();
 
@@ -62,8 +63,7 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
 
   private NestedObjectQueryMapEncoder.ObjectParamMetadata getMetadata(Class<?> objectType) {
     NestedObjectQueryMapEncoder.ObjectParamMetadata metadata = classToMetadata.get(objectType);
-
-    if (metadata == null) {
+    if (Objects.isNull(metadata)) {
       metadata = NestedObjectQueryMapEncoder.ObjectParamMetadata.parseObjectType(objectType);
       classToMetadata.put(objectType, metadata);
     }
@@ -74,7 +74,6 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
 
     private static NestedObjectQueryMapEncoder.ObjectParamMetadata parseObjectType(Class<?> type) {
       List<Field> allFields = new ArrayList<>();
-
       for (Class<?> aClass = type; aClass != null; aClass = aClass.getSuperclass()) {
         for (Field field : aClass.getDeclaredFields()) {
           if (!field.isSynthetic()) {
