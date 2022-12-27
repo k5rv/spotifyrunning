@@ -18,8 +18,8 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -32,11 +32,11 @@ public class UserService implements SpotifyUserService {
 
   @Override
   public SpotifyUser getUser() {
-
+    log.info("Getting current user profile");
     SpotifyItem spotifyItem = spotifyClient.getCurrentUserProfile();
 
-    if (spotifyItem == null) {
-      throw new NullPointerException("Spotify user profile is null");
+    if (Objects.isNull(spotifyItem)) {
+      throw new IllegalStateException("User profile is null");
     }
 
     UserProfileItem userProfileItem = (UserProfileItem) spotifyItem;
@@ -48,22 +48,21 @@ public class UserService implements SpotifyUserService {
 
   @Override
   public List<SpotifyTrack> getTopTracks(@Valid @NotNull GetSpotifyUserItemsRequest request) {
-
+    log.info("Getting current user top tracks");
     SpotifyItemsResponse response = spotifyClient.getUserTopTracks(request);
 
-    if (response == null) {
-      log.error("Spotify user top tracks response is null, request: {}", request);
-      return Collections.emptyList();
+    if (Objects.isNull(response)) {
+      throw new IllegalStateException("User top tracks response is null");
     }
 
-    List<SpotifyTrack> spotifyTracks =
+    List<SpotifyTrack> tracks =
         response.getItems().stream()
             .map(TrackItem.class::cast)
             .map(trackMapper::toTrack)
             .map(SpotifyTrack.class::cast)
             .toList();
 
-    log.info("Top user tracks received: {}", spotifyTracks);
-    return spotifyTracks;
+    log.info("User top tracks received: {}", tracks);
+    return tracks;
   }
 }

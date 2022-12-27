@@ -12,7 +12,6 @@ import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
@@ -35,87 +34,77 @@ public class SpotifyRunningService implements SpotifyRunning {
   private final SpotifyRecommendationService recommendationService;
   private final SpotifyRunningConfiguration spotifyRunningConfiguration;
 
-  public SpotifyPlaylist getPlaylist() {
-
+  public SpotifyPlaylist createPlaylist() {
     return createPlaylist(
         spotifyRunningConfiguration.spotifyPlaylistDetails(),
         spotifyRunningConfiguration.spotifyRecommendationFeatures());
   }
 
-  private SpotifyPlaylist createPlaylist(
-      @NotNull SpotifyPlaylistDetails playlistDetails,
-      @NotNull SpotifyRecommendationFeatures features) {
+  @Override
+  public SpotifyPlaylist createPlaylist(
+      @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationFeatures features) {
+    List<SpotifyTrack> userTopTracks =
+        userService.getTopTracks(GetUserTopItemsRequest.builder().build());
 
-    List<SpotifyTrack> tracks = userService.getTopTracks(GetUserTopItemsRequest.builder().build());
-
-    if (CollectionUtils.isEmpty(tracks)) {
-      throw new RuntimeException(
-          String.format("Top tracks list value is: %s, expected not to be null or empty", tracks));
+    if (userTopTracks.isEmpty()) {
+      throw new IllegalStateException("Top tracks not found");
     }
 
-    List<SpotifyArtist> artists = artistService.getArtists(tracks);
+    List<String> artistIds =
+        userTopTracks.stream()
+            .map(SpotifyTrack::getArtists)
+            .flatMap(List::stream)
+            .map(SpotifyArtist::getId)
+            .distinct()
+            .toList();
 
-    if (CollectionUtils.isEmpty(artists)) {
-      throw new RuntimeException(
-          String.format("Artists list value is: %s, expected not to be null or empty", artists));
+    List<SpotifyArtist> topTracksArtists = artistService.getArtists(artistIds);
+
+    if (topTracksArtists.isEmpty()) {
+      throw new IllegalStateException("Artists not found");
     }
 
-    if (artists.stream().allMatch(artist -> Objects.isNull(artist.getGenres()))) {
-      throw new RuntimeException(
-          String.format("Artists genres are null, check seed artists: %s", artists));
+    if (topTracksArtists.stream().allMatch(artist -> Objects.isNull(artist.getGenres()))) {
+      throw new IllegalStateException("Artists genres not found");
     }
 
-    List<String> seedGenres =
-        artists.stream().map(SpotifyArtist::getGenres).flatMap(List::stream).toList();
+    List<String> topTracksGenres =
+        topTracksArtists.stream().map(SpotifyArtist::getGenres).flatMap(List::stream).toList();
 
-    List<List<String>> seedGenresList = Lists.partition(seedGenres, 1);
+    List<List<SpotifyTrack>> seedTracksPartitions = Lists.partition(userTopTracks, 1);
 
-    List<List<SpotifyTrack>> seedTracksList = Lists.partition(tracks, 1);
+    List<List<String>> seedGenresPartitions = Lists.partition(topTracksGenres, 1);
 
-    List<List<SpotifyArtist>> seedArtistsList = Lists.partition(artists, 1);
+    List<List<SpotifyArtist>> seedArtistsPartitions = Lists.partition(topTracksArtists, 1);
 
-    AtomicReference<Set<SpotifyTrack>> trackSetAtomicReference = new AtomicReference<>();
-    trackSetAtomicReference.set(new HashSet<>());
+    AtomicReference<Set<SpotifyTrack>> tracks = new AtomicReference<>();
+    tracks.set(new HashSet<>());
 
     IntStream.range(0, 1 /*
             Math.min(
                 Math.min(tracksSeedList.size(), artistsSeedList.size()), genresSeedList.size())*/)
         .forEach(
             index -> {
-              List<SpotifyTrack> tracksRecommendation =
-                  recommendationService.getTracksRecommendation(
-                      seedTracksList.get(index),
-                      seedArtistsList.get(index),
-                      seedGenresList.get(index),
+              List<SpotifyTrack> seedRecommendations =
+                  recommendationService.getTracks(
+                      seedTracksPartitions.get(index),
+                      seedArtistsPartitions.get(index),
+                      seedGenresPartitions.get(index),
                       features);
 
-              trackSetAtomicReference.get().addAll(new HashSet<>(tracksRecommendation));
+              tracks.get().addAll(new HashSet<>(seedRecommendations));
             });
 
-    log.info(
-        "{} Tracks recommendations are ready: {}",
-        trackSetAtomicReference.get().size(),
-        trackSetAtomicReference.get());
-    List<SpotifyTrack> tracksRecommendations = trackSetAtomicReference.get().stream().toList();
-
-    if (CollectionUtils.isEmpty(tracksRecommendations)) {
-      throw new RuntimeException(
-          String.format(
-              "Track recommendation list value is: %s, expected not to be null or empty", artists));
+    if (tracks.get().stream().toList().isEmpty()) {
+      throw new IllegalStateException("Recommendations not found");
     }
 
     SpotifyUser user = userService.getUser();
 
-    if (Objects.isNull(user)) {
-      throw new RuntimeException("User is null");
-    }
-
     SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistDetails);
 
-    if (Objects.isNull(playlist)) {
-      throw new RuntimeException("Playlist is null");
-    }
+    playlistService.addTracks(playlist, tracks.get().stream().toList());
 
-    return playlistService.addTracks(playlist, tracksRecommendations);
+    return playlistService.getPlaylist(playlist.getId());
   }
 }

@@ -15,4 +15,9 @@ public class Artist implements SpotifyArtist {
   private String name;
   private URI uri;
   private List<String> genres;
+
+  @Override
+  public String toString() {
+    return "Artist(id:%s, name:%s)".formatted(this.id, this.name);
+  }
 }

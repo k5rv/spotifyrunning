@@ -7,14 +7,14 @@ import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
 import com.ksaraev.spotifyrunning.model.artist.ArtistMapper;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -25,31 +25,24 @@ public class ArtistService implements SpotifyArtistService {
   private final ArtistMapper artistMapper;
 
   @Override
-  public List<SpotifyArtist> getArtists(@NotEmpty List<SpotifyTrack> tracks) {
-
-    List<String> ids =
-        tracks.stream()
-            .map(SpotifyTrack::getArtists)
-            .flatMap(List::stream)
-            .map(SpotifyArtist::getId)
-            .toList();
-
+  public List<SpotifyArtist> getArtists(@NotNull List<String> ids) {
+    log.info("Getting artists with ids: {}", ids);
     GetSpotifyItemsRequest request = GetItemsRequest.builder().ids(ids).build();
 
     SpotifyItemsResponse response = spotifyClient.getArtists(request);
 
-    if (response == null) {
-      throw new RuntimeException("Spotify artists response is null");
+    if (Objects.isNull(response)) {
+      throw new IllegalStateException("Artists response is null");
     }
 
-    List<SpotifyArtist> spotifyArtists =
+    List<SpotifyArtist> artists =
         response.getItems().stream()
             .map(ArtistItem.class::cast)
             .map(artistMapper::toArtist)
             .map(SpotifyArtist.class::cast)
             .toList();
 
-    log.info("Spotify artists received: {}", spotifyArtists);
-    return spotifyArtists;
+    log.info("Artists received: {}", artists);
+    return artists;
   }
 }

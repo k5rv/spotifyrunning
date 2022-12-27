@@ -6,9 +6,7 @@ import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendatio
 import com.ksaraev.spotifyrunning.client.dto.requests.GetRecommendationItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
-import com.ksaraev.spotifyrunning.client.dto.responses.UserRecommendedItemsResponse;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrunning.model.recommendation.RecommendationMapper;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import lombok.AllArgsConstructor;
@@ -16,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -29,17 +24,15 @@ import java.util.Objects;
 public class RecommendationService implements SpotifyRecommendationService {
   private final SpotifyClient spotifyClient;
   private final TrackMapper trackMapper;
-  private final RecommendationMapper recommendationMapper;
 
   @Override
-  public List<SpotifyTrack> getTracksRecommendation(
-      @Size(min = 1, max = 5) List<SpotifyTrack> seedTracks,
-      @Size(min = 1, max = 5) List<SpotifyArtist> seedArtists,
-      @Size(min = 1, max = 5) List<String> seedGenres,
-      @NotNull SpotifyRecommendationFeatures recommendationFeatures) {
-
+  public List<SpotifyTrack> getTracks(
+      List<SpotifyTrack> seedTracks,
+      List<SpotifyArtist> seedArtists,
+      List<String> seedGenres,
+      SpotifyRecommendationFeatures recommendationFeatures) {
     log.info(
-        "Prepared seed tracks: {}, seed artists: {}, seed genres: {} and recommendation features: {}",
+        "Getting tracks with seed: {}, {}, {} and features: {}",
         seedTracks,
         seedArtists,
         seedGenres,
@@ -55,16 +48,9 @@ public class RecommendationService implements SpotifyRecommendationService {
 
     SpotifyItemsResponse response = spotifyClient.getRecommendations(request);
 
-    List<Map<String, Object>> spotifySeed = ((UserRecommendedItemsResponse) response).getSeeds();
-
-    if (Objects.isNull(spotifySeed)) {
-      log.warn("Spotify seed tracks recommendation is null");
-      throw new RuntimeException();
+    if (Objects.isNull(response)) {
+      throw new IllegalStateException("Tracks response is null");
     }
-
-    log.info(
-        "Spotify seed tracks recommendation received: {}",
-        ((UserRecommendedItemsResponse) response).getSeeds());
 
     List<SpotifyTrack> tracksRecommendation =
         response.getItems().stream()
@@ -73,7 +59,7 @@ public class RecommendationService implements SpotifyRecommendationService {
             .map(SpotifyTrack.class::cast)
             .toList();
 
-    log.info("Spotify tracks recommendation received: {}", tracksRecommendation);
+    log.info("Tracks received: {}", tracksRecommendation);
     return tracksRecommendation;
   }
 }

@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrunning.client.config;
 
-import com.ksaraev.spotifyrunning.client.config.encoders.NestedObjectQueryMapEncoder;
+import com.ksaraev.spotifyrunning.client.config.encoders.SpotifyClientRequestQueryMapEncoder;
 import feign.Logger;
 import feign.QueryMapEncoder;
 import feign.RequestInterceptor;
@@ -33,11 +33,11 @@ public class SpotifyFeignClientConfig {
 
   @Bean
   public QueryMapEncoder queryMapEncoder() {
-    return new NestedObjectQueryMapEncoder();
+    return new SpotifyClientRequestQueryMapEncoder();
   }
 
   @Bean
   public Logger.Level feignLoggerLevel() {
-    return Logger.Level.BASIC;
+    return Logger.Level.NONE;
   }
 }

@@ -8,11 +8,12 @@ import feign.codec.EncodeException;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
+public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
 
-  private final Map<Class<?>, NestedObjectQueryMapEncoder.ObjectParamMetadata> classToMetadata =
-      new HashMap<>();
+  private final Map<Class<?>, SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata>
+      classToMetadata = new HashMap<>();
 
   @Override
   public Map<String, Object> encode(Object object) throws EncodeException {
@@ -26,7 +27,8 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
     }
 
     try {
-      NestedObjectQueryMapEncoder.ObjectParamMetadata metadata = getMetadata(object.getClass());
+      SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata metadata =
+          getMetadata(object.getClass());
 
       for (Field field : metadata.objectFields) {
         Object value = field.get(object);
@@ -58,13 +60,19 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
 
   private void processNameAndValue(
       String name, Object value, Map<String, Object> fieldNameToValue) {
+    if (Objects.nonNull(value) && Collection.class.isAssignableFrom(value.getClass())) {
+      value =
+          ((Collection<?>) value).stream().map(String::valueOf).collect(Collectors.joining(","));
+    }
     fieldNameToValue.put(name, value);
   }
 
-  private NestedObjectQueryMapEncoder.ObjectParamMetadata getMetadata(Class<?> objectType) {
-    NestedObjectQueryMapEncoder.ObjectParamMetadata metadata = classToMetadata.get(objectType);
+  private SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata getMetadata(Class<?> objectType) {
+    SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata metadata =
+        classToMetadata.get(objectType);
     if (Objects.isNull(metadata)) {
-      metadata = NestedObjectQueryMapEncoder.ObjectParamMetadata.parseObjectType(objectType);
+      metadata =
+          SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata.parseObjectType(objectType);
       classToMetadata.put(objectType, metadata);
     }
     return metadata;
@@ -72,7 +80,8 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
 
   private record ObjectParamMetadata(List<Field> objectFields) {
 
-    private static NestedObjectQueryMapEncoder.ObjectParamMetadata parseObjectType(Class<?> type) {
+    private static SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata parseObjectType(
+        Class<?> type) {
       List<Field> allFields = new ArrayList<>();
       for (Class<?> aClass = type; aClass != null; aClass = aClass.getSuperclass()) {
         for (Field field : aClass.getDeclaredFields()) {
@@ -82,7 +91,7 @@ public class NestedObjectQueryMapEncoder implements QueryMapEncoder {
           }
         }
       }
-      return new NestedObjectQueryMapEncoder.ObjectParamMetadata(allFields);
+      return new SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata(allFields);
     }
   }
 }

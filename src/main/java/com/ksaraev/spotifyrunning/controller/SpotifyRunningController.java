@@ -4,7 +4,7 @@ import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.service.SpotifyRunningService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -14,9 +14,8 @@ public class SpotifyRunningController {
 
   private final SpotifyRunningService spotifyRunningService;
 
-  @GetMapping(path = "/playlists")
-  public SpotifyPlaylist getPlaylist() {
-
-    return spotifyRunningService.getPlaylist();
+  @PostMapping(path = "/playlists")
+  public SpotifyPlaylist createPlaylist() {
+    return spotifyRunningService.createPlaylist();
   }
 }

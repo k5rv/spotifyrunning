@@ -11,7 +11,6 @@ import com.ksaraev.spotifyrunning.model.playlist.Playlist;
 import com.ksaraev.spotifyrunning.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrunning.model.spotifyentity.SpotifyEntity;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
 import lombok.AllArgsConstructor;
@@ -19,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
@@ -39,16 +36,16 @@ public class PlaylistService implements SpotifyPlaylistService {
   @Override
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyUser user, @NotNull SpotifyPlaylistDetails playlistDetails) {
+    log.info("Creating playlist for user: {}", user);
+    SpotifyItemDetails itemDetails = playlistMapper.toPlaylistItemDetails(playlistDetails);
 
-    SpotifyItemDetails spotifyItemDetails = playlistMapper.toPlaylistItemDetails(playlistDetails);
+    SpotifyItem item = spotifyClient.createPlaylist(user.getId(), itemDetails);
 
-    SpotifyItem spotifyItem = spotifyClient.createPlaylist(user.getId(), spotifyItemDetails);
-
-    if (spotifyItem == null) {
-      throw new NullPointerException("Spotify playlist is null");
+    if (Objects.isNull(item)) {
+      throw new IllegalStateException("Playlist response is null");
     }
 
-    PlaylistItem playlistItem = (PlaylistItem) spotifyItem;
+    PlaylistItem playlistItem = (PlaylistItem) item;
 
     Playlist playlist = playlistMapper.toPlaylist(playlistItem);
     log.info("Playlist created: {}", playlist);
@@ -56,95 +53,46 @@ public class PlaylistService implements SpotifyPlaylistService {
   }
 
   @Override
-  public SpotifyPlaylist addTracks(
-      @NotNull SpotifyPlaylist playlist, @NotEmpty List<SpotifyTrack> tracks) {
+  public void addTracks(@NotNull SpotifyPlaylist playlist, @NotNull List<SpotifyTrack> tracks) {
+    log.info("Adding tracks to playlist: {}", playlist);
 
-    List<SpotifyEntity> spotifyEntities = tracks.stream().map(SpotifyEntity.class::cast).toList();
+    List<List<SpotifyTrack>> trackBatches = Lists.partition(tracks, 99);
 
-    List<List<SpotifyEntity>> entityBatchList = Lists.partition(spotifyEntities, 99);
+    String playlistId = playlist.getId();
 
-    IntStream.range(0, entityBatchList.size())
+    IntStream.range(0, trackBatches.size())
         .forEach(
             index -> {
-              log.info(
-                  "Updating playlist (id: {}, snapshotId: {})",
-                  playlist.getId(),
-                  playlist.getSnapshotId());
+              List<SpotifyTrack> trackBatch = trackBatches.get(index);
 
-              String snapshotId = addPlaylistEntities(playlist, entityBatchList.get(index));
+              List<URI> trackUris = trackBatch.stream().map(SpotifyTrack::getUri).toList();
+
+              EnrichSpotifyItemRequest request =
+                  EnrichItemRequest.builder().uris(trackUris).build();
+
+              String snapshotId = spotifyClient.addPlaylistItems(playlistId, request);
 
               if (Objects.isNull(snapshotId)) {
-                throw new RuntimeException("Snapshot id is null");
+                throw new IllegalStateException("Adding tracks response is null");
               }
+
+              playlist.setSnapshotId(snapshotId);
+              log.info("Added {} tracks to playlist: {}", trackBatch.size(), playlist);
             });
-
-    SpotifyPlaylist updatedPlaylist = getPlaylist(playlist);
-
-    if (Objects.isNull(updatedPlaylist)) {
-      throw new RuntimeException("Updated playlist is null");
-    }
-
-    if (Objects.isNull(updatedPlaylist.getTracks())) {
-      throw new RuntimeException("Updated playlist track list is null");
-    }
-
-    if (updatedPlaylist.getTracks().isEmpty()) {
-      throw new RuntimeException("Updated playlist is empty");
-    }
-
-    List<SpotifyTrack> diffTracks =
-        updatedPlaylist.getTracks().stream()
-            .filter(
-                updatedPlaylistTrack ->
-                    tracks.stream()
-                        .anyMatch(
-                            trackToAdd -> trackToAdd.getId().equals(updatedPlaylistTrack.getId())))
-            .toList();
-
-    if (diffTracks.isEmpty()) {
-      log.warn("Playlist tracks haven't changed");
-      return playlist;
-    }
-
-    log.info("Playlist (id:{}), updated with tracks {}", playlist.getId(), diffTracks);
-    return playlist;
-  }
-
-  private String addPlaylistEntities(
-      @NotNull SpotifyPlaylist playlist, @NotEmpty List<SpotifyEntity> entities) {
-
-    List<URI> entityUris = entities.stream().map(SpotifyEntity::getUri).toList();
-
-    EnrichSpotifyItemRequest request = EnrichItemRequest.builder().uris(entityUris).build();
-    log.info("Prepared entities for playlist update: {},{}", playlist, entities);
-
-    String snapshotId = spotifyClient.addPlaylistItems(playlist.getId(), request);
-    log.info("Spotify playlist updated: {}", snapshotId);
-
-    if (playlist.getSnapshotId().equals(snapshotId)) {
-      log.warn("Spotify playlist snapshot id wasn't changed");
-    }
-
-    return snapshotId;
   }
 
   @Override
-  public SpotifyPlaylist getPlaylist(@Valid @NotNull SpotifyPlaylist playlist) {
+  public SpotifyPlaylist getPlaylist(@NotNull String playlistId) {
+    log.info("Getting playlist with id: {}", playlistId);
+    SpotifyItem item = spotifyClient.getPlaylist(playlistId);
 
-    return getPlaylist(playlist.getId());
-  }
-
-  private SpotifyPlaylist getPlaylist(@NotNull String playlistId) {
-
-    SpotifyItem spotifyItem = spotifyClient.getPlaylist(playlistId);
-
-    if (spotifyItem == null) {
-      throw new NullPointerException("Spotify playlist is null");
+    if (Objects.isNull(item)) {
+      throw new NullPointerException("Playlist response is null");
     }
 
-    PlaylistItem playlistItem = (PlaylistItem) spotifyItem;
+    PlaylistItem playlistItem = (PlaylistItem) item;
 
-    SpotifyPlaylist playlist = playlistMapper.toPlaylist(playlistItem);
+    Playlist playlist = playlistMapper.toPlaylist(playlistItem);
 
     log.info("Playlist received: {}", playlist);
     return playlist;

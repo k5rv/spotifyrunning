@@ -14,4 +14,9 @@ public class User implements SpotifyUser {
   private String name;
   private URI uri;
   private String email;
+
+  @Override
+  public String toString() {
+    return "User(id:%s, name:%s)".formatted(this.id, this.name);
+  }
 }
