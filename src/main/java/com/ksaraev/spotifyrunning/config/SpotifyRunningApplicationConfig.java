@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 import java.math.BigDecimal;
 
 @Configuration
-@Qualifier("SpotifyRunningConfigProduction")
-public class SpotifyRunningConfig implements SpotifyRunningConfiguration {
+@Qualifier("SpotifyRunningApplicationConfigProduction")
+public class SpotifyRunningApplicationConfig {
 
   @Value("${spotifyrunning.playlist.name}")
   private String name;
@@ -31,21 +31,22 @@ public class SpotifyRunningConfig implements SpotifyRunningConfiguration {
   private BigDecimal minEnergy;
 
   @Bean
-  public SpotifyPlaylistDetails spotifyPlaylistDetails() {
-    return PlaylistDetails.builder()
-        .isCollaborative(false)
-        .isPublic(false)
-        .name(this.name)
-        .description(this.description)
-        .build();
-  }
+  SpotifyRunningPlaylistConfig runningPlaylistConfig() {
+    SpotifyPlaylistDetails playlistDetails =
+        PlaylistDetails.builder()
+            .isCollaborative(false)
+            .isPublic(false)
+            .name(this.name)
+            .description(this.description)
+            .build();
 
-  @Bean
-  public SpotifyRecommendationFeatures spotifyRecommendationFeatures() {
-    return RecommendationFeatures.builder()
-        .minEnergy(BigDecimal.valueOf(0.65))
-        .minTempo(BigDecimal.valueOf(185.00))
-        .maxTempo(BigDecimal.valueOf(205.00))
-        .build();
+    SpotifyRecommendationFeatures recommendationFeatures =
+        RecommendationFeatures.builder()
+            .minEnergy(BigDecimal.valueOf(0.65))
+            .minTempo(BigDecimal.valueOf(185.00))
+            .maxTempo(BigDecimal.valueOf(205.00))
+            .build();
+
+    return new RunningPlaylistConfig(playlistDetails, recommendationFeatures);
   }
 }

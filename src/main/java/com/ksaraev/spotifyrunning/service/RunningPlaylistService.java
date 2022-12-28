@@ -3,7 +3,6 @@ package com.ksaraev.spotifyrunning.service;
 import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest;
-import com.ksaraev.spotifyrunning.config.SpotifyRunningConfiguration;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
@@ -26,19 +25,12 @@ import java.util.stream.IntStream;
 @Service
 @Validated
 @AllArgsConstructor
-public class SpotifyRunningService implements SpotifyRunning {
+public class RunningPlaylistService implements SpotifyRunningPlaylistService {
 
   private final SpotifyUserService userService;
   private final SpotifyArtistService artistService;
   private final SpotifyPlaylistService playlistService;
   private final SpotifyRecommendationService recommendationService;
-  private final SpotifyRunningConfiguration spotifyRunningConfiguration;
-
-  public SpotifyPlaylist createPlaylist() {
-    return createPlaylist(
-        spotifyRunningConfiguration.spotifyPlaylistDetails(),
-        spotifyRunningConfiguration.spotifyRecommendationFeatures());
-  }
 
   @Override
   public SpotifyPlaylist createPlaylist(

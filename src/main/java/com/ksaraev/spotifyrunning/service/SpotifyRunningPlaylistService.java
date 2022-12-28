@@ -6,7 +6,7 @@ import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
 
 import javax.validation.constraints.NotNull;
 
-public interface SpotifyRunning {
+public interface SpotifyRunningPlaylistService {
 
   SpotifyPlaylist createPlaylist(
       @NotNull SpotifyPlaylistDetails playlistDetails,
