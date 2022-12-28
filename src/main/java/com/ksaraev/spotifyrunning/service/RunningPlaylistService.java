@@ -22,7 +22,6 @@ import java.util.List;
 public class RunningPlaylistService implements SpotifyRunningPlaylistService {
 
   private final SpotifyUserService userService;
-  private final SpotifyArtistService artistService;
   private final SpotifyPlaylistService playlistService;
   private final SpotifyRecommendationService recommendationService;
 
@@ -30,7 +29,7 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationFeatures features) {
     List<SpotifyTrack> userTopTracks =
-        userService.getTopTracks(GetUserTopItemsRequest.builder().build());
+        userService.getTopTracks();
 
     if (userTopTracks.isEmpty()) {
       throw new IllegalStateException("Top tracks not found");

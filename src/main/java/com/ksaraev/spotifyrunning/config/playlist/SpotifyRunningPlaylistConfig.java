@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrunning.config;
+package com.ksaraev.spotifyrunning.config.playlist;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;

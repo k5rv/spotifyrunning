@@ -5,7 +5,9 @@ import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
 import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
+import com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
+import com.ksaraev.spotifyrunning.config.requests.SpotifyRequestConfig;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
@@ -16,8 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,6 +27,8 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UserService implements SpotifyUserService {
   private final SpotifyClient spotifyClient;
+
+  private final SpotifyRequestConfig spotifyRequestConfig;
   private final UserMapper userMapper;
   private final TrackMapper trackMapper;
 
@@ -47,8 +49,14 @@ public class UserService implements SpotifyUserService {
   }
 
   @Override
-  public List<SpotifyTrack> getTopTracks(@Valid @NotNull GetSpotifyUserItemsRequest request) {
+  public List<SpotifyTrack> getTopTracks() {
     log.info("Getting current user top tracks");
+
+    GetSpotifyUserItemsRequest request =
+        GetUserTopItemsRequest.builder()
+            .limit(spotifyRequestConfig.getUserTopItemsRequestLimit())
+            .build();
+
     SpotifyItemsResponse response = spotifyClient.getUserTopTracks(request);
 
     if (Objects.isNull(response)) {

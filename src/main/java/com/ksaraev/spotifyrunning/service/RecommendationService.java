@@ -6,6 +6,7 @@ import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendatio
 import com.ksaraev.spotifyrunning.client.dto.requests.GetRecommendationItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
+import com.ksaraev.spotifyrunning.config.requests.SpotifyRequestConfig;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
@@ -23,6 +24,8 @@ import java.util.Objects;
 @AllArgsConstructor
 public class RecommendationService implements SpotifyRecommendationService {
   private final SpotifyClient spotifyClient;
+
+  private final SpotifyRequestConfig spotifyRequestConfig;
   private final TrackMapper trackMapper;
 
   @Override
@@ -44,6 +47,7 @@ public class RecommendationService implements SpotifyRecommendationService {
             .seedArtists(seedArtists.stream().map(SpotifyArtist::getId).toList())
             .seedGenres(seedGenres)
             .spotifyRecommendationFeatures(recommendationFeatures)
+            .limit(spotifyRequestConfig.getRecommendationItemsRequestLimit())
             .build();
 
     SpotifyItemsResponse response = spotifyClient.getRecommendations(request);

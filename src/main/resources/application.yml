@@ -24,14 +24,20 @@ spring:
             user-info-uri: https://api.spotify.com/v1/me
             user-name-attribute: display_name
 
-spotifyrunning:
+app:
   playlist:
     name: "Running workout"
     description: "Music for your training based on Spotify recommendations and specific audio features"
-  recommendation-features:
-    min-tempo: "185"
-    max-tempo: "205"
-    min-energy: "0.65"
+    features:
+      min-tempo: "185"
+      max-tempo: "205"
+      min-energy: "0.65"
+  requests:
+    get-user-top-items:
+      limit: 15
+    get-recommendations:
+      limit: 50
+      time-range: medium_term
 
 logging:
   level:

@@ -12,5 +12,5 @@ public interface SpotifyUserService {
 
   SpotifyUser getUser();
 
-  List<SpotifyTrack> getTopTracks(@Valid @NotNull GetSpotifyUserItemsRequest request);
+  List<SpotifyTrack> getTopTracks();
 }

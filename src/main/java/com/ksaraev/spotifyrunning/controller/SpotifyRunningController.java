@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrunning.controller;
 
-import com.ksaraev.spotifyrunning.config.SpotifyRunningPlaylistConfig;
+import com.ksaraev.spotifyrunning.config.playlist.SpotifyRunningPlaylistConfig;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.service.SpotifyRunningPlaylistService;
 import lombok.AllArgsConstructor;
