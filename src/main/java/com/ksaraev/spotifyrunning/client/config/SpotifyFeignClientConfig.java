@@ -5,6 +5,7 @@ import feign.Logger;
 import feign.QueryMapEncoder;
 import feign.RequestInterceptor;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -13,9 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 
+@Getter
 @Configuration
 @AllArgsConstructor
 public class SpotifyFeignClientConfig {
+
   private final OAuth2AuthorizedClientService authorizedClientService;
 
   @Bean

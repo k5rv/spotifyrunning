@@ -15,15 +15,12 @@ import java.util.List;
 public class GetRecommendationItemsRequest implements GetSpotifyUserItemsRequest {
 
   @NotNull
-  @Size(min = 1, max = 5)
   List<String> seedArtists;
 
   @NotNull
-  @Size(min = 1, max = 5)
   List<String> seedTracks;
 
   @NotNull
-  @Size(min = 1, max = 5)
   List<String> seedGenres;
 
   @Min(0)
