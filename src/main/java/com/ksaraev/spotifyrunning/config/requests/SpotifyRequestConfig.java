@@ -8,5 +8,5 @@ public interface SpotifyRequestConfig {
 
   Integer getRecommendationItemsRequestLimit();
 
-  TimeRange getUserTopItemsRequestTimeRange();
+  String getUserTopItemsRequestTimeRange();
 }
