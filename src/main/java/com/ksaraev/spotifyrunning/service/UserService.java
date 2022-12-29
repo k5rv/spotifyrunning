@@ -55,6 +55,7 @@ public class UserService implements SpotifyUserService {
     GetSpotifyUserItemsRequest request =
         GetUserTopItemsRequest.builder()
             .limit(spotifyRequestConfig.getUserTopItemsRequestLimit())
+            .timeRange(spotifyRequestConfig.getUserTopItemsRequestTimeRange())
             .build();
 
     SpotifyItemsResponse response = spotifyClient.getUserTopTracks(request);
@@ -71,6 +72,7 @@ public class UserService implements SpotifyUserService {
             .toList();
 
     log.info("User top tracks received: {}", tracks);
+
     return tracks;
   }
 }

@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrunning.client.dto.requests;
 
 import com.ksaraev.spotifyrunning.client.config.converters.SpotifyClientRequestParameter;
-import feign.Param;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,8 +20,7 @@ public class GetUserTopItemsRequest implements GetSpotifyUserItemsRequest {
   @Min(0)
   Integer offset;
 
-  @Param("time_range")
-  TimeRange timeRange;
+  String timeRange;
 
   @Getter
   @AllArgsConstructor

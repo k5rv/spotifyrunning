@@ -4,8 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
-import static com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest.TimeRange;
-
 @Data
 @NoArgsConstructor
 public class RequestConfig implements SpotifyRequestConfig {
@@ -30,7 +28,7 @@ public class RequestConfig implements SpotifyRequestConfig {
   }
 
   @Override
-  public TimeRange getUserTopItemsRequestTimeRange() {
-    return TimeRange.valueOf(this.userTopItemsRequestTimeRange);
+  public String getUserTopItemsRequestTimeRange() {
+    return this.userTopItemsRequestTimeRange;
   }
 }
