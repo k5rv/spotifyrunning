@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,8 +60,15 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
 
     SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistDetails);
 
-    playlistService.addTracks(playlist, tracks);
+    List<SpotifyTrack> shuffleOrderTracks = shuffleTracks(new ArrayList<>(tracks));
+    playlistService.addTracks(playlist, shuffleOrderTracks);
 
     return playlistService.getPlaylist(playlist.getId());
+  }
+
+  private List<SpotifyTrack> shuffleTracks(List<SpotifyTrack> tracks) {
+    Collections.shuffle(tracks);
+    log.info("Tracks were shuffled");
+    return tracks;
   }
 }
