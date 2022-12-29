@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrunning.config.playlist;
+package com.ksaraev.spotifyrunning.config.recommendations;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
 import com.ksaraev.spotifyrunning.model.playlist.PlaylistDetails;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
-public class RunningPlaylistConfig implements SpotifyRunningPlaylistConfig {
+public class RecommendationsConfig implements SpotifyRecommendationsConfig {
 
   @Value("${app.playlist.name}")
   private String name;
@@ -29,6 +29,9 @@ public class RunningPlaylistConfig implements SpotifyRunningPlaylistConfig {
   @Value("${app.playlist.features.min-energy}")
   private BigDecimal minEnergy;
 
+  @Value("${app.requests.get-recommendations.limit}")
+  private Integer recommendationsRequestLimit;
+
   @Override
   public SpotifyPlaylistDetails getSpotifyPlaylistDetails() {
     return PlaylistDetails.builder()
@@ -42,9 +45,14 @@ public class RunningPlaylistConfig implements SpotifyRunningPlaylistConfig {
   @Override
   public SpotifyRecommendationFeatures getSpotifyRecommendationFeatures() {
     return RecommendationFeatures.builder()
-        .minEnergy(BigDecimal.valueOf(0.65))
-        .minTempo(BigDecimal.valueOf(185.00))
-        .maxTempo(BigDecimal.valueOf(205.00))
+        .minEnergy(this.minEnergy)
+        .minTempo(this.minTempo)
+        .maxTempo(this.maxTempo)
         .build();
+  }
+
+  @Override
+  public Integer getRecommendationItemsRequestLimit() {
+    return this.recommendationsRequestLimit;
   }
 }

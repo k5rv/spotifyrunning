@@ -1,6 +1,7 @@
 package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
+import com.ksaraev.spotifyrunning.config.runningplaylist.SpotifyRunningPlaylistConfig;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
@@ -22,11 +23,14 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
 
   private final SpotifyUserService userService;
   private final SpotifyPlaylistService playlistService;
-  private final SpotifyRecommendationService recommendationService;
+
+  private final SpotifyRunningPlaylistConfig spotifyRunningPlaylistConfig;
+  private final SpotifyRecommendationsService recommendationService;
 
   @Override
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationFeatures features) {
+
     List<SpotifyTrack> userTopTracks = userService.getTopTracks();
 
     if (userTopTracks.isEmpty()) {
@@ -44,6 +48,7 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
                         features))
             .flatMap(List::stream)
             .distinct()
+            .limit(spotifyRunningPlaylistConfig.getPlaylistSizeLimit())
             .toList();
 
     if (tracks.isEmpty()) {

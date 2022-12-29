@@ -6,7 +6,7 @@ import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendatio
 import com.ksaraev.spotifyrunning.client.dto.requests.GetRecommendationItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
-import com.ksaraev.spotifyrunning.config.requests.SpotifyRequestConfig;
+import com.ksaraev.spotifyrunning.config.recommendations.SpotifyRecommendationsConfig;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
@@ -22,10 +22,10 @@ import java.util.Objects;
 @Service
 @Validated
 @AllArgsConstructor
-public class RecommendationService implements SpotifyRecommendationService {
+public class RecommendationsService implements SpotifyRecommendationsService {
   private final SpotifyClient spotifyClient;
 
-  private final SpotifyRequestConfig spotifyRequestConfig;
+  private final SpotifyRecommendationsConfig spotifyRecommendationsConfig;
   private final TrackMapper trackMapper;
 
   @Override
@@ -47,7 +47,7 @@ public class RecommendationService implements SpotifyRecommendationService {
             .seedArtists(seedArtists.stream().map(SpotifyArtist::getId).toList())
             .seedGenres(seedGenres)
             .spotifyRecommendationFeatures(recommendationFeatures)
-            .limit(spotifyRequestConfig.getRecommendationItemsRequestLimit())
+            .limit(spotifyRecommendationsConfig.getRecommendationItemsRequestLimit())
             .build();
 
     SpotifyItemsResponse response = spotifyClient.getRecommendations(request);
@@ -56,14 +56,14 @@ public class RecommendationService implements SpotifyRecommendationService {
       throw new IllegalStateException("Tracks response is null");
     }
 
-    List<SpotifyTrack> tracksRecommendation =
+    List<SpotifyTrack> tracksRecommendations =
         response.getItems().stream()
             .map(TrackItem.class::cast)
             .map(trackMapper::toTrack)
             .map(SpotifyTrack.class::cast)
             .toList();
 
-    log.info("Tracks received: {}", tracksRecommendation);
-    return tracksRecommendation;
+    log.info("Tracks received: {}", tracksRecommendations);
+    return tracksRecommendations;
   }
 }

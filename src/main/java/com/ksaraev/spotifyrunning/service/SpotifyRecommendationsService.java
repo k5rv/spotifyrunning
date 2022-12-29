@@ -6,7 +6,7 @@ import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 
 import java.util.List;
 
-public interface SpotifyRecommendationService {
+public interface SpotifyRecommendationsService {
 
   List<SpotifyTrack> getTracks(
       List<SpotifyTrack> seedTracks,
