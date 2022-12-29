@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
-import com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
@@ -28,8 +27,7 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
   @Override
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationFeatures features) {
-    List<SpotifyTrack> userTopTracks =
-        userService.getTopTracks();
+    List<SpotifyTrack> userTopTracks = userService.getTopTracks();
 
     if (userTopTracks.isEmpty()) {
       throw new IllegalStateException("Top tracks not found");

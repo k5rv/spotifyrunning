@@ -7,21 +7,17 @@ import lombok.Value;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 @Value
 @Builder
 public class GetRecommendationItemsRequest implements GetSpotifyUserItemsRequest {
 
-  @NotNull
-  List<String> seedArtists;
+  @NotNull List<String> seedArtists;
 
-  @NotNull
-  List<String> seedTracks;
+  @NotNull List<String> seedTracks;
 
-  @NotNull
-  List<String> seedGenres;
+  @NotNull List<String> seedGenres;
 
   @Min(0)
   @Max(50)

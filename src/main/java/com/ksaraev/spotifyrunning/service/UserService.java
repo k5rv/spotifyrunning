@@ -5,7 +5,6 @@ import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
 import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
-import com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
 import com.ksaraev.spotifyrunning.config.requests.SpotifyRequestConfig;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
@@ -20,6 +19,9 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Objects;
+
+import static com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest.TimeRange;
+import static com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest.builder;
 
 @Slf4j
 @Service
@@ -53,9 +55,11 @@ public class UserService implements SpotifyUserService {
     log.info("Getting current user top tracks");
 
     GetSpotifyUserItemsRequest request =
-        GetUserTopItemsRequest.builder()
+        builder()
             .limit(spotifyRequestConfig.getUserTopItemsRequestLimit())
-            .timeRange(spotifyRequestConfig.getUserTopItemsRequestTimeRange())
+            .timeRange(
+                TimeRange.valueOf(
+                    spotifyRequestConfig.getUserTopItemsRequestTimeRange().toUpperCase()))
             .build();
 
     SpotifyItemsResponse response = spotifyClient.getUserTopTracks(request);

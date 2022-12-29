@@ -41,9 +41,9 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
                   ? alias.value()
                   : CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName());
 
-          ClassLoader classLoader = value.getClass().getClassLoader();
+          Class<?> currentClass = value.getClass();
 
-          if (classLoader == null) {
+          if (Objects.isNull(currentClass.getClassLoader()) || currentClass.isEnum()) {
             processNameAndValue(name, value, fieldNameToValue);
           } else {
             encode(value, fieldNameToValue);
@@ -83,8 +83,10 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
     private static SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata parseObjectType(
         Class<?> type) {
       List<Field> allFields = new ArrayList<>();
-      for (Class<?> aClass = type; aClass != null; aClass = aClass.getSuperclass()) {
-        for (Field field : aClass.getDeclaredFields()) {
+      for (Class<?> currentClass = type;
+          Objects.nonNull(currentClass);
+          currentClass = currentClass.getSuperclass()) {
+        for (Field field : currentClass.getDeclaredFields()) {
           if (!field.isSynthetic()) {
             field.setAccessible(true);
             allFields.add(field);

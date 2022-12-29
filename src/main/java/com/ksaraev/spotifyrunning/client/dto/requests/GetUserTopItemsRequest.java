@@ -20,7 +20,7 @@ public class GetUserTopItemsRequest implements GetSpotifyUserItemsRequest {
   @Min(0)
   Integer offset;
 
-  String timeRange;
+  TimeRange timeRange;
 
   @Getter
   @AllArgsConstructor
