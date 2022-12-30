@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -50,7 +50,13 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
             .flatMap(List::stream)
             .distinct()
             .limit(spotifyRunningPlaylistConfig.getPlaylistSizeLimit())
-            .toList();
+            .collect(
+                Collectors.collectingAndThen(
+                    Collectors.toList(),
+                    list -> {
+                      Collections.shuffle(list);
+                      return list;
+                    }));
 
     if (tracks.isEmpty()) {
       throw new IllegalStateException("Recommendations not found");
@@ -60,15 +66,8 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
 
     SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistDetails);
 
-    List<SpotifyTrack> shuffleOrderTracks = shuffleTracks(new ArrayList<>(tracks));
-    playlistService.addTracks(playlist, shuffleOrderTracks);
+    playlistService.addTracks(playlist, tracks);
 
     return playlistService.getPlaylist(playlist.getId());
-  }
-
-  private List<SpotifyTrack> shuffleTracks(List<SpotifyTrack> tracks) {
-    Collections.shuffle(tracks);
-    log.info("Tracks were shuffled");
-    return tracks;
   }
 }
