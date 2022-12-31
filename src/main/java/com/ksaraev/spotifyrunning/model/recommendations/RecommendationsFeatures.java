@@ -1,6 +1,6 @@
-package com.ksaraev.spotifyrunning.model.recommendation;
+package com.ksaraev.spotifyrunning.model.recommendations;
 
-import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
+import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecommendationFeatures implements SpotifyRecommendationFeatures {
+public class RecommendationsFeatures implements SpotifyRecommendationsFeatures {
 
   private Integer maxPopularity;
 

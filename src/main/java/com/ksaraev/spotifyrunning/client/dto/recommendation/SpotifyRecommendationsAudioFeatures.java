@@ -4,7 +4,7 @@ import com.ksaraev.spotifyrunning.client.dto.audiofeatures.SpotifyAudioFeatures;
 
 import java.math.BigDecimal;
 
-public interface SpotifyRecommendationAudioFeatures extends SpotifyAudioFeatures {
+public interface SpotifyRecommendationsAudioFeatures extends SpotifyAudioFeatures {
 
   BigDecimal getMaxAcousticness();
 

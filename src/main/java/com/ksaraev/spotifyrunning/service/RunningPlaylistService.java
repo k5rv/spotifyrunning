@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrunning.service;
 
-import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
+import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.config.runningplaylist.SpotifyRunningPlaylistConfig;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
@@ -30,7 +30,7 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
 
   @Override
   public SpotifyPlaylist createPlaylist(
-      @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationFeatures features) {
+      @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationsFeatures features) {
 
     List<SpotifyTrack> userTopTracks = userService.getTopTracks();
 

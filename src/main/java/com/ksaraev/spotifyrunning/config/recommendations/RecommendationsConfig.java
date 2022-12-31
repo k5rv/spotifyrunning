@@ -1,9 +1,9 @@
 package com.ksaraev.spotifyrunning.config.recommendations;
 
-import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationFeatures;
+import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.model.playlist.PlaylistDetails;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrunning.model.recommendation.RecommendationFeatures;
+import com.ksaraev.spotifyrunning.model.recommendations.RecommendationsFeatures;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,8 +43,8 @@ public class RecommendationsConfig implements SpotifyRecommendationsConfig {
   }
 
   @Override
-  public SpotifyRecommendationFeatures getSpotifyRecommendationFeatures() {
-    return RecommendationFeatures.builder()
+  public SpotifyRecommendationsFeatures getSpotifyRecommendationFeatures() {
+    return RecommendationsFeatures.builder()
         .minEnergy(this.minEnergy)
         .minTempo(this.minTempo)
         .maxTempo(this.maxTempo)
