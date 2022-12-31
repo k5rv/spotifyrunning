@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import feign.Param;
 import feign.QueryMapEncoder;
 import feign.codec.EncodeException;
+import org.springframework.util.ObjectUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -12,8 +13,7 @@ import java.util.stream.Collectors;
 
 public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
 
-  private final Map<Class<?>, SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata>
-      classToMetadata = new HashMap<>();
+  private final Map<Class<?>, ObjectParamMetadata> classToMetadata = new HashMap<>();
 
   @Override
   public Map<String, Object> encode(Object object) throws EncodeException {
@@ -27,8 +27,7 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
     }
 
     try {
-      SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata metadata =
-          getMetadata(object.getClass());
+      ObjectParamMetadata metadata = getMetadata(object.getClass());
 
       for (Field field : metadata.objectFields) {
         Object value = field.get(object);
@@ -60,19 +59,25 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
 
   private void processNameAndValue(
       String name, Object value, Map<String, Object> fieldNameToValue) {
-    if (Objects.nonNull(value) && Collection.class.isAssignableFrom(value.getClass())) {
-      value =
-          ((Collection<?>) value).stream().map(String::valueOf).collect(Collectors.joining(","));
+
+    if (ObjectUtils.isEmpty(name) || ObjectUtils.isEmpty(value)) {
+      return;
     }
+
+    if (Collection.class.isAssignableFrom(value.getClass())) {
+      Object joinValue =
+          ((Collection<?>) value).stream().map(String::valueOf).collect(Collectors.joining(","));
+      fieldNameToValue.put(name, joinValue);
+      return;
+    }
+
     fieldNameToValue.put(name, value);
   }
 
-  private SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata getMetadata(Class<?> objectType) {
-    SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata metadata =
-        classToMetadata.get(objectType);
+  private ObjectParamMetadata getMetadata(Class<?> objectType) {
+    ObjectParamMetadata metadata = classToMetadata.get(objectType);
     if (Objects.isNull(metadata)) {
-      metadata =
-          SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata.parseObjectType(objectType);
+      metadata = ObjectParamMetadata.parseObjectType(objectType);
       classToMetadata.put(objectType, metadata);
     }
     return metadata;
@@ -80,8 +85,7 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
 
   private record ObjectParamMetadata(List<Field> objectFields) {
 
-    private static SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata parseObjectType(
-        Class<?> type) {
+    private static ObjectParamMetadata parseObjectType(Class<?> type) {
       List<Field> allFields = new ArrayList<>();
       for (Class<?> currentClass = type;
           Objects.nonNull(currentClass);
@@ -93,7 +97,7 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
           }
         }
       }
-      return new SpotifyClientRequestQueryMapEncoder.ObjectParamMetadata(allFields);
+      return new ObjectParamMetadata(allFields);
     }
   }
 }
