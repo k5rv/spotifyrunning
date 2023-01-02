@@ -2,6 +2,7 @@ package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.config.runningplaylist.SpotifyRunningPlaylistConfig;
+import com.ksaraev.spotifyrunning.exception.SpotifyResourceNotFoundException;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
@@ -32,10 +33,13 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationsFeatures features) {
 
+    SpotifyUser user = userService.getUser();
+
     List<SpotifyTrack> userTopTracks = userService.getTopTracks();
 
     if (userTopTracks.isEmpty()) {
-      throw new IllegalStateException("Top tracks not found");
+      throw new SpotifyResourceNotFoundException(
+          "User %s top tracks not found".formatted(user.getId()));
     }
 
     List<SpotifyTrack> tracks =
@@ -59,10 +63,9 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
                     }));
 
     if (tracks.isEmpty()) {
-      throw new IllegalStateException("Recommendations not found");
+      throw new SpotifyResourceNotFoundException(
+          "User %s recommendations not found".formatted(user.getId()));
     }
-
-    SpotifyUser user = userService.getUser();
 
     SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistDetails);
 

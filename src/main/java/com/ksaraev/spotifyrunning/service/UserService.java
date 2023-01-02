@@ -74,7 +74,6 @@ public class UserService implements SpotifyUserService {
             .toList();
 
     log.info("User top tracks received: {}", tracks);
-
     return tracks;
   }
 }
