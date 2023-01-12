@@ -1,6 +1,8 @@
 package com.ksaraev.spotifyrunning.client.config;
 
 import com.ksaraev.spotifyrunning.client.config.encoders.SpotifyClientRequestQueryMapEncoder;
+import com.ksaraev.spotifyrunning.client.exception.FeignExceptionHandler;
+import com.ksaraev.spotifyrunning.client.exception.SpotifyExceptionHandler;
 import feign.Logger;
 import feign.QueryMapEncoder;
 import feign.RequestInterceptor;
@@ -17,12 +19,12 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 @Getter
 @Configuration
 @AllArgsConstructor
-public class SpotifyFeignClientConfig {
+public class SpotifyClientFeignConfig {
 
   private final OAuth2AuthorizedClientService authorizedClientService;
 
   @Bean
-  public RequestInterceptor spotifyClientRequestInterceptor() {
+  public RequestInterceptor requestInterceptor() {
     return requestTemplate ->
         requestTemplate.header(HttpHeaders.AUTHORIZATION, "Bearer " + getAccessToken());
   }
@@ -35,12 +37,17 @@ public class SpotifyFeignClientConfig {
   }
 
   @Bean
-  public QueryMapEncoder queryMapEncoder() {
+  public QueryMapEncoder spotifyClientRequestQueryMapEncoder() {
     return new SpotifyClientRequestQueryMapEncoder();
   }
 
   @Bean
   public Logger.Level feignLoggerLevel() {
-    return Logger.Level.FULL;
+    return Logger.Level.NONE;
+  }
+
+  @Bean
+  public FeignExceptionHandler spotifyExceptionHandler() {
+    return new SpotifyExceptionHandler();
   }
 }
