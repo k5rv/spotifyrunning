@@ -1,13 +1,12 @@
 package com.ksaraev.spotifyrunning.client.dto.requests;
 
 import com.ksaraev.spotifyrunning.client.config.converters.SpotifyClientRequestParameter;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Value;
-
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 
 @Value
 @Builder

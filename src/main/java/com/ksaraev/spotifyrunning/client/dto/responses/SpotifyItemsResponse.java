@@ -3,8 +3,8 @@ package com.ksaraev.spotifyrunning.client.dto.responses;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)

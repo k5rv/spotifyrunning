@@ -1,6 +1,7 @@
 package com.ksaraev.spotifyrunning.client.dto.items;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+
 import java.util.Map;
 
 public interface SpotifyPublished {

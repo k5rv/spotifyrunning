@@ -1,8 +1,6 @@
 package com.ksaraev.spotifyrunning.client.exception.http;
 
-public class SpotifyNotFoundException extends RuntimeException {
+import lombok.experimental.StandardException;
 
-  public SpotifyNotFoundException(String message) {
-    super(message);
-  }
-}
+@StandardException
+public class SpotifyNotFoundException extends SpotifyException {}

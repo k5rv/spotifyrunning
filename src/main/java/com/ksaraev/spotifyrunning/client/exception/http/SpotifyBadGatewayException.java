@@ -1,8 +1,6 @@
 package com.ksaraev.spotifyrunning.client.exception.http;
 
-public class SpotifyBadGatewayException extends RuntimeException {
+import lombok.experimental.StandardException;
 
-  public SpotifyBadGatewayException(String message) {
-    super(message);
-  }
-}
+@StandardException
+public class SpotifyBadGatewayException extends SpotifyException {}

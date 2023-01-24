@@ -17,9 +17,4 @@ public class Track implements SpotifyTrack {
   private URI uri;
   private Integer popularity;
   private List<SpotifyArtist> artists;
-
-  @Override
-  public String toString() {
-    return "Track(id:%s, name:%s)".formatted(this.id, this.name);
-  }
 }

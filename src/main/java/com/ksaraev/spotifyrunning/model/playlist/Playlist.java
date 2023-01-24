@@ -22,9 +22,4 @@ public class Playlist implements SpotifyPlaylist {
   private Boolean isCollaborative;
   private SpotifyUser owner;
   private List<SpotifyTrack> tracks;
-
-  @Override
-  public String toString() {
-    return "Playlist(id:%s, name:%s, snapshotId:%s)".formatted(this.id, this.name, this.snapshotId);
-  }
 }

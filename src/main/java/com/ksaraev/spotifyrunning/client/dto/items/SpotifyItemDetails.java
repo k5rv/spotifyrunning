@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItem;
 import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItemDetails;
-
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
 @JsonSubTypes({

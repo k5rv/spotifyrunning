@@ -43,7 +43,7 @@ public class SpotifyClientFeignConfig {
 
   @Bean
   public Logger.Level feignLoggerLevel() {
-    return Logger.Level.NONE;
+    return Logger.Level.FULL;
   }
 
   @Bean

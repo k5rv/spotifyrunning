@@ -22,7 +22,7 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
 
   private Map<String, Object> encode(Object object, Map<String, Object> fieldNameToValue) {
 
-    if (Objects.isNull(fieldNameToValue)) {
+    if (fieldNameToValue == null) {
       fieldNameToValue = Maps.newHashMap();
     }
 
@@ -42,7 +42,7 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
 
           Class<?> currentClass = value.getClass();
 
-          if (Objects.isNull(currentClass.getClassLoader()) || currentClass.isEnum()) {
+          if (currentClass.getClassLoader() == null || currentClass.isEnum()) {
             processNameAndValue(name, value, fieldNameToValue);
           } else {
             encode(value, fieldNameToValue);
@@ -76,7 +76,7 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
 
   private ObjectParamMetadata getMetadata(Class<?> objectType) {
     ObjectParamMetadata metadata = classToMetadata.get(objectType);
-    if (Objects.isNull(metadata)) {
+    if (metadata == null) {
       metadata = ObjectParamMetadata.parseObjectType(objectType);
       classToMetadata.put(objectType, metadata);
     }
@@ -88,7 +88,7 @@ public class SpotifyClientRequestQueryMapEncoder implements QueryMapEncoder {
     private static ObjectParamMetadata parseObjectType(Class<?> type) {
       List<Field> allFields = new ArrayList<>();
       for (Class<?> currentClass = type;
-          Objects.nonNull(currentClass);
+          currentClass != null;
           currentClass = currentClass.getSuperclass()) {
         for (Field field : currentClass.getDeclaredFields()) {
           if (!field.isSynthetic()) {

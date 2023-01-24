@@ -8,8 +8,9 @@ import com.ksaraev.spotifyrunning.client.dto.items.audiofeatures.AudioFeaturesIt
 import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItem;
 import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
 import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URL;
 
@@ -24,10 +25,10 @@ import java.net.URL;
 })
 public interface SpotifyItem {
 
-  @NotNull
+  @NotEmpty
   String getId();
 
-  @NotNull
+  @NotEmpty
   String getType();
 
   @NotNull

@@ -14,7 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -37,7 +40,7 @@ public class SpotifyClientErrorDecoder implements ErrorDecoder {
 
     for (Method method : clientMethods) {
       HandleFeignException annotation = method.getAnnotation(HandleFeignException.class);
-      if (Objects.nonNull(annotation)) {
+      if (annotation != null) {
         String configKey = Feign.configKey(method.getDeclaringClass(), method);
         FeignExceptionHandler handlerBean = applicationContext.getBean(annotation.value());
         exceptionHandlerMap.put(configKey, handlerBean);
@@ -48,16 +51,11 @@ public class SpotifyClientErrorDecoder implements ErrorDecoder {
   @Override
   public Exception decode(String methodKey, Response response) {
     FeignExceptionHandler handler = exceptionHandlerMap.get(methodKey);
-
-    if (Objects.isNull(handler)) {
-      return defaultErrorDecoder.decode(methodKey, response);
-    }
+    if (handler == null) return defaultErrorDecoder.decode(methodKey, response);
 
     Exception exception = handler.handle(response);
+    if (exception == null) return defaultErrorDecoder.decode(methodKey, response);
 
-    if (Objects.isNull(exception)) {
-      return defaultErrorDecoder.decode(methodKey, response);
-    }
     return exception;
   }
 }

@@ -1,8 +1,6 @@
 package com.ksaraev.spotifyrunning.client.exception.http;
 
-public class SpotifyTooManyRequestsException extends RuntimeException {
+import lombok.experimental.StandardException;
 
-  public SpotifyTooManyRequestsException(String message) {
-    super(message);
-  }
-}
+@StandardException
+public class SpotifyTooManyRequestsException extends SpotifyException {}

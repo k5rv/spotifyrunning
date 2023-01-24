@@ -9,13 +9,12 @@ import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
 import com.ksaraev.spotifyrunning.client.exception.HandleFeignException;
 import com.ksaraev.spotifyrunning.client.exception.SpotifyExceptionHandler;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Validated
 @FeignClient(
@@ -51,6 +50,11 @@ public interface SpotifyClient {
   @Valid
   SpotifyItemsResponse getArtists(
       @Valid @NotNull @RequestParam(value = "ids") GetSpotifyItemsRequest spotifyItemsRequest);
+
+  @GetMapping(path = "/users/{user_id}")
+  @HandleFeignException(SpotifyExceptionHandler.class)
+  @Valid
+  SpotifyItem getUserProfile(@Valid @NotNull @PathVariable(value = "user_id") String userId);
 
   @PostMapping(path = "users/{userId}/playlists")
   @HandleFeignException(SpotifyExceptionHandler.class)

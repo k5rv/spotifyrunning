@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrunning.model.playlist;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public interface SpotifyPlaylistDetails {
   @NotNull

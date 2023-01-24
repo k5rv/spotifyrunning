@@ -1,11 +1,11 @@
 package com.ksaraev.spotifyrunning.client.dto.requests;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Value;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import java.util.List;
 
 @Value

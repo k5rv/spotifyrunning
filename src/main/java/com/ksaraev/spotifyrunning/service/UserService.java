@@ -11,7 +11,6 @@ import com.ksaraev.spotifyrunning.config.topitems.SpotifyUserTopItemsConfig;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
-import com.ksaraev.spotifyrunning.model.user.User;
 import com.ksaraev.spotifyrunning.model.user.UserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,32 +25,23 @@ import java.util.Objects;
 @Validated
 @AllArgsConstructor
 public class UserService implements SpotifyUserService {
-  private final SpotifyClient spotifyClient;
 
-  private final SpotifyUserTopItemsConfig spotifyUserTopItemsConfig;
   private final UserMapper userMapper;
   private final TrackMapper trackMapper;
 
+  private final SpotifyClient spotifyClient;
+
+  private final SpotifyUserTopItemsConfig spotifyUserTopItemsConfig;
+
   @Override
   public SpotifyUser getUser() {
-    log.info("Getting current user profile");
     SpotifyItem spotifyItem = spotifyClient.getCurrentUserProfile();
-
-    if (Objects.isNull(spotifyItem)) {
-      throw new IllegalStateException("User profile is null");
-    }
-
     UserProfileItem userProfileItem = (UserProfileItem) spotifyItem;
-
-    User user = userMapper.toUser(userProfileItem);
-    log.info("User received: {}", user);
-    return user;
+    return userMapper.toUser(userProfileItem);
   }
 
   @Override
   public List<SpotifyTrack> getTopTracks() {
-    log.info("Getting current user top tracks");
-
     GetSpotifyUserItemsRequest request =
         GetUserTopItemsRequest.builder()
             .limit(spotifyUserTopItemsConfig.getUserTopItemsRequestLimit())
@@ -62,18 +52,18 @@ public class UserService implements SpotifyUserService {
 
     SpotifyItemsResponse response = spotifyClient.getUserTopTracks(request);
 
-    if (Objects.isNull(response)) {
-      throw new IllegalStateException("User top tracks response is null");
-    }
-
     List<SpotifyTrack> tracks =
         response.getItems().stream()
+            .filter(Objects::nonNull)
             .map(TrackItem.class::cast)
             .map(trackMapper::toTrack)
             .map(SpotifyTrack.class::cast)
             .toList();
 
-    log.info("User top tracks received: {}", tracks);
+    if (tracks.isEmpty()) {
+      return List.of();
+    }
+
     return tracks;
   }
 }

@@ -19,14 +19,9 @@ public interface TrackMapper {
 
   default List<SpotifyTrack> playlistTracksToSpotifyTracks(
       PlaylistContent<AddableTrackItem> playlistContent) {
-
-    if (Objects.isNull(playlistContent)) {
-      throw new IllegalArgumentException("value is null");
-    }
-
     return playlistContent.getItems().stream()
-        .map(AddableTrackItem::getSpotifyItem)
         .filter(Objects::nonNull)
+        .map(AddableTrackItem::getSpotifyItem)
         .map(TrackItem.class::cast)
         .map(this::toTrack)
         .map(SpotifyTrack.class::cast)

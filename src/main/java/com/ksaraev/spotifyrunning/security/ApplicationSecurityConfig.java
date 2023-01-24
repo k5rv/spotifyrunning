@@ -7,18 +7,15 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
 public class ApplicationSecurityConfig {
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
     return http.csrf()
         .disable()
-        .authorizeRequests()
-        .anyRequest()
-        .authenticated()
-        .and()
+        .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .oauth2Login(Customizer.withDefaults())
         .build();
   }

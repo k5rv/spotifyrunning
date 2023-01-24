@@ -3,8 +3,8 @@ package com.ksaraev.spotifyrunning.service;
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 public interface SpotifyRecommendationsService {

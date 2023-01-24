@@ -1,6 +1,7 @@
 package com.ksaraev.spotifyrunning.model.spotifyentity;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
+
 import java.net.URI;
 
 public interface SpotifyEntity {

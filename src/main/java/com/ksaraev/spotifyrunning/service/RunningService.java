@@ -2,17 +2,18 @@ package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.config.runningplaylist.SpotifyRunningPlaylistConfig;
-import com.ksaraev.spotifyrunning.exception.SpotifyResourceNotFoundException;
+import com.ksaraev.spotifyrunning.exception.CreatePlaylistException;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Service
 @Validated
 @AllArgsConstructor
-public class RunningPlaylistService implements SpotifyRunningPlaylistService {
+public class RunningService implements SpotifyRunningService {
 
   private final SpotifyUserService userService;
   private final SpotifyPlaylistService playlistService;
@@ -35,13 +36,17 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
 
     SpotifyUser user = userService.getUser();
 
+    log.info("Getting user {} top tracks", user.getId());
     List<SpotifyTrack> userTopTracks = userService.getTopTracks();
-
-    if (userTopTracks.isEmpty()) {
-      throw new SpotifyResourceNotFoundException(
-          "User %s top tracks not found".formatted(user.getId()));
+    if (CollectionUtils.isEmpty(userTopTracks)) {
+      throw new CreatePlaylistException(
+          "Unable to create playlist. User"
+              + user.getId()
+              + " top tracks required for a seed not found.");
     }
+    log.info("Found user {} top tracks", user.getId());
 
+    log.info("Getting user {} tracks recommendations", user.getId());
     List<SpotifyTrack> tracks =
         userTopTracks.stream()
             .map(
@@ -61,16 +66,16 @@ public class RunningPlaylistService implements SpotifyRunningPlaylistService {
                       Collections.shuffle(list);
                       return list;
                     }));
-
-    if (tracks.isEmpty()) {
-      throw new SpotifyResourceNotFoundException(
-          "User %s recommendations not found".formatted(user.getId()));
+    if (CollectionUtils.isEmpty(tracks)) {
+      throw new CreatePlaylistException("Tracks recommendations not found");
     }
-
+    log.info("Found user {} tracks recommendations", user.getId());
+    log.info("Creating playlist for user {}", user.getId());
     SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistDetails);
-
+    log.info("Created playlist {} for user {}", playlist.getId(), user.getId());
+    log.info("Adding tracks to playlist {}", playlist.getId());
     playlistService.addTracks(playlist, tracks);
-
+    log.info("Added tracks to playlist {}", playlist.getId());
     return playlistService.getPlaylist(playlist.getId());
   }
 }
