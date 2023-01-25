@@ -1,16 +1,14 @@
 package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
-import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
+import com.ksaraev.spotifyrunning.client.dto.items.userprofile.SpotifyUserProfileDTO;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetUserTopItemsRequest;
-import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
+import com.ksaraev.spotifyrunning.client.dto.responses.UserTopTracksResponse;
 import com.ksaraev.spotifyrunning.config.topitems.SpotifyUserTopItemsConfig;
-import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
-import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
 import com.ksaraev.spotifyrunning.model.user.UserMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +33,9 @@ public class UserService implements SpotifyUserService {
 
   @Override
   public SpotifyUser getUser() {
-    SpotifyItem spotifyItem = spotifyClient.getCurrentUserProfile();
-    UserProfileItem userProfileItem = (UserProfileItem) spotifyItem;
-    return userMapper.toUser(userProfileItem);
+    SpotifyUserProfileDTO userProfileDTO =
+        (SpotifyUserProfileDTO) spotifyClient.getCurrentUserProfile();
+    return userMapper.toUser(userProfileDTO);
   }
 
   @Override
@@ -50,13 +48,13 @@ public class UserService implements SpotifyUserService {
                     spotifyUserTopItemsConfig.getUserTopItemsRequestTimeRange().toUpperCase()))
             .build();
 
-    SpotifyItemsResponse response = spotifyClient.getUserTopTracks(request);
+    UserTopTracksResponse response =
+        (UserTopTracksResponse) spotifyClient.getUserTopTracks(request);
 
     List<SpotifyTrack> tracks =
         response.getItems().stream()
             .filter(Objects::nonNull)
-            .map(TrackItem.class::cast)
-            .map(trackMapper::toTrack)
+            .map(trackMapper::toModel)
             .map(SpotifyTrack.class::cast)
             .toList();
 

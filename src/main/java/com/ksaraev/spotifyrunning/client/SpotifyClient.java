@@ -1,8 +1,9 @@
 package com.ksaraev.spotifyrunning.client;
 
 import com.ksaraev.spotifyrunning.client.config.SpotifyClientFeignConfig;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItemDetails;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.details.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrunning.client.dto.items.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichSpotifyItemRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyUserItemsRequest;
@@ -25,7 +26,7 @@ public interface SpotifyClient {
   @GetMapping(path = "me")
   @HandleFeignException(SpotifyExceptionHandler.class)
   @Valid
-  SpotifyItem getCurrentUserProfile();
+  SpotifyUserProfileItem getCurrentUserProfile();
 
   @GetMapping(path = "me/top/tracks")
   @HandleFeignException(SpotifyExceptionHandler.class)
@@ -54,19 +55,20 @@ public interface SpotifyClient {
   @GetMapping(path = "/users/{user_id}")
   @HandleFeignException(SpotifyExceptionHandler.class)
   @Valid
-  SpotifyItem getUserProfile(@Valid @NotNull @PathVariable(value = "user_id") String userId);
+  SpotifyUserProfileItem getUserProfile(
+      @Valid @NotNull @PathVariable(value = "user_id") String userId);
 
   @PostMapping(path = "users/{userId}/playlists")
   @HandleFeignException(SpotifyExceptionHandler.class)
   @Valid
-  SpotifyItem createPlaylist(
+  SpotifyPlaylistItem createPlaylist(
       @NotNull @PathVariable(value = "userId") String userId,
-      @Valid @NotNull @RequestBody SpotifyItemDetails spotifyItemDetails);
+      @Valid @NotNull @RequestBody SpotifyPlaylistItemDetails spotifyPlaylistItemDetails);
 
   @GetMapping(path = "playlists/{playlist_id}")
   @HandleFeignException(SpotifyExceptionHandler.class)
   @Valid
-  SpotifyItem getPlaylist(@NotNull @PathVariable(value = "playlist_id") String playlistId);
+  SpotifyPlaylistItem getPlaylist(@NotNull @PathVariable(value = "playlist_id") String playlistId);
 
   @PostMapping(path = "playlists/{playlist_id}/tracks")
   @HandleFeignException(SpotifyExceptionHandler.class)
@@ -77,6 +79,7 @@ public interface SpotifyClient {
 
   @GetMapping(path = "audio-features")
   @HandleFeignException(SpotifyExceptionHandler.class)
+  @Valid
   SpotifyItemsResponse getAudioFeatures(
       @RequestParam(value = "ids") GetSpotifyItemsRequest spotifyItemsRequest);
 }

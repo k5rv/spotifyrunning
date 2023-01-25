@@ -1,5 +1,6 @@
-package com.ksaraev.spotifyrunning.model.playlist;
+package com.ksaraev.spotifyrunning.model.playlist.details;
 
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

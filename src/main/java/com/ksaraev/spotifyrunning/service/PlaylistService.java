@@ -2,16 +2,16 @@ package com.ksaraev.spotifyrunning.service;
 
 import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItemDetails;
-import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItem;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.SpotifyPlaylistDTO;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.details.SpotifyPlaylistDetailsDTO;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichItemRequest;
 import com.ksaraev.spotifyrunning.client.dto.requests.EnrichSpotifyItemRequest;
 import com.ksaraev.spotifyrunning.model.playlist.PlaylistMapper;
-import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
-import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
-import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
+import com.ksaraev.spotifyrunning.model.playlist.details.PlaylistDetailsMapper;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,21 +30,21 @@ public class PlaylistService implements SpotifyPlaylistService {
 
   private final SpotifyClient spotifyClient;
   private final PlaylistMapper playlistMapper;
+  private final PlaylistDetailsMapper playlistDetailsMapper;
 
   @Override
   public SpotifyPlaylist getPlaylist(@NotNull String playlistId) {
-    SpotifyItem item = spotifyClient.getPlaylist(playlistId);
-    PlaylistItem playlistItem = (PlaylistItem) item;
-    return playlistMapper.toPlaylist(playlistItem);
+    SpotifyPlaylistDTO playlistDTO = (SpotifyPlaylistDTO) spotifyClient.getPlaylist(playlistId);
+    return playlistMapper.toModel(playlistDTO);
   }
 
   @Override
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyUser user, @NotNull SpotifyPlaylistDetails playlistDetails) {
-    SpotifyItemDetails itemDetails = playlistMapper.toPlaylistItemDetails(playlistDetails);
-    SpotifyItem item = spotifyClient.createPlaylist(user.getId(), itemDetails);
-    PlaylistItem playlistItem = (PlaylistItem) item;
-    return playlistMapper.toPlaylist(playlistItem);
+    SpotifyPlaylistDetailsDTO playlistDetailsDTO = playlistDetailsMapper.toDto(playlistDetails);
+    SpotifyPlaylistDTO playlistDTO =
+        (SpotifyPlaylistDTO) spotifyClient.createPlaylist(user.getId(), playlistDetailsDTO);
+    return playlistMapper.toModel(playlistDTO);
   }
 
   @Override

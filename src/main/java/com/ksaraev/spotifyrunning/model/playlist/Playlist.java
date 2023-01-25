@@ -1,7 +1,8 @@
 package com.ksaraev.spotifyrunning.model.playlist;
 
-import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
-import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

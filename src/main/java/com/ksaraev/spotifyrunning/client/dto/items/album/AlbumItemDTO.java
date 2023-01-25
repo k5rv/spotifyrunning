@@ -1,10 +1,7 @@
 package com.ksaraev.spotifyrunning.client.dto.items.album;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyIllustrated;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyPublished;
-import com.ksaraev.spotifyrunning.client.dto.items.artist.ArtistItem;
+import com.ksaraev.spotifyrunning.client.dto.items.artist.SpotifyArtistDTO;
 import lombok.Value;
 
 import java.net.URI;
@@ -13,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-public class AlbumItem implements SpotifyItem, SpotifyPublished, SpotifyIllustrated {
+public class AlbumItemDTO implements SpotifyAlbumItem {
 
   @JsonProperty("album_type")
   String albumType;
@@ -33,7 +30,7 @@ public class AlbumItem implements SpotifyItem, SpotifyPublished, SpotifyIllustra
   @JsonProperty("external_urls")
   Map<String, Object> externalUrls;
 
-  List<ArtistItem> artists;
+  List<SpotifyArtistDTO> artists;
 
   String id;
   String name;

@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrunning.client.dto.recommendation;
 
-import com.ksaraev.spotifyrunning.client.dto.audiofeatures.SpotifyAudioFeatures;
+import com.ksaraev.spotifyrunning.client.dto.items.SpotifyAudioFeatures;
 
 import java.math.BigDecimal;
 

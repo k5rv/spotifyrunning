@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrunning.service;
 
-import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
-import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
 
 import java.util.List;
 

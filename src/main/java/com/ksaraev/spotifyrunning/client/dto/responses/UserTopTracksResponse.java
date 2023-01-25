@@ -1,16 +1,16 @@
 package com.ksaraev.spotifyrunning.client.dto.responses;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
+import com.ksaraev.spotifyrunning.client.dto.items.track.SpotifyTrackItem;
 import lombok.Value;
 
 import java.net.URL;
 import java.util.List;
 
 @Value
-public class TopUserItemsResponse implements SpotifyItemsResponse {
+public class UserTopTracksResponse implements SpotifyItemsResponse {
   URL href;
-  List<SpotifyItem> items;
+  List<SpotifyTrackItem> items;
   Integer limit;
   Integer offset;
   Integer total;
@@ -18,9 +18,9 @@ public class TopUserItemsResponse implements SpotifyItemsResponse {
   String previous;
 
   @JsonCreator
-  public TopUserItemsResponse(
+  public UserTopTracksResponse(
       final URL href,
-      final List<SpotifyItem> items,
+      final List<SpotifyTrackItem> items,
       final Integer limit,
       final Integer offset,
       final Integer total,

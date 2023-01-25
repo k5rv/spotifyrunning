@@ -1,11 +1,10 @@
-package com.ksaraev.spotifyrunning.client.dto.items.playlist;
+package com.ksaraev.spotifyrunning.client.dto.items.playlist.details;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItemDetails;
 import lombok.Value;
 
 @Value
-public class PlaylistItemDetails implements SpotifyItemDetails {
+public class SpotifyPlaylistDetailsDTO implements SpotifyPlaylistItemDetails {
 
   @JsonProperty("collaborative")
   Boolean isCollaborative;

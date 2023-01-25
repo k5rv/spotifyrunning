@@ -9,10 +9,10 @@ import java.util.List;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
 @JsonSubTypes({
-  @JsonSubTypes.Type(value = ArtistItemsResponse.class),
-  @JsonSubTypes.Type(value = UserRecommendedItemsResponse.class),
-  @JsonSubTypes.Type(value = TopUserItemsResponse.class),
-  @JsonSubTypes.Type(value = AudioFeaturesItemsResponse.class)
+  @JsonSubTypes.Type(value = UserTopTracksResponse.class),
+  @JsonSubTypes.Type(value = UserRecommendedTracksResponse.class),
+  @JsonSubTypes.Type(value = ArtistsResponse.class),
+  @JsonSubTypes.Type(value = SpotifyTrackAudioFeaturesItemResponse.class)
 })
 public interface SpotifyItemsResponse {
   @NotNull

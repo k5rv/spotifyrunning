@@ -1,9 +1,9 @@
 package com.ksaraev.spotifyrunning.service;
 
-import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylist;
-import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
-import com.ksaraev.spotifyrunning.model.user.SpotifyUser;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;

@@ -1,15 +1,15 @@
 package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
+import com.ksaraev.spotifyrunning.client.dto.items.track.SpotifyTrackDTO;
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.client.dto.requests.GetRecommendationItemsRequest;
 import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
 import com.ksaraev.spotifyrunning.config.recommendations.SpotifyRecommendationsConfig;
 import com.ksaraev.spotifyrunning.exception.InvalidRecommendationSeedException;
-import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrunning.model.spotifyentity.SpotifyEntity;
-import com.ksaraev.spotifyrunning.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyEntity;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -64,8 +64,8 @@ public class RecommendationsService implements SpotifyRecommendationsService {
     List<SpotifyTrack> tracksRecommendations =
         response.getItems().stream()
             .filter(Objects::nonNull)
-            .map(TrackItem.class::cast)
-            .map(trackMapper::toTrack)
+            .map(SpotifyTrackDTO.class::cast)
+            .map(trackMapper::toModel)
             .map(SpotifyTrack.class::cast)
             .toList();
 

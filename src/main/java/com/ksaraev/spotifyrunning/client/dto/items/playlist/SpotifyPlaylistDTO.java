@@ -1,8 +1,8 @@
 package com.ksaraev.spotifyrunning.client.dto.items.playlist;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ksaraev.spotifyrunning.client.dto.items.*;
-import com.ksaraev.spotifyrunning.client.dto.items.userprofile.UserProfileItem;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.content.SpotifyPlaylistItemContent;
+import com.ksaraev.spotifyrunning.client.dto.items.userprofile.SpotifyUserProfileItem;
 import lombok.Value;
 
 import java.net.URI;
@@ -11,12 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-public class PlaylistItem
-    implements SpotifyItem,
-        SpotifyPublished,
-        SpotifyIllustrated,
-        SpotifyFollowable,
-        SpotifyItemDetails {
+public class SpotifyPlaylistDTO implements SpotifyPlaylistItem {
 
   @JsonProperty("snapshot_id")
   String snapshotId;
@@ -34,14 +29,15 @@ public class PlaylistItem
   Map<String, Object> followers;
 
   @JsonProperty("tracks")
-  PlaylistContent<AddableTrackItem> playlistTrackItemsContent;
+  SpotifyPlaylistItemContent spotifyPlaylistItemContent;
 
   String id;
   String name;
   String description;
-  UserProfileItem owner;
+  SpotifyUserProfileItem owner;
   String type;
   URI uri;
   URL href;
   List<Map<String, Object>> images;
+
 }

@@ -1,9 +1,9 @@
 package com.ksaraev.spotifyrunning.config.recommendations;
 
 import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
-import com.ksaraev.spotifyrunning.model.playlist.PlaylistDetails;
-import com.ksaraev.spotifyrunning.model.playlist.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrunning.model.playlist.details.PlaylistDetails;
 import com.ksaraev.spotifyrunning.model.recommendations.RecommendationsFeatures;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

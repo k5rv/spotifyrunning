@@ -1,9 +1,6 @@
-package com.ksaraev.spotifyrunning.model.playlist;
-
-import jakarta.validation.constraints.NotNull;
+package com.ksaraev.spotifyrunning.model.spotify;
 
 public interface SpotifyPlaylistDetails {
-  @NotNull
   String getName();
 
   void setName(String name);

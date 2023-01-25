@@ -1,5 +1,6 @@
 package com.ksaraev.spotifyrunning.model.user;
 
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

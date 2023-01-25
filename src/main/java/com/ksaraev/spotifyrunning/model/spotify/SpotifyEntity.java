@@ -1,12 +1,9 @@
-package com.ksaraev.spotifyrunning.model.spotifyentity;
-
-import jakarta.validation.constraints.NotNull;
+package com.ksaraev.spotifyrunning.model.spotify;
 
 import java.net.URI;
 
 public interface SpotifyEntity {
 
-  @NotNull
   String getId();
 
   void setId(String id);
@@ -15,7 +12,6 @@ public interface SpotifyEntity {
 
   void setName(String name);
 
-  @NotNull
   URI getUri();
 
   void setUri(URI uri);

@@ -1,9 +1,10 @@
 package com.ksaraev.spotifyrunning.model.track;
 
-import com.ksaraev.spotifyrunning.client.dto.items.playlist.AddableTrackItem;
-import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistContent;
-import com.ksaraev.spotifyrunning.client.dto.items.track.TrackItem;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.content.SpotifyPlaylistItemContent;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.content.SpotifyAddableTrackItem;
+import com.ksaraev.spotifyrunning.client.dto.items.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrunning.model.artist.ArtistMapper;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
@@ -15,15 +16,14 @@ import java.util.Objects;
     uses = {ArtistMapper.class})
 public interface TrackMapper {
 
-  Track toTrack(TrackItem trackItem);
+  Track toModel(SpotifyTrackItem spotifyTrackItem);
 
   default List<SpotifyTrack> playlistTracksToSpotifyTracks(
-      PlaylistContent<AddableTrackItem> playlistContent) {
-    return playlistContent.getItems().stream()
+      SpotifyPlaylistItemContent spotifyPlaylistItemContent) {
+    return spotifyPlaylistItemContent.getItems().stream()
         .filter(Objects::nonNull)
-        .map(AddableTrackItem::getSpotifyItem)
-        .map(TrackItem.class::cast)
-        .map(this::toTrack)
+        .map(SpotifyAddableTrackItem::getSpotifyTrackItem)
+        .map(this::toModel)
         .map(SpotifyTrack.class::cast)
         .toList();
   }

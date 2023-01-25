@@ -1,8 +1,6 @@
 package com.ksaraev.spotifyrunning.client.dto.items.audiofeatures;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ksaraev.spotifyrunning.client.dto.audiofeatures.SpotifyAudioFeatures;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
 import lombok.Value;
 
 import java.math.BigDecimal;
@@ -10,7 +8,7 @@ import java.net.URI;
 import java.net.URL;
 
 @Value
-public class AudioFeaturesItem implements SpotifyItem, SpotifyAudioFeatures {
+public class SpotifyTrackAudioFeaturesDTO implements SpotifyTrackAudioFeaturesItem {
 
   @JsonProperty("duration_ms")
   Integer durationMs;

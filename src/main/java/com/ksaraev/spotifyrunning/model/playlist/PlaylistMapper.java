@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrunning.model.playlist;
 
-import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItem;
-import com.ksaraev.spotifyrunning.client.dto.items.playlist.PlaylistItemDetails;
+import com.ksaraev.spotifyrunning.client.dto.items.playlist.SpotifyPlaylistDTO;
 import com.ksaraev.spotifyrunning.model.track.TrackMapper;
 import com.ksaraev.spotifyrunning.model.user.UserMapper;
 import org.mapstruct.Mapper;
@@ -13,8 +12,6 @@ import org.mapstruct.MappingConstants;
     uses = {UserMapper.class, TrackMapper.class})
 public interface PlaylistMapper {
 
-  @Mapping(target = "tracks", source = "playlistTrackItemsContent")
-  Playlist toPlaylist(PlaylistItem playlistItem);
-
-  PlaylistItemDetails toPlaylistItemDetails(SpotifyPlaylistDetails spotifyPlaylistDetails);
+  @Mapping(target = "tracks", source = "spotifyPlaylistItemContent")
+  Playlist toModel(SpotifyPlaylistDTO spotifyPlaylistDTO);
 }

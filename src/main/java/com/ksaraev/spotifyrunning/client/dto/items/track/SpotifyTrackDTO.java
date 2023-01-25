@@ -1,11 +1,8 @@
 package com.ksaraev.spotifyrunning.client.dto.items.track;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyItem;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyPopularity;
-import com.ksaraev.spotifyrunning.client.dto.items.SpotifyPublished;
-import com.ksaraev.spotifyrunning.client.dto.items.album.AlbumItem;
-import com.ksaraev.spotifyrunning.client.dto.items.artist.ArtistItem;
+import com.ksaraev.spotifyrunning.client.dto.items.album.AlbumItemDTO;
+import com.ksaraev.spotifyrunning.client.dto.items.artist.SpotifyArtistDTO;
 import lombok.Value;
 
 import java.net.URI;
@@ -14,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 
 @Value
-public class TrackItem implements SpotifyItem, SpotifyPublished, SpotifyPopularity {
+public class SpotifyTrackDTO implements SpotifyTrackItem {
 
   @JsonProperty("album")
-  AlbumItem album;
+  AlbumItemDTO album;
 
   @JsonProperty("preview_url")
   URL previewUrl;
@@ -38,10 +35,10 @@ public class TrackItem implements SpotifyItem, SpotifyPublished, SpotifyPopulari
   Integer discNumber;
 
   @JsonProperty("linked_from")
-  AlbumItem linkedFrom;
+  AlbumItemDTO linkedFrom;
 
   @JsonProperty("artists")
-  List<ArtistItem> artists;
+  List<SpotifyArtistDTO> artists;
 
   @JsonProperty("available_markets")
   List<String> availableMarkets;

@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrunning.client.dto.audiofeatures;
+package com.ksaraev.spotifyrunning.client.dto.items;
 
 import java.math.BigDecimal;
 

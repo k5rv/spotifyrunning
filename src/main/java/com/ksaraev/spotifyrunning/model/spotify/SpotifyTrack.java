@@ -1,7 +1,4 @@
-package com.ksaraev.spotifyrunning.model.track;
-
-import com.ksaraev.spotifyrunning.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrunning.model.spotifyentity.SpotifyEntity;
+package com.ksaraev.spotifyrunning.model.spotify;
 
 import java.util.List;
 
