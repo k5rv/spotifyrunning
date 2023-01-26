@@ -35,7 +35,7 @@ public class UserService implements SpotifyUserService {
   public SpotifyUser getUser() {
     SpotifyUserProfileDTO userProfileDTO =
         (SpotifyUserProfileDTO) spotifyClient.getCurrentUserProfile();
-    return userMapper.toUser(userProfileDTO);
+    return userMapper.toModel(userProfileDTO);
   }
 
   @Override

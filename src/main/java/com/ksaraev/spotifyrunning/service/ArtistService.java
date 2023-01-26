@@ -33,7 +33,7 @@ public class ArtistService implements SpotifyArtistService {
         response.getItems().stream()
             .filter(Objects::nonNull)
             .map(SpotifyArtistDTO.class::cast)
-            .map(artistMapper::toArtist)
+            .map(artistMapper::toModel)
             .map(SpotifyArtist.class::cast)
             .toList();
 

@@ -18,7 +18,7 @@ public interface TrackMapper {
 
   Track toModel(SpotifyTrackItem spotifyTrackItem);
 
-  default List<SpotifyTrack> playlistTracksToSpotifyTracks(
+  default List<SpotifyTrack> toModel(
       SpotifyPlaylistItemContent spotifyPlaylistItemContent) {
     return spotifyPlaylistItemContent.getItems().stream()
         .filter(Objects::nonNull)
