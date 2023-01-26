@@ -2,10 +2,9 @@ package com.ksaraev.spotifyrunning.service;
 
 import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.playlist.SpotifyPlaylistDTO;
-import com.ksaraev.spotifyrunning.client.dto.items.playlist.details.SpotifyPlaylistDetailsDTO;
-import com.ksaraev.spotifyrunning.client.dto.requests.EnrichItemRequest;
-import com.ksaraev.spotifyrunning.client.dto.requests.EnrichSpotifyItemRequest;
+import com.ksaraev.spotifyrunning.client.items.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrunning.client.items.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrunning.client.requests.AddItemsRequest;
 import com.ksaraev.spotifyrunning.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrunning.model.playlist.details.PlaylistDetailsMapper;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
@@ -34,17 +33,16 @@ public class PlaylistService implements SpotifyPlaylistService {
 
   @Override
   public SpotifyPlaylist getPlaylist(@NotNull String playlistId) {
-    SpotifyPlaylistDTO playlistDTO = (SpotifyPlaylistDTO) spotifyClient.getPlaylist(playlistId);
-    return playlistMapper.toModel(playlistDTO);
+    SpotifyPlaylistItem response = spotifyClient.getPlaylist(playlistId);
+    return playlistMapper.toModel(response);
   }
 
   @Override
   public SpotifyPlaylist createPlaylist(
       @NotNull SpotifyUser user, @NotNull SpotifyPlaylistDetails playlistDetails) {
-    SpotifyPlaylistDetailsDTO playlistDetailsDTO = playlistDetailsMapper.toDto(playlistDetails);
-    SpotifyPlaylistDTO playlistDTO =
-        (SpotifyPlaylistDTO) spotifyClient.createPlaylist(user.getId(), playlistDetailsDTO);
-    return playlistMapper.toModel(playlistDTO);
+    SpotifyPlaylistItemDetails playlistDetailsDTO = playlistDetailsMapper.toDto(playlistDetails);
+    SpotifyPlaylistItem response = spotifyClient.createPlaylist(user.getId(), playlistDetailsDTO);
+    return playlistMapper.toModel(response);
   }
 
   @Override
@@ -55,9 +53,8 @@ public class PlaylistService implements SpotifyPlaylistService {
             index -> {
               List<SpotifyTrack> trackBatch = trackBatches.get(index);
               List<URI> trackUris = trackBatch.stream().map(SpotifyTrack::getUri).toList();
-              EnrichSpotifyItemRequest request =
-                  EnrichItemRequest.builder().uris(trackUris).build();
-              spotifyClient.addPlaylistItems(playlist.getId(), request);
+              AddItemsRequest request = new AddItemsRequest(trackUris);
+              spotifyClient.addItemsToPlaylist(playlist.getId(), request);
             });
   }
 }

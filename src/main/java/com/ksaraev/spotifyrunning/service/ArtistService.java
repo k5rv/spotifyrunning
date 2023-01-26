@@ -1,10 +1,9 @@
 package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.artist.SpotifyArtistDTO;
-import com.ksaraev.spotifyrunning.client.dto.requests.GetItemsRequest;
-import com.ksaraev.spotifyrunning.client.dto.requests.GetSpotifyItemsRequest;
-import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
+import com.ksaraev.spotifyrunning.client.items.SpotifyArtistItem;
+import com.ksaraev.spotifyrunning.client.requests.GetItemsRequest;
+import com.ksaraev.spotifyrunning.client.responses.GetSeveralArtistsResponse;
 import com.ksaraev.spotifyrunning.model.artist.ArtistMapper;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyArtist;
 import jakarta.validation.constraints.NotNull;
@@ -26,14 +25,14 @@ public class ArtistService implements SpotifyArtistService {
 
   @Override
   public List<SpotifyArtist> getArtists(@NotNull List<String> ids) {
-    GetSpotifyItemsRequest request = GetItemsRequest.builder().ids(ids).build();
-    SpotifyItemsResponse response = spotifyClient.getArtists(request);
+    GetItemsRequest request = new GetItemsRequest(ids);
+    GetSeveralArtistsResponse response = spotifyClient.getSeveralArtists(request);
 
     List<SpotifyArtist> artists =
-        response.getItems().stream()
+        response.spotifyArtistItems().stream()
             .filter(Objects::nonNull)
-            .map(SpotifyArtistDTO.class::cast)
-            .map(artistMapper::toArtist)
+            .map(SpotifyArtistItem.class::cast)
+            .map(artistMapper::toModel)
             .map(SpotifyArtist.class::cast)
             .toList();
 

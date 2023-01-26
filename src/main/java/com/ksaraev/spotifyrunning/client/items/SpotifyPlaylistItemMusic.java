@@ -1,0 +1,15 @@
+package com.ksaraev.spotifyrunning.client.items;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.net.URL;
+import java.util.List;
+
+public record SpotifyPlaylistItemMusic(
+    @JsonProperty("items") List<SpotifyPlaylistItemTrack> spotifyPlaylistItemTracks,
+    URL href,
+    Integer limit,
+    Integer offset,
+    Integer total,
+    String next,
+    String previous) {}
