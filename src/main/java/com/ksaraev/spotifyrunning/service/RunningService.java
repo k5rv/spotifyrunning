@@ -1,8 +1,8 @@
 package com.ksaraev.spotifyrunning.service;
 
-import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.config.runningplaylist.SpotifyRunningPlaylistConfig;
 import com.ksaraev.spotifyrunning.exception.CreatePlaylistException;
+import com.ksaraev.spotifyrunning.model.recommendations.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;

@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrunning.model.recommendations;
 
-import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,12 +1,12 @@
 package com.ksaraev.spotifyrunning.service;
 
 import com.ksaraev.spotifyrunning.client.SpotifyClient;
-import com.ksaraev.spotifyrunning.client.dto.items.track.SpotifyTrackDTO;
-import com.ksaraev.spotifyrunning.client.dto.recommendation.SpotifyRecommendationsFeatures;
-import com.ksaraev.spotifyrunning.client.dto.requests.GetRecommendationItemsRequest;
-import com.ksaraev.spotifyrunning.client.dto.responses.SpotifyItemsResponse;
+import com.ksaraev.spotifyrunning.client.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrunning.client.requests.GetRecommendationsRequest;
+import com.ksaraev.spotifyrunning.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrunning.config.recommendations.SpotifyRecommendationsConfig;
 import com.ksaraev.spotifyrunning.exception.InvalidRecommendationSeedException;
+import com.ksaraev.spotifyrunning.model.recommendations.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyEntity;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
@@ -46,12 +46,12 @@ public class RecommendationsService implements SpotifyRecommendationsService {
 
     if (seedSize <= 0 || seedSize > 5) {
       throw new InvalidRecommendationSeedException(
-          "Expected seed size must be in [1...5] range. Actual seed size is %s. Seed sizes: tracks: %s, artists: %s, genres: %s."
+          "Expected seed size must be in [1...5] range. Actual seed size is %s. Seed sizes: tracks: %s, spotifyArtistItems: %s, genres: %s."
               .formatted(seedSize, seedTracks.size(), seedArtists.size(), seedGenres.size()));
     }
 
-    GetRecommendationItemsRequest request =
-        GetRecommendationItemsRequest.builder()
+    GetRecommendationsRequest request =
+        GetRecommendationsRequest.builder()
             .seedTracks(seedTracks.stream().map(SpotifyEntity::getId).toList())
             .seedArtists(seedArtists.stream().map(SpotifyEntity::getId).toList())
             .seedGenres(seedGenres)
@@ -59,12 +59,12 @@ public class RecommendationsService implements SpotifyRecommendationsService {
             .limit(spotifyRecommendationsConfig.getRecommendationItemsRequestLimit())
             .build();
 
-    SpotifyItemsResponse response = spotifyClient.getRecommendations(request);
+    GetRecommendationsResponse response = spotifyClient.getRecommendations(request);
 
     List<SpotifyTrack> tracksRecommendations =
-        response.getItems().stream()
+        response.spotifyTrackItems().stream()
             .filter(Objects::nonNull)
-            .map(SpotifyTrackDTO.class::cast)
+            .map(SpotifyTrackItem.class::cast)
             .map(trackMapper::toModel)
             .map(SpotifyTrack.class::cast)
             .toList();
