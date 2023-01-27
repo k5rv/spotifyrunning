@@ -16,10 +16,8 @@ import com.ksaraev.spotifyrunning.client.responses.GetTrackAudioFeaturesResponse
 import com.ksaraev.spotifyrunning.client.responses.GetUserTopTracksResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Validated
 @FeignClient(
     name = "spotify",
     url = "https://api.spotify.com/v1",
@@ -45,7 +43,7 @@ public interface SpotifyClient {
   @HandleFeignException(SpotifyExceptionHandler.class)
   SpotifyPlaylistItem createPlaylist(
       @PathVariable(value = "userId") String userId,
-      @RequestBody SpotifyPlaylistItemDetails spotifyPlaylistItemDetails);
+      @RequestBody SpotifyPlaylistItemDetails playlistItemDetails);
 
   @GetMapping(path = "playlists/{playlist_id}")
   @HandleFeignException(SpotifyExceptionHandler.class)

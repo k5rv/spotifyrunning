@@ -12,6 +12,7 @@ import org.mapstruct.MappingConstants;
     uses = {UserMapper.class, TrackMapper.class})
 public interface PlaylistMapper {
 
-  @Mapping(target = "tracks", source = "spotifyPlaylistItemTracks")
-  Playlist toModel(SpotifyPlaylistItem response);
+  @Mapping(target = "owner", source = "userProfileItem")
+  @Mapping(target = "tracks", source = "playlistItemMusic")
+  Playlist toModel(SpotifyPlaylistItem playlistItem);
 }

@@ -2,7 +2,7 @@ package com.ksaraev.spotifyrunning.model.spotify;
 
 import java.net.URI;
 
-public interface SpotifyEntity {
+public interface SpotifyItem {
 
   String getId();
 

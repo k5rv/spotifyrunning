@@ -13,7 +13,7 @@ public record SpotifyAlbumItem(
     @JsonProperty("release_date") String releaseDate,
     @JsonProperty("release_date_precision") String releaseDatePrecision,
     @JsonProperty("available_markets") List<String> availableMarkets,
-    @JsonProperty("artists") List<SpotifyArtistItem> spotifyArtistItems,
+    @JsonProperty("artists") List<SpotifyArtistItem> artistItems,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,
     String id,
     String name,

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.ksaraev.spotifyrunning.model.user.User;
 
 @JsonDeserialize(as = User.class)
-public interface SpotifyUser extends SpotifyEntity {
+public interface SpotifyUser extends SpotifyItem {
   String getEmail();
 
   void setEmail(String email);

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public record SpotifyPlaylistItem(
-    @JsonProperty("owner") SpotifyUserProfileItem spotifyUserProfileItem,
-    @JsonProperty("tracks") SpotifyPlaylistItemMusic spotifyPlaylistItemTracks,
+    @JsonProperty("owner") SpotifyUserProfileItem userProfileItem,
+    @JsonProperty("tracks") SpotifyPlaylistItemMusic playlistItemMusic,
     @JsonProperty("public") Boolean isPublic,
     @JsonProperty("snapshot_id") String snapshotId,
     @JsonProperty("collaborative") Boolean isCollaborative,

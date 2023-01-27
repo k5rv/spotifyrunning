@@ -2,16 +2,16 @@ package com.ksaraev.spotifyrunning.model.spotify;
 
 import java.util.List;
 
-public interface SpotifyPlaylist extends SpotifyEntity, SpotifyPlaylistDetails {
+public interface SpotifyPlaylist extends SpotifyItem, SpotifyPlaylistDetails {
   String getSnapshotId();
 
   void setSnapshotId(String snapshotId);
 
   SpotifyUser getOwner();
 
-  void setOwner(SpotifyUser spotifyUser);
+  void setOwner(SpotifyUser user);
 
   List<SpotifyTrack> getTracks();
 
-  void setTracks(List<SpotifyTrack> spotifyTracks);
+  void setTracks(List<SpotifyTrack> tracks);
 }

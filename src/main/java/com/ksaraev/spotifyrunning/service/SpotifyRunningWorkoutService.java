@@ -1,13 +1,12 @@
 package com.ksaraev.spotifyrunning.service;
 
-import com.ksaraev.spotifyrunning.model.recommendations.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrackFeatures;
 import jakarta.validation.constraints.NotNull;
 
-public interface SpotifyRunningService {
+public interface SpotifyRunningWorkoutService {
 
   SpotifyPlaylist createPlaylist(
-      @NotNull SpotifyPlaylistDetails playlistDetails,
-      SpotifyRecommendationsFeatures recommendationsFeatures);
+      @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyTrackFeatures trackFeatures);
 }

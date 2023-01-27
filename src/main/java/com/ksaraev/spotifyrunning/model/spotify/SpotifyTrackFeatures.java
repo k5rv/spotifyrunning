@@ -1,8 +1,40 @@
-package com.ksaraev.spotifyrunning.model.recommendations;
+package com.ksaraev.spotifyrunning.model.spotify;
 
 import java.math.BigDecimal;
 
-public interface SpotifyRecommendationsAudioFeatures extends SpotifyAudioFeatures {
+public interface SpotifyTrackFeatures {
+
+  Integer getKey();
+
+  Integer getMaxPopularity();
+
+  Integer getMinPopularity();
+
+  Integer getMode();
+
+  Integer getDurationMs();
+
+  Integer getTimeSignature();
+
+  BigDecimal getTempo();
+
+  BigDecimal getEnergy();
+
+  BigDecimal getValence();
+
+  BigDecimal getLiveness();
+
+  BigDecimal getLoudness();
+
+  BigDecimal getSpeechiness();
+
+  BigDecimal getAcousticness();
+
+  BigDecimal getDanceability();
+
+  BigDecimal getInstrumentalness();
+
+  Integer getPopularity();
 
   BigDecimal getMaxAcousticness();
 

@@ -7,5 +7,4 @@ import java.util.List;
 import java.util.Map;
 
 public record GetRecommendationsResponse(
-    @JsonProperty("tracks") List<SpotifyTrackItem> spotifyTrackItems,
-    List<Map<String, Object>> seeds) {}
+    @JsonProperty("tracks") List<SpotifyTrackItem> trackItems, List<Map<String, Object>> seeds) {}

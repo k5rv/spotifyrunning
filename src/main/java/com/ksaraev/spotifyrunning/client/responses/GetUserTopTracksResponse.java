@@ -8,7 +8,7 @@ import java.util.List;
 
 public record GetUserTopTracksResponse(
     URL href,
-    @JsonProperty("items") List<SpotifyTrackItem> spotifyTrackItems,
+    @JsonProperty("items") List<SpotifyTrackItem> trackItems,
     Integer limit,
     Integer offset,
     Integer total,

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Map;
 
 public record SpotifyPlaylistItemTrack(
-    @JsonProperty("track") SpotifyTrackItem spotifyTrackItem,
+    @JsonProperty("track") SpotifyTrackItem trackItem,
     @JsonProperty("added_at") String addedAt,
     @JsonProperty("added_by") SpotifyUserProfileItem addedBy,
     @JsonProperty("is_local") Boolean isLocal,

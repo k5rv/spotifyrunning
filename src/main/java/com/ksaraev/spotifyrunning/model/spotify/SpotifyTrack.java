@@ -2,7 +2,7 @@ package com.ksaraev.spotifyrunning.model.spotify;
 
 import java.util.List;
 
-public interface SpotifyTrack extends SpotifyEntity {
+public interface SpotifyTrack extends SpotifyItem {
 
   Integer getPopularity();
 

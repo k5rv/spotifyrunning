@@ -1,24 +1,31 @@
-package com.ksaraev.spotifyrunning.config.recommendations;
+package com.ksaraev.spotifyrunning.config.playlist;
 
 import com.ksaraev.spotifyrunning.model.playlist.details.PlaylistDetails;
-import com.ksaraev.spotifyrunning.model.recommendations.RecommendationsFeatures;
-import com.ksaraev.spotifyrunning.model.recommendations.SpotifyRecommendationsFeatures;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrunning.model.track.TrackFeatures;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 
 @Data
-@NoArgsConstructor
-public class RecommendationsConfig implements SpotifyRecommendationsConfig {
+public class RunningWorkoutPlaylistConfig implements SpotifyRunningWorkoutPlaylistConfig {
 
   @Value("${app.playlist.name}")
   private String name;
 
   @Value("${app.playlist.description}")
   private String description;
+
+  @Value("${app.playlist.collaborative}")
+  private Boolean isCollaborative;
+
+  @Value("${app.playlist.public}")
+  private Boolean isPublic;
+
+  @Value("${app.limits.playlist-size}")
+  private Integer sizeLimit;
 
   @Value("${app.playlist.features.min-tempo}")
   private BigDecimal minTempo;
@@ -29,30 +36,22 @@ public class RecommendationsConfig implements SpotifyRecommendationsConfig {
   @Value("${app.playlist.features.min-energy}")
   private BigDecimal minEnergy;
 
-  @Value("${app.requests.get-recommendations.limit}")
-  private Integer recommendationsRequestLimit;
-
   @Override
-  public SpotifyPlaylistDetails getSpotifyPlaylistDetails() {
+  public SpotifyPlaylistDetails getDetails() {
     return PlaylistDetails.builder()
-        .isCollaborative(false)
-        .isPublic(false)
         .name(this.name)
         .description(this.description)
+        .isCollaborative(false)
+        .isPublic(false)
         .build();
   }
 
   @Override
-  public SpotifyRecommendationsFeatures getSpotifyRecommendationFeatures() {
-    return RecommendationsFeatures.builder()
-        .minEnergy(this.minEnergy)
+  public SpotifyTrackFeatures getMusicFeatures() {
+    return TrackFeatures.builder()
         .minTempo(this.minTempo)
         .maxTempo(this.maxTempo)
+        .minEnergy(this.minEnergy)
         .build();
-  }
-
-  @Override
-  public Integer getRecommendationItemsRequestLimit() {
-    return this.recommendationsRequestLimit;
   }
 }

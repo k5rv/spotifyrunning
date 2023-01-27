@@ -1,12 +1,8 @@
 package com.ksaraev.spotifyrunning.service;
 
-import com.ksaraev.spotifyrunning.config.runningplaylist.SpotifyRunningPlaylistConfig;
+import com.ksaraev.spotifyrunning.config.playlist.SpotifyRunningWorkoutPlaylistConfig;
 import com.ksaraev.spotifyrunning.exception.CreatePlaylistException;
-import com.ksaraev.spotifyrunning.model.recommendations.SpotifyRecommendationsFeatures;
-import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
-import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
+import com.ksaraev.spotifyrunning.model.spotify.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,17 +18,16 @@ import java.util.stream.Collectors;
 @Service
 @Validated
 @AllArgsConstructor
-public class RunningService implements SpotifyRunningService {
+public class RunningWorkoutService implements SpotifyRunningWorkoutService {
 
   private final SpotifyUserService userService;
   private final SpotifyPlaylistService playlistService;
-
-  private final SpotifyRunningPlaylistConfig spotifyRunningPlaylistConfig;
-  private final SpotifyRecommendationsService recommendationService;
+  private final SpotifyRecommendationsService recommendationsService;
+  private final SpotifyRunningWorkoutPlaylistConfig runningWorkoutPlaylistConfig;
 
   @Override
   public SpotifyPlaylist createPlaylist(
-      @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyRecommendationsFeatures features) {
+      @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyTrackFeatures trackFeatures) {
 
     SpotifyUser user = userService.getUser();
 
@@ -51,14 +46,14 @@ public class RunningService implements SpotifyRunningService {
         userTopTracks.stream()
             .map(
                 userTopTrack ->
-                    recommendationService.getTracks(
+                    recommendationsService.getTracks(
                         Collections.singletonList(userTopTrack),
                         Collections.emptyList(),
                         Collections.emptyList(),
-                        features))
+                        trackFeatures))
             .flatMap(List::stream)
             .distinct()
-            .limit(spotifyRunningPlaylistConfig.getPlaylistSizeLimit())
+            .limit(runningWorkoutPlaylistConfig.getSizeLimit())
             .collect(
                 Collectors.collectingAndThen(
                     Collectors.toList(),

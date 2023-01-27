@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 
 public record SpotifyTrackItem(
-    @JsonProperty("album") SpotifyAlbumItem spotifyAlbumItem,
+    @JsonProperty("album") SpotifyAlbumItem albumItem,
     @JsonProperty("preview_url") URL previewUrl,
     @JsonProperty("is_local") Boolean isLocal,
     @JsonProperty("is_playable") Boolean isPlayable,
     @JsonProperty("duration_ms") Integer durationMs,
     @JsonProperty("track_number") Integer trackNumber,
     @JsonProperty("disc_number") Integer discNumber,
-    @JsonProperty("linked_from") SpotifyAlbumItem linkedFrom,
-    @JsonProperty("artists") List<SpotifyArtistItem> spotifyArtistItems,
+    @JsonProperty("linked_from") SpotifyAlbumItem sourceAlbumItem,
+    @JsonProperty("artists") List<SpotifyArtistItem> artistItems,
     @JsonProperty("available_markets") List<String> availableMarkets,
     @JsonProperty("external_ids") Map<String, Object> externalIds,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,
