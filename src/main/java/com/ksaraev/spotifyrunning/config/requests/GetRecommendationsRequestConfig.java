@@ -6,6 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 @Data
 public class GetRecommendationsRequestConfig implements SpotifyGetRecommendationsRequestConfig {
 
-  @Value("${app.requests.get-recommendations.limit}")
+  @Value("${spotify-running.config.client.requests.get-recommendations.limit}")
   private Integer limit;
 }

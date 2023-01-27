@@ -24,23 +24,27 @@ spring:
             user-info-uri: https://api.spotify.com/v1/me
             user-name-attribute: display_name
 
-app:
-  playlist:
-    name: "Running workout"
-    description: "Music for your training based on Spotify recommendations and specific audio features"
-    features:
-      min-tempo: "185"
-      max-tempo: "205"
-      min-energy: "0.65"
-  requests:
-    get-user-top-items:
-      limit: 1
-    get-recommendations:
-      limit: 50
-      time-range: medium_term
-  limits:
-    playlist-size: 50
+spotify-running:
+  config:
+    playlist:
+      details:
+        name: "Running workout"
+        description: "Music for your training based on Spotify recommendations and specific audio features"
+        collaborative: false
+        public: false
+        size-limit: 10
+      features:
+        min-tempo: "185"
+        max-tempo: "205"
+        min-energy: "0.65"
+    client:
+      requests:
+        get-user-top-tracks:
+          limit: 50
+          time-range: MEDIUM_TERM
+        get-recommendations:
+          limit: 50
 
 logging:
   level:
-    com.ksaraev.spotifyrunning.client.SpotifyClient: DEBUG
+    com.ksaraev.spotifyrunning.client.SpotifyClient: ERROR

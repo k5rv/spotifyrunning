@@ -12,28 +12,28 @@ import java.math.BigDecimal;
 @Data
 public class RunningWorkoutPlaylistConfig implements SpotifyRunningWorkoutPlaylistConfig {
 
-  @Value("${app.playlist.name}")
+  @Value("${spotify-running.config.playlist.details.name}")
   private String name;
 
-  @Value("${app.playlist.description}")
+  @Value("${spotify-running.config.playlist.details.description}")
   private String description;
 
-  @Value("${app.playlist.collaborative}")
+  @Value("${spotify-running.config.playlist.details.collaborative}")
   private Boolean isCollaborative;
 
-  @Value("${app.playlist.public}")
+  @Value("${spotify-running.config.playlist.details.public}")
   private Boolean isPublic;
 
-  @Value("${app.limits.playlist-size}")
+  @Value("${spotify-running.config.playlist.details.size-limit}")
   private Integer sizeLimit;
 
-  @Value("${app.playlist.features.min-tempo}")
+  @Value("${spotify-running.config.playlist.features.min-tempo}")
   private BigDecimal minTempo;
 
-  @Value("${app.playlist.features.max-tempo}")
+  @Value("${spotify-running.config.playlist.features.max-tempo}")
   private BigDecimal maxTempo;
 
-  @Value("${app.playlist.features.min-energy}")
+  @Value("${spotify-running.config.playlist.features.min-energy}")
   private BigDecimal minEnergy;
 
   @Override

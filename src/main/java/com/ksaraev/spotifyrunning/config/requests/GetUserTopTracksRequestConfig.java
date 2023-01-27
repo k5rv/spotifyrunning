@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Value;
 @Data
 public class GetUserTopTracksRequestConfig implements SpotifyGetUserTopTracksRequestConfig {
 
-  @Value("${app.requests.get-user-top-items.limit}")
+  @Value("${spotify-running.config.client.requests.get-user-top-tracks.limit}")
   private Integer limit;
 
-  @Value("${app.requests.get-recommendations.time-range}")
+  @Value("${spotify-running.config.client.requests.get-user-top-tracks.time-range}")
   private String timeRange;
 }
