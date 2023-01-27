@@ -27,20 +27,20 @@ public class RunningWorkoutService implements SpotifyRunningWorkoutService {
   @Override
   public SpotifyPlaylist createPlaylist(
       SpotifyPlaylistDetails playlistDetails, SpotifyTrackFeatures trackFeatures) {
-
     SpotifyUser user = userService.getUser();
+    log.info("Found current user - userId:{}", user.getId());
 
-    log.info("Getting user {} top tracks", user.getId());
+    log.info("Getting top tracks - userId:{}", user.getId());
     List<SpotifyTrack> userTopTracks = userService.getTopTracks();
     if (CollectionUtils.isEmpty(userTopTracks)) {
       throw new CreatePlaylistException(
-          "Unable to create playlist. User "
+          "Unable to create playlist. User (userId:"
               + user.getId()
-              + " top tracks required for a seed were not found.");
+              + ") top tracks required for a seed were not found.");
     }
-    log.info("Found user {} top tracks", user.getId());
+    log.info("Found top tracks - userId:{} ", user.getId());
 
-    log.info("Getting user {} tracks recommendations", user.getId());
+    log.info("Getting recommendations - userId:{} ", user.getId());
     List<SpotifyTrack> tracks =
         userTopTracks.stream()
             .map(
@@ -60,19 +60,26 @@ public class RunningWorkoutService implements SpotifyRunningWorkoutService {
                       Collections.shuffle(list);
                       return list;
                     }));
+
     if (CollectionUtils.isEmpty(tracks)) {
       throw new CreatePlaylistException(
-          "Unable to create playlist. Recommendations based on tracks "
-              + userTopTracks
+          "Unable to create Playlist. User (userId:"
+              + user.getId()
+              + ") recommendations based on tracks "
+              + userTopTracks.stream().map(SpotifyTrack::getName).toList()
               + " were not found.");
     }
-    log.info("Found user {} tracks recommendations", user.getId());
-    log.info("Creating playlist for user {}", user.getId());
+    log.info("Found recommendations - userId:{}", user.getId());
+
+    log.info("Creating playlist - userId:{}", user.getId());
     SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistDetails);
-    log.info("Created playlist {} for user {}", playlist.getId(), user.getId());
-    log.info("Adding tracks to playlist {}", playlist.getId());
+    log.info("Created playlist - playlistId:{}, userId:{}", playlist.getId(), user.getId());
+
+    log.info("Adding tracks - playlistId:{}", playlist.getId());
     playlistService.addTracks(playlist, tracks);
-    log.info("Added tracks to playlist {}", playlist.getId());
+    log.info("Added tracks - playlistId:{}", playlist.getId());
+
+    log.info("Returning playlist - playlistId:{}", playlist.getId());
     return playlistService.getPlaylist(playlist.getId());
   }
 }
