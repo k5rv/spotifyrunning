@@ -4,10 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+@Builder
 public record GetUserTopTracksRequest(Integer limit, Integer offset, TimeRange timeRange) {
-
-  @Builder
-  public GetUserTopTracksRequest {}
 
   @Getter
   @AllArgsConstructor

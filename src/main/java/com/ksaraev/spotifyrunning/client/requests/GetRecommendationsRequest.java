@@ -5,6 +5,7 @@ import lombok.Builder;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Builder
 public record GetRecommendationsRequest(
     List<String> seedArtists,
     List<String> seedTracks,
@@ -12,8 +13,6 @@ public record GetRecommendationsRequest(
     TrackFeatures trackFeatures,
     Integer limit,
     Integer offset) {
-  @Builder
-  public GetRecommendationsRequest {}
 
   public record TrackFeatures(
       Integer maxPopularity,
@@ -57,9 +56,5 @@ public record GetRecommendationsRequest(
       BigDecimal speechiness,
       BigDecimal maxValence,
       BigDecimal minValence,
-      BigDecimal valence) {
-
-    @Builder
-    public TrackFeatures {}
-  }
+      BigDecimal valence) {}
 }

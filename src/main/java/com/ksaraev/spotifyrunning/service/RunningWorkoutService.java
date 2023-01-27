@@ -3,7 +3,6 @@ package com.ksaraev.spotifyrunning.service;
 import com.ksaraev.spotifyrunning.config.playlist.SpotifyRunningWorkoutPlaylistConfig;
 import com.ksaraev.spotifyrunning.exception.CreatePlaylistException;
 import com.ksaraev.spotifyrunning.model.spotify.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class RunningWorkoutService implements SpotifyRunningWorkoutService {
 
   @Override
   public SpotifyPlaylist createPlaylist(
-      @NotNull SpotifyPlaylistDetails playlistDetails, SpotifyTrackFeatures trackFeatures) {
+      SpotifyPlaylistDetails playlistDetails, SpotifyTrackFeatures trackFeatures) {
 
     SpotifyUser user = userService.getUser();
 
@@ -35,9 +34,9 @@ public class RunningWorkoutService implements SpotifyRunningWorkoutService {
     List<SpotifyTrack> userTopTracks = userService.getTopTracks();
     if (CollectionUtils.isEmpty(userTopTracks)) {
       throw new CreatePlaylistException(
-          "Unable to create playlist. User"
+          "Unable to create playlist. User "
               + user.getId()
-              + " top tracks required for a seed not found.");
+              + " top tracks required for a seed were not found.");
     }
     log.info("Found user {} top tracks", user.getId());
 
@@ -48,8 +47,8 @@ public class RunningWorkoutService implements SpotifyRunningWorkoutService {
                 userTopTrack ->
                     recommendationsService.getTracks(
                         Collections.singletonList(userTopTrack),
-                        Collections.emptyList(),
-                        Collections.emptyList(),
+                        List.of(),
+                        List.of(),
                         trackFeatures))
             .flatMap(List::stream)
             .distinct()
@@ -62,7 +61,10 @@ public class RunningWorkoutService implements SpotifyRunningWorkoutService {
                       return list;
                     }));
     if (CollectionUtils.isEmpty(tracks)) {
-      throw new CreatePlaylistException("Tracks recommendations not found");
+      throw new CreatePlaylistException(
+          "Unable to create playlist. Recommendations based on tracks "
+              + userTopTracks
+              + " were not found.");
     }
     log.info("Found user {} tracks recommendations", user.getId());
     log.info("Creating playlist for user {}", user.getId());

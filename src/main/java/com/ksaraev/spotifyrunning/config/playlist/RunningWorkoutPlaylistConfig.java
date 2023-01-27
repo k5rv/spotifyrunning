@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrunning.config.playlist;
 
-import com.ksaraev.spotifyrunning.model.playlist.details.PlaylistDetails;
+import com.ksaraev.spotifyrunning.model.playlist.PlaylistDetails;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrackFeatures;
 import com.ksaraev.spotifyrunning.model.track.TrackFeatures;

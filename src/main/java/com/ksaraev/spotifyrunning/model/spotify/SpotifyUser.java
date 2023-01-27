@@ -5,6 +5,7 @@ import com.ksaraev.spotifyrunning.model.user.User;
 
 @JsonDeserialize(as = User.class)
 public interface SpotifyUser extends SpotifyItem {
+
   String getEmail();
 
   void setEmail(String email);
