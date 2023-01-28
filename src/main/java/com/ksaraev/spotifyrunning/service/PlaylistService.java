@@ -6,12 +6,10 @@ import com.ksaraev.spotifyrunning.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrunning.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrunning.client.requests.AddItemsRequest;
 import com.ksaraev.spotifyrunning.model.playlist.PlaylistMapper;
-import com.ksaraev.spotifyrunning.model.playlist.details.PlaylistDetailsMapper;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrunning.model.spotify.SpotifyUser;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,24 +27,23 @@ public class PlaylistService implements SpotifyPlaylistService {
 
   private final SpotifyClient spotifyClient;
   private final PlaylistMapper playlistMapper;
-  private final PlaylistDetailsMapper playlistDetailsMapper;
 
   @Override
-  public SpotifyPlaylist getPlaylist(@NotNull String playlistId) {
-    SpotifyPlaylistItem response = spotifyClient.getPlaylist(playlistId);
-    return playlistMapper.toModel(response);
+  public SpotifyPlaylist createPlaylist(SpotifyUser user, SpotifyPlaylistDetails playlistDetails) {
+    SpotifyPlaylistItemDetails playlistItemDetails = playlistMapper.toSpotifyItem(playlistDetails);
+    SpotifyPlaylistItem playlistItem =
+        spotifyClient.createPlaylist(user.getId(), playlistItemDetails);
+    return playlistMapper.toModel(playlistItem);
   }
 
   @Override
-  public SpotifyPlaylist createPlaylist(
-      @NotNull SpotifyUser user, @NotNull SpotifyPlaylistDetails playlistDetails) {
-    SpotifyPlaylistItemDetails playlistDetailsDTO = playlistDetailsMapper.toDto(playlistDetails);
-    SpotifyPlaylistItem response = spotifyClient.createPlaylist(user.getId(), playlistDetailsDTO);
-    return playlistMapper.toModel(response);
+  public SpotifyPlaylist getPlaylist(String playlistId) {
+    SpotifyPlaylistItem playlistItem = spotifyClient.getPlaylist(playlistId);
+    return playlistMapper.toModel(playlistItem);
   }
 
   @Override
-  public void addTracks(@NotNull SpotifyPlaylist playlist, @NotNull List<SpotifyTrack> tracks) {
+  public void addTracks(SpotifyPlaylist playlist, List<SpotifyTrack> tracks) {
     List<List<SpotifyTrack>> trackBatches = Lists.partition(tracks, 99);
     IntStream.range(0, trackBatches.size())
         .forEach(
