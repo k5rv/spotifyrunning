@@ -12,12 +12,12 @@
     <artifactId>spotifyrunning</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>spotifyrunning</name>
-    <description>Spring Boot application creates playlist based on Spotify recommendations for your running activities
+    <description>Spring Boot application creates playlist based on Spotify recommendations for your running workout
     </description>
 
     <properties>
         <java.version>17</java.version>
-        <spring.cloud-version>2022.0.0</spring.cloud-version>
+        <spring.cloud-version>2022.0.1</spring.cloud-version>
     </properties>
 
     <dependencyManagement>
