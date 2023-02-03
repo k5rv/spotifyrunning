@@ -6,10 +6,12 @@ import com.ksaraev.spotifyrunning.service.SpotifyRunningWorkoutService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
+@RequestMapping("api/v1/playlists")
 @AllArgsConstructor
 public class SpotifyRunningController {
 
@@ -17,7 +19,7 @@ public class SpotifyRunningController {
 
   private final SpotifyRunningWorkoutPlaylistConfig playlistConfig;
 
-  @PostMapping(path = "api/v1/playlists")
+  @PostMapping
   public SpotifyPlaylist createPlaylist() {
     return runningService.createPlaylist(
         playlistConfig.getDetails(), playlistConfig.getMusicFeatures());
