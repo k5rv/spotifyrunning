@@ -2,7 +2,7 @@ server:
   port: 8081
 spring:
   application:
-    name: spotifyRunning
+    name: spotifyRun
   main:
     allow-bean-definition-overriding: true
   security:
@@ -24,7 +24,7 @@ spring:
             user-info-uri: https://api.spotify.com/v1/me
             user-name-attribute: display_name
 
-spotify-running:
+spotify-run:
   config:
     playlist:
       details:
@@ -47,4 +47,4 @@ spotify-running:
 
 logging:
   level:
-    com.ksaraev.spotifyrunning.client.SpotifyClient: ERROR
+    com.ksaraev.spotifyrun.client.SpotifyClient: ERROR

@@ -8,10 +8,10 @@
         <version>3.0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.ksaraev.spotifyrunning</groupId>
-    <artifactId>spotifyrunning</artifactId>
+    <groupId>spotifyrun</groupId>
+    <artifactId>spotifyrun</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>spotifyrunning</name>
+    <name>spotifyrun</name>
     <description>Spring Boot application creates playlist based on Spotify recommendations for your running workout
     </description>
 
