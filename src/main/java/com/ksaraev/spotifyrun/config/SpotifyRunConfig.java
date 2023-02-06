@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.config;
 
-import com.ksaraev.spotifyrun.config.playlist.WorkoutPlaylistConfig;
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
+import com.ksaraev.spotifyrun.config.playlist.WorkoutPlaylistConfig;
 import com.ksaraev.spotifyrun.config.requests.GetRecommendationsRequestConfig;
 import com.ksaraev.spotifyrun.config.requests.GetUserTopTracksRequestConfig;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;

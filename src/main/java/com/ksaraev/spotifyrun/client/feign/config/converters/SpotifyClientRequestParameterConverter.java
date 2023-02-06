@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.client.config.converters;
+package com.ksaraev.spotifyrun.client.feign.config.converters;
 
 import lombok.NoArgsConstructor;
 import org.springframework.core.convert.converter.Converter;

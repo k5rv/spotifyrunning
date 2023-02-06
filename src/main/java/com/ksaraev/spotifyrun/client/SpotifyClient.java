@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrun.client;
 
-import com.ksaraev.spotifyrun.client.config.SpotifyClientFeignConfig;
 import com.ksaraev.spotifyrun.client.exception.HandleFeignException;
 import com.ksaraev.spotifyrun.client.exception.SpotifyExceptionHandler;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
@@ -18,10 +17,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(
-    name = "spotify",
-    url = "https://api.spotify.com/v1",
-    configuration = SpotifyClientFeignConfig.class)
+@FeignClient(name = "spotify")
 public interface SpotifyClient {
   @GetMapping(path = "me")
   @HandleFeignException(SpotifyExceptionHandler.class)

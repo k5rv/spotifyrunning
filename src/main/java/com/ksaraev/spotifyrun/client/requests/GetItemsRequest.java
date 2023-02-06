@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.client.requests;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ksaraev.spotifyrun.client.config.converters.SpotifyClientRequestParameter;
+import com.ksaraev.spotifyrun.client.feign.config.converters.SpotifyClientRequestParameter;
 
 import java.util.List;
 

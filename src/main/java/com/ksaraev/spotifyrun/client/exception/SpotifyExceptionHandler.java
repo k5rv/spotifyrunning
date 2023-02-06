@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
-public class SpotifyExceptionHandler implements FeignExceptionHandler {
+public class SpotifyExceptionHandler implements ClientExceptionHandler {
 
   @Override
   public Exception handle(Response response) {

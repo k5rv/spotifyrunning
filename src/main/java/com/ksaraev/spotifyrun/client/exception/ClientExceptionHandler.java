@@ -2,6 +2,6 @@ package com.ksaraev.spotifyrun.client.exception;
 
 import feign.Response;
 
-public interface FeignExceptionHandler {
+public interface ClientExceptionHandler {
   Exception handle(Response response);
 }
