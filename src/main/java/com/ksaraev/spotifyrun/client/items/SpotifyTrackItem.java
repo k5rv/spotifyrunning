@@ -25,4 +25,5 @@ public record SpotifyTrackItem(
     Integer popularity,
     String type,
     URI uri,
-    URL href) {}
+    URL href,
+    Boolean explicit) {}

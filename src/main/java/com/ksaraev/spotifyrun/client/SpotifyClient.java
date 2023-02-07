@@ -6,26 +6,23 @@ import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.client.requests.AddItemsRequest;
-import com.ksaraev.spotifyrun.client.requests.GetItemsRequest;
 import com.ksaraev.spotifyrun.client.requests.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
+import com.ksaraev.spotifyrun.client.responses.AddItemsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
-import com.ksaraev.spotifyrun.client.responses.GetSeveralArtistsResponse;
-import com.ksaraev.spotifyrun.client.responses.GetTrackAudioFeaturesResponse;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "spotify")
 public interface SpotifyClient {
   @GetMapping(path = "me")
   @HandleFeignException(SpotifyExceptionHandler.class)
   SpotifyUserProfileItem getCurrentUserProfile();
-
-  @GetMapping(path = "/users/{user_id}")
-  @HandleFeignException(SpotifyExceptionHandler.class)
-  SpotifyUserProfileItem getUserProfile(@PathVariable(value = "user_id") String userId);
 
   @GetMapping(path = "me/top/tracks")
   @HandleFeignException(SpotifyExceptionHandler.class)
@@ -47,15 +44,6 @@ public interface SpotifyClient {
 
   @PostMapping(path = "playlists/{playlist_id}/tracks")
   @HandleFeignException(SpotifyExceptionHandler.class)
-  String addItemsToPlaylist(
+  AddItemsResponse addItemsToPlaylist(
       @PathVariable(value = "playlist_id") String playlistId, @RequestBody AddItemsRequest request);
-
-  @GetMapping(path = "artists")
-  @HandleFeignException(SpotifyExceptionHandler.class)
-  GetSeveralArtistsResponse getSeveralArtists(@RequestParam(value = "ids") GetItemsRequest request);
-
-  @GetMapping(path = "audio-features")
-  @HandleFeignException(SpotifyExceptionHandler.class)
-  GetTrackAudioFeaturesResponse getTracksAudioFeatures(
-      @RequestParam(value = "ids") GetItemsRequest request);
 }

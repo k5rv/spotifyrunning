@@ -18,10 +18,7 @@ public class SpotifyExceptionHandler implements ClientExceptionHandler {
     try {
       String message =
           new String(response.body().asInputStream().readAllBytes(), StandardCharsets.UTF_8);
-      HttpStatus status = HttpStatus.resolve(response.status());
-      if (status == null)
-        throw new SpotifyClientReadingHttpResponseException(
-            "Error while resolving Spotify API error response. Http status is null.");
+      HttpStatus status = HttpStatus.valueOf(response.status());
       switch (status) {
         case NOT_MODIFIED -> throw new SpotifyNotModifiedException(message);
         case BAD_REQUEST -> throw new SpotifyBadRequestException(message);
@@ -35,8 +32,7 @@ public class SpotifyExceptionHandler implements ClientExceptionHandler {
         default -> throw new SpotifyException(message);
       }
     } catch (IOException e) {
-      throw new SpotifyClientReadingHttpResponseException(
-          "Error while reading Spotify API error response body.", e);
+      throw new SpotifyClientException("Error while reading Spotify API error response body", e);
     }
   }
 }

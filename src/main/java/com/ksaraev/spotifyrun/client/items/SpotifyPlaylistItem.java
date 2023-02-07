@@ -13,6 +13,7 @@ public record SpotifyPlaylistItem(
     @JsonProperty("public") Boolean isPublic,
     @JsonProperty("snapshot_id") String snapshotId,
     @JsonProperty("collaborative") Boolean isCollaborative,
+    @JsonProperty("primary_color") String primaryColor,
     @JsonProperty("followers") Map<String, Object> followers,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,
     String id,
