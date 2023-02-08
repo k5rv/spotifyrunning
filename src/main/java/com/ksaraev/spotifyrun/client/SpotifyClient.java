@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.client;
 
 import com.ksaraev.spotifyrun.client.exception.HandleFeignException;
-import com.ksaraev.spotifyrun.client.exception.SpotifyExceptionHandler;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientFeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
@@ -21,29 +21,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "spotify")
 public interface SpotifyClient {
   @GetMapping(path = "me")
-  @HandleFeignException(SpotifyExceptionHandler.class)
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   SpotifyUserProfileItem getCurrentUserProfile();
 
   @GetMapping(path = "me/top/tracks")
-  @HandleFeignException(SpotifyExceptionHandler.class)
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   GetUserTopTracksResponse getUserTopTracks(@SpringQueryMap GetUserTopTracksRequest request);
 
   @GetMapping(path = "recommendations")
-  @HandleFeignException(SpotifyExceptionHandler.class)
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   GetRecommendationsResponse getRecommendations(@SpringQueryMap GetRecommendationsRequest request);
 
   @PostMapping(path = "users/{userId}/playlists")
-  @HandleFeignException(SpotifyExceptionHandler.class)
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   SpotifyPlaylistItem createPlaylist(
       @PathVariable(value = "userId") String userId,
       @RequestBody SpotifyPlaylistItemDetails playlistItemDetails);
 
   @GetMapping(path = "playlists/{playlist_id}")
-  @HandleFeignException(SpotifyExceptionHandler.class)
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   SpotifyPlaylistItem getPlaylist(@PathVariable(value = "playlist_id") String playlistId);
 
   @PostMapping(path = "playlists/{playlist_id}/tracks")
-  @HandleFeignException(SpotifyExceptionHandler.class)
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   AddItemsResponse addItemsToPlaylist(
       @PathVariable(value = "playlist_id") String playlistId, @RequestBody AddItemsRequest request);
 }

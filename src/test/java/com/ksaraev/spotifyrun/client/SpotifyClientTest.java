@@ -18,7 +18,6 @@ import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -31,6 +30,9 @@ import org.springframework.test.util.AssertionErrors;
 
 import java.net.URI;
 import java.util.Collections;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Slf4j
 @ActiveProfiles("test")
@@ -95,7 +97,7 @@ class SpotifyClientTest {
                     .withBody(responseBody)));
 
     // When and Then
-    Assertions.assertThat(underTest.getCurrentUserProfile())
+    assertThat(underTest.getCurrentUserProfile())
         .isNotNull()
         .isEqualTo(responseBodyToObject(responseBody, SpotifyUserProfileItem.class));
   }
@@ -207,7 +209,7 @@ class SpotifyClientTest {
                     .withBody(responseBody)));
 
     // When and Then
-    Assertions.assertThat(
+    assertThat(
             underTest.getUserTopTracks(
                 new GetUserTopTracksRequest(1, 0, GetUserTopTracksRequest.TimeRange.MEDIUM_TERM)))
         .isNotNull()
@@ -340,7 +342,7 @@ class SpotifyClientTest {
                     .withBody(responseBody)));
 
     // When and Then
-    Assertions.assertThat(
+    assertThat(
             underTest.getRecommendations(
                 new GetRecommendationsRequest(
                     Collections.singletonList("2Tz1DTzVJ5Gyh8ZwVr6ekU"),
@@ -408,7 +410,7 @@ class SpotifyClientTest {
                     .withBody(responseBody)));
 
     // When and Then
-    Assertions.assertThat(
+    assertThat(
             underTest.createPlaylist(
                 userId,
                 new SpotifyPlaylistItemDetails(
@@ -472,7 +474,7 @@ class SpotifyClientTest {
                     .withBody(responseBody)));
 
     // When and Then
-    Assertions.assertThat(underTest.getPlaylist(playlistId))
+    assertThat(underTest.getPlaylist(playlistId))
         .isNotNull()
         .isEqualTo(responseBodyToObject(responseBody, SpotifyPlaylistItem.class));
   }
@@ -494,7 +496,7 @@ class SpotifyClientTest {
                     .withBody(responseBody)));
 
     // When and Then
-    Assertions.assertThat(
+    assertThat(
             underTest.addItemsToPlaylist(
                 playlistId,
                 new AddItemsRequest(
@@ -523,7 +525,7 @@ class SpotifyClientTest {
                     .withBody(errorMessage)
                     .withStatus(400)));
     // When and Then
-    Assertions.assertThatThrownBy(() -> underTest.getCurrentUserProfile())
+    assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isInstanceOf(SpotifyBadRequestException.class)
         .hasMessage(errorMessage);
   }
@@ -549,7 +551,7 @@ class SpotifyClientTest {
                     .withStatus(status)));
 
     // When and Then
-    Assertions.assertThatThrownBy(() -> underTest.getCurrentUserProfile())
+    assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isInstanceOf(Class.forName("com.ksaraev.spotifyrun.client.exception.http." + className));
   }
 
@@ -563,7 +565,7 @@ class SpotifyClientTest {
                     .withStatus(422)));
 
     // When and Then
-    Assertions.assertThatThrownBy(() -> underTest.getCurrentUserProfile())
+    assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isInstanceOf(SpotifyException.class);
   }
 

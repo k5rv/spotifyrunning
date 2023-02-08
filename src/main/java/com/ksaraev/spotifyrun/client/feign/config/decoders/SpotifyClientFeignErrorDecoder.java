@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.client.feign.config.decoders;
 
-import com.ksaraev.spotifyrun.client.exception.ClientExceptionHandler;
+import com.ksaraev.spotifyrun.client.exception.FeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.exception.HandleFeignException;
 import feign.Feign;
 import feign.Response;
@@ -24,7 +24,7 @@ import java.util.Map;
 public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
   private final ApplicationContext applicationContext;
   private final ErrorDecoder.Default defaultErrorDecoder = new Default();
-  private final Map<String, ClientExceptionHandler> exceptionHandlerMap = new HashMap<>();
+  private final Map<String, FeignExceptionHandler> exceptionHandlerMap = new HashMap<>();
 
   @EventListener
   public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -42,7 +42,7 @@ public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
       HandleFeignException annotation = method.getAnnotation(HandleFeignException.class);
       if (annotation != null) {
         String configKey = Feign.configKey(method.getDeclaringClass(), method);
-        ClientExceptionHandler handlerBean = applicationContext.getBean(annotation.value());
+        FeignExceptionHandler handlerBean = applicationContext.getBean(annotation.value());
         exceptionHandlerMap.put(configKey, handlerBean);
       }
     }
@@ -50,7 +50,7 @@ public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
 
   @Override
   public Exception decode(String methodKey, Response response) {
-    ClientExceptionHandler handler = exceptionHandlerMap.get(methodKey);
+    FeignExceptionHandler handler = exceptionHandlerMap.get(methodKey);
     if (handler == null) return defaultErrorDecoder.decode(methodKey, response);
 
     Exception exception = handler.handle(response);
