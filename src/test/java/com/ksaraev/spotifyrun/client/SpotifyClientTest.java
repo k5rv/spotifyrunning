@@ -16,7 +16,6 @@ import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.responses.AddItemsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +33,6 @@ import java.util.Collections;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Slf4j
 @ActiveProfiles("test")
 @AutoConfigureWireMock(port = 0)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

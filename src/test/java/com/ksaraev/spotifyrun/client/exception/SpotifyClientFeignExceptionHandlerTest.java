@@ -77,7 +77,7 @@ class SpotifyClientFeignExceptionHandlerTest {
   }
 
   @Test
-  void itShouldThrowSpotifyClientExceptionWhenResponseBodyCantBeRead() throws Exception {
+  void itShouldThrowSpotifyClientExceptionWhenResponseBodyCantBeRead() {
     // Given
     Response response =
         Response.builder()
@@ -101,7 +101,15 @@ class SpotifyClientFeignExceptionHandlerTest {
 
     // When and Then
     Assertions.assertThatThrownBy(() -> underTest.handle(response))
-        .isExactlyInstanceOf(SpotifyClientException.class)
+        .isExactlyInstanceOf(SpotifyClientErrorResponseHandlingException.class)
         .hasMessage("Error while reading Spotify API error response body");
+  }
+
+  @Test
+  void itShouldThrowSpotifyClientExceptionWhenResponseIsNull() {
+    // When and Then
+    Assertions.assertThatThrownBy(() -> underTest.handle(null))
+        .isExactlyInstanceOf(SpotifyClientErrorResponseHandlingException.class)
+        .hasMessage("Error while reading Spotify API error response: response is null");
   }
 }

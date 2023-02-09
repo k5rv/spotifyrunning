@@ -15,6 +15,10 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
 
   @Override
   public Exception handle(Response response) {
+    if (response == null) {
+      throw new SpotifyClientErrorResponseHandlingException(
+          "Error while reading Spotify API error response: response is null");
+    }
     try {
       String message =
           new String(response.body().asInputStream().readAllBytes(), StandardCharsets.UTF_8);
@@ -51,8 +55,9 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
           return new SpotifyException(message);
         }
       }
-    } catch (IOException e) {
-      throw new SpotifyClientException("Error while reading Spotify API error response body", e);
+    } catch (IOException | RuntimeException e) {
+      throw new SpotifyClientErrorResponseHandlingException(
+          "Error while reading Spotify API error response body", e);
     }
   }
 }

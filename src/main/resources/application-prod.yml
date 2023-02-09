@@ -44,7 +44,7 @@ spotifyrun:
   config:
     playlist:
       details:
-        name: "Running workout"
+        name: "Running Workout"
         description: "Music for your training based on Spotify recommendations and specific audio features"
         collaborative: false
         public: false

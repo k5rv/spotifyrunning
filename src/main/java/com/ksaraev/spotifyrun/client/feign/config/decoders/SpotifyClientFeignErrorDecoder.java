@@ -2,6 +2,7 @@ package com.ksaraev.spotifyrun.client.feign.config.decoders;
 
 import com.ksaraev.spotifyrun.client.exception.FeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.exception.HandleFeignException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientException;
 import feign.Feign;
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -15,7 +16,6 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +24,29 @@ import java.util.Map;
 public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
   private final ApplicationContext applicationContext;
   private final ErrorDecoder.Default defaultErrorDecoder = new Default();
-  private final Map<String, FeignExceptionHandler> exceptionHandlerMap = new HashMap<>();
+  private final Map<String, FeignExceptionHandler> feignExceptionHandlers;
 
   @EventListener
   public void onApplicationEvent(ContextRefreshedEvent event) {
+    collectFeignExceptionHandlers();
+  }
+
+  @Override
+  public Exception decode(String methodKey, Response response) {
+    if (response == null) {
+      throw new SpotifyClientException(
+          "Error while reading Spotify API error response: response is null");
+    }
+    FeignExceptionHandler handler = feignExceptionHandlers.get(methodKey);
+    if (handler == null) return defaultErrorDecoder.decode(methodKey, response);
+
+    Exception exception = handler.handle(response);
+    if (exception == null) return defaultErrorDecoder.decode(methodKey, response);
+
+    return exception;
+  }
+
+  private void collectFeignExceptionHandlers() {
     Map<String, Object> feignClients = applicationContext.getBeansWithAnnotation(FeignClient.class);
 
     List<Method> clientMethods =
@@ -43,19 +62,8 @@ public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
       if (annotation != null) {
         String configKey = Feign.configKey(method.getDeclaringClass(), method);
         FeignExceptionHandler handlerBean = applicationContext.getBean(annotation.value());
-        exceptionHandlerMap.put(configKey, handlerBean);
+        feignExceptionHandlers.put(configKey, handlerBean);
       }
     }
-  }
-
-  @Override
-  public Exception decode(String methodKey, Response response) {
-    FeignExceptionHandler handler = exceptionHandlerMap.get(methodKey);
-    if (handler == null) return defaultErrorDecoder.decode(methodKey, response);
-
-    Exception exception = handler.handle(response);
-    if (exception == null) return defaultErrorDecoder.decode(methodKey, response);
-
-    return exception;
   }
 }
