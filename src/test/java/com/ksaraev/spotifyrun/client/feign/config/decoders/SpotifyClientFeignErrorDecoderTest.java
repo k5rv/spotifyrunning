@@ -2,8 +2,8 @@ package com.ksaraev.spotifyrun.client.feign.config.decoders;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.exception.FeignExceptionHandler;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientException;
 import com.ksaraev.spotifyrun.client.exception.SpotifyClientFeignExceptionHandler;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientResponseDecodingException;
 import com.ksaraev.spotifyrun.client.exception.http.SpotifyException;
 import feign.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,7 +112,7 @@ class SpotifyClientFeignErrorDecoderTest {
   void itShouldThrowSpotifyClientExceptionWhenResponseIsNull() {
     // When and Then
     assertThatThrownBy(() -> underTest.decode("SpotifyClient#getSomething()", null))
-        .isExactlyInstanceOf(SpotifyClientException.class)
+        .isExactlyInstanceOf(SpotifyClientResponseDecodingException.class)
         .hasMessage("Error while reading Spotify API error response: response is null");
   }
 
@@ -120,12 +120,12 @@ class SpotifyClientFeignErrorDecoderTest {
   void itShouldCollectFeignExceptionHandlersIfPresent() {
     // Given
     List<Method> actualSpotifyFeignClientMethods =
-            Arrays.stream(spotifyClient.getClass().getInterfaces()[0].getDeclaredMethods()).toList();
+        Arrays.stream(spotifyClient.getClass().getInterfaces()[0].getDeclaredMethods()).toList();
 
     List<String> configKeys =
-            actualSpotifyFeignClientMethods.stream()
-                    .map(method -> Feign.configKey(method.getDeclaringClass(), method))
-                    .toList();
+        actualSpotifyFeignClientMethods.stream()
+            .map(method -> Feign.configKey(method.getDeclaringClass(), method))
+            .toList();
 
     given(applicationContext.getBeansWithAnnotation(FeignClient.class))
         .willReturn(Map.of(SpotifyClient.class.getCanonicalName(), spotifyClient));

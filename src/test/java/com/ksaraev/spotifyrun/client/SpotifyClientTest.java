@@ -29,6 +29,7 @@ import org.springframework.test.util.AssertionErrors;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -343,9 +344,9 @@ class SpotifyClientTest {
     assertThat(
             underTest.getRecommendations(
                 new GetRecommendationsRequest(
-                    Collections.singletonList("2Tz1DTzVJ5Gyh8ZwVr6ekU"),
-                    Collections.singletonList("synth pop"),
-                    Collections.singletonList("1rPYEWQfIRo5A4fvLgFbBe"),
+                    List.of("2Tz1DTzVJ5Gyh8ZwVr6ekU"),
+                    List.of("synth pop"),
+                    List.of("1rPYEWQfIRo5A4fvLgFbBe"),
                     null,
                     1,
                     0)))

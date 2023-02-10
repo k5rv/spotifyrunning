@@ -2,7 +2,7 @@ package com.ksaraev.spotifyrun.client.feign.config.decoders;
 
 import com.ksaraev.spotifyrun.client.exception.FeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.exception.HandleFeignException;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientResponseDecodingException;
 import feign.Feign;
 import feign.Response;
 import feign.codec.ErrorDecoder;
@@ -34,7 +34,7 @@ public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
   @Override
   public Exception decode(String methodKey, Response response) {
     if (response == null) {
-      throw new SpotifyClientException(
+      throw new SpotifyClientResponseDecodingException(
           "Error while reading Spotify API error response: response is null");
     }
     FeignExceptionHandler handler = feignExceptionHandlers.get(methodKey);
