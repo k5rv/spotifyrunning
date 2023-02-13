@@ -20,6 +20,8 @@ import java.util.stream.Collectors;
 public class RunService implements SpotifyRunService {
 
   private final SpotifyUserService userService;
+
+  private final SpotifyTopTracksService topTracksService;
   private final SpotifyPlaylistService playlistService;
   private final SpotifyRecommendationsService recommendationsService;
   private final SpotifyRunPlaylistConfig playlistConfig;
@@ -31,7 +33,7 @@ public class RunService implements SpotifyRunService {
     log.info("Found current user - userId:{}", user.getId());
 
     log.info("Getting top tracks - userId:{}", user.getId());
-    List<SpotifyTrack> userTopTracks = userService.getTopTracks();
+    List<SpotifyTrack> userTopTracks = topTracksService.getTopTracks();
     if (CollectionUtils.isEmpty(userTopTracks)) {
       throw new CreatePlaylistException(
           "Unable to create playlist. User (userId:"
@@ -46,10 +48,7 @@ public class RunService implements SpotifyRunService {
             .map(
                 userTopTrack ->
                     recommendationsService.getTracks(
-                        Collections.singletonList(userTopTrack),
-                        List.of(),
-                        List.of(),
-                        trackFeatures))
+                        List.of(userTopTrack), List.of(), List.of(), trackFeatures))
             .flatMap(List::stream)
             .distinct()
             .limit(playlistConfig.getSizeLimit())
