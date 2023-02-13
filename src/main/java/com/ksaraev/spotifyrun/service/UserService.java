@@ -1,62 +1,58 @@
 package com.ksaraev.spotifyrun.service;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientException;
+import com.ksaraev.spotifyrun.client.exception.http.SpotifyException;
+import com.ksaraev.spotifyrun.client.exception.http.SpotifyNotFoundException;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
-import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
-import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrun.exception.UserNotFoundException;
+import com.ksaraev.spotifyrun.exception.UserServiceException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import com.ksaraev.spotifyrun.model.track.TrackMapper;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
-import lombok.AllArgsConstructor;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
-import java.util.Objects;
-
 @Slf4j
 @Service
 @Validated
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService implements SpotifyUserService {
-
-  private final UserMapper userMapper;
-  private final TrackMapper trackMapper;
-
   private final SpotifyClient spotifyClient;
-
-  private final SpotifyGetUserTopTracksRequestConfig requestConfig;
-
-  @Override
-  public SpotifyUser getUser() {
-    SpotifyUserProfileItem userProfileResponse = spotifyClient.getCurrentUserProfile();
-    return userMapper.toModel(userProfileResponse);
-  }
+  private final UserMapper userMapper;
 
   @Override
-  public List<SpotifyTrack> getTopTracks() {
-    GetUserTopTracksRequest request =
-        GetUserTopTracksRequest.builder()
-            .timeRange(GetUserTopTracksRequest.TimeRange.valueOf(requestConfig.getTimeRange()))
-            .limit(requestConfig.getLimit())
-            .build();
-
-    GetUserTopTracksResponse response = spotifyClient.getUserTopTracks(request);
-
-    List<SpotifyTrack> tracks =
-        response.trackItems().stream()
-            .filter(Objects::nonNull)
-            .map(trackMapper::toModel)
-            .map(SpotifyTrack.class::cast)
-            .toList();
-
-    if (tracks.isEmpty()) {
-      return List.of();
+  public @Valid SpotifyUser getUser() {
+    SpotifyUserProfileItem userProfileItem;
+    try {
+      userProfileItem = spotifyClient.getCurrentUserProfile();
+    } catch (SpotifyNotFoundException e) {
+      throw new UserNotFoundException("User not found: " + e.getMessage(), e);
+    } catch (SpotifyException e) {
+      throw new UserServiceException(
+          "Unable to get a user: User service exception occurred: Spotify Web API returned an unsuccessful HTTP status code: "
+              + e.getMessage(),
+          e);
+    } catch (SpotifyClientException e) {
+      throw new UserServiceException(
+          "Unable to get a user: User service exception occurred: Spotify client returned an error: "
+              + e.getMessage(),
+          e);
+    } catch (RuntimeException e) {
+      throw new UserServiceException(
+          "Unable to get a user: User service exception occurred: " + e.getMessage(), e);
     }
-
-    return tracks;
+    if (userProfileItem == null) {
+      throw new UserNotFoundException(
+          "User not found: Spotify Web API returned null instead of User Profile");
+    }
+    try {
+      return userMapper.toModel(userProfileItem);
+    } catch (RuntimeException e) {
+      throw new UserServiceException(
+          "Unable to get a user: User service exception occurred: Error while mapping from Spotify User Profile to User");
+    }
   }
 }
