@@ -1,7 +1,5 @@
 package com.ksaraev.spotifyrun.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -16,6 +14,7 @@ import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.responses.AddItemsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
+import com.ksaraev.spotifyrun.utils.JsonHelper;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -25,7 +24,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.spec.internal.MediaTypes;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.AssertionErrors;
 
 import java.net.URI;
 import java.util.Collections;
@@ -98,7 +96,7 @@ class SpotifyClientTest {
     // When and Then
     assertThat(underTest.getCurrentUserProfile())
         .isNotNull()
-        .isEqualTo(responseBodyToObject(responseBody, SpotifyUserProfileItem.class));
+        .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyUserProfileItem.class));
   }
 
   @Test
@@ -213,7 +211,7 @@ class SpotifyClientTest {
                 new GetUserTopTracksRequest(1, 0, GetUserTopTracksRequest.TimeRange.MEDIUM_TERM)))
         .isNotNull()
         .usingRecursiveComparison()
-        .isEqualTo(responseBodyToObject(responseBody, GetUserTopTracksResponse.class));
+        .isEqualTo(JsonHelper.jsonToObject(responseBody, GetUserTopTracksResponse.class));
   }
 
   @Test
@@ -351,7 +349,7 @@ class SpotifyClientTest {
                     1,
                     0)))
         .isNotNull()
-        .isEqualTo(responseBodyToObject(responseBody, GetRecommendationsResponse.class));
+        .isEqualTo(JsonHelper.jsonToObject(responseBody, GetRecommendationsResponse.class));
   }
 
   @Test
@@ -415,7 +413,7 @@ class SpotifyClientTest {
                 new SpotifyPlaylistItemDetails(
                     false, false, "New Playlist", "New Playlist description")))
         .isNotNull()
-        .isEqualTo(responseBodyToObject(responseBody, SpotifyPlaylistItem.class));
+        .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyPlaylistItem.class));
   }
 
   @Test
@@ -475,7 +473,7 @@ class SpotifyClientTest {
     // When and Then
     assertThat(underTest.getPlaylist(playlistId))
         .isNotNull()
-        .isEqualTo(responseBodyToObject(responseBody, SpotifyPlaylistItem.class));
+        .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyPlaylistItem.class));
   }
 
   @Test
@@ -501,7 +499,7 @@ class SpotifyClientTest {
                 new AddItemsRequest(
                     Collections.singletonList(URI.create("spotify:track:1NRrU8Lrsb5Jrcxk6UjJb3")))))
         .isNotNull()
-        .isEqualTo(responseBodyToObject(responseBody, AddItemsResponse.class));
+        .isEqualTo(JsonHelper.jsonToObject(responseBody, AddItemsResponse.class));
   }
 
   @Test
@@ -566,20 +564,5 @@ class SpotifyClientTest {
     // When and Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isInstanceOf(SpotifyException.class);
-  }
-
-  private <T> T responseBodyToObject(String responseBody, Class<T> aClass) {
-    try {
-      return new ObjectMapper().readValue(responseBody, aClass);
-    } catch (JsonProcessingException e) {
-      AssertionErrors.fail(
-          "Fail to convert response body ["
-              + responseBody
-              + "] to instance of ["
-              + aClass
-              + "]:"
-              + e.getMessage());
-      return null;
-    }
   }
 }

@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrun;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.ActiveProfiles;
@@ -12,6 +11,5 @@ import org.springframework.test.context.ActiveProfiles;
 class SpotifyRunApplicationTests {
 
   @Test
-  void contextLoads() {
-  }
+  void contextLoads() {}
 }
