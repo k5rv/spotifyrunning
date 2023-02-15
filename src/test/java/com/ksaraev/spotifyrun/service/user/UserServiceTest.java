@@ -1,12 +1,16 @@
-package com.ksaraev.spotifyrun.service;
+package com.ksaraev.spotifyrun.service.user;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.exception.http.SpotifyNotFoundException;
+import com.ksaraev.spotifyrun.client.exception.http.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.GetUserException;
+import com.ksaraev.spotifyrun.exception.UnauthorizedException;
 import com.ksaraev.spotifyrun.exception.UserNotFoundException;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
+import com.ksaraev.spotifyrun.service.SpotifyUserService;
+import com.ksaraev.spotifyrun.service.UserService;
 import com.ksaraev.spotifyrun.utils.JsonHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -23,10 +27,9 @@ import org.mockito.MockitoAnnotations;
 import java.net.URI;
 import java.util.Set;
 
-import static com.ksaraev.spotifyrun.client.exception.http.SpotifyNotFoundException.SPOTIFY_USER_PROFILE_IS_NULL;
-import static com.ksaraev.spotifyrun.exception.GetUserException.GET_USER_ERROR_MESSAGE;
-import static com.ksaraev.spotifyrun.exception.MappingException.SPOTIFY_USER_PROFILE_MAPPING_ERROR;
-import static com.ksaraev.spotifyrun.exception.UserNotFoundException.USER_NOT_FOUND_MESSAGE;
+import static com.ksaraev.spotifyrun.exception.GetUserException.GET_USER_EXCEPTION_MESSAGE;
+import static com.ksaraev.spotifyrun.exception.UnauthorizedException.UNAUTHORIZED_EXCEPTION_MESSAGE;
+import static com.ksaraev.spotifyrun.exception.UserNotFoundException.USER_NOT_FOUND_EXCEPTION_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -93,7 +96,10 @@ class UserServiceTest {
         .willReturn(JsonHelper.jsonToObject(json, SpotifyUserProfileItem.class));
     given(userMapper.toModel(ArgumentMatchers.any())).willReturn(user);
     // When and Then
-    assertThat(underTest.getUser()).isNotNull().isEqualTo(user);
+    assertThat(underTest.getUser())
+        .isNotNull()
+        .isEqualTo(user)
+        .hasOnlyFields("id", "name", "email", "uri");
   }
 
   @Test
@@ -117,7 +123,19 @@ class UserServiceTest {
     // When and Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(UserNotFoundException.class)
-        .hasMessage(USER_NOT_FOUND_MESSAGE + ": " + message);
+        .hasMessage(USER_NOT_FOUND_EXCEPTION_MESSAGE + ": " + message);
+  }
+
+  @Test
+  void itShouldThrowUnauthorizedExceptionWhenClientThrowsSpotifyUnathorizedFoundException() {
+    // Given
+    String message = "User not found";
+    given(spotifyClient.getCurrentUserProfile())
+        .willThrow(new SpotifyUnauthorizedException(message));
+    // When and Then
+    assertThatThrownBy(() -> underTest.getUser())
+        .isExactlyInstanceOf(UnauthorizedException.class)
+        .hasMessage(UNAUTHORIZED_EXCEPTION_MESSAGE + ": " + message);
   }
 
   @Test
@@ -128,17 +146,7 @@ class UserServiceTest {
     // When and Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(GetUserException.class)
-        .hasMessage(GET_USER_ERROR_MESSAGE + ": " + message);
-  }
-
-  @Test
-  void itShouldThrowUserNotFoundExceptionWhenSpotifyUserProfileIsNull() {
-    // Given
-    given(spotifyClient.getCurrentUserProfile()).willReturn(null);
-    // When and Then
-    assertThatThrownBy(() -> underTest.getUser())
-        .isExactlyInstanceOf(UserNotFoundException.class)
-        .hasMessage(USER_NOT_FOUND_MESSAGE + ": " + SPOTIFY_USER_PROFILE_IS_NULL);
+        .hasMessage(GET_USER_EXCEPTION_MESSAGE + ": " + message);
   }
 
   @Test
@@ -176,10 +184,12 @@ class UserServiceTest {
         }""";
     given(spotifyClient.getCurrentUserProfile())
         .willReturn(JsonHelper.jsonToObject(json, SpotifyUserProfileItem.class));
-    given(userMapper.toModel(any(SpotifyUserProfileItem.class))).willThrow(new RuntimeException());
+    String runtimeExceptionMessage = "Runtime exception message";
+    given(userMapper.toModel(any(SpotifyUserProfileItem.class)))
+        .willThrow(new RuntimeException(runtimeExceptionMessage));
     // When and Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(GetUserException.class)
-        .hasMessage(GET_USER_ERROR_MESSAGE + ": " + SPOTIFY_USER_PROFILE_MAPPING_ERROR);
+        .hasMessage(GET_USER_EXCEPTION_MESSAGE + ": " + runtimeExceptionMessage);
   }
 }
