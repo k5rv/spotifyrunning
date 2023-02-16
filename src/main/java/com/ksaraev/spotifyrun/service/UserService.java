@@ -15,9 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import static com.ksaraev.spotifyrun.exception.GetUserException.GET_USER_EXCEPTION_MESSAGE;
-import static com.ksaraev.spotifyrun.exception.UnauthorizedException.UNAUTHORIZED_EXCEPTION_MESSAGE;
-import static com.ksaraev.spotifyrun.exception.UserNotFoundException.USER_NOT_FOUND_EXCEPTION_MESSAGE;
+import static com.ksaraev.spotifyrun.exception.GetUserException.SPOTIFY_CLIENT_RETURNED_NULL;
+import static com.ksaraev.spotifyrun.exception.GetUserException.UNABLE_TO_GET_USER;
+import static com.ksaraev.spotifyrun.exception.UnauthorizedException.UNAUTHORIZED;
+import static com.ksaraev.spotifyrun.exception.UserNotFoundException.USER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -32,13 +33,20 @@ public class UserService implements SpotifyUserService {
     SpotifyUserProfileItem userProfileItem;
     try {
       userProfileItem = spotifyClient.getCurrentUserProfile();
-      return userMapper.toModel(userProfileItem);
     } catch (SpotifyUnauthorizedException e) {
-      throw new UnauthorizedException(UNAUTHORIZED_EXCEPTION_MESSAGE + ": " + e.getMessage(), e);
+      throw new UnauthorizedException(UNAUTHORIZED + ": " + e.getMessage(), e);
     } catch (SpotifyNotFoundException e) {
-      throw new UserNotFoundException(USER_NOT_FOUND_EXCEPTION_MESSAGE + ": " + e.getMessage(), e);
+      throw new UserNotFoundException(USER_NOT_FOUND + ": " + e.getMessage(), e);
     } catch (RuntimeException e) {
-      throw new GetUserException(GET_USER_EXCEPTION_MESSAGE + ": " + e.getMessage(), e);
+      throw new GetUserException(UNABLE_TO_GET_USER + ": " + e.getMessage(), e);
+    }
+    if (userProfileItem == null) {
+      throw new GetUserException(UNABLE_TO_GET_USER + ": " + SPOTIFY_CLIENT_RETURNED_NULL);
+    }
+    try {
+      return userMapper.mapToUser(userProfileItem);
+    } catch (RuntimeException e) {
+      throw new GetUserException(UNABLE_TO_GET_USER + ": " + e.getMessage(), e);
     }
   }
 }

@@ -13,11 +13,13 @@ import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+@Validated
 @FeignClient(name = "spotify")
 public interface SpotifyClient {
   @GetMapping(path = "me")

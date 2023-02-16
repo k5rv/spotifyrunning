@@ -2,7 +2,7 @@ package com.ksaraev.spotifyrun.service.user;
 
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.mapping.MappingSourceIsNullException;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyItemMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyMapperImpl;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
 import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
@@ -19,7 +19,7 @@ import java.net.URI;
 import static com.ksaraev.spotifyrun.exception.mapping.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserMapperImpl.class, SpotifyItemMapperImpl.class})
+@ContextConfiguration(classes = {UserMapperImpl.class})
 class UserMapperTest {
 
   @Autowired UserMapper underTest;
@@ -65,14 +65,14 @@ class UserMapperTest {
     User user = new User(id, name, uri, email);
     // When and Then
     Assertions.assertThat(
-            underTest.toModel(JsonHelper.jsonToObject(json, SpotifyUserProfileItem.class)))
+            underTest.mapToUser(JsonHelper.jsonToObject(json, SpotifyUserProfileItem.class)))
         .isEqualTo(user);
   }
 
   @Test
   void itShouldThrowMappingExceptionWhenSourceIsNull() {
     // Given When Then
-    Assertions.assertThatThrownBy(() -> underTest.toModel(null))
+    Assertions.assertThatThrownBy(() -> underTest.mapToUser(null))
         .isExactlyInstanceOf(MappingSourceIsNullException.class)
         .hasMessage(MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE);
   }

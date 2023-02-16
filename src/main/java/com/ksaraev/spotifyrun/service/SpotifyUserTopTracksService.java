@@ -4,7 +4,7 @@ import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 
 import java.util.List;
 
-public interface SpotifyTopTracksService {
+public interface SpotifyUserTopTracksService {
 
-  List<SpotifyTrack> getTopTracks();
+  List<SpotifyTrack> getUserTopTracks();
 }
