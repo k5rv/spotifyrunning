@@ -7,7 +7,6 @@ import com.ksaraev.spotifyrun.exception.UnauthorizedException;
 import com.ksaraev.spotifyrun.exception.UserNotFoundException;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.service.UserService;
-import jakarta.validation.ConstraintViolationException;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -57,185 +56,236 @@ class UserServiceIntegrationTest {
   }
 
   @Test
-  void itShouldGetCurrentUserProfile() {
+  void itShouldReturnUser() {
     // Given
     String id = "12122604372";
     String name = "Konstantin";
-    String email = "mail@gmail.com";
+    String email = "email@gmail.com";
     URI uri = URI.create("spotify:user:12122604372");
-    String responseBody =
-        "{\n"
-            + "  \"display_name\":\""
-            + name
-            + "\",\n"
-            + "  \"external_urls\":{\n"
-            + "    \"spotify\":\"https://open.spotify.com/user/12122604372\"\n"
-            + "  },\n"
-            + "  \"followers\":{\n"
-            + "    \"href\":null,\n"
-            + "    \"total\":0\n"
-            + "  },\n"
-            + "  \"href\":\"https://api.spotify.com/v1/users/12122604372\",\n"
-            + "  \"id\":\""
-            + id
-            + "\",\n"
-            + "  \"email\":\""
-            + email
-            + "\",\n"
-            + "  \"images\":[\n"
-            + "    {\n"
-            + "      \"height\":null,\n"
-            + "      \"url\":\"https://scontent-ams2-1.xx.fbcdn.net\",\n"
-            + "      \"width\":null\n"
-            + "    }\n"
-            + "  ],\n"
-            + "  \"type\":\"user\",\n"
-            + "  \"uri\":\""
-            + uri
-            + "\"\n"
-            + "}";
-    stubFor(
-        get(urlEqualTo("/v1/me"))
-            .willReturn(
-                responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-    // When and Then
-    assertThat(underTest.getUser()).isNotNull().isEqualTo(new User(id, name, uri, email));
-  }
-
-  @Test
-  void itShouldThrowConstraintViolationExceptionWhenUserProfileIdIsNotPresent() {
-    // Given
-    String responseBody =
+    User user = User.builder().id(id).name(name).email(email).uri(uri).build();
+    String spotifyUserProfileItemJson =
         """
-               {
-                 "display_name":"Konstantin",
-                 "external_urls":{
-                   "spotify":"https://open.spotify.com/user/12122604372"
-                 },
-                 "followers":{
-                   "href":null,
-                   "total":0
-                 },
-                 "href":"https://api.spotify.com/v1/users/12122604372",
-                 "email":"mail@gmail.com",
-                 "images":[
-                   {
-                     "height":null,
-                     "url":"https://scontent-ams2-1.xx.fbcdn.net",
-                     "width":null
-                   }
-                 ],
-                 "type":"user",
-                 "uri":"spotify:user:12122604372"
-               }
-               """;
+             {
+               "country": "CC",
+               "display_name": "%s",
+               "email": "%s",
+               "explicit_content": {
+                 "filter_enabled": false,
+                 "filter_locked": false
+               },
+               "external_urls": {
+                 "spotify": "https://open.spotify.com/user/12122604372"
+               },
+               "followers": {
+                 "href": null,
+                 "total": 0
+               },
+               "href": "https://api.spotify.com/v1/users/12122604372",
+               "id": "%s",
+               "images": [
+                 {
+                   "height": null,
+                   "url": "https://scontent-cdg2-1.xx.fbcdn.net",
+                   "width": null
+                 }
+               ],
+               "product": "premium",
+               "type": "user",
+               "uri": "%s"
+             }
+             """
+            .formatted(name, email, id, uri);
 
     stubFor(
         get(urlEqualTo("/v1/me"))
             .willReturn(
                 responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-    // When and Then
-    assertThatThrownBy(() -> underTest.getUser())
-        .isExactlyInstanceOf(ConstraintViolationException.class)
-        .hasMessage("getUser.<return value>.id: must not be null");
-  }
-
-  @Test
-  void itShouldThrowUserNotFoundExceptionWhenHttpStatusCode404() {
-    // Given
-    stubFor(
-        get(urlEqualTo("/v1/me"))
-            .willReturn(
-                responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withStatus(404)));
-    // When and Then
-    assertThatThrownBy(() -> underTest.getUser())
-        .isExactlyInstanceOf(UserNotFoundException.class)
-        .hasMessage(USER_NOT_FOUND + ": ");
+                    .withBody(spotifyUserProfileItemJson)));
+    // Then
+    assertThat(underTest.getUser())
+        .isNotNull()
+        .isEqualTo(user)
+        .hasOnlyFields("id", "name", "email", "uri");
   }
 
   @ParameterizedTest
   @CsvSource(
+      delimiter = '|',
       textBlock =
           """
-                 {"error":{"status":400,"message":"Bad Request"}},
-                 {"error":"invalid_client","error_description":"Invalid client secret"}
-                 Plain text
-                 """,
-      delimiter = '|')
-  void itShouldThrowUnauthorizedExceptionWhenHttpStatusCode401(String responseBody) {
-    // Given
-    stubFor(
-        get(urlEqualTo("/v1/me"))
-            .willReturn(
-                responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)
-                    .withStatus(401)));
-    // When and Then
-    assertThatThrownBy(() -> underTest.getUser())
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + ": " + responseBody);
-  }
+               "key":"value",              |"email":"k.saraev@gmail.com",|"id":"12122604372",|"uri":"spotify:user:12122604372"|.displayName: must not be empty
+               "display_name":"Konstantin",|"email":"email@",            |"id":"12122604372",|"uri":"spotify:user:12122604372"|.email: must be a well-formed email address
+               "display_name":"Konstantin",|"email":"k.saraev@gmail.com",|"key":"value",     |"uri":"spotify:user:12122604372"|.id: must not be null
+               "display_name":"Konstantin",|"email":"k.saraev@gmail.com",|"id":"12122604372",|"key":"value"                   |.uri: must not be null
+               """)
+  void itShouldThrowGetUserExceptionWhenSpotifyReturnsNotValidUserProfileItem(
+      String displayNameJsonKeyValue,
+      String emailJsonKeyValue,
+      String idJsonKeyValue,
+      String uriJsonKeyValue,
+      String constraintViolationMessage) {
+    String spotifyUserProfileItemJson =
+        """
+             {
+               "country":"CY",
+               %s
+               %s
+               "explicit_content":{
+                 "filter_enabled":false,
+                 "filter_locked":false
+               },
+               "external_urls":{
+                 "spotify":"https://open.spotify.com/user/12122604372"
+               },
+               "followers":{
+                 "href":null,
+                 "total":0
+               },
+               "href":"https://api.spotify.com/v1/users/12122604372",
+               %s
+               "images":[
+                 {
+                   "height":null,
+                   "url":"https://scontent-cdt1-1.xx.fbcdn.net",
+                   "width":null
+                 }
+               ],
+               "product":"premium",
+               "type":"user",
+               %s
+             }
+             """
+            .formatted(displayNameJsonKeyValue, emailJsonKeyValue, idJsonKeyValue, uriJsonKeyValue);
 
-  @ParameterizedTest
-  @CsvSource(
-      textBlock =
-          """
-                 400|{"error":{"status":400,"message":"Bad Request"}},
-                 403|{"error":{"status":403,"message":"Forbidden"}},
-                 429|{"error":{"status":429,"message":"Too Many Requests"}},
-                 500|{"error":{"status":500,"message":"Internal Server Error"}},
-                 502|{"error":{"status":502,"message":"Bad Gateway"}},
-                 503|{"error":{"status":503,"message":"Service Unavailable"}},
-                 400|{"error":"invalid_client","error_description":"Invalid client secret"}
-                 400|Plain text
-                 """,
-      delimiter = '|')
-  void itShouldThrowGetUserExceptionWhenHttpStatusCodeNot2XX(Integer status, String responseBody) {
-    // Given
     stubFor(
         get(urlEqualTo("/v1/me"))
             .willReturn(
                 responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)
-                    .withStatus(status)));
-    // When and Then
-    assertThatThrownBy(() -> underTest.getUser())
-        .isExactlyInstanceOf(GetUserException.class)
-        .hasMessage(UNABLE_TO_GET_USER + ": " + responseBody);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      textBlock =
-          """
-                 {"id:"100",name":"something","size":"20"}
-                 Plain text
-                 """,
-      delimiter = '|')
-  void
-      itShouldThrowGetUserExceptionWhenHttpStatusCodeIs200AndResponseBodyIsNotSpotifyUserProfileItemJson(
-          String responseBody) {
-    // Given
-    stubFor(
-        get(urlEqualTo("/v1/me"))
-            .willReturn(
-                responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-    // When and Then
+                    .withBody(spotifyUserProfileItemJson)));
+    // Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(GetUserException.class)
         .hasMessage(
             UNABLE_TO_GET_USER
-                + ": "
+                + "getCurrentUserProfile.<return value>"
+                + constraintViolationMessage);
+  }
+
+  @Test
+  void itShouldThrowGetUserExceptionWhenSpotifyReturnsEmptyResponseBody() {
+    stubFor(
+        get(urlEqualTo("/v1/me"))
+            .willReturn(
+                responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)));
+    // Then
+    assertThatThrownBy(() -> underTest.getUser())
+        .isExactlyInstanceOf(GetUserException.class)
+        .hasMessage(UNABLE_TO_GET_USER + "getCurrentUserProfile.<return value>: must not be null");
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      textBlock =
+          """
+               {"error":{"status":404,"message":"Not Found"}}
+               plain text
+               ""
+               """)
+  void itShouldThrowUserNotFoundExceptionWhenSpotifyResponseHttpStatusCodeIs404(String message) {
+    // Given
+    stubFor(
+        get(urlEqualTo("/v1/me"))
+            .willReturn(
+                responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)
+                    .withStatus(404)));
+    // Then
+    assertThatThrownBy(() -> underTest.getUser())
+        .isExactlyInstanceOf(UserNotFoundException.class)
+        .hasMessage(USER_NOT_FOUND + message);
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      textBlock =
+          """
+               {"error":{"status":401,"message":"Unauthorized"}}
+               {"error":"invalid_client","error_description":"Invalid client secret"}
+               plain text
+               ""
+               """)
+  void itShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs401(String message) {
+    // Given
+    stubFor(
+        get(urlEqualTo("/v1/me"))
+            .willReturn(
+                responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)
+                    .withStatus(401)));
+    // Then
+    assertThatThrownBy(() -> underTest.getUser())
+        .isExactlyInstanceOf(UnauthorizedException.class)
+        .hasMessage(UNAUTHORIZED + message);
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      textBlock =
+          """
+                400|{"error":{"status":400,"message":"Bad Request"}},
+                403|{"error":{"status":403,"message":"Forbidden"}},
+                429|{"error":{"status":429,"message":"Too Many Requests"}},
+                500|{"error":{"status":500,"message":"Internal Server Error"}},
+                502|{"error":{"status":502,"message":"Bad Gateway"}},
+                503|{"error":{"status":503,"message":"Service Unavailable"}},
+                400|{"error":"invalid_client","error_description":"Invalid client secret"}
+                400|plain text
+                400|""
+                """)
+  void itShouldThrowGetUserExceptionWhenSpotifyResponseHttpStatusCodeIsNot2XX(
+      Integer status, String message) {
+    // Given
+    stubFor(
+        get(urlEqualTo("/v1/me"))
+            .willReturn(
+                responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)
+                    .withStatus(status)));
+    // Then
+    assertThatThrownBy(() -> underTest.getUser())
+        .isExactlyInstanceOf(GetUserException.class)
+        .hasMessage(UNABLE_TO_GET_USER + message);
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      textBlock =
+          """
+               plain text
+               ""
+               """)
+  void itShouldThrowGetUserExceptionWhenSpotifyHttpResponseBodyCantBeDecodedAsSpotifyUserProfileItem(String message) {
+    // Given
+    stubFor(
+        get(urlEqualTo("/v1/me"))
+            .willReturn(
+                responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)));
+    // Then
+    assertThatThrownBy(() -> underTest.getUser())
+        .isExactlyInstanceOf(GetUserException.class)
+        .hasMessage(
+            UNABLE_TO_GET_USER
                 + "Error while extracting response for type [class "
                 + SpotifyUserProfileItem.class.getCanonicalName()
                 + "] and content type [application/json;charset=UTF-8]");
