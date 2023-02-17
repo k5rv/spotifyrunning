@@ -11,15 +11,15 @@ import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
 import com.ksaraev.spotifyrun.service.SpotifyUserService;
 import com.ksaraev.spotifyrun.service.UserService;
-import com.ksaraev.spotifyrun.utils.JsonHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,30 +27,25 @@ import org.mockito.MockitoAnnotations;
 import java.net.URI;
 import java.util.Set;
 
-import static com.ksaraev.spotifyrun.exception.GetUserException.SPOTIFY_CLIENT_RETURNED_NULL;
 import static com.ksaraev.spotifyrun.exception.GetUserException.UNABLE_TO_GET_USER;
 import static com.ksaraev.spotifyrun.exception.UnauthorizedException.UNAUTHORIZED;
 import static com.ksaraev.spotifyrun.exception.UserNotFoundException.USER_NOT_FOUND;
+import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserServiceTest {
   @Mock private SpotifyClient spotifyClient;
   @Mock private UserMapper userMapper;
   private SpotifyUserService underTest;
   private Validator validator;
 
-  @BeforeAll
-  public void setValidator() {
-    validator = Validation.buildDefaultValidatorFactory().getValidator();
-  }
-
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+    validator = Validation.buildDefaultValidatorFactory().getValidator();
     underTest = new UserService(spotifyClient, userMapper);
   }
 
@@ -61,145 +56,174 @@ class UserServiceTest {
     String name = "Konstantin";
     String email = "email@gmail.com";
     URI uri = URI.create("spotify:user:12122604372");
-    String json =
-        "{\n"
-            + "  \"display_name\":\""
-            + name
-            + "\",\n"
-            + "  \"external_urls\":{\n"
-            + "    \"spotify\":\"https://open.spotify.com/user/12122604372\"\n"
-            + "  },\n"
-            + "  \"followers\":{\n"
-            + "    \"href\":null,\n"
-            + "    \"total\":0\n"
-            + "  },\n"
-            + "  \"href\":\"https://api.spotify.com/v1/users/12122604372\",\n"
-            + "  \"id\":\""
-            + id
-            + "\",\n"
-            + "  \"email\":\""
-            + email
-            + "\",\n"
-            + "  \"images\":[\n"
-            + "    {\n"
-            + "      \"height\":null,\n"
-            + "      \"url\":\"https://www.content.com\",\n"
-            + "      \"width\":null\n"
-            + "    }\n"
-            + "  ],\n"
-            + "  \"type\":\"user\",\n"
-            + "  \"uri\":\""
-            + uri
-            + "\"\n"
-            + "}";
-    User user = new User(id, name, uri, email);
-    given(spotifyClient.getCurrentUserProfile())
-        .willReturn(JsonHelper.jsonToObject(json, SpotifyUserProfileItem.class));
+    String spotifyUserProfileItemJson =
+        """
+             {
+               "country": "CC",
+               "display_name": "%s",
+               "email": "%s",
+               "explicit_content": {
+                 "filter_enabled": false,
+                 "filter_locked": false
+               },
+               "external_urls": {
+                 "spotify": "https://open.spotify.com/user/12122604372"
+               },
+               "followers": {
+                 "href": null,
+                 "total": 0
+               },
+               "href": "https://api.spotify.com/v1/users/12122604372",
+               "id": "%s",
+               "images": [
+                 {
+                   "height": null,
+                   "url": "https://scontent-cdg2-1.xx.fbcdn.net",
+                   "width": null
+                 }
+               ],
+               "product": "premium",
+               "type": "user",
+               "uri": "%s"
+             }
+             """
+            .formatted(name, email, id, uri);
+    SpotifyUserProfileItem userProfileItem =
+        jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileItem.class);
+    User user = User.builder().id(id).name(name).email(email).uri(uri).build();
+    given(spotifyClient.getCurrentUserProfile()).willReturn(userProfileItem);
     given(userMapper.mapToUser(ArgumentMatchers.any())).willReturn(user);
-    // When and Then
+    // Then
     assertThat(underTest.getUser())
         .isNotNull()
         .isEqualTo(user)
         .hasOnlyFields("id", "name", "email", "uri");
   }
 
-  @Test
-  void itShouldValidateWhenUserIdIsNull() {
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      nullValues = "null",
+      textBlock =
+          """
+               null       |Konstantin|email@gmail.com|spotify:user:12122604372|id: must not be null
+               12122604372|null      |email@gmail.com|spotify:user:12122604372|name: must not be empty
+               12122604372|Konstantin|email@         |spotify:user:12122604372|email: must be a well-formed email address
+               12122604372|Konstantin|email@gmail.com|null                    |uri: must not be null
+               """)
+  void itShouldDetectUserConstraintViolations(
+      String id, String name, String email, URI uri, String message) {
     // Given
-    User user = new User();
-    user.setId(null);
+    User user = User.builder().id(id).name(name).email(email).uri(uri).build();
     // When
-    Set<ConstraintViolation<User>> violations = validator.validate(user);
+    Set<ConstraintViolation<User>> constraintViolations = validator.validate(user);
     // Then
-    assertThat(violations).hasSize(1);
-    assertThat(new ConstraintViolationException(violations)).hasMessage("id: must not be null");
+    assertThat(constraintViolations).hasSize(1);
+    assertThat(new ConstraintViolationException(constraintViolations)).hasMessage(message);
   }
 
-  @Test
-  void itShouldThrowGetUserExceptionWhenSpotifyClientReturnsNull() {
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      nullValues = "null",
+      textBlock =
+          """
+               "type": "user",              |"email": "email@gmail.com",|"id": "12122604372",|"uri": "spotify:user:12122604372"|displayName: must not be empty
+               "display_name": "Konstantin",|"email": "@gmail.com",     |"id": "12122604372",|"uri": "spotify:user:12122604372"|email: must be a well-formed email address
+               "display_name": "Konstantin",|"email": "email@gmail.com",|"type": "user",     |"uri": "spotify:user:12122604372"|id: must not be null
+               "display_name": "Konstantin",|"email": "email@gmail.com",|"id": "12122604372",|"type": "user"                   |uri: must not be null
+               """)
+  void itShouldDetectUserProfileItemConstraintViolations(
+      String displayNameJsonKeyValue,
+      String emailJsonKeyValue,
+      String idJsonKeyValue,
+      String uriJsonKeyValue,
+      String message) {
     // Given
-    given(spotifyClient.getCurrentUserProfile()).willReturn(null);
-    // When and Then
-    assertThatThrownBy(() -> underTest.getUser())
-        .isInstanceOf(GetUserException.class)
-        .hasMessage(UNABLE_TO_GET_USER + ": " + SPOTIFY_CLIENT_RETURNED_NULL);
+    String spotifyUserProfileItemJson =
+        """
+             {
+               "country": "CY",
+               %s
+               %s
+               "explicit_content": {
+                 "filter_enabled": false,
+                 "filter_locked": false
+               },
+               "external_urls": {
+                 "spotify": "https://open.spotify.com/user/12122604372"
+               },
+               "followers": {
+                 "href": null,
+                 "total": 0
+               },
+               "href": "https://api.spotify.com/v1/users/12122604372",
+               %s
+               "images": [
+                 {
+                   "height": null,
+                   "url": "https://scontent-cdg2-1.xx.fbcdn.net",
+                   "width": null
+                 }
+               ],
+               "product": "premium",
+               %s
+             }
+             """
+            .formatted(displayNameJsonKeyValue, emailJsonKeyValue, idJsonKeyValue, uriJsonKeyValue);
+    SpotifyUserProfileItem spotifyUserProfileItem =
+        jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileItem.class);
+    // When
+    Set<ConstraintViolation<SpotifyUserProfileItem>> constraintViolations =
+        validator.validate(spotifyUserProfileItem);
+    // Then
+    assertThat(constraintViolations).hasSize(1);
+    assertThat(new ConstraintViolationException(constraintViolations)).hasMessage(message);
   }
 
   @Test
   void itShouldThrowUserNotFoundExceptionWhenClientThrowsSpotifyNotFoundException() {
     // Given
-    String message = "User not found";
+    String message = "message";
     given(spotifyClient.getCurrentUserProfile()).willThrow(new SpotifyNotFoundException(message));
-    // When and Then
+    // Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(UserNotFoundException.class)
-        .hasMessage(USER_NOT_FOUND + ": " + message);
+        .hasMessage(USER_NOT_FOUND + message);
   }
 
   @Test
-  void itShouldThrowUnauthorizedExceptionWhenClientThrowsSpotifyUnathorizedFoundException() {
+  void itShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
-    String message = "User not found";
+    String message = "message";
     given(spotifyClient.getCurrentUserProfile())
         .willThrow(new SpotifyUnauthorizedException(message));
-    // When and Then
+    // Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + ": " + message);
+        .hasMessage(UNAUTHORIZED + message);
   }
 
   @Test
-  void itShouldThrowGetUserExceptionWhenClientThrowsRuntimeException() {
+  void itShouldThrowGetUserExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "exception message";
+    String message = "message";
     given(spotifyClient.getCurrentUserProfile()).willThrow(new RuntimeException(message));
-    // When and Then
+    // Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(GetUserException.class)
-        .hasMessage(UNABLE_TO_GET_USER + ": " + message);
+        .hasMessage(UNABLE_TO_GET_USER + message);
   }
 
   @Test
   void itShouldThrowGetUserExceptionWhenUserMapperThrowsRuntimeException() {
     // Given
-    String json =
-        """
-        {
-          "country":"CY",
-          "display_name":"Konstantin",
-          "email":"email@gmail.com",
-          "explicit_content":{
-            "filter_enabled":false,
-            "filter_locked":false
-          },
-          "external_urls":{
-            "spotify":"https://open.spotify.com/user/12122604372"
-          },
-          "followers":{
-            "href":null,
-            "total":0
-          },
-          "href":"https://api.spotify.com/v1/users/12122604372",
-          "id":"12122604372",
-          "images":[
-            {
-              "height":null,
-              "url":"https://scontent-cdg2-1.xx.fbcdn.net",
-              "width":null
-            }
-          ],
-          "product":"premium",
-          "type":"user",
-          "uri":"spotify:user:12122604372"
-        }""";
-    given(spotifyClient.getCurrentUserProfile())
-        .willReturn(JsonHelper.jsonToObject(json, SpotifyUserProfileItem.class));
-    String runtimeExceptionMessage = "Runtime exception message";
-    given(userMapper.mapToUser(any(SpotifyUserProfileItem.class)))
-        .willThrow(new RuntimeException(runtimeExceptionMessage));
-    // When and Then
+    String message = "message";
+    given(spotifyClient.getCurrentUserProfile()).willReturn(null);
+    given(userMapper.mapToUser(any())).willThrow(new RuntimeException(message));
+    // Then
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(GetUserException.class)
-        .hasMessage(UNABLE_TO_GET_USER + ": " + runtimeExceptionMessage);
+        .hasMessage(UNABLE_TO_GET_USER + message);
   }
 }
