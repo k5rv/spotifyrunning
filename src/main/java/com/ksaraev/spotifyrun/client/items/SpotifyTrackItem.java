@@ -1,6 +1,10 @@
 package com.ksaraev.spotifyrun.client.items;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 import java.net.URI;
 import java.net.URL;
@@ -16,14 +20,14 @@ public record SpotifyTrackItem(
     @JsonProperty("track_number") Integer trackNumber,
     @JsonProperty("disc_number") Integer discNumber,
     @JsonProperty("linked_from") SpotifyAlbumItem sourceAlbumItem,
-    @JsonProperty("artists") List<SpotifyArtistItem> artistItems,
+    @JsonProperty("artists") @NotEmpty List<SpotifyArtistItem> artistItems,
     @JsonProperty("available_markets") List<String> availableMarkets,
     @JsonProperty("external_ids") Map<String, Object> externalIds,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,
-    String id,
-    String name,
-    Integer popularity,
+    @NotNull String id,
+    @NotEmpty String name,
+    @Min(0) @Max(100) Integer popularity,
     String type,
-    URI uri,
+    @NotNull URI uri,
     URL href,
     Boolean explicit) {}

@@ -175,6 +175,7 @@ class UserServiceIntegrationTest {
 
   @Test
   void itShouldThrowGetUserExceptionWhenSpotifyReturnsEmptyResponseBody() {
+    // Given
     stubFor(
         get(urlEqualTo("/v1/me"))
             .willReturn(
@@ -184,30 +185,6 @@ class UserServiceIntegrationTest {
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(GetUserException.class)
         .hasMessage(UNABLE_TO_GET_USER + "getCurrentUserProfile.<return value>: must not be null");
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-               {"error":{"status":404,"message":"Not Found"}}
-               plain text
-               ""
-               """)
-  void itShouldThrowUserNotFoundExceptionWhenSpotifyResponseHttpStatusCodeIs404(String message) {
-    // Given
-    stubFor(
-        get(urlEqualTo("/v1/me"))
-            .willReturn(
-                responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(404)));
-    // Then
-    assertThatThrownBy(() -> underTest.getUser())
-        .isExactlyInstanceOf(UserNotFoundException.class)
-        .hasMessage(USER_NOT_FOUND + message);
   }
 
   @ParameterizedTest
@@ -233,6 +210,30 @@ class UserServiceIntegrationTest {
     assertThatThrownBy(() -> underTest.getUser())
         .isExactlyInstanceOf(UnauthorizedException.class)
         .hasMessage(UNAUTHORIZED + message);
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      textBlock =
+          """
+               {"error":{"status":404,"message":"Not Found"}}
+               plain text
+               ""
+               """)
+  void itShouldThrowUserNotFoundExceptionWhenSpotifyResponseHttpStatusCodeIs404(String message) {
+    // Given
+    stubFor(
+        get(urlEqualTo("/v1/me"))
+            .willReturn(
+                responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)
+                    .withStatus(404)));
+    // Then
+    assertThatThrownBy(() -> underTest.getUser())
+        .isExactlyInstanceOf(UserNotFoundException.class)
+        .hasMessage(USER_NOT_FOUND + message);
   }
 
   @ParameterizedTest
@@ -267,13 +268,13 @@ class UserServiceIntegrationTest {
   }
 
   @ParameterizedTest
-  @CsvSource(
-      textBlock =
-          """
+  @CsvSource(textBlock = """
                plain text
                ""
                """)
-  void itShouldThrowGetUserExceptionWhenSpotifyHttpResponseBodyCantBeDecodedAsSpotifyUserProfileItem(String message) {
+  void
+      itShouldThrowGetUserExceptionWhenSpotifyHttpResponseBodyCantBeDecodedAsSpotifyUserProfileItem(
+          String message) {
     // Given
     stubFor(
         get(urlEqualTo("/v1/me"))

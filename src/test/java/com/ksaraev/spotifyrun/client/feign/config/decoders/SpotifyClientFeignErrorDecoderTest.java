@@ -60,7 +60,7 @@ class SpotifyClientFeignErrorDecoderTest {
             .status(400)
             .build();
     given(feignExceptionHandlers.get(methodKey)).willReturn(null);
-    // When and Then
+    // Then
     assertThat(underTest.decode(methodKey, response)).isInstanceOf(FeignException.class);
   }
 
@@ -82,7 +82,7 @@ class SpotifyClientFeignErrorDecoderTest {
             .build();
     given(feignExceptionHandlers.get(methodKey))
         .willReturn(new SpotifyClientFeignExceptionHandler());
-    // When and Then
+    // Then
     assertThat(underTest.decode(methodKey, response)).isInstanceOf(SpotifyException.class);
   }
 
@@ -104,13 +104,13 @@ class SpotifyClientFeignErrorDecoderTest {
             .build();
     given(spotifyClientFeignExceptionHandler.handle(response)).willReturn(null);
     given(feignExceptionHandlers.get(methodKey)).willReturn(spotifyClientFeignExceptionHandler);
-    // When and Then
+    // Then
     assertThat(underTest.decode(methodKey, response)).isInstanceOf(FeignException.class);
   }
 
   @Test
   void itShouldThrowSpotifyClientExceptionWhenResponseIsNull() {
-    // When and Then
+    // Then
     assertThatThrownBy(() -> underTest.decode("SpotifyClient#getSomething()", null))
         .isExactlyInstanceOf(SpotifyClientResponseDecodingException.class)
         .hasMessage("Error while reading Spotify API error response: response is null");

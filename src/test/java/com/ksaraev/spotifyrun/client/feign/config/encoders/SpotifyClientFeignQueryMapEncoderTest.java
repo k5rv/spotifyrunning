@@ -23,7 +23,7 @@ class SpotifyClientFeignQueryMapEncoderTest {
     // Given
     String fieldValue = "fieldValue";
     ClassToEncode classToEncode = new ClassToEncode(fieldValue);
-    // When and Then
+    // Then
     Assertions.assertThat(underTest.encode(classToEncode))
         .isEqualTo(Map.of("field_name_to_encode", fieldValue));
   }
@@ -33,7 +33,7 @@ class SpotifyClientFeignQueryMapEncoderTest {
     // Given
     String fieldValue = "fieldValue";
     AnnotatedClassToEncode annotatedClassToEncode = new AnnotatedClassToEncode(fieldValue);
-    // When and Then
+    // Then
     Assertions.assertThat(underTest.encode(annotatedClassToEncode))
         .isEqualTo(Map.of(PARAM_ANNOTATION_VALUE, fieldValue));
   }
@@ -46,7 +46,7 @@ class SpotifyClientFeignQueryMapEncoderTest {
     ClassToEncodeWithCustomClassField classToEncodeWithCustomClassField =
         new ClassToEncodeWithCustomClassField(classToEncode);
 
-    // When and Then
+    // Then
     Assertions.assertThat(underTest.encode(classToEncodeWithCustomClassField))
         .isEqualTo(Map.of("field_name_to_encode", customClassStringFieldValue));
   }
@@ -57,7 +57,7 @@ class SpotifyClientFeignQueryMapEncoderTest {
     List<String> elements = List.of("elementA", "elementB");
     ClassToEncodeWithCollectionTypeField classToEncodeWithCollectionTypeField =
         new ClassToEncodeWithCollectionTypeField(elements);
-    // When and Then
+    // Then
     Assertions.assertThat(underTest.encode(classToEncodeWithCollectionTypeField))
         .isEqualTo(Map.of("collection_field_name_to_encode", "elementA,elementB"));
   }

@@ -11,6 +11,8 @@ import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.responses.AddItemsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
@@ -24,14 +26,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface SpotifyClient {
   @GetMapping(path = "me")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
   SpotifyUserProfileItem getCurrentUserProfile();
 
   @GetMapping(path = "me/top/tracks")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
   GetUserTopTracksResponse getUserTopTracks(@SpringQueryMap GetUserTopTracksRequest request);
 
   @GetMapping(path = "recommendations")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
   GetRecommendationsResponse getRecommendations(@SpringQueryMap GetRecommendationsRequest request);
 
   @PostMapping(path = "users/{userId}/playlists")

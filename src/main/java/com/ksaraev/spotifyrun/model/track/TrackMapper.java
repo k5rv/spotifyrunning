@@ -2,11 +2,9 @@ package com.ksaraev.spotifyrun.model.track;
 
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemTrack;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.client.requests.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -17,7 +15,7 @@ import java.util.Objects;
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,
     uses = {ArtistMapper.class})
-public interface TrackMapper extends SpotifyMapper{
+public interface TrackMapper extends SpotifyMapper {
 
   @Mapping(target = "artists", source = "artistItems")
   Track mapToTrack(SpotifyTrackItem spotifyTrackItem);

@@ -9,22 +9,22 @@ import com.ksaraev.spotifyrun.exception.GetUserTopTracksException;
 import com.ksaraev.spotifyrun.exception.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest.TimeRange;
-import static com.ksaraev.spotifyrun.exception.GetUserTopTracksException.*;
+import static com.ksaraev.spotifyrun.exception.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
+import static com.ksaraev.spotifyrun.exception.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
 import static com.ksaraev.spotifyrun.exception.UnauthorizedException.UNAUTHORIZED;
 
 @Slf4j
 @Service
-@Validated
 @RequiredArgsConstructor
 public class UserTopTracksService implements SpotifyUserTopTracksService {
 
@@ -33,36 +33,31 @@ public class UserTopTracksService implements SpotifyUserTopTracksService {
   private final TrackMapper trackMapper;
 
   @Override
-  public List<@Valid SpotifyTrack> getUserTopTracks() {
+  public List<SpotifyTrack> getUserTopTracks() {
     if (Arrays.stream(TimeRange.values())
-        .noneMatch(timeRange -> timeRange.name().equals(requestConfig.getTimeRange()))) {
+        .noneMatch(tr -> tr.name().equals(requestConfig.getTimeRange()))) {
       throw new GetUserTopTracksException(
-          UNABLE_TO_GET_USER_TOP_TRACKS
-              + ": "
-              + CONFIGURATION_ERROR_NOT_VALID_TIME_RANGE_PARAMETER.formatted(
-                  requestConfig.getTimeRange()));
+          UNABLE_TO_GET_USER_TOP_TRACKS + ILLEGAL_TIME_RANGE + requestConfig.getTimeRange());
     }
-    GetUserTopTracksResponse response;
     try {
       GetUserTopTracksRequest request =
           GetUserTopTracksRequest.builder()
               .timeRange(TimeRange.valueOf(requestConfig.getTimeRange()))
               .limit(requestConfig.getLimit())
               .build();
-      response = spotifyClient.getUserTopTracks(request);
-    } catch (SpotifyUnauthorizedException e) {
-      throw new UnauthorizedException(UNAUTHORIZED + ": " + e.getMessage(), e);
-    } catch (RuntimeException e) {
-      throw new GetUserTopTracksException(UNABLE_TO_GET_USER_TOP_TRACKS + ": " + e.getMessage(), e);
-    }
-    if (response == null) {
-      throw new GetUserTopTracksException(
-          UNABLE_TO_GET_USER_TOP_TRACKS + ": " + SPOTIFY_CLIENT_RETURNED_NULL);
-    }
-    try {
+      GetUserTopTracksResponse response = spotifyClient.getUserTopTracks(request);
+      if (CollectionUtils.isEmpty(response.trackItems())) {
+        return List.of();
+      }
+      response.trackItems().removeAll(Collections.singleton(null));
+      if (response.trackItems().isEmpty()) {
+        return List.of();
+      }
       return trackMapper.mapItemsToTracks(response.trackItems());
+    } catch (SpotifyUnauthorizedException e) {
+      throw new UnauthorizedException(UNAUTHORIZED + e.getMessage(), e);
     } catch (RuntimeException e) {
-      throw new GetUserTopTracksException(UNABLE_TO_GET_USER_TOP_TRACKS + ": " + e.getMessage());
+      throw new GetUserTopTracksException(UNABLE_TO_GET_USER_TOP_TRACKS + e.getMessage(), e);
     }
   }
 }

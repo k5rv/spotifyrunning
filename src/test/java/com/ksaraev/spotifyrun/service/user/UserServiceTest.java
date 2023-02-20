@@ -17,7 +17,6 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentMatchers;
@@ -39,6 +38,7 @@ import static org.mockito.BDDMockito.given;
 class UserServiceTest {
   @Mock private SpotifyClient spotifyClient;
   @Mock private UserMapper userMapper;
+
   private SpotifyUserService underTest;
   private Validator validator;
 
@@ -56,6 +56,7 @@ class UserServiceTest {
     String name = "Konstantin";
     String email = "email@gmail.com";
     URI uri = URI.create("spotify:user:12122604372");
+    User user = User.builder().id(id).name(name).email(email).uri(uri).build();
     String spotifyUserProfileItemJson =
         """
              {
@@ -90,7 +91,6 @@ class UserServiceTest {
             .formatted(name, email, id, uri);
     SpotifyUserProfileItem userProfileItem =
         jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileItem.class);
-    User user = User.builder().id(id).name(name).email(email).uri(uri).build();
     given(spotifyClient.getCurrentUserProfile()).willReturn(userProfileItem);
     given(userMapper.mapToUser(ArgumentMatchers.any())).willReturn(user);
     // Then
@@ -125,7 +125,6 @@ class UserServiceTest {
   @ParameterizedTest
   @CsvSource(
       delimiter = '|',
-      nullValues = "null",
       textBlock =
           """
                "type": "user",              |"email": "email@gmail.com",|"id": "12122604372",|"uri": "spotify:user:12122604372"|displayName: must not be empty
@@ -133,7 +132,7 @@ class UserServiceTest {
                "display_name": "Konstantin",|"email": "email@gmail.com",|"type": "user",     |"uri": "spotify:user:12122604372"|id: must not be null
                "display_name": "Konstantin",|"email": "email@gmail.com",|"id": "12122604372",|"type": "user"                   |uri: must not be null
                """)
-  void itShouldDetectUserProfileItemConstraintViolations(
+  void itShouldDetectSpotifyUserProfileItemConstraintViolations(
       String displayNameJsonKeyValue,
       String emailJsonKeyValue,
       String idJsonKeyValue,
@@ -182,7 +181,7 @@ class UserServiceTest {
   }
 
   @Test
-  void itShouldThrowUserNotFoundExceptionWhenClientThrowsSpotifyNotFoundException() {
+  void itShouldThrowUserNotFoundExceptionWhenSpotifyClientThrowsSpotifyNotFoundException() {
     // Given
     String message = "message";
     given(spotifyClient.getCurrentUserProfile()).willThrow(new SpotifyNotFoundException(message));

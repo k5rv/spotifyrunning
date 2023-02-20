@@ -93,7 +93,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withBody(responseBody)));
 
-    // When and Then
+    // Then
     assertThat(underTest.getCurrentUserProfile())
         .isNotNull()
         .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyUserProfileItem.class));
@@ -205,7 +205,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withBody(responseBody)));
 
-    // When and Then
+    // Then
     assertThat(
             underTest.getUserTopTracks(
                 new GetUserTopTracksRequest(1, 0, GetUserTopTracksRequest.TimeRange.MEDIUM_TERM)))
@@ -338,7 +338,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withBody(responseBody)));
 
-    // When and Then
+    // Then
     assertThat(
             underTest.getRecommendations(
                 new GetRecommendationsRequest(
@@ -406,7 +406,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withBody(responseBody)));
 
-    // When and Then
+    // Then
     assertThat(
             underTest.createPlaylist(
                 userId,
@@ -470,7 +470,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withBody(responseBody)));
 
-    // When and Then
+    // Then
     assertThat(underTest.getPlaylist(playlistId))
         .isNotNull()
         .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyPlaylistItem.class));
@@ -492,7 +492,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withBody(responseBody)));
 
-    // When and Then
+    // Then
     assertThat(
             underTest.addItemsToPlaylist(
                 playlistId,
@@ -521,7 +521,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withBody(errorMessage)
                     .withStatus(400)));
-    // When and Then
+    // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isInstanceOf(SpotifyBadRequestException.class)
         .hasMessage(errorMessage);
@@ -547,7 +547,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withStatus(status)));
 
-    // When and Then
+    // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isInstanceOf(Class.forName("com.ksaraev.spotifyrun.client.exception.http." + className));
   }
@@ -561,7 +561,7 @@ class SpotifyClientTest {
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
                     .withStatus(422)));
 
-    // When and Then
+    // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isInstanceOf(SpotifyException.class);
   }

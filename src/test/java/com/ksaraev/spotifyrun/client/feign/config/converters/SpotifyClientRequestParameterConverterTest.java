@@ -18,7 +18,7 @@ class SpotifyClientRequestParameterConverterTest {
     // Given
     String parameter = "parameter";
     SpotifyClientRequestParameter spotifyClientRequestParameter = () -> parameter;
-    // When and Then
+    // Then
     Assertions.assertThat(underTest.convert(spotifyClientRequestParameter)).isEqualTo(parameter);
   }
 }

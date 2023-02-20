@@ -1,7 +1,10 @@
 package com.ksaraev.spotifyrun.model.artist;
 
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,11 +12,12 @@ import java.net.URI;
 import java.util.List;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Artist implements SpotifyArtist {
-  private String id;
-  private String name;
-  private URI uri;
+  @NotNull private String id;
+  @NotEmpty private String name;
+  @NotNull private URI uri;
   private List<String> genres;
 }
