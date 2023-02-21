@@ -1,11 +1,13 @@
 package com.ksaraev.spotifyrun.service.toptracks;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.exception.http.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
 import com.ksaraev.spotifyrun.exception.GetUserTopTracksException;
+import com.ksaraev.spotifyrun.exception.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.track.Track;
@@ -16,12 +18,12 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -30,8 +32,10 @@ import java.util.*;
 
 import static com.ksaraev.spotifyrun.exception.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
 import static com.ksaraev.spotifyrun.exception.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
+import static com.ksaraev.spotifyrun.exception.UnauthorizedException.*;
 import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
@@ -41,6 +45,7 @@ class UserTopTracksServiceTest {
   @Mock private SpotifyClient spotifyClient;
   @Mock private SpotifyGetUserTopTracksRequestConfig requestConfig;
   @Mock private TrackMapper trackMapper;
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> spotifyTrackItemsArgumentCaptor;
   private SpotifyUserTopTracksService underTest;
   private Validator validator;
 
@@ -57,6 +62,7 @@ class UserTopTracksServiceTest {
     String artistId = "5VnrVRYzaatWXs102ScGwN";
     String artistName = "Name";
     URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
+
     Artist artist =
         Artist.builder()
             .id(artistId)
@@ -64,10 +70,12 @@ class UserTopTracksServiceTest {
             .uri(artistUri)
             .genres(Collections.emptyList())
             .build();
+
     String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
     String trackName = "Name";
     URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
     Integer trackPopularity = 32;
+
     Track track =
         Track.builder()
             .id(trackId)
@@ -76,6 +84,7 @@ class UserTopTracksServiceTest {
             .popularity(trackPopularity)
             .artists(List.of(artist))
             .build();
+
     String getUserTopTracksResponseJson =
         """
              {
@@ -182,7 +191,7 @@ class UserTopTracksServiceTest {
         .willReturn(getUserTopTracksResponse);
     given(trackMapper.mapItemsToTracks(anyList())).willReturn(List.of(track));
     // Then
-    Assertions.assertThat(underTest.getUserTopTracks()).containsExactly(track);
+    assertThat(underTest.getUserTopTracks()).containsExactly(track);
   }
 
   @ParameterizedTest
@@ -200,9 +209,23 @@ class UserTopTracksServiceTest {
     given(requestConfig.getLimit()).willReturn(50);
     given(requestConfig.getTimeRange()).willReturn(timeRange);
     // Then
-    Assertions.assertThatThrownBy(() -> underTest.getUserTopTracks())
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isInstanceOf(GetUserTopTracksException.class)
         .hasMessage(UNABLE_TO_GET_USER_TOP_TRACKS + ILLEGAL_TIME_RANGE + message);
+  }
+
+  @Test
+  void itShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+    // Given
+    String message = "message";
+    given(requestConfig.getLimit()).willReturn(50);
+    given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
+    given(spotifyClient.getUserTopTracks(any()))
+        .willThrow(new SpotifyUnauthorizedException(message));
+    // Then
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
+        .isInstanceOf(UnauthorizedException.class)
+        .hasMessage(UNAUTHORIZED + message);
   }
 
   @Test
@@ -213,7 +236,7 @@ class UserTopTracksServiceTest {
     given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
     given(spotifyClient.getUserTopTracks(any())).willThrow(new RuntimeException(message));
     // Then
-    Assertions.assertThatThrownBy(() -> underTest.getUserTopTracks())
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isInstanceOf(GetUserTopTracksException.class)
         .hasMessage(UNABLE_TO_GET_USER_TOP_TRACKS + message);
   }
@@ -324,7 +347,7 @@ class UserTopTracksServiceTest {
         .willReturn(getUserTopTracksResponse);
     given(trackMapper.mapItemsToTracks(anyList())).willThrow(new RuntimeException(message));
     // Then
-    Assertions.assertThatThrownBy(() -> underTest.getUserTopTracks())
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isInstanceOf(GetUserTopTracksException.class)
         .hasMessage(UNABLE_TO_GET_USER_TOP_TRACKS + message);
   }
@@ -590,6 +613,7 @@ class UserTopTracksServiceTest {
                 nameJsonKeyValue,
                 popularityJsonKeyValue,
                 uriJsonKeyValue);
+
     SpotifyTrackItem spotifyTrackItem = jsonToObject(spotifyTrackItemJson, SpotifyTrackItem.class);
     // When
     Set<ConstraintViolation<SpotifyTrackItem>> violations = validator.validate(spotifyTrackItem);
@@ -630,8 +654,11 @@ class UserTopTracksServiceTest {
     trackItems.add(null);
     given(spotifyClient.getUserTopTracks(any(GetUserTopTracksRequest.class)))
         .willReturn(new GetUserTopTracksResponse(null, trackItems, 1, 0, 1, null, null));
+    // When
+    underTest.getUserTopTracks();
     // Then
-    assertThat(underTest.getUserTopTracks()).isEmpty();
+    then(trackMapper).should().mapItemsToTracks(spotifyTrackItemsArgumentCaptor.capture());
+    assertThat(spotifyTrackItemsArgumentCaptor.getValue()).isEmpty();
   }
 
   @Test
@@ -728,11 +755,11 @@ class UserTopTracksServiceTest {
     trackItems.add(spotifyTrackItem);
     trackItems.add(null);
     trackItems.add(null);
-    ArgumentCaptor<List<SpotifyTrackItem>> spotifyTrackItemsArgumentCaptor =
-        ArgumentCaptor.forClass(List.class);
     given(spotifyClient.getUserTopTracks(any(GetUserTopTracksRequest.class)))
         .willReturn(new GetUserTopTracksResponse(null, trackItems, 1, 0, 1, null, null));
+    // When
     underTest.getUserTopTracks();
+    // Then
     then(trackMapper).should().mapItemsToTracks(spotifyTrackItemsArgumentCaptor.capture());
     assertThat(spotifyTrackItemsArgumentCaptor.getAllValues())
         .containsExactly(Collections.singletonList(spotifyTrackItem));
