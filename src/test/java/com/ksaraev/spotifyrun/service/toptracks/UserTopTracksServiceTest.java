@@ -1,15 +1,18 @@
 package com.ksaraev.spotifyrun.service.toptracks;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.exception.http.SpotifyForbiddenException;
 import com.ksaraev.spotifyrun.client.exception.http.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
-import com.ksaraev.spotifyrun.exception.GetUserTopTracksException;
-import com.ksaraev.spotifyrun.exception.UnauthorizedException;
+import com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException;
+import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
+import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
 import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
@@ -30,9 +33,10 @@ import org.mockito.MockitoAnnotations;
 import java.net.URI;
 import java.util.*;
 
-import static com.ksaraev.spotifyrun.exception.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
-import static com.ksaraev.spotifyrun.exception.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
-import static com.ksaraev.spotifyrun.exception.UnauthorizedException.*;
+import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
+import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
+import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
+import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,7 +61,7 @@ class UserTopTracksServiceTest {
   }
 
   @Test
-  void itShouldReturnTracks() {
+  void itShouldGetTracks() {
     // Given
     String artistId = "5VnrVRYzaatWXs102ScGwN";
     String artistName = "Name";
@@ -87,100 +91,100 @@ class UserTopTracksServiceTest {
 
     String getUserTopTracksResponseJson =
         """
+         {
+           "items":[
              {
-               "items":[
-                 {
-                   "album":{
-                     "album_type":"ALBUM",
-                     "artists":[
-                       {
-                         "external_urls":{
-                           "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
-                         },
-                         "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
-                         "id":"5VnrVRYzaatWXs102ScGwN",
-                         "name":"Artist Name",
-                         "type":"artist",
-                         "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
-                       }
-                      ],
-                     "available_markets":[
-                       "US",
-                       "GB"
-                     ],
+               "album":{
+                 "album_type":"ALBUM",
+                 "artists":[
+                   {
                      "external_urls":{
-                       "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
+                       "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
                      },
-                     "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
-                     "id":"0t58MAAaEcFOfp5aeljocU",
-                     "images":[
-                       {
-                         "height":640,
-                         "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
-                         "width":640
-                       },
-                       {
-                         "height":300,
-                         "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
-                         "width":300
-                       },
-                       {
-                         "height":64,
-                         "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
-                         "width":64
-                       }
-                     ],
-                     "name":"Name",
-                     "release_date":"2001-06-11",
-                     "release_date_precision":"day",
-                     "total_tracks":10,
-                     "type":"album",
-                     "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
+                     "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
+                     "id":"5VnrVRYzaatWXs102ScGwN",
+                     "name":"Artist Name",
+                     "type":"artist",
+                     "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
+                   }
+                  ],
+                 "available_markets":[
+                   "US",
+                   "GB"
+                 ],
+                 "external_urls":{
+                   "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
+                 },
+                 "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
+                 "id":"0t58MAAaEcFOfp5aeljocU",
+                 "images":[
+                   {
+                     "height":640,
+                     "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
+                     "width":640
                    },
-                  "artists":[
-                     {
-                       "external_urls":{
-                         "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
-                       },
-                       "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
-                       "id":"%s",
-                       "name":"%s",
-                       "type":"artist",
-                       "uri":"%s"
-                     }
-                   ],
-                   "available_markets":[
-                     "US",
-                     "GB"
-                   ],
-                   "disc_number":1,
-                   "duration_ms":239493,
-                   "explicit":false,
-                   "external_ids":{
-                     "isrc":"CCEA32135502"
+                   {
+                     "height":300,
+                     "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
+                     "width":300
                    },
+                   {
+                     "height":64,
+                     "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
+                     "width":64
+                   }
+                 ],
+                 "name":"Name",
+                 "release_date":"2001-06-11",
+                 "release_date_precision":"day",
+                 "total_tracks":10,
+                 "type":"album",
+                 "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
+               },
+              "artists":[
+                 {
                    "external_urls":{
-                     "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+                     "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
                    },
-                   "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
+                   "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
                    "id":"%s",
-                   "is_local":false,
                    "name":"%s",
-                   "popularity":%s,
-                   "preview_url":"https://p.scdn.co/mp3-preview/ab67626d000008514b8b7ed8a19cef47f4438913?cid=774b29d4f13844c495f206cafdad9c86",
-                   "track_number":9,
-                   "type":"track",
+                   "type":"artist",
                    "uri":"%s"
                  }
                ],
-               "total":50,
-               "limit":1,
-               "offset":0,
-               "href":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0",
-               "next":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=1",
-               "previous":null
+               "available_markets":[
+                 "US",
+                 "GB"
+               ],
+               "disc_number":1,
+               "duration_ms":239493,
+               "explicit":false,
+               "external_ids":{
+                 "isrc":"CCEA32135502"
+               },
+               "external_urls":{
+                 "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+               },
+               "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
+               "id":"%s",
+               "is_local":false,
+               "name":"%s",
+               "popularity":%s,
+               "preview_url":"https://p.scdn.co/mp3-preview/ab67626d000008514b8b7ed8a19cef47f4438913?cid=774b29d4f13844c495f206cafdad9c86",
+               "track_number":9,
+               "type":"track",
+               "uri":"%s"
              }
-             """
+           ],
+           "total":50,
+           "limit":1,
+           "offset":0,
+           "href":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0",
+           "next":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=1",
+           "previous":null
+         }
+         """
             .formatted(
                 artistId, artistName, artistUri, trackId, trackName, trackPopularity, trackUri);
     GetUserTopTracksResponse getUserTopTracksResponse =
@@ -200,9 +204,9 @@ class UserTopTracksServiceTest {
       nullValues = "null",
       textBlock =
           """
-                           |null
-               UNKNOWN_TERM|UNKNOWN_TERM
-               """)
+                       |null
+           UNKNOWN_TERM|UNKNOWN_TERM
+           """)
   void itShouldThrowGetUserTopTracksExceptionWhenTimeRangeIsNotValid(
       String timeRange, String message) {
     // Given
@@ -216,6 +220,34 @@ class UserTopTracksServiceTest {
 
   @Test
   void itShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+    // Given
+    String message = "message";
+    given(requestConfig.getLimit()).willReturn(50);
+    given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
+    given(spotifyClient.getUserTopTracks(any()))
+        .willThrow(new SpotifyUnauthorizedException(message));
+    // Then
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
+        .isInstanceOf(UnauthorizedException.class)
+        .hasMessage(UNAUTHORIZED + message);
+  }
+
+  @Test
+  void itShouldThrowForbiddenExceptionWhenSpotifyClientThrowsSpotifyForbiddenException() {
+    // Given
+    String message = "message";
+    given(requestConfig.getLimit()).willReturn(50);
+    given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
+    given(spotifyClient.getUserTopTracks(any())).willThrow(new SpotifyForbiddenException(message));
+    // Then
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
+        .isInstanceOf(ForbiddenException.class)
+        .hasMessage(FORBIDDEN + message);
+  }
+
+  @Test
+  void
+      itShouldThrowTooManyRequestExceptionWhenSpotifyClientThrowsSpotifyTooManyRequestsException() {
     // Given
     String message = "message";
     given(requestConfig.getLimit()).willReturn(50);
@@ -247,55 +279,11 @@ class UserTopTracksServiceTest {
     String message = "message";
     String getUserTopTracksResponseJson =
         """
-            {
-              "items":[
-                {
-                  "album":{
-                    "album_type":"ALBUM",
-                    "artists":[
-                      {
-                        "external_urls":{
-                          "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
-                        },
-                        "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
-                        "id":"5VnrVRYzaatWXs102ScGwN",
-                        "name":"Artist Name",
-                        "type":"artist",
-                        "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
-                      }
-                    ],
-                    "available_markets":[
-                      "US"
-                    ],
-                    "external_urls":{
-                      "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
-                    },
-                    "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
-                    "id":"0t58MAAaEcFOfp5aeljocU",
-                    "images":[
-                      {
-                        "height":640,
-                        "url":"https://i.scdn.co/image/ab67616d0000b2734b8b7ed8a19cef47f4438913",
-                        "width":640
-                      },
-                      {
-                        "height":300,
-                        "url":"https://i.scdn.co/image/ab67616d00001e024b8b7ed8a19cef47f4438913",
-                        "width":300
-                      },
-                      {
-                        "height":64,
-                        "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
-                        "width":64
-                      }
-                    ],
-                    "name":"Name",
-                    "release_date":"2001-06-11",
-                    "release_date_precision":"day",
-                    "total_tracks":10,
-                    "type":"album",
-                    "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
-                  },
+          {
+            "items":[
+              {
+                "album":{
+                  "album_type":"ALBUM",
                   "artists":[
                     {
                       "external_urls":{
@@ -311,34 +299,78 @@ class UserTopTracksServiceTest {
                   "available_markets":[
                     "US"
                   ],
-                  "disc_number":1,
-                  "duration_ms":239493,
-                  "explicit":false,
-                  "external_ids":{
-                    "isrc":"UKEX32135502"
-                  },
                   "external_urls":{
-                    "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+                    "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
                   },
-                  "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
-                  "id":"5Ko5Jn0OG8IDFEHhAYsCnj",
-                  "is_local":false,
-                  "name":"Name Name",
-                  "popularity":32,
-                  "preview_url":"https://p.scdn.co/mp3-preview/ab67626d000008514b8b7ed8a19cef47f4438913?cid=774b29d4f13844c495f206cafdad9c86",
-                  "track_number":9,
-                  "type":"track",
-                  "uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"
-                }
-              ],
-              "total":50,
-              "limit":1,
-              "offset":0,
-              "href":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0",
-              "next":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=1",
-              "previous":null
-            }
-            """;
+                  "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
+                  "id":"0t58MAAaEcFOfp5aeljocU",
+                  "images":[
+                    {
+                      "height":640,
+                      "url":"https://i.scdn.co/image/ab67616d0000b2734b8b7ed8a19cef47f4438913",
+                      "width":640
+                    },
+                    {
+                      "height":300,
+                      "url":"https://i.scdn.co/image/ab67616d00001e024b8b7ed8a19cef47f4438913",
+                      "width":300
+                    },
+                    {
+                      "height":64,
+                      "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
+                      "width":64
+                    }
+                  ],
+                  "name":"Name",
+                  "release_date":"2001-06-11",
+                  "release_date_precision":"day",
+                  "total_tracks":10,
+                  "type":"album",
+                  "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
+                },
+                "artists":[
+                  {
+                    "external_urls":{
+                      "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
+                    },
+                    "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
+                    "id":"5VnrVRYzaatWXs102ScGwN",
+                    "name":"Artist Name",
+                    "type":"artist",
+                    "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
+                  }
+                ],
+                "available_markets":[
+                  "US"
+                ],
+                "disc_number":1,
+                "duration_ms":239493,
+                "explicit":false,
+                "external_ids":{
+                  "isrc":"UKEX32135502"
+                },
+                "external_urls":{
+                  "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+                },
+                "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
+                "id":"5Ko5Jn0OG8IDFEHhAYsCnj",
+                "is_local":false,
+                "name":"Name Name",
+                "popularity":32,
+                "preview_url":"https://p.scdn.co/mp3-preview/ab67626d000008514b8b7ed8a19cef47f4438913?cid=774b29d4f13844c495f206cafdad9c86",
+                "track_number":9,
+                "type":"track",
+                "uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"
+              }
+            ],
+            "total":50,
+            "limit":1,
+            "offset":0,
+            "href":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0",
+            "next":"https://api.spotify.com/v1/me/top/tracks?limit=1&offset=1",
+            "previous":null
+          }
+          """;
     GetUserTopTracksResponse getUserTopTracksResponse =
         jsonToObject(getUserTopTracksResponseJson, GetUserTopTracksResponse.class);
     given(requestConfig.getLimit()).willReturn(50);
@@ -358,13 +390,13 @@ class UserTopTracksServiceTest {
       nullValues = "null",
       textBlock =
           """
-               null                  |Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|90 |FALSE|id: must not be null
-               11bw2jzXRG1V25Zs0NdLWl|null|spotify:track:11bw2jzXRG1V25Zs0NdLWl|90 |FALSE|name: must not be empty
-               11bw2jzXRG1V25Zs0NdLWl|Name|null                                |90 |FALSE|uri: must not be null
-               11bw2jzXRG1V25Zs0NdLWl|Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|-1 |FALSE|popularity: must be greater than or equal to 0
-               11bw2jzXRG1V25Zs0NdLWl|Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|101|FALSE|popularity: must be less than or equal to 100
-               11bw2jzXRG1V25Zs0NdLWl|Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|90 |TRUE |artists: must not be empty
-               """)
+           null                  |Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|90 |FALSE|id: must not be null
+           11bw2jzXRG1V25Zs0NdLWl|null|spotify:track:11bw2jzXRG1V25Zs0NdLWl|90 |FALSE|name: must not be empty
+           11bw2jzXRG1V25Zs0NdLWl|Name|null                                |90 |FALSE|uri: must not be null
+           11bw2jzXRG1V25Zs0NdLWl|Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|-1 |FALSE|popularity: must be greater than or equal to 0
+           11bw2jzXRG1V25Zs0NdLWl|Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|101|FALSE|popularity: must be less than or equal to 100
+           11bw2jzXRG1V25Zs0NdLWl|Name|spotify:track:11bw2jzXRG1V25Zs0NdLWl|90 |TRUE |artists: must not be empty
+           """)
   void itShouldDetectTrackConstraintViolations(
       String id,
       String name,
@@ -377,10 +409,10 @@ class UserTopTracksServiceTest {
     if (hasEmptyArtists) {
       artists = Collections.emptyList();
     }
-    Track track =
+    SpotifyTrack track =
         Track.builder().id(id).name(name).uri(uri).popularity(popularity).artists(artists).build();
     // When
-    Set<ConstraintViolation<Track>> violations = validator.validate(track);
+    Set<ConstraintViolation<SpotifyTrack>> violations = validator.validate(track);
     // Then
     assertThat(violations).hasSize(1);
     assertThat(new ConstraintViolationException(violations)).hasMessage(message);
@@ -392,88 +424,88 @@ class UserTopTracksServiceTest {
     String message = "trackItems[1].id: must not be null";
     String spotifyTrackItemJson =
         """
-              {
-                "album":{
-                  "album_type":"ALBUM",
-                  "artists":[
-                    {
-                      "external_urls":{
-                        "spotify":"https://open.spotify.com/artist/5VnrXCUzaatWXs702ScGwN"
-                      },
-                      "href":"https://api.spotify.com/v1/artists/5VnrXCUzaatWXs702ScGwN",
-                      "id":"5VnrXCUzaatWXs702ScGwN",
-                      "name":"name",
-                      "type":"artist",
-                      "uri":"spotify:artist:5VnrXCUzaatWXs702ScGwN"
-                    }
-                  ],
-                  "available_markets":[
-                    "AD"
-                  ],
+          {
+            "album":{
+              "album_type":"ALBUM",
+              "artists":[
+                {
                   "external_urls":{
-                    "spotify":"https://open.spotify.com/album/0t58MEWaEcEOfp5aelHocT"
+                    "spotify":"https://open.spotify.com/artist/5VnrXCUzaatWXs702ScGwN"
                   },
-                  "href":"https://api.spotify.com/v1/albums/0t58MEWaEcEOfp5aelHocT",
-                  "id":"0t58MEWaEcEOfp5aelHocT",
-                  "images":[
-                    {
-                      "height":640,
-                      "url":"https://i.scdn.co/image/Ab67116d0000b2734b8b7ed8a19cef47f4438944",
-                      "width":640
-                    },
-                    {
-                      "height":300,
-                      "url":"https://i.scdn.co/image/Ab67116d0000b2734b8b7ed8a19cef47f4438944",
-                      "width":300
-                    },
-                    {
-                      "height":64,
-                      "url":"https://i.scdn.co/image/Ab67116d0000b2734b8b7ed8a19cef47f4438944",
-                      "width":64
-                    }
-                  ],
+                  "href":"https://api.spotify.com/v1/artists/5VnrXCUzaatWXs702ScGwN",
+                  "id":"5VnrXCUzaatWXs702ScGwN",
                   "name":"name",
-                  "release_date":"2022-01-01",
-                  "release_date_precision":"day",
-                  "total_tracks":10,
-                  "type":"album",
-                  "uri":"spotify:album:0t58MEWaEcEOfp5aelHocT"
+                  "type":"artist",
+                  "uri":"spotify:artist:5VnrXCUzaatWXs702ScGwN"
+                }
+              ],
+              "available_markets":[
+                "AD"
+              ],
+              "external_urls":{
+                "spotify":"https://open.spotify.com/album/0t58MEWaEcEOfp5aelHocT"
+              },
+              "href":"https://api.spotify.com/v1/albums/0t58MEWaEcEOfp5aelHocT",
+              "id":"0t58MEWaEcEOfp5aelHocT",
+              "images":[
+                {
+                  "height":640,
+                  "url":"https://i.scdn.co/image/Ab67116d0000b2734b8b7ed8a19cef47f4438944",
+                  "width":640
                 },
-                "artists":[
-                  {
-                    "external_urls":{
-                      "spotify":"https://open.spotify.com/artist/5VnrXCUzaatWXs702ScGwN"
-                    },
-                    "href":"https://api.spotify.com/v1/artists/5VnrXCUzaatWXs702ScGwN",
-                    "id":"5VnrXCUzaatWXs702ScGwN",
-                    "name":"name",
-                    "type":"artist",
-                    "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
-                  }
-                ],
-                "available_markets":[
-                  "AD"
-                ],
-                "disc_number":1,
-                "duration_ms":239493,
-                "explicit":false,
-                "external_ids":{
-                  "isrc":"CCEX32135501"
+                {
+                  "height":300,
+                  "url":"https://i.scdn.co/image/Ab67116d0000b2734b8b7ed8a19cef47f4438944",
+                  "width":300
                 },
+                {
+                  "height":64,
+                  "url":"https://i.scdn.co/image/Ab67116d0000b2734b8b7ed8a19cef47f4438944",
+                  "width":64
+                }
+              ],
+              "name":"name",
+              "release_date":"2022-01-01",
+              "release_date_precision":"day",
+              "total_tracks":10,
+              "type":"album",
+              "uri":"spotify:album:0t58MEWaEcEOfp5aelHocT"
+            },
+            "artists":[
+              {
                 "external_urls":{
-                  "spotify":"https://open.spotify.com/track/5Ko5Jn0OJ8IJFMHhSYsCnj"
+                  "spotify":"https://open.spotify.com/artist/5VnrXCUzaatWXs702ScGwN"
                 },
-                "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OJ8IJFMHhSYsCnj",
-                %s
-                "is_local":false,
+                "href":"https://api.spotify.com/v1/artists/5VnrXCUzaatWXs702ScGwN",
+                "id":"5VnrXCUzaatWXs702ScGwN",
                 "name":"name",
-                "popularity":45,
-                "preview_url":"https://p.scdn.co/mp3-preview/1234567890?cid=1234567890",
-                "track_number":9,
-                "type":"track",
-                "uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"
+                "type":"artist",
+                "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
               }
-              """;
+            ],
+            "available_markets":[
+              "AD"
+            ],
+            "disc_number":1,
+            "duration_ms":239493,
+            "explicit":false,
+            "external_ids":{
+              "isrc":"CCEX32135501"
+            },
+            "external_urls":{
+              "spotify":"https://open.spotify.com/track/5Ko5Jn0OJ8IJFMHhSYsCnj"
+            },
+            "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OJ8IJFMHhSYsCnj",
+            %s
+            "is_local":false,
+            "name":"name",
+            "popularity":45,
+            "preview_url":"https://p.scdn.co/mp3-preview/1234567890?cid=1234567890",
+            "track_number":9,
+            "type":"track",
+            "uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"
+          }
+          """;
 
     String idJsonKeyValue = """
             "id":"5Ko5Jn0OG8IDFEHhAYsCnj",
@@ -501,13 +533,13 @@ class UserTopTracksServiceTest {
       delimiter = '|',
       textBlock =
           """
-               FALSE|"type":"track",               |"name":"name",  |"popularity":32, |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|id: must not be null
-               FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj",|"type":"track", |"popularity":32, |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|name: must not be empty
-               FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj",|"name":"name",  |"popularity":32, |"type":"track"                              |uri: must not be null
-               FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj",|"name":"name",  |"popularity":-1, |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|popularity: must be greater than or equal to 0
-               FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj",|"name":"name",  |"popularity":101,|"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|popularity: must be less than or equal to 100
-               TRUE |"id":"5Ko5Jn0OG8IDFEHhAYsCnj",|"name":"name",  |"popularity":32, |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|artistItems: must not be empty
-               """)
+           FALSE|"type":"track"               |"name":"name"  |"popularity":32 |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|id: must not be null
+           FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj"|"type":"track" |"popularity":32 |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|name: must not be empty
+           FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj"|"name":"name"  |"popularity":32 |"type":"track"                              |uri: must not be null
+           FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj"|"name":"name"  |"popularity":-1 |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|popularity: must be greater than or equal to 0
+           FALSE|"id":"5Ko5Jn0OG8IDFEHhAYsCnj"|"name":"name"  |"popularity":101|"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|popularity: must be less than or equal to 100
+           TRUE |"id":"5Ko5Jn0OG8IDFEHhAYsCnj"|"name":"name"  |"popularity":32 |"uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"|artistItems: must not be empty
+           """)
   void itShouldDetectSpotifyTrackItemConstraintViolations(
       Boolean hasEmptyArtistsJsonKeyValue,
       String idJsonKeyValue,
@@ -519,94 +551,94 @@ class UserTopTracksServiceTest {
     String artistsJsonKeyValue =
         hasEmptyArtistsJsonKeyValue
             ? """
-                   "artists":[],"""
+               "artists":[]"""
             : """
-                   "artists":[
-                     {
-                       "external_urls":{
-                         "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
-                       },
-                       "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
-                       "id":"5VnrVRYzaatWXs102ScGwN",
-                       "name":"Artist Name",
-                       "type":"artist",
-                       "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
-                     }
-                   ],
-                   """;
+               "artists":[
+                 {
+                   "external_urls":{
+                     "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
+                   },
+                   "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
+                   "id":"5VnrVRYzaatWXs102ScGwN",
+                   "name":"Artist Name",
+                   "type":"artist",
+                   "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
+                 }
+               ]
+               """;
 
     String spotifyTrackItemJson =
         """
-            {
-              "album":{
-                "album_type":"ALBUM",
-                "artists":[
-                  {
-                    "external_urls":{
-                      "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
-                    },
-                    "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
-                    "id":"5VnrVRYzaatWXs102ScGwN",
-                    "name":"Artist Name",
-                    "type":"artist",
-                    "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
-                  }
-                ],
-                "available_markets":[
-                  "US"
-                ],
-                "external_urls":{
-                  "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
-                },
-                "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
-                "id":"0t58MAAaEcFOfp5aeljocU",
-                "images":[
-                  {
-                    "height":640,
-                    "url":"https://i.scdn.co/image/ab67616d0000b2734b8b7ed8a19cef47f4438913",
-                    "width":640
+          {
+            "album":{
+              "album_type":"ALBUM",
+              "artists":[
+                {
+                  "external_urls":{
+                    "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
                   },
-                  {
-                    "height":300,
-                    "url":"https://i.scdn.co/image/ab67616d00001e024b8b7ed8a19cef47f4438913",
-                    "width":300
-                  },
-                  {
-                    "height":64,
-                    "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
-                    "width":64
-                  }
-                ],
-                "name":"Name",
-                "release_date":"2001-06-11",
-                "release_date_precision":"day",
-                "total_tracks":10,
-                "type":"album",
-                "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
-              },
-              %s
+                  "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
+                  "id":"5VnrVRYzaatWXs102ScGwN",
+                  "name":"Artist Name",
+                  "type":"artist",
+                  "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
+                }
+              ],
               "available_markets":[
                 "US"
               ],
-              "disc_number":1,
-              "duration_ms":239493,
-              "explicit":false,
-              "external_ids":{
-                "isrc":"CCEA32135502"
-              },
               "external_urls":{
-                "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+                "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
               },
-              "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
-              %s
-              "is_local":false,
-              %s
-              %s
-              "preview_url":"https://p.scdn.co/mp3-preview/abc",
-              "track_number":9,
-              %s
-            }
-        """
+              "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
+              "id":"0t58MAAaEcFOfp5aeljocU",
+              "images":[
+                {
+                  "height":640,
+                  "url":"https://i.scdn.co/image/ab67616d0000b2734b8b7ed8a19cef47f4438913",
+                  "width":640
+                },
+                {
+                  "height":300,
+                  "url":"https://i.scdn.co/image/ab67616d00001e024b8b7ed8a19cef47f4438913",
+                  "width":300
+                },
+                {
+                  "height":64,
+                  "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
+                  "width":64
+                }
+              ],
+              "name":"name",
+              "release_date":"2001-06-11",
+              "release_date_precision":"day",
+              "total_tracks":10,
+              "type":"album",
+              "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
+            },
+            %s,
+            "available_markets":[
+              "US"
+            ],
+            "disc_number":1,
+            "duration_ms":239493,
+            "explicit":false,
+            "external_ids":{
+              "isrc":"CCEA32135502"
+            },
+            "external_urls":{
+              "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+            },
+            "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
+            %s,
+            "is_local":false,
+            %s,
+            %s,
+            "preview_url":"https://p.scdn.co/mp3-preview/abc",
+            "track_number":9,
+            %s
+          }
+          """
             .formatted(
                 artistsJsonKeyValue,
                 idJsonKeyValue,
@@ -666,53 +698,9 @@ class UserTopTracksServiceTest {
     // Given
     String spotifyTrackItemJson =
         """
-            {
-              "album":{
-                "album_type":"ALBUM",
-                "artists":[
-                  {
-                    "external_urls":{
-                      "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
-                    },
-                    "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
-                    "id":"5VnrVRYzaatWXs102ScGwN",
-                    "name":"Artist Name",
-                    "type":"artist",
-                    "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
-                  }
-                ],
-                "available_markets":[
-                  "US"
-                ],
-                "external_urls":{
-                  "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
-                },
-                "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
-                "id":"0t58MAAaEcFOfp5aeljocU",
-                "images":[
-                  {
-                    "height":640,
-                    "url":"https://i.scdn.co/image/ab67616d0000b2734b8b7ed8a19cef47f4438913",
-                    "width":640
-                  },
-                  {
-                    "height":300,
-                    "url":"https://i.scdn.co/image/ab67616d00001e024b8b7ed8a19cef47f4438913",
-                    "width":300
-                  },
-                  {
-                    "height":64,
-                    "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
-                    "width":64
-                  }
-                ],
-                "name":"Name",
-                "release_date":"2001-06-11",
-                "release_date_precision":"day",
-                "total_tracks":10,
-                "type":"album",
-                "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
-              },
+          {
+            "album":{
+              "album_type":"ALBUM",
               "artists":[
                 {
                   "external_urls":{
@@ -728,26 +716,70 @@ class UserTopTracksServiceTest {
               "available_markets":[
                 "US"
               ],
-              "disc_number":1,
-              "duration_ms":239493,
-              "explicit":false,
-              "external_ids":{
-                "isrc":"CCEA32135502"
-              },
               "external_urls":{
-                "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+                "spotify":"https://open.spotify.com/album/0t58MAAaEcFOfp5aeljocU"
               },
-              "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
-              "id":"5Ko5Jn0OG8IDFEHhAYsCnj",
-              "is_local":false,
-              "name":"Name Name",
-              "popularity":32,
-              "preview_url":"https://p.scdn.co/mp3-preview/ab67626d000008514b8b7ed8a19cef47f4438913?cid=774b29d4f13844c495f206cafdad9c86",
-              "track_number":9,
-              "type":"track",
-              "uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"
-            }
-            """;
+              "href":"https://api.spotify.com/v1/albums/0t58MAAaEcFOfp5aeljocU",
+              "id":"0t58MAAaEcFOfp5aeljocU",
+              "images":[
+                {
+                  "height":640,
+                  "url":"https://i.scdn.co/image/ab67616d0000b2734b8b7ed8a19cef47f4438913",
+                  "width":640
+                },
+                {
+                  "height":300,
+                  "url":"https://i.scdn.co/image/ab67616d00001e024b8b7ed8a19cef47f4438913",
+                  "width":300
+                },
+                {
+                  "height":64,
+                  "url":"https://i.scdn.co/image/ab67626d000008514b8b7ed8a19cef47f4438913",
+                  "width":64
+                }
+              ],
+              "name":"Name",
+              "release_date":"2001-06-11",
+              "release_date_precision":"day",
+              "total_tracks":10,
+              "type":"album",
+              "uri":"spotify:album:0t58MAAaEcFOfp5aeljocU"
+            },
+            "artists":[
+              {
+                "external_urls":{
+                  "spotify":"https://open.spotify.com/artist/5VnrVRYzaatWXs102ScGwN"
+                },
+                "href":"https://api.spotify.com/v1/artists/5VnrVRYzaatWXs102ScGwN",
+                "id":"5VnrVRYzaatWXs102ScGwN",
+                "name":"Artist Name",
+                "type":"artist",
+                "uri":"spotify:artist:5VnrVRYzaatWXs102ScGwN"
+              }
+            ],
+            "available_markets":[
+              "US"
+            ],
+            "disc_number":1,
+            "duration_ms":239493,
+            "explicit":false,
+            "external_ids":{
+              "isrc":"CCEA32135502"
+            },
+            "external_urls":{
+              "spotify":"https://open.spotify.com/track/5Ko5Jn0OG8IDFEHhAYsCnj"
+            },
+            "href":"https://api.spotify.com/v1/tracks/5Ko5Jn0OG8IDFEHhAYsCnj",
+            "id":"5Ko5Jn0OG8IDFEHhAYsCnj",
+            "is_local":false,
+            "name":"Name Name",
+            "popularity":32,
+            "preview_url":"https://p.scdn.co/mp3-preview/ab67626d000008514b8b7ed8a19cef47f4438913?cid=774b29d4f13844c495f206cafdad9c86",
+            "track_number":9,
+            "type":"track",
+            "uri":"spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"
+          }
+          """;
     SpotifyTrackItem spotifyTrackItem = jsonToObject(spotifyTrackItemJson, SpotifyTrackItem.class);
     given(requestConfig.getLimit()).willReturn(50);
     given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
