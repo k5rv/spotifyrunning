@@ -1,17 +1,11 @@
 package com.ksaraev.spotifyrun.service.recommendations;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyForbiddenException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyTooManyRequestsException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.client.requests.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
 import com.ksaraev.spotifyrun.exception.service.GetRecommendationsException;
-import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
-import com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException;
-import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.Track;
@@ -35,9 +29,6 @@ import java.net.URI;
 import java.util.*;
 
 import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
-import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
-import static com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException.TOO_MANY_REQUESTS;
-import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -442,138 +433,6 @@ class RecommendationsServiceTest {
   }
 
   @Test
-  void itShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
-    // Given
-    String message = "message";
-
-    SpotifyTrack seedTrack =
-        Track.builder()
-            .id("0WNrVRYzaatWXs002ScGwN")
-            .name("name")
-            .uri(URI.create("spotify:track:0WNrVRYzaatWXs002ScGwN"))
-            .popularity(55)
-            .artists(Collections.emptyList())
-            .build();
-
-    List<SpotifyTrack> seedTracks = Collections.singletonList(seedTrack);
-
-    String GetRecommendationsRequestTrackFeaturesJson = """
-           {"minTempo":120}""";
-
-    given(trackFeaturesMapper.mapToRequestFeatures(any()))
-        .willReturn(
-            jsonToObject(
-                GetRecommendationsRequestTrackFeaturesJson,
-                GetRecommendationsRequest.TrackFeatures.class));
-
-    given(requestConfig.getLimit()).willReturn(50);
-
-    given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willThrow(new SpotifyUnauthorizedException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, null))
-        .isInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @Test
-  void itShouldThrowForbiddenExceptionWhenSpotifyClientThrowsSpotifyForbiddenException() {
-    // Given
-    String message = "message";
-
-    SpotifyTrack seedTrack =
-        Track.builder()
-            .id("0WNrVRYzaatWXs002ScGwN")
-            .name("name")
-            .uri(URI.create("spotify:track:0WNrVRYzaatWXs002ScGwN"))
-            .popularity(55)
-            .artists(Collections.emptyList())
-            .build();
-
-    List<SpotifyTrack> seedTracks = Collections.singletonList(seedTrack);
-
-    String GetRecommendationsRequestTrackFeaturesJson = """
-           {"minTempo":120}""";
-
-    given(trackFeaturesMapper.mapToRequestFeatures(any()))
-        .willReturn(
-            jsonToObject(
-                GetRecommendationsRequestTrackFeaturesJson,
-                GetRecommendationsRequest.TrackFeatures.class));
-
-    given(requestConfig.getLimit()).willReturn(50);
-
-    given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willThrow(new SpotifyForbiddenException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, null))
-        .isInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @Test
-  void itShouldThrowTooManyRequestExceptionWhenSpotifyClientThrowsSpotifyTooManyRequestException() {
-    // Given
-    String message = "message";
-
-    SpotifyTrack seedTrack =
-        Track.builder()
-            .id("0WNrVRYzaatWXs002ScGwN")
-            .name("name")
-            .uri(URI.create("spotify:track:0WNrVRYzaatWXs002ScGwN"))
-            .popularity(55)
-            .artists(Collections.emptyList())
-            .build();
-
-    List<SpotifyTrack> seedTracks = Collections.singletonList(seedTrack);
-
-    String GetRecommendationsRequestTrackFeaturesJson = """
-           {"minTempo":120}""";
-
-    given(trackFeaturesMapper.mapToRequestFeatures(any()))
-        .willReturn(
-            jsonToObject(
-                GetRecommendationsRequestTrackFeaturesJson,
-                GetRecommendationsRequest.TrackFeatures.class));
-
-    given(requestConfig.getLimit()).willReturn(50);
-
-    given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willThrow(new SpotifyTooManyRequestsException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, null))
-        .isInstanceOf(TooManyRequestsException.class)
-        .hasMessage(TOO_MANY_REQUESTS + message);
-  }
-
-  @Test
-  void itShouldThrowGetRecommendationsExceptionWhenTrackFeaturesMapperThrowsRuntimeException() {
-    // Given
-    String message = "message";
-
-    SpotifyTrack seedTrack =
-        Track.builder()
-            .id("0WNrVRYzaatWXs002ScGwN")
-            .name("name")
-            .uri(URI.create("spotify:track:0WNrVRYzaatWXs002ScGwN"))
-            .popularity(55)
-            .artists(Collections.emptyList())
-            .build();
-
-    List<SpotifyTrack> seedTracks = Collections.singletonList(seedTrack);
-
-    given(trackFeaturesMapper.mapToRequestFeatures(any())).willThrow(new RuntimeException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, null))
-        .isInstanceOf(GetRecommendationsException.class)
-        .hasMessage(UNABLE_TO_GET_RECOMMENDATIONS + message);
-  }
-
-  @Test
   void itShouldThrowGetRecommendationsExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
@@ -599,6 +458,30 @@ class RecommendationsServiceTest {
 
     given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
         .willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, null))
+        .isInstanceOf(GetRecommendationsException.class)
+        .hasMessage(UNABLE_TO_GET_RECOMMENDATIONS + message);
+  }
+
+  @Test
+  void itShouldThrowGetRecommendationsExceptionWhenTrackFeaturesMapperThrowsRuntimeException() {
+    // Given
+    String message = "message";
+
+    SpotifyTrack seedTrack =
+        Track.builder()
+            .id("0WNrVRYzaatWXs002ScGwN")
+            .name("name")
+            .uri(URI.create("spotify:track:0WNrVRYzaatWXs002ScGwN"))
+            .popularity(55)
+            .artists(Collections.emptyList())
+            .build();
+
+    List<SpotifyTrack> seedTracks = Collections.singletonList(seedTrack);
+
+    given(trackFeaturesMapper.mapToRequestFeatures(any())).willThrow(new RuntimeException(message));
 
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, null))

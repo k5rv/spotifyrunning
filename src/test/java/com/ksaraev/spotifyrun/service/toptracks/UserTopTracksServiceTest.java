@@ -1,15 +1,11 @@
 package com.ksaraev.spotifyrun.service.toptracks;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyForbiddenException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
 import com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException;
-import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
-import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
@@ -35,8 +31,6 @@ import java.util.*;
 
 import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
 import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
-import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
-import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -216,48 +210,6 @@ class UserTopTracksServiceTest {
     assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isInstanceOf(GetUserTopTracksException.class)
         .hasMessage(UNABLE_TO_GET_USER_TOP_TRACKS + ILLEGAL_TIME_RANGE + message);
-  }
-
-  @Test
-  void itShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
-    // Given
-    String message = "message";
-    given(requestConfig.getLimit()).willReturn(50);
-    given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
-    given(spotifyClient.getUserTopTracks(any()))
-        .willThrow(new SpotifyUnauthorizedException(message));
-    // Then
-    assertThatThrownBy(() -> underTest.getUserTopTracks())
-        .isInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @Test
-  void itShouldThrowForbiddenExceptionWhenSpotifyClientThrowsSpotifyForbiddenException() {
-    // Given
-    String message = "message";
-    given(requestConfig.getLimit()).willReturn(50);
-    given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
-    given(spotifyClient.getUserTopTracks(any())).willThrow(new SpotifyForbiddenException(message));
-    // Then
-    assertThatThrownBy(() -> underTest.getUserTopTracks())
-        .isInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @Test
-  void
-      itShouldThrowTooManyRequestExceptionWhenSpotifyClientThrowsSpotifyTooManyRequestsException() {
-    // Given
-    String message = "message";
-    given(requestConfig.getLimit()).willReturn(50);
-    given(requestConfig.getTimeRange()).willReturn("MEDIUM_TERM");
-    given(spotifyClient.getUserTopTracks(any()))
-        .willThrow(new SpotifyUnauthorizedException(message));
-    // Then
-    assertThatThrownBy(() -> underTest.getUserTopTracks())
-        .isInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
   }
 
   @Test
@@ -694,7 +646,7 @@ class UserTopTracksServiceTest {
   }
 
   @Test
-  void itShouldReturnOnlyNotNullTracksWhenSpotifyTrackItemsListContainsNullElements() {
+  void itShouldReturnNotNullElementsWhenSpotifyTrackItemsListContainsNullElements() {
     // Given
     String spotifyTrackItemJson =
         """

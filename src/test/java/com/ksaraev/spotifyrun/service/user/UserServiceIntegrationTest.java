@@ -1,9 +1,7 @@
 package com.ksaraev.spotifyrun.service.user;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.service.GetUserException;
-import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.service.UserService;
 import org.apache.http.HttpHeaders;
@@ -25,7 +23,6 @@ import java.net.URI;
 import static com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.responseDefinition;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.ksaraev.spotifyrun.exception.service.GetUserException.UNABLE_TO_GET_USER;
-import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -60,7 +57,9 @@ class UserServiceIntegrationTest {
     String name = "Konstantin";
     String email = "email@gmail.com";
     URI uri = URI.create("spotify:user:12122604372");
+
     User user = User.builder().id(id).name(name).email(email).uri(uri).build();
+
     String spotifyUserProfileItemJson =
         """
          {
@@ -183,55 +182,5 @@ class UserServiceIntegrationTest {
     assertThatThrownBy(() -> underTest.getCurrentUser())
         .isExactlyInstanceOf(GetUserException.class)
         .hasMessage(UNABLE_TO_GET_USER + "getCurrentUserProfile.<return value>: must not be null");
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           {"error":{"status":401,"message":"Unauthorized"}}
-           {"error":"invalid_client","error_description":"Invalid client secret"}
-           plain text
-           ""
-           """)
-  void itShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs401(String message) {
-    // Given
-    stubFor(
-        get(urlEqualTo("/v1/me"))
-            .willReturn(
-                responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(401)));
-    // Then
-    assertThatThrownBy(() -> underTest.getCurrentUser())
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(textBlock = """
-                plain text
-                ""
-                """)
-  void
-      itShouldThrowGetUserExceptionWhenSpotifyHttpResponseBodyCantBeDecodedAsSpotifyUserProfileItem(
-          String message) {
-    // Given
-    stubFor(
-        get(urlEqualTo("/v1/me"))
-            .willReturn(
-                responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(message)));
-    // Then
-    assertThatThrownBy(() -> underTest.getCurrentUser())
-        .isExactlyInstanceOf(GetUserException.class)
-        .hasMessage(
-            UNABLE_TO_GET_USER
-                + "Error while extracting response for type [class "
-                + SpotifyUserProfileItem.class.getCanonicalName()
-                + "] and content type [application/json;charset=UTF-8]");
   }
 }

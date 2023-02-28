@@ -2,18 +2,12 @@ package com.ksaraev.spotifyrun.service;
 
 import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyForbiddenException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyTooManyRequestsException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.requests.AddItemsRequest;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;
-import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
-import com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException;
-import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
@@ -31,9 +25,6 @@ import java.util.stream.IntStream;
 import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
 import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
 import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
-import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
-import static com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException.TOO_MANY_REQUESTS;
-import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 
 @Slf4j
 @Service
@@ -52,12 +43,6 @@ public class PlaylistService implements SpotifyPlaylistService {
       SpotifyPlaylistItem playlistItem =
           spotifyClient.createPlaylist(user.getId(), playlistItemDetails);
       return playlistMapper.mapToPlaylist(playlistItem);
-    } catch (SpotifyUnauthorizedException e) {
-      throw new UnauthorizedException(UNAUTHORIZED + e.getMessage(), e);
-    } catch (SpotifyForbiddenException e) {
-      throw new ForbiddenException(FORBIDDEN + e.getMessage(), e);
-    } catch (SpotifyTooManyRequestsException e) {
-      throw new TooManyRequestsException(TOO_MANY_REQUESTS + e.getMessage(), e);
     } catch (RuntimeException e) {
       throw new CreatePlaylistException(UNABLE_TO_CREATE_PLAYLIST + e.getMessage(), e);
     }
@@ -68,12 +53,6 @@ public class PlaylistService implements SpotifyPlaylistService {
     try {
       SpotifyPlaylistItem playlistItem = spotifyClient.getPlaylist(playlistId);
       return playlistMapper.mapToPlaylist(playlistItem);
-    } catch (SpotifyUnauthorizedException e) {
-      throw new UnauthorizedException(UNAUTHORIZED + e.getMessage(), e);
-    } catch (SpotifyForbiddenException e) {
-      throw new ForbiddenException(FORBIDDEN + e.getMessage(), e);
-    } catch (SpotifyTooManyRequestsException e) {
-      throw new TooManyRequestsException(TOO_MANY_REQUESTS + e.getMessage(), e);
     } catch (RuntimeException e) {
       throw new GetPlaylistException(UNABLE_TO_GET_PLAYLIST + e.getMessage(), e);
     }
@@ -91,12 +70,6 @@ public class PlaylistService implements SpotifyPlaylistService {
                 AddItemsRequest request = new AddItemsRequest(trackUris);
                 spotifyClient.addItemsToPlaylist(playlist.getId(), request);
               });
-    } catch (SpotifyUnauthorizedException e) {
-      throw new UnauthorizedException(UNAUTHORIZED + e.getMessage(), e);
-    } catch (SpotifyForbiddenException e) {
-      throw new ForbiddenException(FORBIDDEN + e.getMessage(), e);
-    } catch (SpotifyTooManyRequestsException e) {
-      throw new TooManyRequestsException(TOO_MANY_REQUESTS + e.getMessage(), e);
     } catch (RuntimeException e) {
       throw new AddTracksException(UNABLE_TO_ADD_TRACKS + e.getMessage(), e);
     }

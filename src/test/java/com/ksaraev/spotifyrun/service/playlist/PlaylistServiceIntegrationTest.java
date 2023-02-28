@@ -3,21 +3,14 @@ package com.ksaraev.spotifyrun.service.playlist;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.responses.AddItemsResponse;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;
-import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
-import com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException;
-import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
+import com.ksaraev.spotifyrun.model.spotify.*;
 import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.service.PlaylistService;
@@ -45,9 +38,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
 import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
 import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
-import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
-import static com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException.TOO_MANY_REQUESTS;
-import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -424,192 +414,6 @@ class PlaylistServiceIntegrationTest {
         .hasMessage(UNABLE_TO_CREATE_PLAYLIST + message);
   }
 
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           {"error":{"status":401,"message":"Unauthorized"}}
-           {"error":"invalid_client","error_description":"Invalid client secret"}
-           plain text
-           ""
-           """)
-  void createPlaylistShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs401(
-      String message) {
-    // Given
-    String userId = "12122604372";
-    SpotifyUser spotifyUser =
-        User.builder()
-            .id(userId)
-            .name("Konstantin")
-            .uri(URI.create("spotify:user:12122604372"))
-            .build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails = PlaylistDetails.builder().name("name").build();
-
-    stubFor(
-        post(urlEqualTo("/v1/users/" + userId + "/playlists"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(401)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           {"error":{"status":403,"message":"Forbidden"}}
-           {"error":"invalid_client","error_description":"Invalid client secret"}
-           plain text
-           ""
-           """)
-  void createPlaylistShouldThrowForbiddenExceptionWhenSpotifyResponseHttpStatusCodeIs403(
-      String message) {
-    // Given
-    String userId = "12122604372";
-    SpotifyUser spotifyUser =
-        User.builder()
-            .id(userId)
-            .name("Konstantin")
-            .uri(URI.create("spotify:user:12122604372"))
-            .build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails = PlaylistDetails.builder().name("name").build();
-
-    stubFor(
-        post(urlEqualTo("/v1/users/" + userId + "/playlists"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(403)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           {"error":{"status":429,"message":"Too Many Requests"}}
-           {"error":"invalid_client","error_description":"Invalid client secret"}
-           plain text
-           ""
-           """)
-  void createPlaylistShouldThrowTooManyRequestsExceptionWhenSpotifyResponseHttpStatusCodeIs429(
-      String message) {
-    // Given
-    String userId = "12122604372";
-    SpotifyUser spotifyUser =
-        User.builder()
-            .id(userId)
-            .name("Konstantin")
-            .uri(URI.create("spotify:user:12122604372"))
-            .build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails = PlaylistDetails.builder().name("name").build();
-
-    stubFor(
-        post(urlEqualTo("/v1/users/" + userId + "/playlists"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(429)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(TooManyRequestsException.class)
-        .hasMessage(TOO_MANY_REQUESTS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                    400|{"error":{"status":400,"message":"Bad Request"}},
-                    500|{"error":{"status":500,"message":"Internal Server Error"}},
-                    502|{"error":{"status":502,"message":"Bad Gateway"}},
-                    503|{"error":{"status":503,"message":"Service Unavailable"}},
-                    400|{"error":"invalid_client","error_description":"Invalid client secret"}
-                    400|plain text
-                    400|""
-                    """)
-  void itShouldThrowCreatePlaylistExceptionWhenSpotifyResponseHttpStatusCodeIsNot2XX(
-      Integer status, String message) {
-    // Given
-    String userId = "12122604372";
-    SpotifyUser spotifyUser =
-        User.builder()
-            .id(userId)
-            .name("Konstantin")
-            .uri(URI.create("spotify:user:12122604372"))
-            .build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails = PlaylistDetails.builder().name("name").build();
-
-    stubFor(
-        post(urlEqualTo("/v1/users/" + userId + "/playlists"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(status)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(CreatePlaylistException.class)
-        .hasMessage(UNABLE_TO_CREATE_PLAYLIST + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock = """
-        {"id:"100",name":"something","size":"20"}
-        Plain text""")
-  void itShouldThrowCreatePlaylistExceptionWhenHttpResponseBodyNotAJsonRepresentationOfPlaylistItem(
-      String responseBody) {
-    // Given
-    String userId = "12122604372";
-    SpotifyUser spotifyUser =
-        User.builder()
-            .id(userId)
-            .name("Konstantin")
-            .uri(URI.create("spotify:user:12122604372"))
-            .build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails = PlaylistDetails.builder().name("name").build();
-
-    stubFor(
-        post(urlEqualTo("/v1/users/" + userId + "/playlists"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-    // Then
-    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(CreatePlaylistException.class)
-        .hasMessage(
-            UNABLE_TO_CREATE_PLAYLIST
-                + "Error while extracting response for type [class "
-                + SpotifyPlaylistItem.class.getCanonicalName()
-                + "] and content type [application/json;charset=UTF-8]");
-  }
-
   @Test
   void itShouldGetPlaylist() {
     // Given
@@ -701,6 +505,237 @@ class PlaylistServiceIntegrationTest {
                 responseDefinition()
                     .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
                     .withBody(spotifyPlaylistItemJson)));
+    // Then
+    assertThat(underTest.getPlaylist(playlistId)).isEqualTo(playlist);
+  }
+
+  @Test
+  void itShouldGetPlaylistWithTracks() {
+    // Give
+    String artistId = "5VnrVRYzaatWXs102ScGwN";
+    String artistName = "name";
+    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
+
+    SpotifyArtist artist = Artist.builder().id(artistId).name(artistName).uri(artistUri).build();
+
+    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
+    String trackName = "name";
+    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
+    Integer trackPopularity = 32;
+
+    SpotifyTrack track =
+        Track.builder()
+            .id(trackId)
+            .name(trackName)
+            .uri(trackUri)
+            .popularity(trackPopularity)
+            .artists(List.of(artist))
+            .build();
+
+    String userId = "12122604372";
+    String userName = "Konstantin";
+    URI userUri = URI.create("spotify:user:12122604372");
+
+    SpotifyUser user = User.builder().id(userId).name(userName).uri(userUri).build();
+
+    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
+    String playlistName = "name";
+    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
+    String playlistDescription = "description";
+    String playlistSnapshotId = "MSw0NjNmNjc3ZTQwOWQzYzQ1N2ZjMzlkOGM5MjA4OGMzYjc1Mjk1NGFh";
+    Boolean playlistIsPublic = false;
+    Boolean playlistIsCollaborative = false;
+
+    SpotifyPlaylist playlist =
+        Playlist.builder()
+            .id(playlistId)
+            .name(playlistName)
+            .description(playlistDescription)
+            .isPublic(playlistIsPublic)
+            .isCollaborative(playlistIsCollaborative)
+            .uri(playlistUri)
+            .owner(user)
+            .tracks(List.of(track))
+            .snapshotId(playlistSnapshotId)
+            .build();
+
+    String spotifyPlaylistItemWithTracksJson =
+        """
+            {
+              "collaborative":%s,
+              "public":%s,
+              "description":"%s",
+              "external_urls":{
+                "spotify":"https://open.spotify.com/playlist/2ZZjry5nxeL3iucxfxdtrw"
+              },
+              "followers":{
+                "href":null,
+                "total":0
+              },
+              "href":"https://api.spotify.com/v1/playlists/2ZZjry5nxeL3iucxfxdtrw",
+              "id":"%s",
+              "images":[
+                {
+                  "height":640,
+                  "url":"https://i.scdn.co/image/ab67616d0000b273598f8e67ae9a1551d0ec2b62",
+                  "width":640
+                }
+              ],
+              "name":"%s",
+              "snapshot_id":"%s",
+              "owner":{
+                "display_name":"%s",
+                "external_urls":{
+                  "spotify":"https://open.spotify.com/user/12122604372"
+                },
+                "href":"https://api.spotify.com/v1/users/12122604372",
+                "id":"%s",
+                "type":"user",
+                "uri":"%s"
+              },
+              "primary_color":null,
+              "tracks":{
+                "href":"https://api.spotify.com/v1/playlists/2ZZjry5nxeL3iucxfxdtrw/tracks?offset=0&limit=100",
+                "items":[
+                  {
+                    "added_at":"2023-02-28T08:15:03Z",
+                    "added_by":{
+                      "external_urls":{
+                        "spotify":"https://open.spotify.com/user/12122604372"
+                      },
+                      "href":"https://api.spotify.com/v1/users/12122604372",
+                      "id":"12122604372",
+                      "type":"user",
+                      "uri":"spotify:user:12122604372"
+                    },
+                    "is_local":false,
+                    "primary_color":null,
+                    "track":{
+                      "album":{
+                        "album_type":"single",
+                        "artists":[
+                          {
+                            "external_urls":{
+                              "spotify":"https://open.spotify.com/artist/1"
+                            },
+                            "href":"https://api.spotify.com/v1/artists/1",
+                            "id":"%s",
+                            "name":"%s",
+                            "type":"artist",
+                            "uri":"%s"
+                          }
+                        ],
+                        "available_markets":[
+                          "AD"
+                        ],
+                        "external_urls":{
+                          "spotify":"https://open.spotify.com/album/1"
+                        },
+                        "href":"https://api.spotify.com/v1/albums/1",
+                        "id":"1",
+                        "images":[
+                          {
+                            "height":640,
+                            "url":"https://i.scdn.co/image/ab67616d0000b273598f8e67ae9a1551d0ec2b62",
+                            "width":640
+                          },
+                          {
+                            "height":300,
+                            "url":"https://i.scdn.co/image/ab67616d00001e02598f8e67ae9a1551d0ec2b62",
+                            "width":300
+                          },
+                          {
+                            "height":64,
+                            "url":"https://i.scdn.co/image/ab67616d00004851598f8e67ae9a1551d0ec2b62",
+                            "width":64
+                          }
+                        ],
+                        "name":"1",
+                        "release_date":"2018-10-10",
+                        "release_date_precision":"day",
+                        "total_tracks":1,
+                        "type":"album",
+                        "uri":"spotify:album:1"
+                      },
+                      "artists":[
+                        {
+                          "external_urls":{
+                            "spotify":"https://open.spotify.com/artist/19v5IMYhkJR3ZZrjnt3b4y"
+                          },
+                          "href":"https://api.spotify.com/v1/artists/19v5IMYhkJR3ZZrjnt3b4y",
+                          "id":"%s",
+                          "name":"%s",
+                          "type":"artist",
+                          "uri":"%s"
+                        }
+                      ],
+                      "available_markets":[
+                        "AR"
+                      ],
+                      "disc_number":1,
+                      "duration_ms":163081,
+                      "episode":false,
+                      "explicit":false,
+                      "external_ids":{
+                        "isrc":"1"
+                      },
+                      "external_urls":{
+                        "spotify":"https://open.spotify.com/track/6YrvGK0jaDMfFKsjY4FYQN"
+                      },
+                      "href":"https://api.spotify.com/v1/tracks/6YrvGK0jaDMfFKsjY4FYQN",
+                      "id":"%s",
+                      "is_local":false,
+                      "name":"%s",
+                      "popularity":%s,
+                      "preview_url":"https://p.scdn.co/mp3-preview/908ef738ea6f5d30090e235f12a4c892edb9f424?cid=f9e2da24684d494981191203959dd4d4",
+                      "track":true,
+                      "track_number":1,
+                      "type":"track",
+                      "uri":"%s"
+                    },
+                    "video_thumbnail":{
+                      "url":null
+                    }
+                  }
+                ],
+                "limit":100,
+                "next":null,
+                "offset":0,
+                "previous":null,
+                "total":1
+              },
+              "type":"playlist",
+              "uri":"%s"
+            }
+            """
+            .formatted(
+                playlistIsCollaborative,
+                playlistIsPublic,
+                playlistDescription,
+                playlistId,
+                playlistName,
+                playlistSnapshotId,
+                userName,
+                userId,
+                userUri,
+                artistId,
+                artistName,
+                artistUri,
+                artistId,
+                artistName,
+                artistUri,
+                trackId,
+                trackName,
+                trackPopularity,
+                trackUri,
+                playlistUri);
+
+    stubFor(
+        get(urlEqualTo("/v1/playlists/" + playlistId))
+            .willReturn(
+                responseDefinition()
+                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
+                    .withBody(spotifyPlaylistItemWithTracksJson)));
 
     // Then
     assertThat(underTest.getPlaylist(playlistId)).isEqualTo(playlist);
@@ -822,153 +857,6 @@ class PlaylistServiceIntegrationTest {
     assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
         .isExactlyInstanceOf(GetPlaylistException.class)
         .hasMessage(UNABLE_TO_GET_PLAYLIST + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                   {"error":{"status":401,"message":"Unauthorized"}}
-                   {"error":"invalid_client","error_description":"Invalid client secret"}
-                   plain text
-                   ""
-                   """)
-  void getPlaylistShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs401(
-      String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    stubFor(
-        get(urlEqualTo("/v1/playlists/" + playlistId))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(401)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           {"error":{"status":403,"message":"Forbidden"}}
-           {"error":"invalid_client","error_description":"Invalid client secret"}
-           plain text
-           ""
-           """)
-  void getPlaylistShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs403(
-      String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    stubFor(
-        get(urlEqualTo("/v1/playlists/" + playlistId))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(403)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                   {"error":{"status":401,"message":"Too Many Requests"}}
-                   {"error":"invalid_client","error_description":"Invalid client secret"}
-                   plain text
-                   ""
-                   """)
-  void getPlaylistShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs429(
-      String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    stubFor(
-        get(urlEqualTo("/v1/playlists/" + playlistId))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(429)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(TooManyRequestsException.class)
-        .hasMessage(TOO_MANY_REQUESTS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           400|{"error":{"status":400,"message":"Bad Request"}},
-           500|{"error":{"status":500,"message":"Internal Server Error"}},
-           502|{"error":{"status":502,"message":"Bad Gateway"}},
-           503|{"error":{"status":503,"message":"Service Unavailable"}},
-           400|{"error":"invalid_client","error_description":"Invalid client secret"}
-           400|plain text
-           400|""
-           """)
-  void getPlaylistThrowGetPlaylistExceptionWhenSpotifyResponseHttpStatusCodeIsNot2XX(
-      Integer status, String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    stubFor(
-        get(urlEqualTo("/v1/playlists/" + playlistId))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(status)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(GetPlaylistException.class)
-        .hasMessage(UNABLE_TO_GET_PLAYLIST + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock = """
-        {"id:"100",name":"something","size":"20"}
-        Plain text""")
-  void
-      itShouldThrowGetPlaylistExceptionWhenHttpResponseBodyNotAJsonRepresentationOfSpotifyPlaylistItemClass(
-          String responseBody) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    stubFor(
-        get(urlEqualTo("/v1/playlists/" + playlistId))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(GetPlaylistException.class)
-        .hasMessage(
-            UNABLE_TO_GET_PLAYLIST
-                + "Error while extracting response for type [class "
-                + SpotifyPlaylistItem.class.getCanonicalName()
-                + "] and content type [application/json;charset=UTF-8]");
   }
 
   @Test
@@ -1144,337 +1032,5 @@ class PlaylistServiceIntegrationTest {
     assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
         .isExactlyInstanceOf(AddTracksException.class)
         .hasMessage(UNABLE_TO_ADD_TRACKS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                           {"error":{"status":401,"message":"Unauthorized"}}
-                           {"error":"invalid_client","error_description":"Invalid client secret"}
-                           plain text
-                           ""
-                           """)
-  void addTracksShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs401(
-      String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    stubFor(
-        post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(401)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                   {"error":{"status":403,"message":"Forbidden"}}
-                   {"error":"invalid_client","error_description":"Invalid client secret"}
-                   plain text
-                   ""
-                   """)
-  void addTracksShouldThrowForbiddenExceptionWhenSpotifyResponseHttpStatusCodeIs403(
-      String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    stubFor(
-        post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(403)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                   {"error":{"status":429,"message":"Too Many Requests"}}
-                   {"error":"invalid_client","error_description":"Invalid client secret"}
-                   plain text
-                   ""
-                   """)
-  void addTracksShouldThrowTooManyRequestsExceptionWhenSpotifyResponseHttpStatusCodeIs429(
-      String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    stubFor(
-        post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(429)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(TooManyRequestsException.class)
-        .hasMessage(TOO_MANY_REQUESTS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           400|{"error":{"status":400,"message":"Bad Request"}},
-           500|{"error":{"status":500,"message":"Internal Server Error"}},
-           502|{"error":{"status":502,"message":"Bad Gateway"}},
-           503|{"error":{"status":503,"message":"Service Unavailable"}},
-           400|{"error":"invalid_client","error_description":"Invalid client secret"}
-           400|plain text
-           400|""
-           """)
-  void addTracksThrowsAddTracksExceptionWhenSpotifyResponseHttpStatusCodeIsNot2XX(
-      Integer status, String message) {
-    // Given
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    stubFor(
-        post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(status)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(AddTracksException.class)
-        .hasMessage(UNABLE_TO_ADD_TRACKS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock = """
-       {"id:"100",name":"something","size":"20"}
-       Plain text""")
-  void
-      itShouldThrowAddTracksExceptionWhenHttpResponseBodyNotAJsonRepresentationOfAddItemsResponseClass(
-          String responseBody) {
-    // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    stubFor(
-        post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(AddTracksException.class)
-        .hasMessage(
-            UNABLE_TO_ADD_TRACKS
-                + "Error while extracting response for type [class "
-                + AddItemsResponse.class.getCanonicalName()
-                + "] and content type [application/json;charset=UTF-8]");
   }
 }

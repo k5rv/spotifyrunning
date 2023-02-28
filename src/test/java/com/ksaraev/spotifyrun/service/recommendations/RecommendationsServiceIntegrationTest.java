@@ -2,11 +2,7 @@ package com.ksaraev.spotifyrun.service.recommendations;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.exception.service.GetRecommendationsException;
-import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
-import com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException;
-import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
@@ -15,7 +11,6 @@ import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackFeatures;
 import com.ksaraev.spotifyrun.service.RecommendationsService;
 import jakarta.validation.ConstraintViolationException;
-import org.apache.http.HttpHeaders;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +20,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.spec.internal.MediaTypes;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.test.context.ActiveProfiles;
@@ -38,11 +32,7 @@ import java.util.stream.IntStream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
-import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
-import static com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException.TOO_MANY_REQUESTS;
-import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.cloud.contract.spec.internal.MediaTypes.APPLICATION_JSON_UTF8;
 
@@ -812,264 +802,5 @@ class RecommendationsServiceIntegrationTest {
     Assertions.assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
         .isExactlyInstanceOf(GetRecommendationsException.class)
         .hasMessage(UNABLE_TO_GET_RECOMMENDATIONS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-           {"error":{"status":401,"message":"Unauthorized"}}
-           {"error":"invalid_client","error_description":"Invalid client secret"}
-           plain text
-           ""
-           """)
-  void itShouldThrowUnauthorizedExceptionWhenSpotifyResponseHttpStatusCodeIs401(String message) {
-    // Given
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(track);
-
-    SpotifyTrackFeatures trackFeatures =
-        TrackFeatures.builder().minTempo(new BigDecimal(120)).build();
-
-    stubFor(
-        get(urlPathEqualTo("/v1/recommendations"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(401)));
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                   {"error":{"status":403,"message":"Forbidden"}}
-                   {"error":"invalid_client","error_description":"Invalid client secret"}
-                   plain text
-                   ""
-                   """)
-  void itShouldThrowForbiddenExceptionWhenSpotifyResponseHttpStatusCodeIs403(String message) {
-    // Given
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(track);
-
-    SpotifyTrackFeatures trackFeatures =
-        TrackFeatures.builder().minTempo(new BigDecimal(120)).build();
-
-    stubFor(
-        get(urlPathEqualTo("/v1/recommendations"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(403)));
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
-        .isExactlyInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-                   {"error":{"status":429,"message":"Too Many Requests"}}
-                   {"error":"invalid_client","error_description":"Invalid client secret"}
-                   plain text
-                   ""
-                   """)
-  void itShouldThrowTooManyRequestExceptionWhenSpotifyResponseHttpStatusCodeIs429(String message) {
-    // Given
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(track);
-
-    SpotifyTrackFeatures trackFeatures =
-        TrackFeatures.builder().minTempo(new BigDecimal(120)).build();
-
-    stubFor(
-        get(urlPathEqualTo("/v1/recommendations"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(message)
-                    .withStatus(429)));
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
-        .isExactlyInstanceOf(TooManyRequestsException.class)
-        .hasMessage(TOO_MANY_REQUESTS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock =
-          """
-            400|{"error":{"status":400,"message":"Bad Request"}},
-            500|{"error":{"status":500,"message":"Internal Server Error"}},
-            502|{"error":{"status":502,"message":"Bad Gateway"}},
-            503|{"error":{"status":503,"message":"Service Unavailable"}},
-            400|{"error":"invalid_client","error_description":"Invalid client secret"}
-            400|plain text
-            400|""
-            """)
-  void itShouldThrowGetRecommendationsExceptionWhenSpotifyResponseHttpStatusCodeIsNot2XX(
-      Integer status, String message) {
-    // Given
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(track);
-
-    SpotifyTrackFeatures trackFeatures =
-        TrackFeatures.builder().minTempo(new BigDecimal(120)).build();
-
-    stubFor(
-        get(urlPathEqualTo("/v1/recommendations"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withBody(message)
-                    .withStatus(status)));
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
-        .isExactlyInstanceOf(GetRecommendationsException.class)
-        .hasMessage(UNABLE_TO_GET_RECOMMENDATIONS + message);
-  }
-
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      textBlock = """
-        {"id:"100",name":"something","size":"20"}
-        Plain text""")
-  void
-      itShouldThrowGetRecommendationsExceptionWhenHttpResponseBodyNotAJsonRepresentationOfGetRecommendationsResponseClass(
-          String responseBody) {
-    // Given
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(track);
-
-    SpotifyTrackFeatures trackFeatures =
-        TrackFeatures.builder().minTempo(new BigDecimal(120)).build();
-
-    stubFor(
-        get(urlPathEqualTo("/v1/recommendations"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-    // Then
-    assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
-        .isExactlyInstanceOf(GetRecommendationsException.class)
-        .hasMessage(
-            UNABLE_TO_GET_RECOMMENDATIONS
-                + "Error while extracting response for type [class "
-                + GetRecommendationsResponse.class.getCanonicalName()
-                + "] and content type [application/json;charset=UTF-8]");
   }
 }

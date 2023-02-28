@@ -1,26 +1,17 @@
 package com.ksaraev.spotifyrun.service.playlist;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyForbiddenException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyTooManyRequestsException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.requests.AddItemsRequest;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;
-import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
-import com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException;
-import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistMapper;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
+import com.ksaraev.spotifyrun.model.spotify.*;
 import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.service.PlaylistService;
@@ -45,9 +36,6 @@ import java.util.Set;
 import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
 import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
 import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
-import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
-import static com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException.TOO_MANY_REQUESTS;
-import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -331,90 +319,6 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void itShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
-    // Given
-    String message = "message";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    String playlistName = "name";
-    String playlistDescription = "description";
-    Boolean isCollaborative = false;
-    Boolean isPublic = false;
-
-    SpotifyUser spotifyUser =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails =
-        PlaylistDetails.builder()
-            .name(playlistName)
-            .description(playlistDescription)
-            .isCollaborative(isCollaborative)
-            .isPublic(isPublic)
-            .build();
-
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        new SpotifyPlaylistItemDetails(
-            isCollaborative, isPublic, playlistName, playlistDescription);
-
-    given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistDetails.class)))
-        .willReturn(playlistItemDetails);
-
-    given(spotifyClient.createPlaylist(spotifyUser.getId(), playlistItemDetails))
-        .willThrow(new SpotifyUnauthorizedException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @Test
-  void itShouldThrowForbiddenExceptionWhenSpotifyClientThrowsSpotifyForbiddenException() {
-    // Given
-    String message = "message";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    String playlistName = "name";
-    String playlistDescription = "description";
-    Boolean isCollaborative = false;
-    Boolean isPublic = false;
-
-    SpotifyUser spotifyUser =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails =
-        PlaylistDetails.builder()
-            .name(playlistName)
-            .description(playlistDescription)
-            .isCollaborative(isCollaborative)
-            .isPublic(isPublic)
-            .build();
-
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        new SpotifyPlaylistItemDetails(
-            isCollaborative, isPublic, playlistName, playlistDescription);
-
-    given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistDetails.class)))
-        .willReturn(playlistItemDetails);
-
-    given(spotifyClient.createPlaylist(spotifyUser.getId(), playlistItemDetails))
-        .willThrow(new SpotifyForbiddenException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @Test
   void itShouldCreatePlaylistExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
@@ -695,49 +599,6 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void
-      getPlaylistShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
-    // Given
-    String message = "message";
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    given(spotifyClient.getPlaylist(playlistId))
-        .willThrow(new SpotifyUnauthorizedException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @Test
-  void getPlaylistShouldThrowForbiddenExceptionWhenSpotifyClientThrowsSpotifyForbiddenException() {
-    // Given
-    String message = "message";
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    given(spotifyClient.getPlaylist(playlistId)).willThrow(new SpotifyForbiddenException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @Test
-  void
-      getPlaylistShouldThrowTooManyRequestsExceptionWhenSpotifyClientThrowsSpotifyTooManyRequestsException() {
-    // Given
-    String message = "message";
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    given(spotifyClient.getPlaylist(playlistId))
-        .willThrow(new SpotifyTooManyRequestsException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-        .isExactlyInstanceOf(TooManyRequestsException.class)
-        .hasMessage(TOO_MANY_REQUESTS + message);
-  }
-
-  @Test
   void getPlaylistShouldThrowGetPlaylistExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
@@ -886,161 +747,6 @@ class PlaylistServiceTest {
     assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
 
     assertThat(addItemsRequestArgumentCaptor.getValue()).isEqualTo(addItemsRequest);
-  }
-
-  @Test
-  void
-      addTracksShouldThrowUnauthorizedExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
-    // Given
-    String message = "message";
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    given(spotifyClient.addItemsToPlaylist(any(), any()))
-        .willThrow(new SpotifyUnauthorizedException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(UnauthorizedException.class)
-        .hasMessage(UNAUTHORIZED + message);
-  }
-
-  @Test
-  void addTracksShouldThrowForbiddenExceptionWhenSpotifyClientThrowsSpotifyForbiddenException() {
-    // Given
-    String message = "message";
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    given(spotifyClient.addItemsToPlaylist(any(), any()))
-        .willThrow(new SpotifyForbiddenException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(ForbiddenException.class)
-        .hasMessage(FORBIDDEN + message);
-  }
-
-  @Test
-  void
-      addTracksShouldThrowTooManyRequestsExceptionWhenSpotifyClientThrowsSpotifyTooManyRequestsException() {
-    // Given
-    String message = "message";
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
-    given(spotifyClient.addItemsToPlaylist(any(), any()))
-        .willThrow(new SpotifyTooManyRequestsException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))
-        .isExactlyInstanceOf(TooManyRequestsException.class)
-        .hasMessage(TOO_MANY_REQUESTS + message);
   }
 
   @Test
