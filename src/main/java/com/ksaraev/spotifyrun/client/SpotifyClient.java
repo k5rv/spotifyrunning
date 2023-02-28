@@ -44,16 +44,22 @@ public interface SpotifyClient {
 
   @PostMapping(path = "users/{userId}/playlists")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
   SpotifyPlaylistItem createPlaylist(
       @PathVariable(value = "userId") String userId,
       @RequestBody SpotifyPlaylistItemDetails playlistItemDetails);
 
   @GetMapping(path = "playlists/{playlist_id}")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
   SpotifyPlaylistItem getPlaylist(@PathVariable(value = "playlist_id") String playlistId);
 
   @PostMapping(path = "playlists/{playlist_id}/tracks")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
   AddItemsResponse addItemsToPlaylist(
       @PathVariable(value = "playlist_id") String playlistId, @RequestBody AddItemsRequest request);
 }

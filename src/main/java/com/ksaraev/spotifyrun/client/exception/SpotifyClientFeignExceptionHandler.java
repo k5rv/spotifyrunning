@@ -21,7 +21,9 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
     }
     try {
       String message =
-          new String(response.body().asInputStream().readAllBytes(), StandardCharsets.UTF_8);
+          response.body() != null
+              ? new String(response.body().asInputStream().readAllBytes(), StandardCharsets.UTF_8)
+              : "";
       HttpStatus status = HttpStatus.valueOf(response.status());
       switch (status) {
         case NOT_MODIFIED -> {

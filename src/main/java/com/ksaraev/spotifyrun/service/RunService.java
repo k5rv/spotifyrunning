@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.service;
 
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
-import com.ksaraev.spotifyrun.exception.CreatePlaylistException;
+import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.model.spotify.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class RunService implements SpotifyRunService {
   @Override
   public SpotifyPlaylist createPlaylist(
       SpotifyPlaylistDetails playlistDetails, SpotifyTrackFeatures trackFeatures) {
-    SpotifyUser user = userService.getUser();
+    SpotifyUser user = userService.getCurrentUser();
     log.info("Found current user - userId:{}", user.getId());
 
     log.info("Getting top tracks - userId:{}", user.getId());
@@ -47,8 +47,7 @@ public class RunService implements SpotifyRunService {
         userTopTracks.stream()
             .map(
                 userTopTrack ->
-                    recommendationsService.getRecommendations(
-                        List.of(userTopTrack), List.of(), List.of(), trackFeatures))
+                    recommendationsService.getRecommendations(List.of(userTopTrack), trackFeatures))
             .flatMap(List::stream)
             .distinct()
             .limit(playlistConfig.getSizeLimit())

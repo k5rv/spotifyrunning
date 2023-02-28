@@ -3,10 +3,10 @@ package com.ksaraev.spotifyrun.service.recommendations;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.ksaraev.spotifyrun.client.responses.GetRecommendationsResponse;
-import com.ksaraev.spotifyrun.exception.ForbiddenException;
-import com.ksaraev.spotifyrun.exception.GetRecommendationsException;
-import com.ksaraev.spotifyrun.exception.TooManyRequestsException;
-import com.ksaraev.spotifyrun.exception.UnauthorizedException;
+import com.ksaraev.spotifyrun.exception.service.GetRecommendationsException;
+import com.ksaraev.spotifyrun.exception.spotify.ForbiddenException;
+import com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException;
+import com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
@@ -15,6 +15,7 @@ import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackFeatures;
 import com.ksaraev.spotifyrun.service.RecommendationsService;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.http.HttpHeaders;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -24,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cloud.contract.spec.internal.MediaTypes;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.test.context.ActiveProfiles;
@@ -35,10 +37,10 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.ksaraev.spotifyrun.exception.ForbiddenException.FORBIDDEN;
-import static com.ksaraev.spotifyrun.exception.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
-import static com.ksaraev.spotifyrun.exception.TooManyRequestsException.TOO_MANY_REQUESTS;
-import static com.ksaraev.spotifyrun.exception.UnauthorizedException.UNAUTHORIZED;
+import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
+import static com.ksaraev.spotifyrun.exception.spotify.ForbiddenException.FORBIDDEN;
+import static com.ksaraev.spotifyrun.exception.spotify.TooManyRequestsException.TOO_MANY_REQUESTS;
+import static com.ksaraev.spotifyrun.exception.spotify.UnauthorizedException.UNAUTHORIZED;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -66,8 +68,6 @@ class RecommendationsServiceIntegrationTest {
   void after() {
     mock.resetAll();
   }
-
-  // getRecommendations.seedTracks: must not be null
 
   @Test
   void itShouldGetTracks() {
@@ -855,7 +855,10 @@ class RecommendationsServiceIntegrationTest {
     stubFor(
         get(urlPathEqualTo("/v1/recommendations"))
             .willReturn(
-                ResponseDefinitionBuilder.responseDefinition().withBody(message).withStatus(401)));
+                ResponseDefinitionBuilder.responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)
+                    .withStatus(401)));
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
         .isExactlyInstanceOf(UnauthorizedException.class)
@@ -903,7 +906,10 @@ class RecommendationsServiceIntegrationTest {
     stubFor(
         get(urlPathEqualTo("/v1/recommendations"))
             .willReturn(
-                ResponseDefinitionBuilder.responseDefinition().withBody(message).withStatus(403)));
+                ResponseDefinitionBuilder.responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)
+                    .withStatus(403)));
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
         .isExactlyInstanceOf(ForbiddenException.class)
@@ -951,7 +957,10 @@ class RecommendationsServiceIntegrationTest {
     stubFor(
         get(urlPathEqualTo("/v1/recommendations"))
             .willReturn(
-                ResponseDefinitionBuilder.responseDefinition().withBody(message).withStatus(429)));
+                ResponseDefinitionBuilder.responseDefinition()
+                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
+                    .withBody(message)
+                    .withStatus(429)));
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(seedTracks, trackFeatures))
         .isExactlyInstanceOf(TooManyRequestsException.class)

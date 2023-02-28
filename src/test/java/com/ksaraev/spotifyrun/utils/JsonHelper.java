@@ -10,12 +10,7 @@ public class JsonHelper {
       return new ObjectMapper().readValue(json, aClass);
     } catch (JsonProcessingException e) {
       AssertionErrors.fail(
-          "Fail to convert response body ["
-              + json
-              + "] to instance of ["
-              + aClass
-              + "]:"
-              + e.getMessage());
+          "Fail to convert Json [" + json + "] to instance of [" + aClass + "]:" + e.getMessage());
       return null;
     }
   }
