@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.service.user;
+package com.ksaraev.spotifyrun.mapping;
 
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
@@ -13,9 +13,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.net.URI;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
-import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {UserMapperImpl.class})
@@ -24,51 +26,47 @@ class UserMapperTest {
   @Autowired UserMapper underTest;
 
   @Test
-  void itShouldMapSpotifyUserProfileItemToUser() {
+  void itShouldMapSpotifyUserProfileItemToUser() throws Exception {
     // Given
     String id = "12122604372";
     String name = "Konstantin";
     String email = "email@gmail.com";
     URI uri = URI.create("spotify:user:12122604372");
+
     User user = User.builder().id(id).name(name).email(email).uri(uri).build();
-    String spotifyUserProfileItemJson =
-        """
-         {
-           "country": "CC",
-           "display_name": "%s",
-           "email": "%s",
-           "explicit_content": {
-             "filter_enabled": false,
-             "filter_locked": false
-           },
-           "external_urls": {
-             "spotify": "https://open.spotify.com/user/12122604372"
-           },
-           "followers": {
-             "href": null,
-             "total": 0
-           },
-           "href": "https://api.spotify.com/v1/users/12122604372",
-           "id": "%s",
-           "images": [
-             {
-               "height": null,
-               "url": "https://scontent-cdg2-1.xx.fbcdn.net",
-               "width": null
-             }
-           ],
-           "product": "premium",
-           "type": "user",
-           "uri": "%s"
-         }
-         """
-            .formatted(name, email, id, uri);
+
     SpotifyUserProfileItem userProfileItem =
-        jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileItem.class);
+        SpotifyUserProfileItem.builder()
+            .id(id)
+            .displayName(name)
+            .uri(uri)
+            .email(email)
+            .country("CC")
+            .explicitContent(Map.of("filter_enabled", false, "filter_locked", false))
+            .externalUrls(Map.of("spotify", "https://open.spotify.com/user/12122604372"))
+            .followers(Map.of("href", "", "total", 0))
+            .href(new URL("https://api.spotify.com/v1/users/12122604372"))
+            .images(
+                List.of(
+                    Map.of(
+                        "height",
+                        "",
+                        "url",
+                        new URL("https://scontent-cdg2-1.xx.fbcdn.net"),
+                        "width",
+                        "")))
+            .product("premium")
+            .type("user")
+            .build();
+
     // Then
-    Assertions.assertThat(underTest.mapToUser(userProfileItem)).isEqualTo(user);
+    Assertions.assertThat(underTest.mapToUser(userProfileItem))
+        .isNotNull()
+        .isEqualTo(user)
+        .hasOnlyFields("id", "name", "email", "uri");
   }
 
+  //
   @Test
   void itShouldThrowNullMappingSourceExceptionWhenUserProfileItemIsNull() {
     // Then
