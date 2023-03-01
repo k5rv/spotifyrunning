@@ -3,8 +3,6 @@ package com.ksaraev.spotifyrun.client;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyBadRequestException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyException;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
@@ -17,8 +15,6 @@ import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.utils.JsonHelper;
 import org.apache.http.HttpHeaders;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.spec.internal.MediaTypes;
@@ -30,9 +26,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ActiveProfiles("test")
+@ActiveProfiles(value = "test")
 @AutoConfigureWireMock(port = 0)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -61,7 +56,7 @@ class SpotifyClientTest {
   @Test
   void itShouldGetCurrentUserProfile() {
     // Given
-    String responseBody =
+    String spotifyUserProfileItemJson =
         """
         {
           "display_name": "Konstantin",
@@ -91,18 +86,18 @@ class SpotifyClientTest {
             .willReturn(
                 ResponseDefinitionBuilder.responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-
+                    .withBody(spotifyUserProfileItemJson)));
     // Then
     assertThat(underTest.getCurrentUserProfile())
         .isNotNull()
-        .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyUserProfileItem.class));
+        .isEqualTo(
+            JsonHelper.jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileItem.class));
   }
 
   @Test
   void itShouldGetUserTopTracks() {
     // Given
-    String responseBody =
+    String getUserTopTracksResponseJson =
         """
         {
           "items": [
@@ -203,21 +198,21 @@ class SpotifyClientTest {
             .willReturn(
                 ResponseDefinitionBuilder.responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-
+                    .withBody(getUserTopTracksResponseJson)));
     // Then
     assertThat(
             underTest.getUserTopTracks(
                 new GetUserTopTracksRequest(1, 0, GetUserTopTracksRequest.TimeRange.MEDIUM_TERM)))
         .isNotNull()
         .usingRecursiveComparison()
-        .isEqualTo(JsonHelper.jsonToObject(responseBody, GetUserTopTracksResponse.class));
+        .isEqualTo(
+            JsonHelper.jsonToObject(getUserTopTracksResponseJson, GetUserTopTracksResponse.class));
   }
 
   @Test
   void itShouldGetRecommendations() {
     // Given
-    String responseBody =
+    String getRecommendationsJson =
         """
         {
           "tracks": [
@@ -336,8 +331,7 @@ class SpotifyClientTest {
             .willReturn(
                 ResponseDefinitionBuilder.responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-
+                    .withBody(getRecommendationsJson)));
     // Then
     assertThat(
             underTest.getRecommendations(
@@ -349,14 +343,15 @@ class SpotifyClientTest {
                     1,
                     0)))
         .isNotNull()
-        .isEqualTo(JsonHelper.jsonToObject(responseBody, GetRecommendationsResponse.class));
+        .isEqualTo(
+            JsonHelper.jsonToObject(getRecommendationsJson, GetRecommendationsResponse.class));
   }
 
   @Test
   void itShouldCreatePlaylist() {
     // Given
     String userId = "12122604372";
-    String responseBody =
+    String spotifyPlaylistItemJson =
         """
         {
           "collaborative": false,
@@ -404,8 +399,7 @@ class SpotifyClientTest {
             .willReturn(
                 ResponseDefinitionBuilder.responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-
+                    .withBody(spotifyPlaylistItemJson)));
     // Then
     assertThat(
             underTest.createPlaylist(
@@ -413,14 +407,14 @@ class SpotifyClientTest {
                 new SpotifyPlaylistItemDetails(
                     false, false, "New Playlist", "New Playlist description")))
         .isNotNull()
-        .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyPlaylistItem.class));
+        .isEqualTo(JsonHelper.jsonToObject(spotifyPlaylistItemJson, SpotifyPlaylistItem.class));
   }
 
   @Test
   void itShouldGetPlaylist() {
     // Given
     String playlistId = "4gH6yuY8CoFjqHlbPlxVM6";
-    String responseBody =
+    String spotifyPlaylistItemJson =
         """
         {
           "collaborative": false,
@@ -468,19 +462,18 @@ class SpotifyClientTest {
             .willReturn(
                 ResponseDefinitionBuilder.responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-
+                    .withBody(spotifyPlaylistItemJson)));
     // Then
     assertThat(underTest.getPlaylist(playlistId))
         .isNotNull()
-        .isEqualTo(JsonHelper.jsonToObject(responseBody, SpotifyPlaylistItem.class));
+        .isEqualTo(JsonHelper.jsonToObject(spotifyPlaylistItemJson, SpotifyPlaylistItem.class));
   }
 
   @Test
   void itShouldAddItemsToPlaylist() {
     // Given
     String playlistId = "4gH6yuY8CoFjqHlbPlxVM6";
-    String responseBody =
+    String addItemsResponseJson =
         """
         {"snapshot_id": "MywxZjVmNmIyYjYzZGZkMDdlZTQ3MDY3ZjBkOTMxNDY2ZTU0OWNjOTkw"}
         """;
@@ -490,8 +483,7 @@ class SpotifyClientTest {
             .willReturn(
                 ResponseDefinitionBuilder.responseDefinition()
                     .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(responseBody)));
-
+                    .withBody(addItemsResponseJson)));
     // Then
     assertThat(
             underTest.addItemsToPlaylist(
@@ -499,70 +491,6 @@ class SpotifyClientTest {
                 new AddItemsRequest(
                     Collections.singletonList(URI.create("spotify:track:1NRrU8Lrsb5Jrcxk6UjJb3")))))
         .isNotNull()
-        .isEqualTo(JsonHelper.jsonToObject(responseBody, AddItemsResponse.class));
-  }
-
-  @Test
-  void itShouldThrowSpotifyExceptionWithOriginalErrorMessageWhenReceiveHttpErrorStatusCode() {
-    // Given
-    String errorMessage =
-        """
-        {
-            "error": {
-                "status": 400,
-                "message": "Bad Request"
-            }
-        }""";
-
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlEqualTo("/v1/me"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withBody(errorMessage)
-                    .withStatus(400)));
-    // Then
-    assertThatThrownBy(() -> underTest.getCurrentUserProfile())
-        .isInstanceOf(SpotifyBadRequestException.class)
-        .hasMessage(errorMessage);
-  }
-
-  @ParameterizedTest
-  @CsvSource({
-    "400, SpotifyBadRequestException",
-    "401, SpotifyUnauthorizedException",
-    "403, SpotifyForbiddenException",
-    "404, SpotifyNotFoundException",
-    "429, SpotifyTooManyRequestsException",
-    "500, SpotifyInternalServerErrorException",
-    "502, SpotifyBadGatewayException",
-    "503, SpotifyServiceUnavailableException",
-  })
-  void itShouldThrowSpotifyExceptionWhenReceiveHttpErrorStatusCode(Integer status, String className)
-      throws Exception {
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlEqualTo("/v1/me"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withStatus(status)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getCurrentUserProfile())
-        .isInstanceOf(Class.forName("com.ksaraev.spotifyrun.client.exception.http." + className));
-  }
-
-  @Test
-  void itShouldThrowSpotifyExceptionWhenReceiveHttpErrorStatusCodeAndDontHavePredefinedException() {
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlEqualTo("/v1/me"))
-            .willReturn(
-                ResponseDefinitionBuilder.responseDefinition()
-                    .withHeader(HttpHeaders.CONTENT_TYPE, MediaTypes.APPLICATION_JSON_UTF8)
-                    .withStatus(422)));
-
-    // Then
-    assertThatThrownBy(() -> underTest.getCurrentUserProfile())
-        .isInstanceOf(SpotifyException.class);
+        .isEqualTo(JsonHelper.jsonToObject(addItemsResponseJson, AddItemsResponse.class));
   }
 }

@@ -34,7 +34,8 @@ public interface SpotifyClient {
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   @Valid
   @NotNull
-  GetUserTopTracksResponse getUserTopTracks(@SpringQueryMap GetUserTopTracksRequest request);
+  GetUserTopTracksResponse getUserTopTracks(
+      @Valid @NotNull @SpringQueryMap GetUserTopTracksRequest request);
 
   @GetMapping(path = "recommendations")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)

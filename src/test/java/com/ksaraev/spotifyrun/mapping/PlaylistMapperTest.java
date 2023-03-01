@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.service.playlist;
+package com.ksaraev.spotifyrun.mapping;
 
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;

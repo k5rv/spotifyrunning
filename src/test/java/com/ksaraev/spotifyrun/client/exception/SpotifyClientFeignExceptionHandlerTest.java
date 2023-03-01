@@ -15,6 +15,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
+
 class SpotifyClientFeignExceptionHandlerTest {
 
   private SpotifyClientFeignExceptionHandler underTest;
@@ -25,17 +28,20 @@ class SpotifyClientFeignExceptionHandlerTest {
   }
 
   @ParameterizedTest
-  @CsvSource({
-    "304, SpotifyNotModifiedException",
-    "400, SpotifyBadRequestException",
-    "401, SpotifyUnauthorizedException",
-    "403, SpotifyForbiddenException",
-    "404, SpotifyNotFoundException",
-    "429, SpotifyTooManyRequestsException",
-    "500, SpotifyInternalServerErrorException",
-    "502, SpotifyBadGatewayException",
-    "503, SpotifyServiceUnavailableException"
-  })
+  @CsvSource(
+      delimiter = '|',
+      textBlock =
+          """
+           304|SpotifyNotModifiedException
+           400|SpotifyBadRequestException
+           401|SpotifyUnauthorizedException
+           403|SpotifyForbiddenException
+           404|SpotifyNotFoundException
+           429|SpotifyTooManyRequestsException
+           500|SpotifyInternalServerErrorException
+           502|SpotifyBadGatewayException
+           503|SpotifyServiceUnavailableException
+           """)
   void itShouldReturnSpotifyExceptionWhenHttpResponseErrorStatusReceived(
       Integer status, String className) throws Exception {
     // Given
@@ -54,7 +60,7 @@ class SpotifyClientFeignExceptionHandlerTest {
     // Then
     Assertions.assertThat(underTest.handle(response))
         .isExactlyInstanceOf(
-            Class.forName("com.ksaraev.spotifyrun.client.exception.http." + className));
+            Class.forName(SpotifyException.class.getPackage().getName() + "." + className));
   }
 
   @Test
@@ -74,6 +80,37 @@ class SpotifyClientFeignExceptionHandlerTest {
             .build();
     // Then
     Assertions.assertThat(underTest.handle(response)).isExactlyInstanceOf(SpotifyException.class);
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      textBlock =
+          """
+           400|SpotifyBadRequestException|{"error":{"status":400,"message":"Bad Request"}}
+           401|SpotifyUnauthorizedException|{"error":"invalid_client","error_description":"Invalid client secret"}
+           401|SpotifyUnauthorizedException|""
+           """)
+  void itShouldReturnSpotifyExceptionWithOriginalErrorMessageWhenHttpResponseErrorStatusReceived(
+      Integer status, String className, String message) throws Exception {
+    // Given
+    Response response =
+        Response.builder()
+            .body(message, StandardCharsets.UTF_8)
+            .request(
+                Request.create(
+                    Request.HttpMethod.GET,
+                    "http://127.0.0.1",
+                    Map.of(),
+                    Request.Body.create("", StandardCharsets.UTF_8),
+                    new RequestTemplate()))
+            .status(status)
+            .build();
+    // Then
+    Assertions.assertThat(underTest.handle(response))
+        .isExactlyInstanceOf(
+            Class.forName(SpotifyException.class.getPackage().getName() + "." + className))
+        .hasMessage(message);
   }
 
   @Test
@@ -98,18 +135,17 @@ class SpotifyClientFeignExceptionHandlerTest {
                     new RequestTemplate()))
             .status(400)
             .build();
-
     // Then
     Assertions.assertThatThrownBy(() -> underTest.handle(response))
         .isExactlyInstanceOf(SpotifyClientErrorResponseHandlingException.class)
-        .hasMessage("Error while reading Spotify API error response body");
+        .hasMessage(ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY);
   }
 
   @Test
-  void itShouldThrowSpotifyClientExceptionWhenResponseIsNull() {
+  void itShouldThrowSpotifyClientErrorResponseHandlingExceptionWhenResponseIsNull() {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.handle(null))
         .isExactlyInstanceOf(SpotifyClientErrorResponseHandlingException.class)
-        .hasMessage("Error while reading Spotify API error response: response is null");
+        .hasMessage(ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY + RESPONSE_IS_NULL);
   }
 }

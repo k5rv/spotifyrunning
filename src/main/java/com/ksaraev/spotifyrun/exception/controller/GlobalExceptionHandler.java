@@ -12,12 +12,11 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-  private static final String SPOTIFYRUN_EXCEPTION_MESSAGE = "Spotifyrun exception occurred";
+  private static final String SPOTIFYRUN_EXCEPTION_MESSAGE = "Spotifyrun exception occurred: ";
 
   @ExceptionHandler(value = {RuntimeException.class})
   public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
-    log.error(SPOTIFYRUN_EXCEPTION_MESSAGE, e);
+    log.error(SPOTIFYRUN_EXCEPTION_MESSAGE + e.getMessage(), e);
     return ResponseEntity.status(INTERNAL_SERVER_ERROR)
         .body(new ErrorResponse(INTERNAL_SERVER_ERROR, ZonedDateTime.now()));
   }
