@@ -57,6 +57,7 @@ spotifyrun:
       requests:
         get-user-top-tracks:
           limit: 50
+          offset: 0
           time-range: MEDIUM_TERM
         get-recommendations:
           limit: 50

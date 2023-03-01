@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.service.toptracks;
+package com.ksaraev.spotifyrun.mapping;
 
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.artist.Artist;
@@ -21,7 +21,7 @@ import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TrackMapperImpl.class, ArtistMapperImpl.class})
-class TracksMapperTest {
+class TrackMapperTest {
 
   @Autowired TrackMapper underTest;
 

@@ -1,16 +1,19 @@
 package com.ksaraev.spotifyrun.client.items;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+@Builder
 public record SpotifyTrackItem(
     @JsonProperty("album") SpotifyAlbumItem albumItem,
     @JsonProperty("preview_url") URL previewUrl,
@@ -20,7 +23,7 @@ public record SpotifyTrackItem(
     @JsonProperty("track_number") Integer trackNumber,
     @JsonProperty("disc_number") Integer discNumber,
     @JsonProperty("linked_from") SpotifyAlbumItem sourceAlbumItem,
-    @JsonProperty("artists") @NotEmpty List<SpotifyArtistItem> artistItems,
+    @JsonProperty("artists") @Valid @NotEmpty List<SpotifyArtistItem> artistItems,
     @JsonProperty("available_markets") List<String> availableMarkets,
     @JsonProperty("external_ids") Map<String, Object> externalIds,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,
