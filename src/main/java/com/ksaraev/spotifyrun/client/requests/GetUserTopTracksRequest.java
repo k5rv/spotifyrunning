@@ -1,11 +1,14 @@
 package com.ksaraev.spotifyrun.client.requests;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder
-public record GetUserTopTracksRequest(Integer limit, Integer offset, TimeRange timeRange) {
+public record GetUserTopTracksRequest(
+    @Min(1) @Max(50) Integer limit, @Min(0) Integer offset, TimeRange timeRange) {
 
   @Getter
   @AllArgsConstructor

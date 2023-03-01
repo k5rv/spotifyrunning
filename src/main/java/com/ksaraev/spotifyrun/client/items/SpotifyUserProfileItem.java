@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+@Builder
 public record SpotifyUserProfileItem(
     @JsonProperty("display_name") @NotEmpty String displayName,
     @JsonProperty("explicit_content") Map<String, Object> explicitContent,

@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import static com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest.TimeRange;
 import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
@@ -42,11 +42,13 @@ public class UserTopTracksService implements SpotifyUserTopTracksService {
           GetUserTopTracksRequest.builder()
               .timeRange(TimeRange.valueOf(requestConfig.getTimeRange()))
               .limit(requestConfig.getLimit())
+              .offset(requestConfig.getOffset())
               .build();
       GetUserTopTracksResponse response = spotifyClient.getUserTopTracks(request);
       if (CollectionUtils.isEmpty(response.trackItems())) return List.of();
-      List<SpotifyTrackItem> trackItems = response.trackItems();
-      trackItems.removeAll(Collections.singleton(null));
+      List<SpotifyTrackItem> trackItems =
+          response.trackItems().stream().filter(Objects::nonNull).toList();
+      if (trackItems.isEmpty()) return List.of();
       return trackMapper.mapItemsToTracks(trackItems);
     } catch (RuntimeException e) {
       throw new GetUserTopTracksException(UNABLE_TO_GET_USER_TOP_TRACKS + e.getMessage(), e);
