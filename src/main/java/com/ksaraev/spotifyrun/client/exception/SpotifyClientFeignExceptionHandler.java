@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
+
 @Slf4j
 @Component
 public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler {
@@ -17,7 +20,7 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
   public Exception handle(Response response) {
     if (response == null) {
       throw new SpotifyClientErrorResponseHandlingException(
-          "Error while reading Spotify API error response: response is null");
+          ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY + RESPONSE_IS_NULL);
     }
     try {
       String message =
@@ -59,7 +62,7 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
       }
     } catch (IOException | RuntimeException e) {
       throw new SpotifyClientErrorResponseHandlingException(
-          "Error while reading Spotify API error response body", e);
+          ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY, e);
     }
   }
 }

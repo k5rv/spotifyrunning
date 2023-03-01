@@ -2,8 +2,6 @@ package com.ksaraev.spotifyrun.service.playlist;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
-import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.responses.AddItemsResponse;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;
@@ -22,8 +20,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -52,10 +48,6 @@ class PlaylistServiceIntegrationTest {
 
   public static WireMockServer mock = new WireMockServer(WireMockSpring.options().dynamicPort());
   @Autowired private PlaylistService underTest;
-
-  @Autowired private SpotifyClient spotifyClient;
-
-  @Captor private ArgumentCaptor<AddItemsResponse> addItemsResponseArgumentCaptor;
 
   @BeforeAll
   static void setupClass() {
