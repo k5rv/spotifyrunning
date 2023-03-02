@@ -34,6 +34,7 @@ import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
@@ -42,7 +43,8 @@ class UserTopTracksServiceTest {
   @Mock private SpotifyClient spotifyClient;
   @Mock private SpotifyGetUserTopTracksRequestConfig requestConfig;
   @Mock private TrackMapper trackMapper;
-  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> spotifyTrackItemsArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> trackItemsArgumentCaptor;
+  @Captor private ArgumentCaptor<GetUserTopTracksRequest> getUserTopTracksRequestArgumentCaptor;
   private SpotifyUserTopTracksService underTest;
 
   @BeforeEach
@@ -124,13 +126,24 @@ class UserTopTracksServiceTest {
     given(requestConfig.getOffset()).willReturn(offset);
     given(requestConfig.getTimeRange()).willReturn(timeRange.name());
 
-    given(spotifyClient.getUserTopTracks(getUserTopTracksRequest))
+    given(spotifyClient.getUserTopTracks(any(GetUserTopTracksRequest.class)))
         .willReturn(getUserTopTracksResponse);
 
-    given(trackMapper.mapItemsToTracks(trackItems)).willReturn(tracks);
+    given(trackMapper.mapItemsToTracks(anyList())).willReturn(tracks);
+
+    // When
+    underTest.getUserTopTracks();
 
     // Then
-    assertThat(underTest.getUserTopTracks()).containsExactly(track);
+    then(spotifyClient).should().getUserTopTracks(getUserTopTracksRequestArgumentCaptor.capture());
+
+    assertThat(getUserTopTracksRequestArgumentCaptor.getValue())
+        .isNotNull()
+        .isEqualTo(getUserTopTracksRequest);
+
+    then(trackMapper).should().mapItemsToTracks(trackItemsArgumentCaptor.capture());
+
+    assertThat(trackItemsArgumentCaptor.getAllValues()).isNotEmpty().containsExactly(trackItems);
   }
 
   @ParameterizedTest
@@ -193,7 +206,7 @@ class UserTopTracksServiceTest {
     given(spotifyClient.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
     // Then
     assertThat(underTest.getUserTopTracks()).isEmpty();
-    then(trackMapper).should(never()).mapItemsToTracks(spotifyTrackItemsArgumentCaptor.capture());
+    then(trackMapper).should(never()).mapItemsToTracks(trackItemsArgumentCaptor.capture());
   }
 
   @Test
@@ -207,10 +220,9 @@ class UserTopTracksServiceTest {
         GetUserTopTracksResponse.builder().trackItems(trackItems).build();
     given(requestConfig.getTimeRange()).willReturn(timeRangeName);
     given(spotifyClient.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
-    // When
-    underTest.getUserTopTracks();
     // Then
-    then(trackMapper).should(never()).mapItemsToTracks(spotifyTrackItemsArgumentCaptor.capture());
+    assertThat(underTest.getUserTopTracks()).isEmpty();
+    then(trackMapper).should(never()).mapItemsToTracks(trackItemsArgumentCaptor.capture());
   }
 
   @Test
@@ -230,8 +242,8 @@ class UserTopTracksServiceTest {
     // When
     underTest.getUserTopTracks();
     // Then
-    then(trackMapper).should().mapItemsToTracks(spotifyTrackItemsArgumentCaptor.capture());
-    assertThat(spotifyTrackItemsArgumentCaptor.getAllValues())
+    then(trackMapper).should().mapItemsToTracks(trackItemsArgumentCaptor.capture());
+    assertThat(trackItemsArgumentCaptor.getAllValues())
         .containsExactly(Collections.singletonList(trackItem));
   }
 }

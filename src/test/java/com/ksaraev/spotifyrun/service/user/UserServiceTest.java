@@ -7,10 +7,10 @@ import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
 import com.ksaraev.spotifyrun.service.SpotifyUserService;
 import com.ksaraev.spotifyrun.service.UserService;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -21,17 +21,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 class UserServiceTest {
   @Mock private SpotifyClient spotifyClient;
   @Mock private UserMapper userMapper;
   private SpotifyUserService underTest;
-  private Validator validator;
+
+  @Captor private ArgumentCaptor<SpotifyUserProfileItem> userProfileItemArgumentCaptor;
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    validator = Validation.buildDefaultValidatorFactory().getValidator();
     underTest = new UserService(spotifyClient, userMapper);
   }
 
@@ -56,8 +57,12 @@ class UserServiceTest {
     given(spotifyClient.getCurrentUserProfile()).willReturn(userProfileItem);
     given(userMapper.mapToUser(userProfileItem)).willReturn(user);
 
+    // When
+    underTest.getCurrentUser();
+
     // Then
-    assertThat(underTest.getCurrentUser()).isNotNull().isEqualTo(user);
+    then(userMapper).should().mapToUser(userProfileItemArgumentCaptor.capture());
+    assertThat(userProfileItemArgumentCaptor.getValue()).isNotNull().isEqualTo(userProfileItem);
   }
 
   @Test
