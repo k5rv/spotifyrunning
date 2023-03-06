@@ -1,18 +1,17 @@
 package com.ksaraev.spotifyrun.model;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
 import com.ksaraev.spotifyrun.model.user.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-
 import java.net.URI;
 import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class UserTest {
   private static final Validator validator =

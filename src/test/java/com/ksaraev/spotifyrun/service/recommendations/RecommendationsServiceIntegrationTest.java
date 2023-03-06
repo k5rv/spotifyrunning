@@ -1,5 +1,11 @@
 package com.ksaraev.spotifyrun.service.recommendations;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import static org.springframework.cloud.contract.spec.internal.MediaTypes.APPLICATION_JSON_UTF8;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.ksaraev.spotifyrun.exception.service.GetRecommendationsException;
@@ -11,6 +17,11 @@ import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackFeatures;
 import com.ksaraev.spotifyrun.service.RecommendationsService;
 import jakarta.validation.ConstraintViolationException;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -23,18 +34,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.math.BigDecimal;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import static org.springframework.cloud.contract.spec.internal.MediaTypes.APPLICATION_JSON_UTF8;
 
 @ActiveProfiles("test")
 @AutoConfigureWireMock(port = 0)
