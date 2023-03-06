@@ -1,5 +1,7 @@
 package com.ksaraev.spotifyrun.mapping;
 
+import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
+
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
@@ -14,17 +16,14 @@ import com.ksaraev.spotifyrun.model.track.TrackMapperImpl;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
 import com.ksaraev.spotifyrun.utils.JsonHelper;
+import java.net.URI;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.net.URI;
-import java.util.List;
-
-import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
