@@ -1,5 +1,17 @@
 package com.ksaraev.spotifyrun.service.playlist;
 
+import static com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.responseDefinition;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
+import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
+import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
+import static org.apache.http.HttpHeaders.CONTENT_TYPE;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import static org.springframework.cloud.contract.spec.internal.MediaTypes.APPLICATION_JSON;
+import static org.springframework.cloud.contract.spec.internal.MediaTypes.APPLICATION_JSON_UTF8;
+
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
@@ -13,6 +25,8 @@ import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.service.PlaylistService;
 import jakarta.validation.ConstraintViolationException;
+import java.net.URI;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -25,21 +39,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.cloud.contract.wiremock.WireMockSpring;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.net.URI;
-import java.util.List;
-
-import static com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder.responseDefinition;
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
-import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
-import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
-import static org.apache.http.HttpHeaders.CONTENT_TYPE;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import static org.springframework.cloud.contract.spec.internal.MediaTypes.APPLICATION_JSON;
-import static org.springframework.cloud.contract.spec.internal.MediaTypes.APPLICATION_JSON_UTF8;
 
 @ActiveProfiles("test")
 @AutoConfigureWireMock(port = 0)

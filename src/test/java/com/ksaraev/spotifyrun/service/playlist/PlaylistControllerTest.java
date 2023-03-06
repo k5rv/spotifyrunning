@@ -1,5 +1,10 @@
 package com.ksaraev.spotifyrun.service.playlist;
 
+import static com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException.USER_TOP_TRACKS_NOT_FOUND;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
+
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
 import com.ksaraev.spotifyrun.controller.PlaylistController;
 import com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException;
@@ -15,20 +20,14 @@ import com.ksaraev.spotifyrun.service.SpotifyPlaylistService;
 import com.ksaraev.spotifyrun.service.SpotifyRecommendationsService;
 import com.ksaraev.spotifyrun.service.SpotifyUserService;
 import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
+import java.math.BigDecimal;
+import java.net.URI;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.math.BigDecimal;
-import java.net.URI;
-import java.util.List;
-
-import static com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException.USER_TOP_TRACKS_NOT_FOUND;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.BDDMockito.given;
 
 class PlaylistControllerTest {
 

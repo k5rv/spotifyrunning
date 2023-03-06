@@ -1,34 +1,5 @@
 package com.ksaraev.spotifyrun.service.toptracks;
 
-import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.items.SpotifyArtistItem;
-import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
-import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
-import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
-import com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException;
-import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.track.TrackMapper;
-import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
-import com.ksaraev.spotifyrun.service.UserTopTracksService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
 import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,6 +9,34 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
+
+import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
+import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
+import com.ksaraev.spotifyrun.client.items.SpotifyArtistItem;
+import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
+import com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException;
+import com.ksaraev.spotifyrun.model.artist.Artist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrun.model.track.Track;
+import com.ksaraev.spotifyrun.model.track.TrackMapper;
+import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
+import com.ksaraev.spotifyrun.service.UserTopTracksService;
+import java.net.URI;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 class UserTopTracksServiceTest {
   @Mock private SpotifyClient spotifyClient;
@@ -227,7 +226,7 @@ class UserTopTracksServiceTest {
 
   @Test
   void
-      itShouldReturnUserTopTracksNonNullElementsWhenGetUserTopTracksResponseTrackItemsListContainsNullElements() {
+      itShouldReturnUserTopTracksNonNullElementsWhenGetUserTopTracksResponseTrackItemsListHasNullElements() {
     // Given
     SpotifyTrackItem trackItem = SpotifyTrackItem.builder().build();
     List<SpotifyTrackItem> trackItems = new ArrayList<>();

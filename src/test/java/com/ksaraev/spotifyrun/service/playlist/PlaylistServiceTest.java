@@ -1,9 +1,19 @@
 package com.ksaraev.spotifyrun.service.playlist;
 
+import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
+import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
+import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
+import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+
 import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.api.AddItemsRequest;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.client.requests.AddItemsRequest;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;
@@ -23,6 +33,9 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import java.net.URI;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,20 +44,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.net.URI;
-import java.util.List;
-import java.util.Set;
-
-import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
-import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
-import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
-import static com.ksaraev.spotifyrun.utils.JsonHelper.jsonToObject;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
 class PlaylistServiceTest {
   @Mock private SpotifyClient spotifyClient;
@@ -223,7 +222,6 @@ class PlaylistServiceTest {
   @ParameterizedTest
   @CsvSource(
       delimiter = '|',
-      nullValues = "null",
       textBlock =
           """
            "type": "playlist"           |"name":"name"     |"uri":"spotify:playlist:0S4WIUelgktE36rVcG7ZRy"|"snapshot_id":"MSw0NjNmNjc3ZTQwOWQzYzQ1N2ZjMzlkOGM5MjA4OGMzYjc1Mjk1NGFh"|TRUE |id: must not be null
