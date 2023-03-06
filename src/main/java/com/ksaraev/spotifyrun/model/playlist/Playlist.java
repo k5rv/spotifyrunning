@@ -5,11 +5,10 @@ import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
-
 import java.net.URI;
 import java.util.List;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Builder

@@ -1,25 +1,24 @@
 package com.ksaraev.spotifyrun.service;
 
+import static com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest.TimeRange;
+import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
+import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
+
 import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
+import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
-import com.ksaraev.spotifyrun.client.responses.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
 import com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import static com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest.TimeRange;
-import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
-import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service

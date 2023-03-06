@@ -1,11 +1,15 @@
 package com.ksaraev.spotifyrun.client.feign.decoders;
 
-import com.ksaraev.spotifyrun.client.exception.FeignExceptionHandler;
-import com.ksaraev.spotifyrun.client.exception.HandleFeignException;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientResponseDecodingException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientResponseDecodingException;
+import com.ksaraev.spotifyrun.client.feign.exception.FeignExceptionHandler;
+import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
 import feign.Feign;
 import feign.Response;
 import feign.codec.ErrorDecoder;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.ApplicationContext;
@@ -13,11 +17,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor

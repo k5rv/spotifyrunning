@@ -1,16 +1,18 @@
 package com.ksaraev.spotifyrun.client.items;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
 
+@Builder
 public record SpotifyPlaylistItem(
-    @JsonProperty("owner") @NotNull SpotifyUserProfileItem userProfileItem,
+    @JsonProperty("owner") @Valid @NotNull SpotifyUserProfileItem userProfileItem,
     @JsonProperty("tracks") SpotifyPlaylistItemMusic playlistItemMusic,
     @JsonProperty("public") Boolean isPublic,
     @JsonProperty("snapshot_id") @NotNull String snapshotId,

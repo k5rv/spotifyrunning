@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.model.track;
 
-import com.ksaraev.spotifyrun.client.requests.GetRecommendationsRequest;
+import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import org.mapstruct.Mapper;

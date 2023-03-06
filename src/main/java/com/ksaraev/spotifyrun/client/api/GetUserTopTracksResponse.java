@@ -1,12 +1,11 @@
-package com.ksaraev.spotifyrun.client.responses;
+package com.ksaraev.spotifyrun.client.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
 import jakarta.validation.Valid;
-import lombok.Builder;
-
 import java.net.URL;
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record GetUserTopTracksResponse(

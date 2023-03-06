@@ -1,16 +1,16 @@
-package com.ksaraev.spotifyrun.client.exception;
+package com.ksaraev.spotifyrun.client.feign.exception;
 
-import com.ksaraev.spotifyrun.client.exception.http.*;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
+
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException;
+import com.ksaraev.spotifyrun.client.feign.exception.http.*;
 import feign.Response;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
-import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
 
 @Slf4j
 @Component
