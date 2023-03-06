@@ -1,20 +1,24 @@
-package com.ksaraev.spotifyrun.client.requests;
+package com.ksaraev.spotifyrun.client.api;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 class GetUserTopTracksRequestTest {
 
-  private static final Validator validator =
-      Validation.buildDefaultValidatorFactory().getValidator();
+  private Validator validator;
+
+  @BeforeEach
+  void setUp() {
+    validator = Validation.buildDefaultValidatorFactory().getValidator();
+  }
 
   @ParameterizedTest
   @CsvSource(

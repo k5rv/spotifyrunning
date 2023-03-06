@@ -7,7 +7,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
+import java.net.URI;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,14 +22,14 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles(value = "test")
 @AutoConfigureWireMock(port = 0)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
-class GetCurrentUserProfileIntegrationTest {
-
+class AddItemsToPlaylistIntegrationTest {
   public static WireMockServer wiremock =
       new WireMockServer(WireMockSpring.options().dynamicPort());
   @Autowired private SpotifyClient underTest;
 
   @BeforeAll
   static void setupClass() {
+
     wiremock.start();
   }
 
@@ -43,38 +44,28 @@ class GetCurrentUserProfileIntegrationTest {
   }
 
   @Test
-  void itShouldGetCurrentUserProfile() {
+  void itShouldAddItemsToPlaylist() {
     // Given
-    String spotifyUserProfileItemJson =
+    String addItemsResponseJson =
         """
-        {
-          "display_name": "Konstantin",
-          "external_urls": {
-            "spotify": "https://open.spotify.com/user/12122604372"
-          },
-          "followers": {
-            "href": null,
-            "total": 0
-          },
-          "href": "https://api.spotify.com/v1/users/12122604372",
-          "id": "12122604372",
-          "images": [
-            {
-              "height": null,
-              "url": "https://scontent-ams2-1.xx.fbcdn.net/1",
-              "width": null
-            }
-          ],
-          "type": "user",
-          "uri": "spotify:user:12122604372"
-        }
-        """;
+         {
+           "snapshot_id":"MyxmN2I2YTZmYjQ4NTAwZTk2ZmY1ZTNjYTgzMTFlNWZkZmIwMzEzY2Y0"
+         }
+         """;
 
-    stubFor(get(urlEqualTo("/v1/me")).willReturn(jsonResponse(spotifyUserProfileItemJson, 200)));
+    String playlistId = "3zw6WSVfzWX3mj0tUuZpTK";
+    URI trackUri = URI.create("spotify:track:1234567890AaBbCcDdEeFfG");
+    List<URI> uris = List.of(trackUri);
+    AddItemsRequest addItemsRequest = AddItemsRequest.builder().itemUris(uris).build();
+
+    stubFor(
+        post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
+            .willReturn(jsonResponse(addItemsResponseJson, 200)));
 
     // Then
-    assertThat(underTest.getCurrentUserProfile())
+    assertThat(underTest.addItemsToPlaylist(playlistId, addItemsRequest))
+        .isNotNull()
         .usingRecursiveComparison()
-        .isEqualTo(jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileItem.class));
+        .isEqualTo(jsonToObject(addItemsResponseJson, AddItemsResponse.class));
   }
 }
