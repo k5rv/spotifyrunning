@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.client.exception;
+package com.ksaraev.spotifyrun.client.feign.exception;
 
 import feign.Response;
 

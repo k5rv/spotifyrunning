@@ -1,13 +1,12 @@
 package com.ksaraev.spotifyrun.exception.controller;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
+import java.time.ZonedDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.time.ZonedDateTime;
-
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @Slf4j
 @ControllerAdvice

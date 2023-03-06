@@ -4,10 +4,9 @@ import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import com.ksaraev.spotifyrun.model.track.TrackFeatures;
+import java.math.BigDecimal;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-
-import java.math.BigDecimal;
 
 @Data
 public class WorkoutPlaylistConfig implements SpotifyRunPlaylistConfig {

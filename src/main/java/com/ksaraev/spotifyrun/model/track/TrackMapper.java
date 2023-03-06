@@ -5,12 +5,11 @@ import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
+import java.util.List;
+import java.util.Objects;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-
-import java.util.List;
-import java.util.Objects;
 
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,

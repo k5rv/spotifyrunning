@@ -1,10 +1,14 @@
 package com.ksaraev.spotifyrun.service;
 
+import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
+import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
+import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
+
 import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.api.AddItemsRequest;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.client.requests.AddItemsRequest;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;
@@ -13,18 +17,13 @@ import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
+import java.net.URI;
+import java.util.List;
+import java.util.stream.IntStream;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import java.net.URI;
-import java.util.List;
-import java.util.stream.IntStream;
-
-import static com.ksaraev.spotifyrun.exception.service.AddTracksException.UNABLE_TO_ADD_TRACKS;
-import static com.ksaraev.spotifyrun.exception.service.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
-import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
 
 @Slf4j
 @Service

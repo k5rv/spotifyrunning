@@ -1,5 +1,8 @@
 package com.ksaraev.spotifyrun.controller;
 
+import static com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException.RECOMMENDATIONS_NOT_FOUND;
+import static com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException.USER_TOP_TRACKS_NOT_FOUND;
+
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
 import com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException;
 import com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException;
@@ -10,18 +13,14 @@ import com.ksaraev.spotifyrun.service.SpotifyPlaylistService;
 import com.ksaraev.spotifyrun.service.SpotifyRecommendationsService;
 import com.ksaraev.spotifyrun.service.SpotifyUserService;
 import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException.RECOMMENDATIONS_NOT_FOUND;
-import static com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException.USER_TOP_TRACKS_NOT_FOUND;
 
 @Slf4j
 @RestController

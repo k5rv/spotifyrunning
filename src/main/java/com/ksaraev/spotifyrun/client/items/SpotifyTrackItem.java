@@ -6,12 +6,11 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
 
 @Builder
 public record SpotifyTrackItem(
@@ -33,4 +32,6 @@ public record SpotifyTrackItem(
     String type,
     @NotNull URI uri,
     URL href,
-    Boolean explicit) {}
+    Boolean explicit,
+    Boolean episode,
+    Boolean track) {}

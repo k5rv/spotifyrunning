@@ -1,10 +1,9 @@
-package com.ksaraev.spotifyrun.client.requests;
+package com.ksaraev.spotifyrun.client.api;
 
 import feign.Param;
-import lombok.Builder;
-
 import java.math.BigDecimal;
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record GetRecommendationsRequest(
@@ -12,9 +11,9 @@ public record GetRecommendationsRequest(
     @Param("seed_tracks") List<String> seedTrackIds,
     @Param("seed_genres") List<String> seedGenres,
     TrackFeatures trackFeatures,
-    Integer limit,
-    Integer offset) {
+    Integer limit) {
 
+  @Builder
   public record TrackFeatures(
       Integer maxPopularity,
       Integer minPopularity,

@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.client.requests;
+package com.ksaraev.spotifyrun.client.api;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

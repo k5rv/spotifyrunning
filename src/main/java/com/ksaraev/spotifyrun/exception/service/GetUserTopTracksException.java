@@ -1,9 +1,8 @@
 package com.ksaraev.spotifyrun.exception.service;
 
-import com.ksaraev.spotifyrun.client.requests.GetUserTopTracksRequest;
-import lombok.experimental.StandardException;
-
+import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
 import java.util.Arrays;
+import lombok.experimental.StandardException;
 
 @StandardException
 public class GetUserTopTracksException extends ServiceException {

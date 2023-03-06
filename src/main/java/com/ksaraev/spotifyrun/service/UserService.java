@@ -1,5 +1,7 @@
 package com.ksaraev.spotifyrun.service;
 
+import static com.ksaraev.spotifyrun.exception.service.GetUserException.UNABLE_TO_GET_USER;
+
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.service.GetUserException;
@@ -8,8 +10,6 @@ import com.ksaraev.spotifyrun.model.user.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import static com.ksaraev.spotifyrun.exception.service.GetUserException.UNABLE_TO_GET_USER;
 
 @Slf4j
 @Service

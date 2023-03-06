@@ -1,9 +1,8 @@
 package com.ksaraev.spotifyrun.exception.controller;
 
+import java.time.ZonedDateTime;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
-
-import java.time.ZonedDateTime;
 
 @Data
 public final class ErrorResponse {

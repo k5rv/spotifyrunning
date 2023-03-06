@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.client.exception.http;
+package com.ksaraev.spotifyrun.client.feign.exception.http;
 
 import lombok.experimental.StandardException;
 

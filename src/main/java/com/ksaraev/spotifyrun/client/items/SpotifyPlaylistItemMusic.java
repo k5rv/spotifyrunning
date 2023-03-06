@@ -1,12 +1,15 @@
 package com.ksaraev.spotifyrun.client.items;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import java.net.URL;
 import java.util.List;
 
+@Builder
 public record SpotifyPlaylistItemMusic(
-    @JsonProperty("items") List<SpotifyPlaylistItemTrack> playlistItemTracks,
+    @JsonProperty("items") @Valid List<SpotifyPlaylistItemTrack> playlistItemTracks,
     URL href,
     Integer limit,
     Integer offset,

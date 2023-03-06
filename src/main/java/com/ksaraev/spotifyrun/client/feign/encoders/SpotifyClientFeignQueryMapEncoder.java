@@ -2,16 +2,15 @@ package com.ksaraev.spotifyrun.client.feign.encoders;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Maps;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientRequestEncodingException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException;
 import feign.Param;
 import feign.QueryMapEncoder;
 import feign.codec.EncodeException;
-import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
-
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 @Component
 public class SpotifyClientFeignQueryMapEncoder implements QueryMapEncoder {
