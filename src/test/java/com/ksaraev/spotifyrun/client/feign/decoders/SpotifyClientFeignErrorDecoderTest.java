@@ -1,11 +1,22 @@
 package com.ksaraev.spotifyrun.client.feign.decoders;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exception.FeignExceptionHandler;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientFeignExceptionHandler;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientResponseDecodingException;
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientResponseDecodingException;
+import com.ksaraev.spotifyrun.client.feign.exception.FeignExceptionHandler;
+import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
+import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;
 import feign.*;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -14,18 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.event.ContextRefreshedEvent;
-
-import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
 
 class SpotifyClientFeignErrorDecoderTest {
 
@@ -44,7 +43,7 @@ class SpotifyClientFeignErrorDecoderTest {
   }
 
   @Test
-  void itShouldReturnFeignExceptionWhenCustomSpotifyClientFeignExceptionHandlerNotFound() {
+  void itShouldReturnFeignExceptionWhenSpotifyClientFeignExceptionHandlerNotFound() {
     // Given
     String methodKey = "SpotifyClient#getSomething()";
     Response response =

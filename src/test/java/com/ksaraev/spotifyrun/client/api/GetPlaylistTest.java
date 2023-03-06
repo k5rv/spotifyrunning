@@ -3,6 +3,7 @@ package com.ksaraev.spotifyrun.client.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.utils.SpotifyClientDummy;
 import jakarta.validation.ConstraintViolation;
@@ -15,9 +16,9 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class GetCurrentUserProfileTest {
+class GetPlaylistTest {
 
-  private final String GET_CURRENT_USER_PROFILE = "getCurrentUserProfile";
+  private final String GET_PLAYLIST = "getPlaylist";
   private SpotifyClient object;
   private Method method;
   private ExecutableValidator executableValidator;
@@ -25,12 +26,27 @@ class GetCurrentUserProfileTest {
   @BeforeEach
   void setUp() throws Exception {
     object = new SpotifyClientDummy();
-    method = SpotifyClient.class.getMethod(GET_CURRENT_USER_PROFILE);
+    method = SpotifyClient.class.getMethod(GET_PLAYLIST, String.class);
     executableValidator = Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
   }
 
   @Test
-  void itShouldDetectGetCurrentUserProfileMethodConstraintViolationWhenReturnValueIsNull() {
+  void itShouldDetectGetPlaylistMethodConstraintViolationWhenPlaylistIdIsNull() {
+    // Given
+    String message = ".playlistId: must not be null";
+    // When
+    Object[] parameterValues = {null};
+    Set<ConstraintViolation<SpotifyClient>> constraintViolations =
+        executableValidator.validateParameters(object, method, parameterValues);
+    // Then
+    assertThat(constraintViolations).hasSize(1);
+    assertThat(new ConstraintViolationException(constraintViolations))
+        .hasMessage(GET_PLAYLIST + message);
+  }
+
+  @Test
+  void itShouldDetectGetPlaylistMethodConstraintViolationWhenReturnValueIsNull() {
+    // Given
     String message = ".<return value>: must not be null";
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
@@ -38,26 +54,37 @@ class GetCurrentUserProfileTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_CURRENT_USER_PROFILE + message);
+        .hasMessage(GET_PLAYLIST + message);
   }
 
   @Test
   void
-      itShouldDetectGetCurrentUserProfileMethodConstraintViolationWhenReturnValueSpotifyUserProfileItemIsNotValid() {
+      itShouldDetectGetPlaylistMethodCascadeConstraintViolationWhenReturnValueSpotifyPlaylistItemIsNotValid() {
     // Given
+    String message = ".<return value>.id: must not be null";
+
     SpotifyUserProfileItem userProfileItem =
         SpotifyUserProfileItem.builder()
-            .id(null)
+            .id("12122604372")
             .displayName("name")
             .email("email@gmail.com")
             .uri(URI.create("spotify:user:12122604372"))
             .build();
+
+    SpotifyPlaylistItem playlistItem =
+        SpotifyPlaylistItem.builder()
+            .id(null)
+            .name("playlist name")
+            .uri(URI.create("spotify:playlist:0moWPCTPTShumonjlsDgLe"))
+            .userProfileItem(userProfileItem)
+            .snapshotId("MywyM2Y2Zjg5YTdlNGQ3MmI2OGFiN2NiZmQ4NTNlZDdlMjE2OTFjODM4")
+            .build();
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
-        executableValidator.validateReturnValue(object, method, userProfileItem);
+        executableValidator.validateReturnValue(object, method, playlistItem);
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_CURRENT_USER_PROFILE + ".<return value>.id: must not be null");
+        .hasMessage(GET_PLAYLIST + message);
   }
 }

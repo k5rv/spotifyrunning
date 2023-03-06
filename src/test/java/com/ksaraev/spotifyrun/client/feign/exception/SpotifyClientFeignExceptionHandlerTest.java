@@ -1,22 +1,22 @@
-package com.ksaraev.spotifyrun.client.exception;
+package com.ksaraev.spotifyrun.client.feign.exception;
 
-import com.ksaraev.spotifyrun.client.exception.http.SpotifyException;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
+
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException;
+import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
-import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
-import static com.ksaraev.spotifyrun.client.exception.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
 
 class SpotifyClientFeignExceptionHandlerTest {
 
@@ -87,7 +87,7 @@ class SpotifyClientFeignExceptionHandlerTest {
       delimiter = '|',
       textBlock =
           """
-           400|SpotifyBadRequestException|{"error":{"status":400,"message":"Bad Request"}}
+           400|SpotifyBadRequestException  |{"error":{"status":400,"message":"Bad Request"}}
            401|SpotifyUnauthorizedException|{"error":"invalid_client","error_description":"Invalid client secret"}
            401|SpotifyUnauthorizedException|""
            """)
