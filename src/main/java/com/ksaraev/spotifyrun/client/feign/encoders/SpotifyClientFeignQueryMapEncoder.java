@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
 
 @Component
 public class SpotifyClientFeignQueryMapEncoder implements QueryMapEncoder {
@@ -55,7 +56,8 @@ public class SpotifyClientFeignQueryMapEncoder implements QueryMapEncoder {
       return fieldNameToValue;
 
     } catch (IllegalAccessException e) {
-      throw new SpotifyClientRequestEncodingException("Failure encoding object into query map", e);
+      throw new SpotifyClientRequestEncodingException(
+          UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP + e.getMessage(), e);
     }
   }
 
