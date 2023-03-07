@@ -1,9 +1,11 @@
 package com.ksaraev.spotifyrun.client.feign.exception;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException.*;
 
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException;
+import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyBadGatewayException;
+import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyBadRequestException;
 import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;
 import feign.Request;
 import feign.RequestTemplate;
@@ -116,13 +118,14 @@ class SpotifyClientFeignExceptionHandlerTest {
   @Test
   void itShouldThrowSpotifyClientExceptionWhenResponseBodyCantBeRead() {
     // Given
+    String message = "message";
     Response response =
         Response.builder()
             .body(
                 new InputStream() {
                   @Override
                   public int read() throws IOException {
-                    throw new IOException("Error occurred");
+                    throw new IOException(message);
                   }
                 },
                 1)
@@ -137,15 +140,39 @@ class SpotifyClientFeignExceptionHandlerTest {
             .build();
     // Then
     Assertions.assertThatThrownBy(() -> underTest.handle(response))
-        .isExactlyInstanceOf(SpotifyClientErrorResponseHandlingException.class)
-        .hasMessage(ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY);
+        .isExactlyInstanceOf(SpotifyClientReadingErrorResponseException.class)
+        .hasMessage(
+            SpotifyClientReadingErrorResponseException.UNABLE_TO_READ_ERROR_RESPONSE + message);
+  }
+
+  @Test
+  void itShouldThrowSpotifyClientExceptionWhenResponseBodyIsNull() {
+    // Given
+    String message = "";
+    byte[] bytes = null;
+    Response response =
+        Response.builder()
+            .body(bytes)
+            .request(
+                Request.create(
+                    Request.HttpMethod.GET,
+                    "http://127.0.0.1",
+                    Map.of(),
+                    Request.Body.create("", StandardCharsets.UTF_8),
+                    new RequestTemplate()))
+            .status(400)
+            .build();
+    // Then
+    Assertions.assertThat(underTest.handle(response))
+        .isExactlyInstanceOf(SpotifyBadRequestException.class)
+        .hasMessage(message);
   }
 
   @Test
   void itShouldThrowSpotifyClientErrorResponseHandlingExceptionWhenResponseIsNull() {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.handle(null))
-        .isExactlyInstanceOf(SpotifyClientErrorResponseHandlingException.class)
-        .hasMessage(ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY + RESPONSE_IS_NULL);
+        .isExactlyInstanceOf(SpotifyClientReadingErrorResponseIsNullException.class)
+        .hasMessage(READING_ERROR_RESPONSE_IS_NULL);
   }
 }

@@ -1,5 +1,6 @@
 package com.ksaraev.spotifyrun.client.feign.decoders;
 
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientDecodingErrorResponseIsNullException.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -7,7 +8,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientResponseDecodingException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientDecodingErrorResponseIsNullException;
 import com.ksaraev.spotifyrun.client.feign.exception.FeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;
@@ -111,8 +112,8 @@ class SpotifyClientFeignErrorDecoderTest {
   void itShouldThrowSpotifyClientExceptionWhenResponseIsNull() {
     // Then
     assertThatThrownBy(() -> underTest.decode("SpotifyClient#getSomething()", null))
-        .isExactlyInstanceOf(SpotifyClientResponseDecodingException.class)
-        .hasMessage("Error while reading Spotify API error response: response is null");
+        .isExactlyInstanceOf(SpotifyClientDecodingErrorResponseIsNullException.class)
+        .hasMessage(DECODING_ERROR_RESPONSE_IS_NULL);
   }
 
   @Test

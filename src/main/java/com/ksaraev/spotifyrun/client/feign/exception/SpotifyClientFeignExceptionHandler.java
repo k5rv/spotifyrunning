@@ -1,9 +1,10 @@
 package com.ksaraev.spotifyrun.client.feign.exception;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY;
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException.RESPONSE_IS_NULL;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseException.*;
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException.*;
 
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientErrorResponseHandlingException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseException;
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException;
 import com.ksaraev.spotifyrun.client.feign.exception.http.*;
 import feign.Response;
 import java.io.IOException;
@@ -19,8 +20,7 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
   @Override
   public Exception handle(Response response) {
     if (response == null) {
-      throw new SpotifyClientErrorResponseHandlingException(
-          ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY + RESPONSE_IS_NULL);
+      throw new SpotifyClientReadingErrorResponseIsNullException(READING_ERROR_RESPONSE_IS_NULL);
     }
     try {
       String message =
@@ -61,8 +61,8 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
         }
       }
     } catch (IOException | RuntimeException e) {
-      throw new SpotifyClientErrorResponseHandlingException(
-          ERROR_WHILE_READING_SPOTIFY_API_ERROR_RESPONSE_BODY, e);
+      throw new SpotifyClientReadingErrorResponseException(
+          UNABLE_TO_READ_ERROR_RESPONSE + e.getMessage(), e);
     }
   }
 }
