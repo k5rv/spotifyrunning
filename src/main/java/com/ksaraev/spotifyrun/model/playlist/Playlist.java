@@ -3,6 +3,7 @@ package com.ksaraev.spotifyrun.model.playlist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -17,9 +18,9 @@ public class Playlist implements SpotifyPlaylist {
   @NotEmpty private String name;
   @NotNull private URI uri;
   private String description;
-  private String snapshotId;
+  @NotNull private String snapshotId;
   private Boolean isPublic;
   private Boolean isCollaborative;
-  @NotNull private SpotifyUser owner;
-  private List<SpotifyTrack> tracks;
+  @Valid @NotNull private SpotifyUser owner;
+  @Valid private List<SpotifyTrack> tracks;
 }

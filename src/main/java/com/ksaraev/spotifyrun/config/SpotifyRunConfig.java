@@ -14,7 +14,7 @@ public class SpotifyRunConfig {
 
   @Bean
   SpotifyRunPlaylistConfig getWorkoutPlaylistConfig() {
-    return new WorkoutPlaylistConfig();
+    return WorkoutPlaylistConfig.builder().build();
   }
 
   @Bean

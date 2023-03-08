@@ -1,19 +1,29 @@
 package com.ksaraev.spotifyrun.client.feign.encoders;
 
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
+import static org.mockito.BDDMockito.*;
+
+import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException;
 import feign.Param;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.*;
 
 class SpotifyClientFeignQueryMapEncoderTest {
 
   private static final String PARAM_ANNOTATION_VALUE = "param_annotation_value";
   private SpotifyClientFeignQueryMapEncoder underTest;
 
+  @Mock HashMap<String, Object> fieldNameToValue;
+
   @BeforeEach
   void setUp() {
+    MockitoAnnotations.openMocks(this);
+
     underTest = new SpotifyClientFeignQueryMapEncoder();
   }
 
@@ -38,7 +48,7 @@ class SpotifyClientFeignQueryMapEncoderTest {
   }
 
   @Test
-  void itShouldEncodeCustomClassFieldNameToLowerUnderscore() throws Exception {
+  void itShouldEncodeCustomClassFieldNameToLowerUnderscore() {
     // Given
     String customClassStringFieldValue = "customClassStringFieldValue";
     ClassToEncode classToEncode = new ClassToEncode(customClassStringFieldValue);
@@ -59,6 +69,42 @@ class SpotifyClientFeignQueryMapEncoderTest {
     // Then
     Assertions.assertThat(underTest.encode(classToEncodeWithCollectionTypeField))
         .isEqualTo(Map.of("collection_field_name_to_encode", "elementA,elementB"));
+  }
+
+  @Test
+  void itShouldThrowSpotifyClientRequestEncodingExceptionWhenIllegalAccessExceptionThrown() {
+    // Given
+    String message = "message";
+    String fieldValue = "fieldValue";
+    ClassToEncode classToEncode = new ClassToEncode(fieldValue);
+    given(
+            fieldNameToValue.put(
+                ArgumentMatchers.any(String.class), ArgumentMatchers.any(Object.class)))
+        .willAnswer(
+            invocation -> {
+              throw new IllegalAccessException(message);
+            });
+    // Then
+    Assertions.assertThatThrownBy(() -> underTest.encode(classToEncode, fieldNameToValue))
+        .isExactlyInstanceOf(SpotifyClientRequestEncodingException.class)
+        .hasCauseExactlyInstanceOf(IllegalAccessException.class)
+        .hasMessage(UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP + message);
+  }
+
+  @Test
+  void itShouldThrowSpotifyClientRequestEncodingExceptionWhenRuntimeExceptionThrown() {
+    // Given
+    String message = "message";
+    String fieldValue = "fieldValue";
+    ClassToEncode classToEncode = new ClassToEncode(fieldValue);
+    given(
+            fieldNameToValue.put(
+                ArgumentMatchers.any(String.class), ArgumentMatchers.any(Object.class)))
+        .willThrow(new RuntimeException(message));
+    Assertions.assertThatThrownBy(() -> underTest.encode(classToEncode, fieldNameToValue))
+        .isExactlyInstanceOf(SpotifyClientRequestEncodingException.class)
+        .hasCauseExactlyInstanceOf(RuntimeException.class)
+        .hasMessage(UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP + message);
   }
 
   private record ClassToEncode(String fieldNameToEncode) {}

@@ -60,7 +60,7 @@ class SpotifyPlaylistItemMusicTest {
             ? null
             : SpotifyTrackItem.builder()
                 .id("1234567890AaBbCcDdEeFfG")
-                .name("playlist name")
+                .name("track name")
                 .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
                 .popularity(51)
                 .artistItems(artistItems)

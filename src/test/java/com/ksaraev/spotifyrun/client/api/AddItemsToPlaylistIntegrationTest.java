@@ -25,11 +25,12 @@ import org.springframework.test.context.ActiveProfiles;
 class AddItemsToPlaylistIntegrationTest {
   public static WireMockServer wiremock =
       new WireMockServer(WireMockSpring.options().dynamicPort());
-  @Autowired private SpotifyClient underTest;
+
+  @Autowired
+  private SpotifyClient underTest;
 
   @BeforeAll
   static void setupClass() {
-
     wiremock.start();
   }
 

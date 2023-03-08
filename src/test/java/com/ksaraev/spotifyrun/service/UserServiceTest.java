@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.service.user;
+package com.ksaraev.spotifyrun.service;
 
 import static com.ksaraev.spotifyrun.exception.service.GetUserException.UNABLE_TO_GET_USER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -6,14 +6,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.service.GetUserException;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
-import com.ksaraev.spotifyrun.service.SpotifyUserService;
-import com.ksaraev.spotifyrun.service.UserService;
 import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,8 +60,10 @@ class UserServiceTest {
     underTest.getCurrentUser();
 
     // Then
+    verify(spotifyClient, times(1)).getCurrentUserProfile();
     then(userMapper).should().mapToUser(userProfileItemArgumentCaptor.capture());
     assertThat(userProfileItemArgumentCaptor.getValue()).isNotNull().isEqualTo(userProfileItem);
+
   }
 
   @Test
