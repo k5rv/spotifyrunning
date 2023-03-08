@@ -6,7 +6,8 @@ import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
 
-public class SpotifyClientDummy implements SpotifyClient {
+public class SpotifyClientStub implements SpotifyClient {
+
   @Override
   public SpotifyUserProfileItem getCurrentUserProfile() {
     return null;

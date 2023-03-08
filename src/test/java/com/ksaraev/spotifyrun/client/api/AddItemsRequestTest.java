@@ -40,11 +40,10 @@ class AddItemsRequestTest {
   void itShouldDetectAddItemsRequestConstraintViolationsWhenUriListHasNullElements() {
     // Given
     URI uriA = URI.create("spotify:resource:a");
-    URI uriB = null;
     URI uriC = URI.create("spotify:resource:c");
     List<URI> uris = new ArrayList<>();
     uris.add(uriA);
-    uris.add(uriB);
+    uris.add(null);
     uris.add(uriC);
     AddItemsRequest addItemsRequest = AddItemsRequest.builder().itemUris(uris).build();
     // When

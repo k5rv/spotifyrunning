@@ -6,7 +6,7 @@ server:
     include-stacktrace: never
 spring:
   application:
-    name: spotifyRun
+    name: spotifyrun
   main:
     allow-bean-definition-overriding: true
   security:
@@ -15,8 +15,8 @@ spring:
         registration:
           spotify:
             client-name: spotify
-            client-id: spotify-app-client-id
-            client-secret: spotify-app-client-secret
+            client-id: f9e2da24684d494981191203959dd4d4
+            client-secret: 17481f24711c449baa451d960c4b9e2c
             provider: spotify
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
@@ -33,12 +33,11 @@ spring:
       client:
         config:
           spotify:
-            url: https://api.spotify.com/v1
-            error-decoder: com.ksaraev.spotifyrun.client.config.decoders.SpotifyClientErrorDecoder
-            query-map-encoder: com.ksaraev.spotifyrun.client.config.encoders.SpotifyClientRequestQueryMapEncoder
-            request-interceptors:
-              - com.ksaraev.spotifyrun.client.config.interceptors.SpotifyClientAuthRequestInterceptor
-            logger-level: BASIC
+            url: http://127.0.0.1:${wiremock.server.port}/v1
+            logger-level: full
+      oauth2:
+        enabled: false
+        clientRegistrationId: spotify
 
 spotifyrun:
   config:
@@ -62,4 +61,8 @@ spotifyrun:
 
 logging:
   level:
-    com.ksaraev.spotifyrun.client.SpotifyClient: ERROR
+    com.ksaraev.spotifyrun.client.SpotifyClient: DEBUG
+    com.ksaraev.spotifyrun.service.RunService: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG
+

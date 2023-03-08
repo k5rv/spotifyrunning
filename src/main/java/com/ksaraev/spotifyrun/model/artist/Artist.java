@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Artist implements SpotifyArtist {
   @NotNull private String id;
   @NotEmpty private String name;

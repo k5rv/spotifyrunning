@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.service.recommendations;
+package com.ksaraev.spotifyrun.service;
 
 import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +24,6 @@ import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackFeatures;
 import com.ksaraev.spotifyrun.model.track.TrackFeaturesMapper;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
-import com.ksaraev.spotifyrun.service.RecommendationsService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -40,7 +39,6 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -164,6 +162,121 @@ class RecommendationsServiceTest {
 
     // When
     underTest.getRecommendations(seedTracks, trackFeatures);
+
+    // Then
+    then(trackFeaturesMapper).should().mapToRequestFeatures(trackFeaturesArgumentCaptor.capture());
+
+    assertThat(trackFeaturesArgumentCaptor.getValue()).isNotNull().isEqualTo(trackFeatures);
+
+    then(spotifyClient)
+        .should()
+        .getRecommendations(getRecommendationsRequestArgumentCaptor.capture());
+
+    assertThat(getRecommendationsRequestArgumentCaptor.getValue())
+        .isNotNull()
+        .isEqualTo(getRecommendationsRequest);
+
+    then(trackMapper).should().mapItemsToTracks(trackItemsArgumentCaptor.capture());
+
+    assertThat(trackItemsArgumentCaptor.getAllValues()).containsExactly(recommendationTrackItems);
+  }
+
+  @Test
+  void itShouldGetRecommendationsWithoutFeaturesIncluded() {
+    // Given
+    String artistId = "0000567890AaBbCcDdEeFfG";
+    String artistName = "artist name";
+    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
+
+    String seedTrackId = "0000567890AaBbCcDdEeFfG";
+    String seedTrackName = "seed track name";
+    URI seedTrackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
+    Integer seedTrackPopularity = 51;
+
+    String recommendationTrackId = "112233445AaBbCcDdEeFfG";
+    String recommendationTrackName = "recommendation track name";
+    URI recommendationTrackUri = URI.create("spotify:track:112233445AaBbCcDdEeFfG");
+    Integer recommendationTrackPopularity = 51;
+
+    Artist artist =
+        Artist.builder()
+            .id(artistId)
+            .name(artistName)
+            .uri(artistUri)
+            .genres(Collections.emptyList())
+            .build();
+
+    List<SpotifyArtist> artists = List.of(artist);
+
+    Track seedTrack =
+        Track.builder()
+            .id(seedTrackId)
+            .name(seedTrackName)
+            .uri(seedTrackUri)
+            .popularity(seedTrackPopularity)
+            .artists(artists)
+            .build();
+
+    List<SpotifyTrack> seedTracks = List.of(seedTrack);
+
+    Track recommendationTrack =
+        Track.builder()
+            .id(recommendationTrackId)
+            .name(recommendationTrackName)
+            .uri(seedTrackUri)
+            .popularity(seedTrackPopularity)
+            .artists(artists)
+            .build();
+
+    List<SpotifyTrack> recommendationTracks = List.of(recommendationTrack);
+
+    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().build();
+
+    SpotifyArtistItem artistItem =
+        SpotifyArtistItem.builder().id(artistId).name(artistName).uri(artistUri).build();
+
+    List<SpotifyArtistItem> artistItems = List.of(artistItem);
+
+    SpotifyTrackItem trackItem =
+        SpotifyTrackItem.builder()
+            .id(recommendationTrackId)
+            .name(recommendationTrackName)
+            .uri(recommendationTrackUri)
+            .popularity(recommendationTrackPopularity)
+            .artistItems(artistItems)
+            .build();
+
+    List<SpotifyTrackItem> recommendationTrackItems = Collections.singletonList(trackItem);
+
+    List<String> seedTrackIds = List.of(seedTrackId);
+
+    GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
+        GetRecommendationsRequest.TrackFeatures.builder().build();
+
+    Integer limit = 10;
+
+    GetRecommendationsRequest getRecommendationsRequest =
+        GetRecommendationsRequest.builder()
+            .seedTrackIds(seedTrackIds)
+            .trackFeatures(requestTrackFeatures)
+            .limit(limit)
+            .build();
+
+    GetRecommendationsResponse getRecommendationsResponse =
+        GetRecommendationsResponse.builder().trackItems(recommendationTrackItems).build();
+
+    given(trackFeaturesMapper.mapToRequestFeatures(any(TrackFeatures.class)))
+        .willReturn(requestTrackFeatures);
+
+    given(requestConfig.getLimit()).willReturn(limit);
+
+    given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
+        .willReturn(getRecommendationsResponse);
+
+    given(trackMapper.mapItemsToTracks(anyList())).willReturn(recommendationTracks);
+
+    // When
+    underTest.getRecommendations(seedTracks);
 
     // Then
     then(trackFeaturesMapper).should().mapToRequestFeatures(trackFeaturesArgumentCaptor.capture());
@@ -313,23 +426,12 @@ class RecommendationsServiceTest {
         .hasMessage(GET_RECOMMENDATIONS + ".seedTracks: must not be null");
   }
 
-  @ParameterizedTest
-  @CsvSource(
-      delimiter = '|',
-      nullValues = "null",
-      textBlock =
-          """
-           null                   |seed track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |TRUE |.seedTracks[0].id: must not be null
-           0000567890AaBbCcDdEeFfG|null           |spotify:track:1234567890AaBbCcDdEeFfG|51 |TRUE |.seedTracks[0].name: must not be empty
-           0000567890AaBbCcDdEeFfG|seed track name|null                                 |51 |TRUE |.seedTracks[0].uri: must not be null
-           0000567890AaBbCcDdEeFfG|seed track name|spotify:track:1234567890AaBbCcDdEeFfG|-1 |TRUE |.seedTracks[0].popularity: must be greater than or equal to 0
-           0000567890AaBbCcDdEeFfG|seed track name|spotify:track:1234567890AaBbCcDdEeFfG|101|TRUE |.seedTracks[0].popularity: must be less than or equal to 100
-           0000567890AaBbCcDdEeFfG|seed track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |FALSE|.seedTracks[0].artists: must not be empty
-           """)
-  void itShouldDetectGetRecommendationsConstraintViolationsWhenSeedTracksElementIsNotValid(
-      String id, String name, URI uri, Integer popularity, Boolean hasArtists, String message)
+  @Test
+  void itShouldDetectGetRecommendationsCascadeConstraintViolationsWhenSeedTracksElementIsNotValid()
       throws Exception {
     // Given
+    String message = ".seedTracks[0].id: must not be null";
+
     SpotifyArtist artist =
         Artist.builder()
             .id("0000567890AaBbCcDdEeFfG")
@@ -337,10 +439,16 @@ class RecommendationsServiceTest {
             .uri(URI.create("spotify:artist:0000567890AaBbCcDdEeFfG"))
             .build();
 
-    List<SpotifyArtist> artists = hasArtists ? List.of(artist) : List.of();
+    List<SpotifyArtist> artists = List.of(artist);
 
     SpotifyTrack track =
-        Track.builder().id(id).name(name).uri(uri).popularity(popularity).artists(artists).build();
+        Track.builder()
+            .id(null)
+            .name("seed track name")
+            .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
+            .popularity(51)
+            .artists(artists)
+            .build();
 
     List<SpotifyTrack> tracks = List.of(track);
 

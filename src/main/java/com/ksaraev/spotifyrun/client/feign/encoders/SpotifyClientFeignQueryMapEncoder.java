@@ -1,5 +1,7 @@
 package com.ksaraev.spotifyrun.client.feign.encoders;
 
+import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
+
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Maps;
 import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException;
@@ -11,7 +13,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
 
 @Component
 public class SpotifyClientFeignQueryMapEncoder implements QueryMapEncoder {
@@ -23,13 +24,11 @@ public class SpotifyClientFeignQueryMapEncoder implements QueryMapEncoder {
     return encode(object, null);
   }
 
-  private Map<String, Object> encode(Object object, Map<String, Object> fieldNameToValue) {
-
-    if (fieldNameToValue == null) {
-      fieldNameToValue = Maps.newHashMap();
-    }
-
+  Map<String, Object> encode(Object object, Map<String, Object> fieldNameToValue) {
     try {
+
+      if (fieldNameToValue == null) fieldNameToValue = Maps.newHashMap();
+
       ObjectParamMetadata metadata = getMetadata(object.getClass());
 
       for (Field field : metadata.objectFields) {
@@ -55,7 +54,7 @@ public class SpotifyClientFeignQueryMapEncoder implements QueryMapEncoder {
 
       return fieldNameToValue;
 
-    } catch (IllegalAccessException e) {
+    } catch (IllegalAccessException | RuntimeException e) {
       throw new SpotifyClientRequestEncodingException(
           UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP + e.getMessage(), e);
     }

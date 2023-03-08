@@ -33,5 +33,5 @@ build/
 .vscode/
 
 /features.txt
-/src/main/resources/application-test.yml
 /src/main/resources/application-development.yml
+/src/main/resources/application-test.yml.yml

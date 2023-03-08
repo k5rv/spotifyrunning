@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.items.SpotifyArtistItem;
 import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.utils.SpotifyClientDummy;
+import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -26,7 +26,7 @@ class GetRecommendationsTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    object = new SpotifyClientDummy();
+    object = new SpotifyClientStub();
     method = SpotifyClient.class.getMethod(GET_RECOMMENDATIONS, GetRecommendationsRequest.class);
     executableValidator = Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
   }

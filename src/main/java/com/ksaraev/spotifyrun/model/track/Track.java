@@ -2,6 +2,7 @@ package com.ksaraev.spotifyrun.model.track;
 
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -15,8 +16,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class Track implements SpotifyTrack {
   @NotNull private String id;
 
@@ -28,5 +27,5 @@ public class Track implements SpotifyTrack {
   @Max(100)
   private Integer popularity;
 
-  @NotEmpty private List<SpotifyArtist> artists;
+  @Valid @NotEmpty private List<SpotifyArtist> artists;
 }

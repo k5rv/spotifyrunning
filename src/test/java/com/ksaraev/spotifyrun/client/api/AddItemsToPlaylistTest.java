@@ -3,8 +3,7 @@ package com.ksaraev.spotifyrun.client.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.items.*;
-import com.ksaraev.spotifyrun.utils.SpotifyClientDummy;
+import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -25,7 +24,7 @@ class AddItemsToPlaylistTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    object = new SpotifyClientDummy();
+    object = new SpotifyClientStub();
     method =
         SpotifyClient.class.getMethod(ADD_ITEMS_TO_PLAYLIST, String.class, AddItemsRequest.class);
     executableValidator = Validation.buildDefaultValidatorFactory().getValidator().forExecutables();

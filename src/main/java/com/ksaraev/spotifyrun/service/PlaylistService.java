@@ -35,6 +35,16 @@ public class PlaylistService implements SpotifyPlaylistService {
   private final PlaylistMapper playlistMapper;
 
   @Override
+  public SpotifyPlaylist getPlaylist(String playlistId) throws GetPlaylistException {
+    try {
+      SpotifyPlaylistItem playlistItem = spotifyClient.getPlaylist(playlistId);
+      return playlistMapper.mapToPlaylist(playlistItem);
+    } catch (RuntimeException e) {
+      throw new GetPlaylistException(UNABLE_TO_GET_PLAYLIST + e.getMessage(), e);
+    }
+  }
+
+  @Override
   public SpotifyPlaylist createPlaylist(SpotifyUser user, SpotifyPlaylistDetails playlistDetails) {
     try {
       SpotifyPlaylistItemDetails playlistItemDetails =
@@ -44,16 +54,6 @@ public class PlaylistService implements SpotifyPlaylistService {
       return playlistMapper.mapToPlaylist(playlistItem);
     } catch (RuntimeException e) {
       throw new CreatePlaylistException(UNABLE_TO_CREATE_PLAYLIST + e.getMessage(), e);
-    }
-  }
-
-  @Override
-  public SpotifyPlaylist getPlaylist(String playlistId) throws GetPlaylistException {
-    try {
-      SpotifyPlaylistItem playlistItem = spotifyClient.getPlaylist(playlistId);
-      return playlistMapper.mapToPlaylist(playlistItem);
-    } catch (RuntimeException e) {
-      throw new GetPlaylistException(UNABLE_TO_GET_PLAYLIST + e.getMessage(), e);
     }
   }
 

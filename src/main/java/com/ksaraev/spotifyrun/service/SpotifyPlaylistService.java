@@ -11,10 +11,10 @@ import java.util.List;
 
 public interface SpotifyPlaylistService {
 
+  SpotifyPlaylist getPlaylist(@NotNull String playlistId);
+
   SpotifyPlaylist createPlaylist(
       @Valid @NotNull SpotifyUser user, @Valid @NotNull SpotifyPlaylistDetails playlistDetails);
-
-  SpotifyPlaylist getPlaylist(@NotNull String playlistId);
 
   void addTracks(
       @Valid @NotNull SpotifyPlaylist playlist, @NotEmpty List<@Valid SpotifyTrack> tracks);

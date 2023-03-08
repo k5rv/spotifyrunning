@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.service.playlist;
+package com.ksaraev.spotifyrun.controller;
 
 import static com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException.USER_TOP_TRACKS_NOT_FOUND;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
-import com.ksaraev.spotifyrun.controller.PlaylistController;
 import com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException;
 import com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
