@@ -7,8 +7,8 @@ import static com.ksaraev.spotifyrun.exception.service.GetPlaylistException.UNAB
 import com.google.common.collect.Lists;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.AddItemsRequest;
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;

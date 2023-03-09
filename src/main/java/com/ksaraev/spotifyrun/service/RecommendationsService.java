@@ -5,7 +5,7 @@ import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsExcepti
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsResponse;
-import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
 import com.ksaraev.spotifyrun.exception.service.GetRecommendationsException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
@@ -27,7 +27,7 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 public class RecommendationsService implements SpotifyRecommendationsService {
   private final SpotifyClient spotifyClient;
-  private final SpotifyGetRecommendationsRequestConfig requestConfig;
+  private final SpotifyGetRecommendationsRequestConfig getRecommendationsRequestConfig;
   private final TrackMapper trackMapper;
   private final TrackFeaturesMapper trackFeaturesMapper;
 
@@ -40,7 +40,7 @@ public class RecommendationsService implements SpotifyRecommendationsService {
           GetRecommendationsRequest.builder()
               .seedTrackIds(seedTrackIds)
               .trackFeatures(trackFeaturesMapper.mapToRequestFeatures(trackFeatures))
-              .limit(requestConfig.getLimit())
+              .limit(getRecommendationsRequestConfig.getLimit())
               .build();
 
       GetRecommendationsResponse response = spotifyClient.getRecommendations(request);

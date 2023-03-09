@@ -7,7 +7,7 @@ import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
-import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
 import com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
@@ -26,22 +26,25 @@ import org.springframework.stereotype.Service;
 public class UserTopTracksService implements SpotifyUserTopTracksService {
 
   private final SpotifyClient spotifyClient;
-  private final SpotifyGetUserTopTracksRequestConfig requestConfig;
+  private final SpotifyGetUserTopTracksRequestConfig getUserTopTracksRequestConfig;
   private final TrackMapper trackMapper;
 
   @Override
   public List<SpotifyTrack> getUserTopTracks() {
     if (Arrays.stream(TimeRange.values())
-        .noneMatch(timeRange -> timeRange.name().equals(requestConfig.getTimeRange()))) {
+        .noneMatch(
+            timeRange -> timeRange.name().equals(getUserTopTracksRequestConfig.getTimeRange()))) {
       throw new GetUserTopTracksException(
-          UNABLE_TO_GET_USER_TOP_TRACKS + ILLEGAL_TIME_RANGE + requestConfig.getTimeRange());
+          UNABLE_TO_GET_USER_TOP_TRACKS
+              + ILLEGAL_TIME_RANGE
+              + getUserTopTracksRequestConfig.getTimeRange());
     }
     try {
       GetUserTopTracksRequest request =
           GetUserTopTracksRequest.builder()
-              .timeRange(TimeRange.valueOf(requestConfig.getTimeRange()))
-              .limit(requestConfig.getLimit())
-              .offset(requestConfig.getOffset())
+              .timeRange(TimeRange.valueOf(getUserTopTracksRequestConfig.getTimeRange()))
+              .limit(getUserTopTracksRequestConfig.getLimit())
+              .offset(getUserTopTracksRequestConfig.getOffset())
               .build();
 
       GetUserTopTracksResponse response = spotifyClient.getUserTopTracks(request);

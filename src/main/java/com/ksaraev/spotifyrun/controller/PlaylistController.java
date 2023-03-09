@@ -50,7 +50,7 @@ public class PlaylistController {
                         List.of(userTopTrack), playlistConfig.getMusicFeatures()))
             .flatMap(List::stream)
             .distinct()
-            .limit(playlistConfig.getSizeLimit())
+            .limit(playlistConfig.getSize())
             .collect(
                 Collectors.collectingAndThen(
                     Collectors.toList(),
@@ -63,7 +63,8 @@ public class PlaylistController {
       throw new RecommendationsNotFoundException(RECOMMENDATIONS_NOT_FOUND);
     }
 
-    SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistConfig.getDetails());
+    SpotifyPlaylist playlist =
+        playlistService.createPlaylist(user, playlistConfig.getDetails());
     playlistService.addTracks(playlist, musicRecommendations);
     return playlistService.getPlaylist(playlist.getId());
   }
