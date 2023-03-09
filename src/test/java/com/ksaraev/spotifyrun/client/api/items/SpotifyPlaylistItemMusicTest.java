@@ -1,7 +1,8 @@
-package com.ksaraev.spotifyrun.client.items;
+package com.ksaraev.spotifyrun.client.api.items;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ksaraev.spotifyrun.client.api.items.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class SpotifyPlaylistItemTrackTest {
+class SpotifyPlaylistItemMusicTest {
 
   private Validator validator;
 
@@ -60,7 +61,7 @@ class SpotifyPlaylistItemTrackTest {
             ? null
             : SpotifyTrackItem.builder()
                 .id("1234567890AaBbCcDdEeFfG")
-                .name("playlist name")
+                .name("track name")
                 .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
                 .popularity(51)
                 .artistItems(artistItems)
@@ -85,13 +86,13 @@ class SpotifyPlaylistItemTrackTest {
   }
 
   @Test
-  void itShouldDetectSpotifyPlaylistItemTrackCascadeConstraintViolations() {
+  void itShouldDetectSpotifyPlaylistItemMusicTestCascadeConstraintViolations() {
     // Given
-    String message = "addedBy.id: must not be null";
+    String message = "playlistItemTracks[0].trackItem: must not be null";
 
     SpotifyUserProfileItem userProfileItem =
         SpotifyUserProfileItem.builder()
-            .id(null)
+            .id("12122604372")
             .displayName("name")
             .uri(URI.create("spotify:user:12122604372"))
             .email("email@mail.com")
@@ -117,14 +118,18 @@ class SpotifyPlaylistItemTrackTest {
 
     SpotifyPlaylistItemTrack playlistItemTrack =
         SpotifyPlaylistItemTrack.builder()
-            .trackItem(trackItem)
+            .trackItem(null)
             .addedBy(userProfileItem)
             .addedAt("2020-12-04T14:14:36Z")
             .build();
 
+    List<SpotifyPlaylistItemTrack> playlistItemTracks = List.of(playlistItemTrack);
+
+    SpotifyPlaylistItemMusic playlistItemMusic = SpotifyPlaylistItemMusic.builder().playlistItemTracks(playlistItemTracks).build();
+
     // When
-    Set<ConstraintViolation<SpotifyPlaylistItemTrack>> constraintViolations =
-        validator.validate(playlistItemTrack);
+    Set<ConstraintViolation<SpotifyPlaylistItemMusic>> constraintViolations =
+        validator.validate(playlistItemMusic);
 
     // Then
     assertThat(constraintViolations).hasSize(1);

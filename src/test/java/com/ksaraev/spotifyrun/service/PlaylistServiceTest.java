@@ -11,9 +11,9 @@ import static org.mockito.BDDMockito.then;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.AddItemsRequest;
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.service.AddTracksException;
 import com.ksaraev.spotifyrun.exception.service.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.service.GetPlaylistException;
