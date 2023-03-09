@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.client.items;
+package com.ksaraev.spotifyrun.client.api.items;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;

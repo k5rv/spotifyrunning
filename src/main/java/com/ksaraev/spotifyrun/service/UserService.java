@@ -3,7 +3,7 @@ package com.ksaraev.spotifyrun.service;
 import static com.ksaraev.spotifyrun.exception.service.GetUserException.UNABLE_TO_GET_USER;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.service.GetUserException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
