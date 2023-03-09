@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.model.track;
 
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemTrack;
-import com.ksaraev.spotifyrun.client.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemTrack;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
