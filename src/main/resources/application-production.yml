@@ -41,24 +41,23 @@ spring:
             logger-level: BASIC
 
 spotifyrun:
-  config:
-    playlist:
-      details:
-        name: "Running Workout"
-        description: "Music for your training based on Spotify recommendations and specific audio features"
-        size-limit: 50
-      features:
-        min-tempo: "185"
-        max-tempo: "205"
-        min-energy: "0.65"
-    client:
-      requests:
-        get-user-top-tracks:
-          limit: 50
-          offset: 0
-          time-range: MEDIUM_TERM
-        get-recommendations:
-          limit: 50
+  playlist:
+    details:
+      name: "Running Workout"
+      description: "Music for your training based on Spotify recommendations and specific audio features"
+      size: 50
+    features:
+      min-tempo: "185"
+      max-tempo: "205"
+      min-energy: "0.65"
+  client:
+    requests:
+      get-user-top-tracks:
+        limit: 50
+        offset: 0
+        time-range: MEDIUM_TERM
+      get-recommendations:
+        limit: 50
 
 logging:
   level:
