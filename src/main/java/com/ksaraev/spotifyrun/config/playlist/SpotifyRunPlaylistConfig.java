@@ -9,5 +9,5 @@ public interface SpotifyRunPlaylistConfig {
 
   SpotifyTrackFeatures getMusicFeatures();
 
-  Integer getSizeLimit();
+  Integer getSize();
 }
