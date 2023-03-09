@@ -7,8 +7,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.items.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

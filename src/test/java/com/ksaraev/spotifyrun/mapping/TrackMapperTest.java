@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.mapping;
 
 
-import com.ksaraev.spotifyrun.client.items.*;
+import com.ksaraev.spotifyrun.client.api.items.*;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;

@@ -104,7 +104,7 @@ class PlaylistControllerTest {
 
     SpotifyPlaylistDetails playlistDetails = PlaylistDetails.builder().name("name").build();
 
-    given(playlistConfig.getSizeLimit()).willReturn(2);
+    given(playlistConfig.getSize()).willReturn(2);
     given(playlistConfig.getMusicFeatures()).willReturn(trackFeatures);
     given(playlistConfig.getDetails()).willReturn(playlistDetails);
     given(recommendationsService.getRecommendations(anyList(), any()))
