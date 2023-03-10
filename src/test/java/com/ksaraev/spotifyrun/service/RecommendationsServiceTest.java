@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.service;
 
-import static com.ksaraev.spotifyrun.exception.service.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
+import static com.ksaraev.spotifyrun.exception.business.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -15,7 +15,7 @@ import com.ksaraev.spotifyrun.client.api.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistItem;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
-import com.ksaraev.spotifyrun.exception.service.GetRecommendationsException;
+import com.ksaraev.spotifyrun.exception.business.GetRecommendationsException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
@@ -337,7 +337,7 @@ class RecommendationsServiceTest {
 
     Method getRecommendations =
         RecommendationsService.class.getMethod(
-            "getRecommendations", List.class, SpotifyTrackFeatures.class);
+            GET_RECOMMENDATIONS, List.class, SpotifyTrackFeatures.class);
 
     Object[] parameterValues = {tracks, trackFeatures};
 
@@ -391,7 +391,7 @@ class RecommendationsServiceTest {
 
     Method getRecommendations =
         RecommendationsService.class.getMethod(
-            "getRecommendations", List.class, SpotifyTrackFeatures.class);
+            GET_RECOMMENDATIONS, List.class, SpotifyTrackFeatures.class);
 
     Object[] parameterValues = {tracks, trackFeatures};
 
@@ -412,7 +412,7 @@ class RecommendationsServiceTest {
 
     Method getRecommendations =
         RecommendationsService.class.getMethod(
-            "getRecommendations", List.class, SpotifyTrackFeatures.class);
+            GET_RECOMMENDATIONS, List.class, SpotifyTrackFeatures.class);
 
     Object[] parameterValues = {null, trackFeatures};
 
@@ -456,7 +456,7 @@ class RecommendationsServiceTest {
 
     Method getRecommendations =
         RecommendationsService.class.getMethod(
-            "getRecommendations", List.class, SpotifyTrackFeatures.class);
+            GET_RECOMMENDATIONS, List.class, SpotifyTrackFeatures.class);
 
     Object[] parameterValues = {tracks, trackFeatures};
 
@@ -497,7 +497,7 @@ class RecommendationsServiceTest {
 
     Method getRecommendations =
         RecommendationsService.class.getMethod(
-            "getRecommendations", List.class, SpotifyTrackFeatures.class);
+            GET_RECOMMENDATIONS, List.class, SpotifyTrackFeatures.class);
 
     Object[] parameterValues = {tracks, null};
 

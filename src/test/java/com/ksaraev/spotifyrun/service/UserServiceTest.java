@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.service;
 
-import static com.ksaraev.spotifyrun.exception.service.GetUserException.UNABLE_TO_GET_USER;
+import static com.ksaraev.spotifyrun.exception.business.GetUserException.UNABLE_TO_GET_USER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.exception.service.GetUserException;
+import com.ksaraev.spotifyrun.exception.business.GetUserException;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
 import java.net.URI;

@@ -1,11 +1,11 @@
 package com.ksaraev.spotifyrun.client;
 
 import com.ksaraev.spotifyrun.client.api.*;
-import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
-import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
+import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
