@@ -1,11 +1,12 @@
 package com.ksaraev.spotifyrun.controller;
 
-import static com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException.RECOMMENDATIONS_NOT_FOUND;
-import static com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException.USER_TOP_TRACKS_NOT_FOUND;
+import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.*;
+import static com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException.*;
+import static com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException.*;
 
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
-import com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException;
-import com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException;
+import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
+import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
@@ -42,6 +43,7 @@ public class PlaylistController {
       throw new UserTopTracksNotFoundException(USER_TOP_TRACKS_NOT_FOUND);
     }
 
+    // TODO: check that requests continue while list size less than playlistConfig.getSize()
     List<SpotifyTrack> musicRecommendations =
         userTopTracks.stream()
             .map(
@@ -63,8 +65,7 @@ public class PlaylistController {
       throw new RecommendationsNotFoundException(RECOMMENDATIONS_NOT_FOUND);
     }
 
-    SpotifyPlaylist playlist =
-        playlistService.createPlaylist(user, playlistConfig.getDetails());
+    SpotifyPlaylist playlist = playlistService.createPlaylist(user, playlistConfig.getDetails());
     playlistService.addTracks(playlist, musicRecommendations);
     return playlistService.getPlaylist(playlist.getId());
   }
