@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.exception.service;
+package com.ksaraev.spotifyrun.exception.business;
 
 import lombok.experimental.StandardException;
 

@@ -1,15 +1,15 @@
 package com.ksaraev.spotifyrun.service;
 
 import static com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest.TimeRange;
-import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
-import static com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
+import static com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
+import static com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
-import com.ksaraev.spotifyrun.exception.service.GetUserTopTracksException;
+import com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
 import java.util.Arrays;

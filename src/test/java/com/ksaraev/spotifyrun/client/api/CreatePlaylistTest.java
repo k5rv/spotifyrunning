@@ -3,7 +3,9 @@ package com.ksaraev.spotifyrun.client.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

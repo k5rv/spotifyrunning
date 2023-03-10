@@ -66,7 +66,7 @@ class AddItemsToPlaylistTest {
   void
       itShouldDetectAddItemsToPlaylistMethodCascadeConstraintViolationWhenAddItemsToPlaylistRequestIsNotValid() {
     // Given
-    String message = ".request.itemUris: must not be empty";
+    String message = ".request.itemUris: size must be between 1 and 100";
     String playlistId = "0moWPCTPTShumonjlsDgLe";
     List<URI> uris = List.of();
     AddItemsRequest addItemsRequest = AddItemsRequest.builder().itemUris(uris).build();

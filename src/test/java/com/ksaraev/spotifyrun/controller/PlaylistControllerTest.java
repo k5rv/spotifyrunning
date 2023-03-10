@@ -1,13 +1,15 @@
 package com.ksaraev.spotifyrun.controller;
 
-import static com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException.USER_TOP_TRACKS_NOT_FOUND;
+import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.*;
+import static com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException.*;
+import static com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
-import com.ksaraev.spotifyrun.exception.controller.RecommendationsNotFoundException;
-import com.ksaraev.spotifyrun.exception.controller.UserTopTracksNotFoundException;
+import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
+import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
@@ -151,6 +153,6 @@ class PlaylistControllerTest {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.createPlaylist())
         .isExactlyInstanceOf(RecommendationsNotFoundException.class)
-        .hasMessage(RecommendationsNotFoundException.RECOMMENDATIONS_NOT_FOUND);
+        .hasMessage(RECOMMENDATIONS_NOT_FOUND);
   }
 }

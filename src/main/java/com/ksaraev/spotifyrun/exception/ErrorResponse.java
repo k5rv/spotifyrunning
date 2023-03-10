@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.exception.controller;
+package com.ksaraev.spotifyrun.exception;
 
 import java.time.ZonedDateTime;
 import lombok.Data;

@@ -16,9 +16,8 @@ import org.mockito.*;
 class SpotifyClientFeignQueryMapEncoderTest {
 
   private static final String PARAM_ANNOTATION_VALUE = "param_annotation_value";
-  private SpotifyClientFeignQueryMapEncoder underTest;
-
   @Mock HashMap<String, Object> fieldNameToValue;
+  private SpotifyClientFeignQueryMapEncoder underTest;
 
   @BeforeEach
   void setUp() {

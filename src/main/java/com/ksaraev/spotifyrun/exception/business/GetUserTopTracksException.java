@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.exception.service;
+package com.ksaraev.spotifyrun.exception.business;
 
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
 import java.util.Arrays;

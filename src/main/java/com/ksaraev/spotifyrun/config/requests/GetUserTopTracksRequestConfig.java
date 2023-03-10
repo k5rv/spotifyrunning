@@ -2,7 +2,6 @@ package com.ksaraev.spotifyrun.config.requests;
 
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Value;
 
 @Data
 @Builder
