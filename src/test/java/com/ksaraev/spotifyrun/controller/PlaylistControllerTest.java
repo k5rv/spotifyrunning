@@ -1,44 +1,52 @@
 package com.ksaraev.spotifyrun.controller;
 
-import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.*;
 import static com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException.*;
 import static com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException.*;
+import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
 import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
 import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
-import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.playlist.Playlist;
-import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
 import com.ksaraev.spotifyrun.model.spotify.*;
 import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.track.TrackFeatures;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.service.SpotifyPlaylistService;
 import com.ksaraev.spotifyrun.service.SpotifyRecommendationsService;
 import com.ksaraev.spotifyrun.service.SpotifyUserService;
 import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
-import java.math.BigDecimal;
-import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 class PlaylistControllerTest {
 
-  @Mock SpotifyUserService userService;
-  @Mock SpotifyUserTopTracksService topTracksService;
-  @Mock SpotifyRecommendationsService recommendationsService;
-  @Mock SpotifyPlaylistService playlistService;
-  @Mock SpotifyRunPlaylistConfig playlistConfig;
+  @Mock private SpotifyUserService userService;
+  @Mock private SpotifyUserTopTracksService topTracksService;
+  @Mock private SpotifyRecommendationsService recommendationsService;
+  @Mock private SpotifyPlaylistService playlistService;
+  @Mock private SpotifyRunPlaylistConfig playlistConfig;
 
-  PlaylistController underTest;
+  @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyUser> userArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyPlaylistDetails> playlistDetailsArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyPlaylist> playlistArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyTrackFeatures> featuresArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrack>> userTopTracksArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrack>> musicRecommendationsArgumentCaptor;
+
+  private PlaylistController underTest;
 
   @BeforeEach
   void setUp() {
@@ -51,86 +59,157 @@ class PlaylistControllerTest {
   @Test
   void itShouldCreatePlaylist() {
     // Given
-    SpotifyUser user =
-        User.builder()
-            .id("12122604372")
-            .name("Konstantin")
-            .email("email@gmail.com")
-            .uri(URI.create("spotify:user:12122604372"))
-            .build();
+    SpotifyUser user = getUser();
 
-    given(userService.getCurrentUser()).willReturn(user);
-
-    SpotifyArtist artist =
-        Artist.builder()
-            .id("5VnrVRYzaatWXs102ScGwN")
-            .name("name")
-            .uri(URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN"))
-            .build();
-
-    SpotifyTrack topTrackA =
-        Track.builder()
-            .id("5Ko5Jn0OG8IDFEHhAYsCnj")
-            .name("name_a")
-            .uri(URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj"))
-            .popularity(32)
-            .artists(List.of(artist))
-            .build();
-
-    SpotifyTrack topTrackB =
-        Track.builder()
-            .id("5Ko5Jn0OG8IDFEHhAYsCn1")
-            .name("name_b")
-            .uri(URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCn1"))
-            .popularity(20)
-            .artists(List.of(artist))
-            .build();
-
+    SpotifyTrack topTrackA = getTrack();
+    SpotifyTrack topTrackB = getTrack();
     List<SpotifyTrack> userTopTracks = List.of(topTrackA, topTrackB);
 
-    given(topTracksService.getUserTopTracks()).willReturn(userTopTracks);
-
-    SpotifyTrack musicRecommendation =
-        Track.builder()
-            .id("6Ko5Jn0OG8IDFEHhAYsCn1")
-            .name("recommendations")
-            .uri(URI.create("spotify:track:6Ko5Jn0OG8IDFEHhAYsCn1"))
-            .popularity(90)
-            .artists(List.of(artist))
-            .build();
-
+    SpotifyTrack musicRecommendation = getTrack();
     List<SpotifyTrack> musicRecommendations = List.of(musicRecommendation);
 
-    SpotifyTrackFeatures trackFeatures =
-        TrackFeatures.builder().minTempo(new BigDecimal(120)).build();
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
 
-    SpotifyPlaylistDetails playlistDetails = PlaylistDetails.builder().name("name").build();
+    SpotifyPlaylistDetails playlistDetails = getPlaylistDetails();
+    SpotifyPlaylist playlist = getPlaylist();
+    playlist.setTracks(musicRecommendations);
 
+    given(userService.getCurrentUser()).willReturn(user);
+    given(topTracksService.getUserTopTracks()).willReturn(userTopTracks);
     given(playlistConfig.getSize()).willReturn(2);
     given(playlistConfig.getMusicFeatures()).willReturn(trackFeatures);
     given(playlistConfig.getDetails()).willReturn(playlistDetails);
     given(recommendationsService.getRecommendations(anyList(), any()))
         .willReturn(musicRecommendations);
+    given(playlistService.createPlaylist(user, playlistDetails)).willReturn(playlist);
+    given(playlistService.getPlaylist(playlist.getId())).willReturn(playlist);
 
-    SpotifyPlaylist playlist =
-        Playlist.builder()
-            .id("0S4WIUelgktE36rVcG7ZRy")
-            .name("name")
-            .uri(URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy"))
-            .description("description")
-            .snapshotId("MSw0NjNmNjc3ZTQwOWQzYzQ1N2ZjMzlkOGM5MjA4OGMzYjc1Mjk1NGFh")
-            .isCollaborative(false)
-            .isPublic(false)
-            .build();
+    // When
+    underTest.createPlaylist();
+
+    // Then
+    verify(recommendationsService, times(2))
+        .getRecommendations(
+            userTopTracksArgumentCaptor.capture(), featuresArgumentCaptor.capture());
+
+    Assertions.assertThat(userTopTracksArgumentCaptor.getAllValues())
+        .containsExactly(List.of(topTrackA), List.of(topTrackB));
+
+    Assertions.assertThat(featuresArgumentCaptor.getAllValues())
+        .containsExactly(trackFeatures, trackFeatures);
+
+    verify(playlistService)
+        .createPlaylist(userArgumentCaptor.capture(), playlistDetailsArgumentCaptor.capture());
+
+    Assertions.assertThat(userArgumentCaptor.getValue()).isNotNull().isEqualTo(user);
+
+    Assertions.assertThat(playlistDetailsArgumentCaptor.getValue())
+        .isNotNull()
+        .isEqualTo(playlistDetails);
+
+    verify(playlistService, times(1))
+        .addTracks(playlistArgumentCaptor.capture(), musicRecommendationsArgumentCaptor.capture());
+
+    Assertions.assertThat(musicRecommendationsArgumentCaptor.getAllValues())
+        .containsExactly(musicRecommendations);
+
+    verify(playlistService).getPlaylist(playlistIdArgumentCaptor.capture());
+
+    Assertions.assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlist.getId());
+  }
+
+  @ParameterizedTest
+  @CsvSource(
+      delimiter = '|',
+      textBlock =
+          """
+                   3|0|0|1|FALSE|FALSE|3
+                   2|1|0|2|TRUE |FALSE|3
+                   2|0|1|3|FALSE|TRUE |3
+                   """)
+  void itShouldStopAddMusicRecommendationsWhenRecommendationsSizeIsEqualToPlaylistConfigSize(
+      Integer aTracksNumber,
+      Integer bTracksNumber,
+      Integer cTracksNumber,
+      Integer requestsNumber,
+      Boolean hasAAndBTracks,
+      Boolean hasAllTracks,
+      Integer playlistConfigSize) {
+    // Given
+    SpotifyUser user = getUser();
+
+    SpotifyTrack topTrackA = getTrack();
+    SpotifyTrack topTrackB = getTrack();
+    SpotifyTrack topTrackC = getTrack();
+
+    List<SpotifyTrack> userTopTracks = List.of(topTrackA, topTrackB, topTrackC);
+
+    List<SpotifyTrack> musicRecommendationsA = getTracks(aTracksNumber);
+    List<SpotifyTrack> musicRecommendationsB = getTracks(bTracksNumber);
+    List<SpotifyTrack> musicRecommendationsC = getTracks(cTracksNumber);
+
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
+    SpotifyPlaylistDetails playlistDetails = getPlaylistDetails();
+    SpotifyPlaylist playlist = getPlaylist();
+
+    List<SpotifyTrack> playlistTracks = new ArrayList<>(musicRecommendationsA);
+
+    if (hasAAndBTracks) {
+      playlistTracks.addAll(musicRecommendationsB);
+    }
+
+    if (hasAllTracks) {
+      playlistTracks.addAll(musicRecommendationsB);
+      playlistTracks.addAll(musicRecommendationsC);
+    }
+
+    given(userService.getCurrentUser()).willReturn(user);
+    given(topTracksService.getUserTopTracks()).willReturn(userTopTracks);
+    given(playlistConfig.getSize()).willReturn(playlistConfigSize);
+    given(playlistConfig.getMusicFeatures()).willReturn(trackFeatures);
+    given(playlistConfig.getDetails()).willReturn(playlistDetails);
+
+    given(recommendationsService.getRecommendations(List.of(topTrackA), trackFeatures))
+        .willReturn(musicRecommendationsA);
+
+    given(recommendationsService.getRecommendations(List.of(topTrackB), trackFeatures))
+        .willReturn(musicRecommendationsB);
+
+    given(recommendationsService.getRecommendations(List.of(topTrackC), trackFeatures))
+        .willReturn(musicRecommendationsC);
 
     given(playlistService.createPlaylist(user, playlistDetails)).willReturn(playlist);
 
-    playlist.setTracks(musicRecommendations);
-
-    given(playlistService.getPlaylist(playlist.getId())).willReturn(playlist);
+    // When
+    underTest.createPlaylist();
 
     // Then
-    Assertions.assertThat(underTest.createPlaylist()).isNotNull().isEqualTo(playlist);
+    verify(recommendationsService, times(requestsNumber))
+        .getRecommendations(
+            userTopTracksArgumentCaptor.capture(), featuresArgumentCaptor.capture());
+
+    if (!hasAAndBTracks && !hasAllTracks) {
+      Assertions.assertThat(userTopTracksArgumentCaptor.getAllValues())
+          .containsExactly(List.of(topTrackA));
+    }
+
+    if (hasAAndBTracks) {
+      Assertions.assertThat(userTopTracksArgumentCaptor.getAllValues())
+          .containsExactly(List.of(topTrackA), List.of(topTrackB));
+    }
+
+    if (hasAllTracks) {
+      Assertions.assertThat(userTopTracksArgumentCaptor.getAllValues())
+          .containsExactly(List.of(topTrackA), List.of(topTrackB), List.of(topTrackC));
+    }
+
+    verify(playlistService, times(1))
+        .addTracks(playlistArgumentCaptor.capture(), musicRecommendationsArgumentCaptor.capture());
+
+    Assertions.assertThat(musicRecommendationsArgumentCaptor.getValue())
+        .isNotEmpty()
+        .hasSize(playlistConfigSize)
+        .hasSameElementsAs(playlistTracks);
   }
 
   @Test

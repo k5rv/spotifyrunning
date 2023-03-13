@@ -3,6 +3,7 @@ package com.ksaraev.spotifyrun.service;
 import static com.ksaraev.spotifyrun.exception.business.AddTracksException.UNABLE_TO_ADD_TRACKS;
 import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
 import static com.ksaraev.spotifyrun.exception.business.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
+import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,27 +14,21 @@ import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.AddItemsRequest;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.business.AddTracksException;
 import com.ksaraev.spotifyrun.exception.business.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.business.GetPlaylistException;
-import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrun.model.spotify.*;
-import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.user.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -78,57 +73,18 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void itShouldCreatePlaylist() {
+  void itShouldCreatePlaylist() throws Exception{
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
+    SpotifyPlaylistItemDetails playlistItemDetails = getPlaylistItemDetails();
+    SpotifyPlaylistItem playlistItem = getPlaylistItem();
 
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MSw0NjNmNjc3ZTQwOWQzYzQ1N2ZjMzlkOGM5MjA4OGMzYjc1Mjk1NGFh";
-
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
-            .id(userId)
-            .displayName(userName)
-            .email(userEmail)
-            .uri(userUri)
-            .build();
-
-    SpotifyPlaylistItem playlistItem =
-        SpotifyPlaylistItem.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .snapshotId(playlistSnapshotId)
-            .userProfileItem(userProfileItem)
-            .build();
-
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        SpotifyPlaylistItemDetails.builder().name(playlistName).build();
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    Playlist playlist =
-        Playlist.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .snapshotId(playlistSnapshotId)
-            .owner(user)
-            .build();
-
-    PlaylistDetails playlistDetails = PlaylistDetails.builder().name(playlistName).build();
+    SpotifyUser user = getUser();
+    PlaylistDetails playlistDetails = (PlaylistDetails) getPlaylistDetails();
+    Playlist playlist = (Playlist) getPlaylist();
 
     given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistDetails.class)))
         .willReturn(playlistItemDetails);
-
-    given(spotifyClient.createPlaylist(userId, playlistItemDetails)).willReturn(playlistItem);
-
+    given(spotifyClient.createPlaylist(any(), any())).willReturn(playlistItem);
     given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistItem.class))).willReturn(playlist);
 
     // When
@@ -163,20 +119,8 @@ class PlaylistServiceTest {
       itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistItemDetailsThrowsRuntimeException() {
     // Given
     String message = "message";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    String playlistName = "playlist name";
-
-    SpotifyUser spotifyUser =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    SpotifyPlaylistDetails spotifyPlaylistDetails =
-        PlaylistDetails.builder().name(playlistName).build();
-
+    SpotifyUser spotifyUser = getUser();
+    SpotifyPlaylistDetails spotifyPlaylistDetails = getPlaylistDetails();
     given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistDetails.class)))
         .willThrow(new RuntimeException(message));
 
@@ -187,50 +131,16 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() {
+  void itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() throws Exception{
     // Given
     String message = "message";
-
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MSw0NjNmNjc3ZTQwOWQzYzQ1N2ZjMzlkOGM5MjA4OGMzYjc1Mjk1NGFh";
-
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
-            .id(userId)
-            .displayName(userName)
-            .email(userEmail)
-            .uri(userUri)
-            .build();
-
-    SpotifyPlaylistItem playlistItem =
-        SpotifyPlaylistItem.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .snapshotId(playlistSnapshotId)
-            .userProfileItem(userProfileItem)
-            .build();
-
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        SpotifyPlaylistItemDetails.builder().name(playlistName).build();
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    PlaylistDetails playlistDetails = PlaylistDetails.builder().name(playlistName).build();
-
+    SpotifyPlaylistItem playlistItem = getPlaylistItem();
+    SpotifyPlaylistItemDetails playlistItemDetails = getPlaylistItemDetails();
+    SpotifyUser user = getUser();
+    PlaylistDetails playlistDetails = (PlaylistDetails) getPlaylistDetails();
     given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistDetails.class)))
         .willReturn(playlistItemDetails);
-
-    given(spotifyClient.createPlaylist(userId, playlistItemDetails)).willReturn(playlistItem);
-
+    given(spotifyClient.createPlaylist(any(), any())).willReturn(playlistItem);
     given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistItem.class)))
         .willThrow(new RuntimeException(message));
 
@@ -241,57 +151,19 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void itShouldGetPlaylist() {
+  void itShouldGetPlaylist() throws Exception{
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MSw0NjNmNjc3ZTQwOWQzYzQ1N2ZjMzlkOGM5MjA4OGMzYjc1Mjk1NGFh";
-
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
-            .id(userId)
-            .displayName(userName)
-            .email(userEmail)
-            .uri(userUri)
-            .build();
-
-    SpotifyPlaylistItem playlistItem =
-        SpotifyPlaylistItem.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .snapshotId(playlistSnapshotId)
-            .userProfileItem(userProfileItem)
-            .build();
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    Playlist playlist =
-        Playlist.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .snapshotId(playlistSnapshotId)
-            .owner(user)
-            .build();
-
-    given(spotifyClient.getPlaylist(playlistId)).willReturn(playlistItem);
-
+    SpotifyPlaylistItem playlistItem = getPlaylistItem();
+    Playlist playlist = (Playlist) getPlaylist();
+    given(spotifyClient.getPlaylist(any())).willReturn(playlistItem);
     given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistItem.class))).willReturn(playlist);
 
     // When
-    underTest.getPlaylist(playlistId);
+    underTest.getPlaylist(playlist.getId());
 
     // Then
     then(spotifyClient).should().getPlaylist(playlistIdArgumentCaptor.capture());
-    assertThat(playlistIdArgumentCaptor.getValue()).isNotNull().isEqualTo(playlistId);
+    assertThat(playlistIdArgumentCaptor.getValue()).isNotNull().isEqualTo(playlist.getId());
 
     then(playlistMapper).should().mapToPlaylist(playlistItemArgumentCaptor.capture());
     assertThat(playlistItemArgumentCaptor.getValue())
@@ -315,38 +187,13 @@ class PlaylistServiceTest {
 
   @Test
   void
-      getPlaylistShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() {
+      getPlaylistShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() throws Exception{
     // Given
     String message = "message";
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
+    SpotifyPlaylistItem playlistItem = getPlaylistItem();
+    String playlistId = playlistItem.id();
 
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MSw0NjNmNjc3ZTQwOWQzYzQ1N2ZjMzlkOGM5MjA4OGMzYjc1Mjk1NGFh";
-
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
-            .id(userId)
-            .displayName(userName)
-            .email(userEmail)
-            .uri(userUri)
-            .build();
-
-    SpotifyPlaylistItem playlistItem =
-        SpotifyPlaylistItem.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .snapshotId(playlistSnapshotId)
-            .userProfileItem(userProfileItem)
-            .build();
-
-    given(spotifyClient.getPlaylist(playlistId)).willReturn(playlistItem);
-
+    given(spotifyClient.getPlaylist(any())).willReturn(playlistItem);
     given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistItem.class)))
         .willThrow(new RuntimeException(message));
 
@@ -359,48 +206,13 @@ class PlaylistServiceTest {
   @Test
   void itShouldAddTracks() {
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "playlist name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
-
-    AddItemsRequest addItemsRequest = new AddItemsRequest(List.of(trackUri));
+    SpotifyPlaylist playlist = getPlaylist();
+    List<SpotifyTrack> tracks = getTracks(2);
+    List<URI> trackUris = tracks.stream().map(SpotifyTrack::getUri).toList();
+    AddItemsRequest addItemsRequest = new AddItemsRequest(trackUris);
 
     // When
-    underTest.addTracks(playlist, List.of(track));
+    underTest.addTracks(playlist, tracks);
 
     // Then
     then(spotifyClient)
@@ -417,44 +229,8 @@ class PlaylistServiceTest {
   void addTracksShouldThrowAddTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(playlistId).name(playlistName).uri(playlistUri).owner(user).build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(List.of(artist))
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
+    SpotifyPlaylist playlist = getPlaylist();
+    List<SpotifyTrack> tracks = getTracks(2);
     given(spotifyClient.addItemsToPlaylist(any(), any())).willThrow(new RuntimeException(message));
 
     // Then
@@ -466,52 +242,9 @@ class PlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksCascadeConstraintViolationWhenSpotifyPlaylistIsNotValid() {
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistName = "playlist name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MyxmN2I2YTZmYjQ4NTAwZTk2ZmY1ZTNjYTgzMTFlNWZkZmIwMzEzY2Y0";
-
-    SpotifyPlaylist playlist =
-        Playlist.builder()
-            .id(null)
-            .name(playlistName)
-            .uri(playlistUri)
-            .owner(user)
-            .snapshotId(playlistSnapshotId)
-            .build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
+    SpotifyPlaylist playlist = getPlaylist();
+    playlist.setId(null);
+    List<SpotifyTrack> tracks = getTracks(2);
     Object[] parameterValues = {playlist, tracks};
 
     // When
@@ -527,31 +260,7 @@ class PlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksConstraintViolationWhenSpotifyPlaylistIsNull() {
     // Given
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
-
+    List<SpotifyTrack> tracks = getTracks(2);
     Object[] parameterValues = {null, tracks};
 
     // When
@@ -567,30 +276,8 @@ class PlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksConstraintViolationWhenTrackListIsEmpty() {
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "playlist name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MyxmN2I2YTZmYjQ4NTAwZTk2ZmY1ZTNjYTgzMTFlNWZkZmIwMzEzY2Y0";
-
-    SpotifyPlaylist playlist =
-        Playlist.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .owner(user)
-            .snapshotId(playlistSnapshotId)
-            .build();
-
+    SpotifyPlaylist playlist = getPlaylist();
     List<SpotifyTrack> tracks = List.of();
-
     Object[] parameterValues = {playlist, tracks};
 
     // When
@@ -606,55 +293,8 @@ class PlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksConstraintViolationWhenTrackListSizeMoreThan100() {
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "playlist name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MyxmN2I2YTZmYjQ4NTAwZTk2ZmY1ZTNjYTgzMTFlNWZkZmIwMzEzY2Y0";
-
-    SpotifyPlaylist playlist =
-        Playlist.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .owner(user)
-            .snapshotId(playlistSnapshotId)
-            .build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackId = "5Ko5Jn0OG8IDFEHhAYsCnj";
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    List<SpotifyTrack> tracks = new ArrayList<>();
-
-    SpotifyTrack track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
-
-    IntStream.rangeClosed(0, 100).forEach(index -> tracks.add(track));
-
+    SpotifyPlaylist playlist = getPlaylist();
+    List<SpotifyTrack> tracks = getTracks(101);
     Object[] parameterValues = {playlist, tracks};
 
     // When
@@ -670,51 +310,12 @@ class PlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksCascadeConstraintViolationWhenTrackListContainsNotValidElements() {
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
+    SpotifyPlaylist playlist = getPlaylist();
 
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    String playlistName = "playlist name";
-    URI playlistUri = URI.create("spotify:playlist:0S4WIUelgktE36rVcG7ZRy");
-    String playlistSnapshotId = "MyxmN2I2YTZmYjQ4NTAwZTk2ZmY1ZTNjYTgzMTFlNWZkZmIwMzEzY2Y0";
-
-    SpotifyPlaylist playlist =
-        Playlist.builder()
-            .id(playlistId)
-            .name(playlistName)
-            .uri(playlistUri)
-            .owner(user)
-            .snapshotId(playlistSnapshotId)
-            .build();
-
-    String artistId = "5VnrVRYzaatWXs102ScGwN";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:5VnrVRYzaatWXs102ScGwN");
-
-    Artist artist =
-        Artist.builder().id(artistId).name(artistName).uri(artistUri).genres(null).build();
-
-    String trackName = "name";
-    URI trackUri = URI.create("spotify:track:5Ko5Jn0OG8IDFEHhAYsCnj");
-    Integer trackPopularity = 32;
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    SpotifyTrack track =
-        Track.builder()
-            .id(null)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
+    SpotifyTrack track = getTrack();
+    track.setId(null);
+    List<SpotifyTrack> tracks = getTracks(1);
+    tracks.add(1, track);
 
     Object[] parameterValues = {playlist, tracks};
 
@@ -725,16 +326,13 @@ class PlaylistServiceTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(ADD_TRACKS + ".tracks[0].id: must not be null");
+        .hasMessage(ADD_TRACKS + ".tracks[1].id: must not be null");
   }
 
   @Test
   void itShouldDetectCreatePlaylistConstraintViolationsWhenSpotifyUserIsNull() {
     // Given
-    String playlistName = "name";
-
-    PlaylistDetails playlistDetails = PlaylistDetails.builder().name(playlistName).build();
-
+    SpotifyPlaylistDetails playlistDetails = getPlaylistDetails();
     Object[] parameterValues = {null, playlistDetails};
 
     // When
@@ -750,13 +348,7 @@ class PlaylistServiceTest {
   @Test
   void itShouldDetectCreatePlaylistConstraintViolationsWhenSpotifyPlaylistDetailsIsNull() {
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
-
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
+    SpotifyUser user = getUser();
 
     Object[] parameterValues = {user, null};
 
@@ -773,15 +365,10 @@ class PlaylistServiceTest {
   @Test
   void itShouldDetectCreatePlaylistCascadeConstraintViolationsWhenSpotifyUserIsNotValid() {
     // Given
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
+    SpotifyUser user = getUser();
+    user.setId(null);
 
-    String playlistName = "name";
-
-    SpotifyUser user = User.builder().id(null).name(userName).email(userEmail).uri(userUri).build();
-
-    PlaylistDetails playlistDetails = PlaylistDetails.builder().name(playlistName).build();
+    SpotifyPlaylistDetails playlistDetails = getPlaylistDetails();
 
     Object[] parameterValues = {user, playlistDetails};
 
@@ -799,15 +386,10 @@ class PlaylistServiceTest {
   void
       itShouldDetectCreatePlaylistCascadeConstraintViolationsWhenSpotifyPlaylistDetailsIsNotValid() {
     // Given
-    String userId = "12122604372";
-    String userName = "Konstantin";
-    String userEmail = "email@gmail.com";
-    URI userUri = URI.create("spotify:user:12122604372");
+    SpotifyUser user = getUser();
 
-    SpotifyUser user =
-        User.builder().id(userId).name(userName).email(userEmail).uri(userUri).build();
-
-    PlaylistDetails playlistDetails = PlaylistDetails.builder().name(null).build();
+    SpotifyPlaylistDetails playlistDetails = getPlaylistDetails();
+    playlistDetails.setName(null);
 
     Object[] parameterValues = {user, playlistDetails};
 
