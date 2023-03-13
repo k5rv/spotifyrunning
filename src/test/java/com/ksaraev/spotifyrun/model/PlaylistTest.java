@@ -1,11 +1,11 @@
 package com.ksaraev.spotifyrun.model;
 
+import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import com.ksaraev.spotifyrun.model.user.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -38,13 +38,7 @@ class PlaylistTest {
     SpotifyUser user = null;
 
     if (hasOwner) {
-      user =
-          User.builder()
-              .id("12122604372")
-              .name("name")
-              .uri(URI.create("spotify:user:12122604372"))
-              .email("email@mail.com")
-              .build();
+      user = getUser();
     }
 
     SpotifyPlaylist playlist =
@@ -61,22 +55,11 @@ class PlaylistTest {
   @Test
   void itShouldDetectSpotifyPlaylistCascadeConstraintViolations() {
     // Given
-    SpotifyUser user =
-        User.builder()
-            .id(null)
-            .name("name")
-            .uri(URI.create("spotify:user:12122604372"))
-            .email("email@mail.com")
-            .build();
+    SpotifyUser user = getUser();
+    user.setId(null);
 
-    SpotifyPlaylist playlist =
-        Playlist.builder()
-            .id("0moWPCTPTShumonjlsDgLe")
-            .name("playlist name")
-            .uri(URI.create("spotify:playlist:0moWPCTPTShumonjlsDgLe"))
-            .snapshotId("MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1")
-            .owner(user)
-            .build();
+    SpotifyPlaylist playlist = getPlaylist();
+    playlist.setOwner(user);
 
     // When
     Set<ConstraintViolation<SpotifyPlaylist>> constraintViolations = validator.validate(playlist);

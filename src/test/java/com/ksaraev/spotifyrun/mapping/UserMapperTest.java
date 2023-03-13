@@ -4,6 +4,7 @@ import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException
 
 import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
 import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
 import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
@@ -11,7 +12,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import org.assertj.core.api.Assertions;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,19 +28,14 @@ class UserMapperTest {
   @Test
   void itShouldMapSpotifyUserProfileItemToUser() throws Exception {
     // Given
-    String id = "12122604372";
-    String name = "Konstantin";
-    String email = "email@gmail.com";
-    URI uri = URI.create("spotify:user:12122604372");
-
-    User user = User.builder().id(id).name(name).email(email).uri(uri).build();
+    SpotifyUser user = SpotifyHelper.getUser();
 
     SpotifyUserProfileItem userProfileItem =
         SpotifyUserProfileItem.builder()
-            .id(id)
-            .displayName(name)
-            .uri(uri)
-            .email(email)
+            .id(user.getId())
+            .displayName(user.getName())
+            .uri(user.getUri())
+            .email(user.getEmail())
             .country("CC")
             .explicitContent(Map.of("filter_enabled", false, "filter_locked", false))
             .externalUrls(Map.of("spotify", "https://open.spotify.com/user/12122604372"))

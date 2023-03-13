@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrun.mapping;
 
-
 import com.ksaraev.spotifyrun.client.api.items.*;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
@@ -9,6 +8,7 @@ import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
 import com.ksaraev.spotifyrun.model.track.TrackMapperImpl;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TrackMapperImpl.class, ArtistMapperImpl.class})
@@ -29,41 +30,31 @@ class TrackMapperTest {
   @Test
   void itShouldMapSpotifyTrackItemToTrack() throws Exception {
     // Given
-    String artistID = "0102030405AaBbCcDdEeFf";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0102030405AaBbCcDdEeFf");
-
-    String trackId = "2222030405AaBbCcDdEeFf";
-    String trackName = "track name";
-    URI trackUri = URI.create("spotify:track:2222030405AaBbCcDdEeFf");
-    Integer trackPopularity = 52;
-
-    SpotifyArtist artist = Artist.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtist artist = getArtist();
 
     List<SpotifyArtist> artists = List.of(artist);
 
-    SpotifyTrack track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
+    SpotifyTrack track = getTrack();
+    track.setArtists(artists);
 
     SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistID).name(artistName).uri(artistUri).build();
+        SpotifyArtistItem.builder()
+            .id(artist.getId())
+            .name(artist.getName())
+            .uri(artist.getUri())
+            .genres(artist.getGenres())
+            .build();
 
     List<SpotifyArtistItem> artistItems = List.of(artistItem);
 
     SpotifyTrackItem trackItem =
         SpotifyTrackItem.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
+            .id(track.getId())
+            .name(track.getName())
+            .uri(track.getUri())
             .artistItems(artistItems)
             .albumItem(SpotifyAlbumItem.builder().build())
-            .popularity(trackPopularity)
+            .popularity(track.getPopularity())
             .href(new URL("https://api.spotify.com/v1/track/2222030405AaBbCcDdEeFf"))
             .track(true)
             .episode(false)

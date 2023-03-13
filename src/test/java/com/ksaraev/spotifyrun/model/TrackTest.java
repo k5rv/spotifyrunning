@@ -1,11 +1,13 @@
 package com.ksaraev.spotifyrun.model;
 
+import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.Track;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -37,14 +39,7 @@ class TrackTest {
   void itShouldDetectTrackConstraintViolations(
       String id, String name, URI uri, Integer popularity, Boolean hasArtists, String message) {
     // Given
-    SpotifyArtist artist =
-        Artist.builder()
-            .id("1234567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
-            .build();
-
-    List<SpotifyArtist> artists = hasArtists ? List.of(artist) : List.of();
+    List<SpotifyArtist> artists = hasArtists ? getArtists(2) : List.of();
 
     SpotifyTrack track =
         Track.builder().id(id).name(name).uri(uri).popularity(popularity).artists(artists).build();
@@ -62,23 +57,13 @@ class TrackTest {
     // Given
     String message = "artists[0].id: must not be null";
 
-    SpotifyArtist artist =
-        Artist.builder()
-            .id(null)
-            .name("artist name")
-            .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
-            .build();
+    SpotifyArtist artist = getArtist();
+    artist.setId(null);
 
     List<SpotifyArtist> artists = List.of(artist);
 
-    SpotifyTrack track =
-        Track.builder()
-            .id("1234567890AaBbCcDdEeFfG")
-            .name("track name")
-            .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
-            .popularity(51)
-            .artists(artists)
-            .build();
+    SpotifyTrack track = getTrack();
+    track.setArtists(artists);
 
     // When
     Set<ConstraintViolation<SpotifyTrack>> constraintViolations = validator.validate(track);

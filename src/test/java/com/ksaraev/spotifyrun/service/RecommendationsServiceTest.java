@@ -1,6 +1,7 @@
 package com.ksaraev.spotifyrun.service;
 
 import static com.ksaraev.spotifyrun.exception.business.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
+import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -18,6 +19,7 @@ import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestCo
 import com.ksaraev.spotifyrun.exception.business.GetRecommendationsException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyItem;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import com.ksaraev.spotifyrun.model.track.Track;
@@ -35,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -68,76 +69,13 @@ class RecommendationsServiceTest {
   @Test
   void itShouldGetRecommendations() {
     // Given
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
-
-    String seedTrackId = "0000567890AaBbCcDdEeFfG";
-    String seedTrackName = "seed track name";
-    URI seedTrackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer seedTrackPopularity = 51;
-
-    String recommendationTrackId = "112233445AaBbCcDdEeFfG";
-    String recommendationTrackName = "recommendation track name";
-    URI recommendationTrackUri = URI.create("spotify:track:112233445AaBbCcDdEeFfG");
-    Integer recommendationTrackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track seedTrack =
-        Track.builder()
-            .id(seedTrackId)
-            .name(seedTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(seedTrack);
-
-    Track recommendationTrack =
-        Track.builder()
-            .id(recommendationTrackId)
-            .name(recommendationTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> recommendationTracks = List.of(recommendationTrack);
-
-    BigDecimal minTempo = new BigDecimal(120);
-    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().tempo(minTempo).build();
-
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistId).name(artistName).uri(artistUri).build();
-
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
-
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
-            .id(recommendationTrackId)
-            .name(recommendationTrackName)
-            .uri(recommendationTrackUri)
-            .popularity(recommendationTrackPopularity)
-            .artistItems(artistItems)
-            .build();
-
-    List<SpotifyTrackItem> recommendationTrackItems = Collections.singletonList(trackItem);
-
-    List<String> seedTrackIds = List.of(seedTrackId);
-
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    List<SpotifyTrack> recommendationTracks = getTracks(10);
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
+    List<SpotifyTrackItem> recommendationTrackItems = getTrackItems(10);
+    List<String> seedTrackIds = seedTracks.stream().map(SpotifyTrack::getId).toList();
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        GetRecommendationsRequest.TrackFeatures.builder().minTempo(minTempo).build();
-
+        getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsRequest getRecommendationsRequest =
@@ -184,75 +122,13 @@ class RecommendationsServiceTest {
   @Test
   void itShouldGetRecommendationsWithoutFeaturesIncluded() {
     // Given
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
-
-    String seedTrackId = "0000567890AaBbCcDdEeFfG";
-    String seedTrackName = "seed track name";
-    URI seedTrackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer seedTrackPopularity = 51;
-
-    String recommendationTrackId = "112233445AaBbCcDdEeFfG";
-    String recommendationTrackName = "recommendation track name";
-    URI recommendationTrackUri = URI.create("spotify:track:112233445AaBbCcDdEeFfG");
-    Integer recommendationTrackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track seedTrack =
-        Track.builder()
-            .id(seedTrackId)
-            .name(seedTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(seedTrack);
-
-    Track recommendationTrack =
-        Track.builder()
-            .id(recommendationTrackId)
-            .name(recommendationTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> recommendationTracks = List.of(recommendationTrack);
-
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    List<SpotifyTrack> recommendationTracks = getTracks(10);
     SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().build();
-
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistId).name(artistName).uri(artistUri).build();
-
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
-
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
-            .id(recommendationTrackId)
-            .name(recommendationTrackName)
-            .uri(recommendationTrackUri)
-            .popularity(recommendationTrackPopularity)
-            .artistItems(artistItems)
-            .build();
-
-    List<SpotifyTrackItem> recommendationTrackItems = Collections.singletonList(trackItem);
-
-    List<String> seedTrackIds = List.of(seedTrackId);
-
+    List<SpotifyTrackItem> recommendationTrackItems = getTrackItems(5);
+    List<String> seedTrackIds = seedTracks.stream().map(SpotifyItem::getId).toList();
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        GetRecommendationsRequest.TrackFeatures.builder().build();
-
+        getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsRequest getRecommendationsRequest =
@@ -267,12 +143,9 @@ class RecommendationsServiceTest {
 
     given(trackFeaturesMapper.mapToRequestFeatures(any(TrackFeatures.class)))
         .willReturn(requestTrackFeatures);
-
     given(requestConfig.getLimit()).willReturn(limit);
-
     given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
         .willReturn(getRecommendationsResponse);
-
     given(trackMapper.mapItemsToTracks(anyList())).willReturn(recommendationTracks);
 
     // When
@@ -280,19 +153,16 @@ class RecommendationsServiceTest {
 
     // Then
     then(trackFeaturesMapper).should().mapToRequestFeatures(trackFeaturesArgumentCaptor.capture());
-
     assertThat(trackFeaturesArgumentCaptor.getValue()).isNotNull().isEqualTo(trackFeatures);
 
     then(spotifyClient)
         .should()
         .getRecommendations(getRecommendationsRequestArgumentCaptor.capture());
-
     assertThat(getRecommendationsRequestArgumentCaptor.getValue())
         .isNotNull()
         .isEqualTo(getRecommendationsRequest);
 
     then(trackMapper).should().mapItemsToTracks(trackItemsArgumentCaptor.capture());
-
     assertThat(trackItemsArgumentCaptor.getAllValues()).containsExactly(recommendationTrackItems);
   }
 
@@ -301,39 +171,9 @@ class RecommendationsServiceTest {
   void itShouldDetectGetRecommendationsConstraintViolationWhenSeedTracksSizeIsNotValid(
       Integer tracksNumber) throws Exception {
     // Given
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
 
-    String trackId = "0000567890AaBbCcDdEeFfG";
-    String trackName = "seed track name";
-    URI trackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer trackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> tracks = new ArrayList<>();
-
+    List<SpotifyTrack> tracks = getTracks(tracksNumber);
     TrackFeatures trackFeatures = TrackFeatures.builder().build();
-
-    IntStream.range(0, tracksNumber).forEach(index -> tracks.add(track));
 
     Method getRecommendations =
         RecommendationsService.class.getMethod(
@@ -355,36 +195,7 @@ class RecommendationsServiceTest {
   void itShouldDetectGetRecommendationsConstraintViolationWhenSeedTracksContainsNullElements()
       throws Exception {
     // Given
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
-
-    String trackId = "0000567890AaBbCcDdEeFfG";
-    String trackName = "seed track name";
-    URI trackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer trackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id(trackId)
-            .name(trackName)
-            .uri(trackUri)
-            .popularity(trackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> tracks = new ArrayList<>();
-    tracks.add(track);
+    List<SpotifyTrack> tracks = getTracks(1);
     tracks.add(null);
 
     TrackFeatures trackFeatures = TrackFeatures.builder().build();
@@ -432,24 +243,8 @@ class RecommendationsServiceTest {
     // Given
     String message = ".seedTracks[0].id: must not be null";
 
-    SpotifyArtist artist =
-        Artist.builder()
-            .id("0000567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:0000567890AaBbCcDdEeFfG"))
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    SpotifyTrack track =
-        Track.builder()
-            .id(null)
-            .name("seed track name")
-            .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
-            .popularity(51)
-            .artists(artists)
-            .build();
-
+    SpotifyTrack track = getTrack();
+    track.setId(null);
     List<SpotifyTrack> tracks = List.of(track);
 
     TrackFeatures trackFeatures = TrackFeatures.builder().build();
@@ -473,27 +268,7 @@ class RecommendationsServiceTest {
   @Test
   void itShouldDetectGetRecommendationsConstraintViolationWhenTrackFeaturesIsNull()
       throws Exception {
-
-    Artist artist =
-        Artist.builder()
-            .id("0000567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:0000567890AaBbCcDdEeFfG"))
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id("0000567890AaBbCcDdEeFfG")
-            .name("seed track name")
-            .uri(URI.create("spotify:track:0000567890AaBbCcDdEeFfG"))
-            .popularity(51)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> tracks = List.of(track);
+    List<SpotifyTrack> tracks = getTracks(2);
 
     Method getRecommendations =
         RecommendationsService.class.getMethod(
@@ -516,40 +291,15 @@ class RecommendationsServiceTest {
     // Given
     String message = "message";
 
-    Artist artist =
-        Artist.builder()
-            .id("0000567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:0000567890AaBbCcDdEeFfG"))
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id("0000567890AaBbCcDdEeFfG")
-            .name("seed track name")
-            .uri(URI.create("spotify:track:0000567890AaBbCcDdEeFfG"))
-            .popularity(51)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(track);
-
-    BigDecimal minTempo = new BigDecimal(120);
-    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().tempo(minTempo).build();
-
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        GetRecommendationsRequest.TrackFeatures.builder().minTempo(minTempo).build();
-
+        getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     given(trackFeaturesMapper.mapToRequestFeatures(any(TrackFeatures.class)))
         .willReturn(requestTrackFeatures);
-
     given(requestConfig.getLimit()).willReturn(limit);
-
     given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
         .willThrow(new RuntimeException(message));
 
@@ -563,30 +313,8 @@ class RecommendationsServiceTest {
   void itShouldThrowRecommendationExceptionWhenMapToRequestFeaturesThrowsRuntimeException() {
     // Given
     String message = "message";
-
-    Artist artist =
-        Artist.builder()
-            .id("0000567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:0000567890AaBbCcDdEeFfG"))
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track track =
-        Track.builder()
-            .id("0000567890AaBbCcDdEeFfG")
-            .name("seed track name")
-            .uri(URI.create("spotify:track:0000567890AaBbCcDdEeFfG"))
-            .popularity(51)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(track);
-
-    BigDecimal minTempo = new BigDecimal(120);
-    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().tempo(minTempo).build();
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
 
     given(trackFeaturesMapper.mapToRequestFeatures(any(TrackFeatures.class)))
         .willThrow(new RuntimeException(message));
@@ -602,63 +330,11 @@ class RecommendationsServiceTest {
     // Given
     String message = "message";
 
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
-
-    String seedTrackId = "0000567890AaBbCcDdEeFfG";
-    String seedTrackName = "seed track name";
-    URI seedTrackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer seedTrackPopularity = 51;
-
-    String recommendationTrackId = "112233445AaBbCcDdEeFfG";
-    String recommendationTrackName = "recommendation track name";
-    URI recommendationTrackUri = URI.create("spotify:track:112233445AaBbCcDdEeFfG");
-    Integer recommendationTrackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track seedTrack =
-        Track.builder()
-            .id(seedTrackId)
-            .name(seedTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(seedTrack);
-
-    BigDecimal minTempo = new BigDecimal(120);
-    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().tempo(minTempo).build();
-
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistId).name(artistName).uri(artistUri).build();
-
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
-
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
-            .id(recommendationTrackId)
-            .name(recommendationTrackName)
-            .uri(recommendationTrackUri)
-            .popularity(recommendationTrackPopularity)
-            .artistItems(artistItems)
-            .build();
-
-    List<SpotifyTrackItem> recommendationTrackItems = Collections.singletonList(trackItem);
-
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
+    List<SpotifyTrackItem> recommendationTrackItems = getTrackItems(2);
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        GetRecommendationsRequest.TrackFeatures.builder().minTempo(minTempo).build();
-
+        getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsResponse getRecommendationsResponse =
@@ -683,60 +359,23 @@ class RecommendationsServiceTest {
   @Test
   void itShouldReturnEmptyListWhenSpotifyTrackItemsListIsEmpty() {
     // Given
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
-
-    String seedTrackId = "0000567890AaBbCcDdEeFfG";
-    String seedTrackName = "seed track name";
-    URI seedTrackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer seedTrackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track seedTrack =
-        Track.builder()
-            .id(seedTrackId)
-            .name(seedTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(seedTrack);
-
-    BigDecimal minTempo = new BigDecimal(120);
-    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().tempo(minTempo).build();
-
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
     List<SpotifyTrackItem> recommendationTrackItems = List.of();
-
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        GetRecommendationsRequest.TrackFeatures.builder().minTempo(minTempo).build();
-
+        getRecommendationRequestTrackFeatures();
     Integer limit = 10;
-
     GetRecommendationsResponse getRecommendationsResponse =
         GetRecommendationsResponse.builder().trackItems(recommendationTrackItems).build();
 
     given(trackFeaturesMapper.mapToRequestFeatures(any(TrackFeatures.class)))
         .willReturn(requestTrackFeatures);
-
     given(requestConfig.getLimit()).willReturn(limit);
-
     given(spotifyClient.getRecommendations(any(GetRecommendationsRequest.class)))
         .willReturn(getRecommendationsResponse);
 
     // Then
     assertThat(underTest.getRecommendations(seedTracks, trackFeatures)).isEmpty();
-
     then(trackMapper).should(never()).mapItemsToTracks(trackItemsArgumentCaptor.capture());
 
     assertThat(trackItemsArgumentCaptor.getAllValues()).isEmpty();
@@ -745,46 +384,13 @@ class RecommendationsServiceTest {
   @Test
   void itShouldReturnEmptyListWhenSpotifyTrackItemsListElementsAreNull() {
     // Given
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
-
-    String seedTrackId = "0000567890AaBbCcDdEeFfG";
-    String seedTrackName = "seed track name";
-    URI seedTrackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer seedTrackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track seedTrack =
-        Track.builder()
-            .id(seedTrackId)
-            .name(seedTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(seedTrack);
-
-    BigDecimal minTempo = new BigDecimal(120);
-    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().tempo(minTempo).build();
-
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
     List<SpotifyTrackItem> recommendationTrackItems = new ArrayList<>();
     recommendationTrackItems.add(null);
     recommendationTrackItems.add(null);
-
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        GetRecommendationsRequest.TrackFeatures.builder().minTempo(minTempo).build();
-
+        getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsResponse getRecommendationsResponse =
@@ -809,57 +415,9 @@ class RecommendationsServiceTest {
   @Test
   void itShouldReturnNonNullElementsWhenSpotifyTrackItemsListContainsNullElements() {
     // Given
-    String artistId = "0000567890AaBbCcDdEeFfG";
-    String artistName = "artist name";
-    URI artistUri = URI.create("spotify:artist:0000567890AaBbCcDdEeFfG");
-
-    String seedTrackId = "0000567890AaBbCcDdEeFfG";
-    String seedTrackName = "seed track name";
-    URI seedTrackUri = URI.create("spotify:track:0000567890AaBbCcDdEeFfG");
-    Integer seedTrackPopularity = 51;
-
-    String recommendationTrackId = "112233445AaBbCcDdEeFfG";
-    String recommendationTrackName = "recommendation track name";
-    URI recommendationTrackUri = URI.create("spotify:track:112233445AaBbCcDdEeFfG");
-    Integer recommendationTrackPopularity = 51;
-
-    Artist artist =
-        Artist.builder()
-            .id(artistId)
-            .name(artistName)
-            .uri(artistUri)
-            .genres(Collections.emptyList())
-            .build();
-
-    List<SpotifyArtist> artists = List.of(artist);
-
-    Track seedTrack =
-        Track.builder()
-            .id(seedTrackId)
-            .name(seedTrackName)
-            .uri(seedTrackUri)
-            .popularity(seedTrackPopularity)
-            .artists(artists)
-            .build();
-
-    List<SpotifyTrack> seedTracks = List.of(seedTrack);
-
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistId).name(artistName).uri(artistUri).build();
-
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
-
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
-            .id(recommendationTrackId)
-            .name(recommendationTrackName)
-            .uri(recommendationTrackUri)
-            .popularity(recommendationTrackPopularity)
-            .artistItems(artistItems)
-            .build();
-
-    BigDecimal minTempo = new BigDecimal(120);
-    SpotifyTrackFeatures trackFeatures = TrackFeatures.builder().tempo(minTempo).build();
+    List<SpotifyTrack> seedTracks = getTracks(2);
+    SpotifyTrackItem trackItem = getTrackItem();
+    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
 
     List<SpotifyTrackItem> recommendationTrackItems = new ArrayList<>();
     recommendationTrackItems.add(null);
@@ -867,8 +425,7 @@ class RecommendationsServiceTest {
     recommendationTrackItems.add(null);
 
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        GetRecommendationsRequest.TrackFeatures.builder().minTempo(minTempo).build();
-
+        getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsResponse getRecommendationsResponse =
