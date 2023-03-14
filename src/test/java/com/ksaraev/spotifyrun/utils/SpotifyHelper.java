@@ -3,9 +3,7 @@ package com.ksaraev.spotifyrun.utils;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.SpotifyItemType.*;
 import static java.util.concurrent.ThreadLocalRandom.*;
 
-import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
-import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
-import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
+import com.ksaraev.spotifyrun.client.api.*;
 import com.ksaraev.spotifyrun.client.api.items.*;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
@@ -18,9 +16,11 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.IntStream;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -252,41 +252,11 @@ public class SpotifyHelper {
   }
 
   public static SpotifyPlaylistItem getPlaylistItem() {
-    return getPlaylistItemWithMusic(null);
-    /*    String id = getRandomId();
-    String name = getRandomName();
-    URI uri = PLAYLIST.getUri(id);
-    SpotifyUserProfileItem userProfileItem = getUserProfileItem();
-    String snapshotId = getRandomSnapshotId();
-    String description = getRandomDescription();
-    String type = PLAYLIST.getType();
-    Boolean isPublic = true;
-    Boolean isCollaborative = false;
-    String primaryColor = getPrimaryColor();
-    Map<String, Object> followers = getFollowers();
-    Map<String, Object> externalUrls = getExternalUrls(PLAYLIST, id);
-    List<Map<String, Object>> images = getImages();
-    URL href = getHref(PLAYLIST, id);
-    return SpotifyPlaylistItem.builder()
-        .id(id)
-        .name(name)
-        .uri(uri)
-        .userProfileItem(userProfileItem)
-        .snapshotId(snapshotId)
-        .description(description)
-        .type(type)
-        .isCollaborative(isCollaborative)
-        .isPublic(isPublic)
-        .primaryColor(primaryColor)
-        .followers(followers)
-        .externalUrls(externalUrls)
-        .images(images)
-        .href(href)
-        .build();*/
+    String id = getRandomId();
+    return getPlaylistItem(id);
   }
 
-  public static SpotifyPlaylistItem getPlaylistItemWithMusic(SpotifyPlaylistItemMusic playlistItemMusic) {
-    String id = getRandomId();
+  public static SpotifyPlaylistItem getPlaylistItem(String id) {
     String name = getRandomName();
     URI uri = PLAYLIST.getUri(id);
     SpotifyUserProfileItem userProfileItem = getUserProfileItem();
@@ -315,14 +285,18 @@ public class SpotifyHelper {
         .externalUrls(externalUrls)
         .images(images)
         .href(href)
-        .playlistItemMusic(playlistItemMusic)
         .build();
   }
 
   public static SpotifyPlaylistItemTrack getSpotifyPlaylistItemTrack() {
     SpotifyTrackItem trackItem = getTrackItem();
-    String addedAt = "2020-12-04T14:14:36Z";
     SpotifyUserProfileItem addedBy = getUserProfileItem();
+    return getSpotifyPlaylistItemTrack(addedBy, trackItem);
+  }
+
+  public static SpotifyPlaylistItemTrack getSpotifyPlaylistItemTrack(
+      SpotifyUserProfileItem addedBy, SpotifyTrackItem trackItem) {
+    String addedAt = ZonedDateTime.now().toString();
     Boolean isLocal = false;
     String primaryColor = getPrimaryColor();
     Map<String, Object> videoThumbnail = getVideoThumbNail(trackItem.id());
@@ -333,6 +307,66 @@ public class SpotifyHelper {
         .isLocal(isLocal)
         .primaryColor(primaryColor)
         .videoThumbnail(videoThumbnail)
+        .build();
+  }
+
+  public static List<SpotifyPlaylistItemTrack> getSpotifyPlaylistItemTracks(
+      SpotifyUserProfileItem addedBy, List<SpotifyTrackItem> trackItems) {
+    return trackItems.stream()
+        .filter(Objects::nonNull)
+        .map(trackItem -> getSpotifyPlaylistItemTrack(addedBy, trackItem))
+        .toList();
+  }
+
+  public static SpotifyPlaylistItemMusic getSpotifyPlaylistItemMusic(
+      SpotifyUserProfileItem userProfileItem, List<SpotifyTrackItem> trackItems) {
+    List<SpotifyPlaylistItemTrack> playlistItemTracks =
+        getSpotifyPlaylistItemTracks(userProfileItem, trackItems);
+    return SpotifyPlaylistItemMusic.builder()
+        .playlistItemTracks(playlistItemTracks)
+        .next(null)
+        .previous(null)
+        .href(null)
+        .total(trackItems.size())
+        .limit(100)
+        .offset(0)
+        .build();
+  }
+
+  public static SpotifyPlaylistItem updatePlaylist(
+      SpotifyPlaylistItem playlistItem, List<SpotifyTrackItem> trackItems) {
+    String id = playlistItem.id();
+    String name = playlistItem.name();
+    URI uri = playlistItem.uri();
+    SpotifyUserProfileItem userProfileItem = playlistItem.userProfileItem();
+    String snapshotId = getRandomSnapshotId();
+    String description = playlistItem.description();
+    String type = PLAYLIST.getType();
+    Boolean isPublic = true;
+    Boolean isCollaborative = false;
+    String primaryColor = getPrimaryColor();
+    Map<String, Object> followers = getFollowers();
+    Map<String, Object> externalUrls = getExternalUrls(PLAYLIST, playlistItem.id());
+    List<Map<String, Object>> images = getImages();
+    URL href = getHref(PLAYLIST, playlistItem.id());
+    SpotifyPlaylistItemMusic playlistItemMusic =
+        getSpotifyPlaylistItemMusic(playlistItem.userProfileItem(), trackItems);
+    return SpotifyPlaylistItem.builder()
+        .id(id)
+        .name(name)
+        .uri(uri)
+        .userProfileItem(userProfileItem)
+        .playlistItemMusic(playlistItemMusic)
+        .snapshotId(snapshotId)
+        .description(description)
+        .type(type)
+        .isCollaborative(isCollaborative)
+        .isPublic(isPublic)
+        .primaryColor(primaryColor)
+        .followers(followers)
+        .externalUrls(externalUrls)
+        .images(images)
+        .href(href)
         .build();
   }
 
@@ -377,6 +411,57 @@ public class SpotifyHelper {
         .build();
   }
 
+  public static GetRecommendationsResponse createGetRecommendationsResponse(
+      List<SpotifyTrackItem> trackItems) {
+    List<Map<String, Object>> seeds =
+        List.of(
+            Map.of(
+                "initialPoolSize",
+                428,
+                "afterFilteringSize",
+                238,
+                "afterRelinkingSize",
+                238,
+                "id",
+                "0000567890AaBbCcDdEeFfG",
+                "type",
+                "ARTIST",
+                "href",
+                "https://api.spotify.com/v1/artists/0000567890AaBbCcDdEeFfG"),
+            Map.of(
+                "initialPoolSize",
+                425,
+                "afterFilteringSize",
+                222,
+                "afterRelinkingSize",
+                222,
+                "id",
+                "112233445AaBbCcDdEeFfG",
+                "type",
+                "TRACK",
+                "href",
+                "https://api.spotify.com/v1/tracks/1122AA4450011CcDdEeFfG"),
+            Map.of(
+                "initialPoolSize",
+                160,
+                "afterFilteringSize",
+                58,
+                "afterRelinkingSize",
+                58,
+                "id",
+                "genre name",
+                "type",
+                "GENRE",
+                "href",
+                ""));
+    return GetRecommendationsResponse.builder().trackItems(trackItems).seeds(seeds).build();
+  }
+
+  public static AddItemsResponse createAddItemsResponse() {
+    String snapshotId = getRandomSnapshotId();
+    return AddItemsResponse.builder().snapshotId(snapshotId).build();
+  }
+
   public static List<SpotifyArtist> getArtists(Integer size) {
     return getSpotifyItems(size, SpotifyArtist.class);
   }
@@ -406,31 +491,6 @@ public class SpotifyHelper {
 
   public static List<SpotifyTrackItem> getTrackItems(Integer size) {
     return getSpotifyClientItems(size, SpotifyTrackItem.class);
-  }
-
-  public static List<SpotifyPlaylistItemTrack> getPlaylistItemTracks(Integer size) {
-    return getSpotifyClientItems(size, SpotifyPlaylistItemTrack.class);
-  }
-
-  public static SpotifyPlaylistItemMusic getSpotifyPlaylistItemMusic(List<SpotifyPlaylistItemTrack> playlistItemTracks) {
-    URL href;
-    try {
-      href = new URL("https://api.spotify.com");
-    } catch (MalformedURLException e) {
-      throw new RuntimeException("unable to create URL" + e.getMessage(), e);
-    }
-    Integer offset = 0;
-    Integer total = 50;
-    Integer limit = 50;
-    return SpotifyPlaylistItemMusic.builder()
-        .next(null)
-        .href(href)
-        .previous(null)
-        .total(total)
-        .offset(offset)
-        .limit(limit)
-        .playlistItemTracks(playlistItemTracks)
-        .build();
   }
 
   private static <T> List<T> getSpotifyClientItems(Integer size, Class<T> type) {

@@ -1,5 +1,7 @@
 package com.ksaraev.spotifyrun.mapping;
 
+import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
+
 import com.ksaraev.spotifyrun.client.api.items.*;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
@@ -8,7 +10,6 @@ import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
 import com.ksaraev.spotifyrun.model.track.TrackMapperImpl;
-import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -19,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TrackMapperImpl.class, ArtistMapperImpl.class})

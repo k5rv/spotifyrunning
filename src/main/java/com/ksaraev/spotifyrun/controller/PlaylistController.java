@@ -43,7 +43,6 @@ public class PlaylistController {
       throw new UserTopTracksNotFoundException(USER_TOP_TRACKS_NOT_FOUND);
     }
 
-    // TODO: check that requests continue while list size less than playlistConfig.getSize()
     List<SpotifyTrack> musicRecommendations =
         userTopTracks.stream()
             .map(

@@ -2,11 +2,11 @@ package com.ksaraev.spotifyrun.client.api.items;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import java.net.URI;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,32 +39,12 @@ class SpotifyPlaylistItemMusicTest {
     SpotifyUserProfileItem userProfileItem =
         isAddedByNull
             ? null
-            : SpotifyUserProfileItem.builder()
-                .id("12122604372")
-                .displayName("name")
-                .uri(URI.create("spotify:user:12122604372"))
-                .email("email@mail.com")
-                .build();
-
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder()
-            .id("1234567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
-            .build();
-
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
+            : SpotifyHelper.getUserProfileItem();
 
     SpotifyTrackItem trackItem =
         isTrackItemNull
             ? null
-            : SpotifyTrackItem.builder()
-                .id("1234567890AaBbCcDdEeFfG")
-                .name("track name")
-                .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
-                .popularity(51)
-                .artistItems(artistItems)
-                .build();
+            : SpotifyHelper.getTrackItem();
 
     String addedAt = isAddedAtNull ? null : "2020-12-04T14:14:36Z";
 
@@ -90,30 +70,7 @@ class SpotifyPlaylistItemMusicTest {
     String message = "playlistItemTracks[0].trackItem: must not be null";
 
     SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
-            .id("12122604372")
-            .displayName("name")
-            .uri(URI.create("spotify:user:12122604372"))
-            .email("email@mail.com")
-            .build();
-
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder()
-            .id("1234567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
-            .build();
-
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
-
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
-            .id("1234567890AaBbCcDdEeFfG")
-            .name("playlist name")
-            .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
-            .popularity(51)
-            .artistItems(artistItems)
-            .build();
+       SpotifyHelper.getUserProfileItem();
 
     SpotifyPlaylistItemTrack playlistItemTrack =
         SpotifyPlaylistItemTrack.builder()
