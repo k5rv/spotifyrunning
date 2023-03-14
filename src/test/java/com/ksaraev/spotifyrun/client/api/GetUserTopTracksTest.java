@@ -6,6 +6,7 @@ import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistItem;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -78,14 +79,7 @@ class GetUserTopTracksTest {
   void
       itShouldDetectGetUserTopTracksMethodCascadeConstraintViolationWhenReturnValueGetUserTopTracksResponseIsNotValid() {
     // Given
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder()
-            .id("1234567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
-            .build();
-
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
+    List<SpotifyArtistItem> artistItems = SpotifyHelper.getArtistItems(2);
 
     SpotifyTrackItem trackItem =
         SpotifyTrackItem.builder()

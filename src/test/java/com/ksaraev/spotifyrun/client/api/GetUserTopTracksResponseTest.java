@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistItem;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -39,14 +40,7 @@ class GetUserTopTracksResponseTest {
   void itShouldDetectGetUserTopTracksResponseConstraintViolations(
       String id, String name, URI uri, Integer popularity, Boolean hasArtists, String message) {
     // Given
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder()
-            .id("1234567890AaBbCcDdEeFfG")
-            .name("artist name")
-            .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
-            .build();
-
-    List<SpotifyArtistItem> artistItems = hasArtists ? List.of(artistItem) : List.of();
+    List<SpotifyArtistItem> artistItems = hasArtists ? SpotifyHelper.getArtistItems(1) : List.of();
 
     SpotifyTrackItem trackItem =
         SpotifyTrackItem.builder()

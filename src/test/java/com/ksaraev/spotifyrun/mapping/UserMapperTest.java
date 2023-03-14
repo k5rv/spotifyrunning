@@ -5,14 +5,13 @@ import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException
 import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import com.ksaraev.spotifyrun.model.user.User;
 import com.ksaraev.spotifyrun.model.user.UserMapper;
 import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
-import java.net.URI;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import com.ksaraev.spotifyrun.utils.SpotifyHelper;import org.assertj.core.api.Assertions;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

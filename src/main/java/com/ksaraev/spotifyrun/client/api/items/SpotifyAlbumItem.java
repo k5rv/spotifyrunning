@@ -26,5 +26,3 @@ public record SpotifyAlbumItem(
     @NotNull URI uri,
     URL href,
     List<Map<String, Object>> images) {}
-
-

@@ -10,7 +10,16 @@ public class JsonHelper {
       return new ObjectMapper().readValue(json, aClass);
     } catch (JsonProcessingException e) {
       AssertionErrors.fail(
-          "Fail to convert Json [" + json + "] to instance of [" + aClass + "]:" + e.getMessage());
+          "Fail to convert Json [" + json + "] to instance of [" + aClass + "]: " + e.getMessage());
+      return null;
+    }
+  }
+
+  public static String objectToJson(Object object) {
+    try {
+      return new ObjectMapper().writeValueAsString(object);
+    } catch (JsonProcessingException e) {
+      AssertionErrors.fail("Fail to convert object [" + object + "] to Json: " + e.getMessage());
       return null;
     }
   }

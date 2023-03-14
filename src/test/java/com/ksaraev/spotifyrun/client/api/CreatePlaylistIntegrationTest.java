@@ -9,6 +9,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -91,13 +92,7 @@ class CreatePlaylistIntegrationTest {
           """;
 
     String userId = "12122604372";
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        SpotifyPlaylistItemDetails.builder()
-            .name("playlist name")
-            .description("playlist description")
-            .isCollaborative(false)
-            .isPublic(false)
-            .build();
+    SpotifyPlaylistItemDetails playlistItemDetails = SpotifyHelper.getPlaylistItemDetails();
 
     stubFor(
         post(urlEqualTo("/v1/users/" + userId + "/playlists"))

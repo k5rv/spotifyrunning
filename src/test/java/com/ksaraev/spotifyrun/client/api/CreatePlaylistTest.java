@@ -7,6 +7,7 @@ import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
+import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -89,12 +90,7 @@ class CreatePlaylistTest {
     String message = ".<return value>.id: must not be null";
 
     SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
-            .id("12122604372")
-            .displayName("name")
-            .email("email@gmail.com")
-            .uri(URI.create("spotify:user:12122604372"))
-            .build();
+        SpotifyHelper.getUserProfileItem();
 
     SpotifyPlaylistItem playlistItem =
         SpotifyPlaylistItem.builder()
