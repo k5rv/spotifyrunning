@@ -8,9 +8,11 @@ import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import com.ksaraev.spotifyrun.model.track.TrackFeatures;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
 public class SpotifyRunConfig {
@@ -44,6 +46,13 @@ public class SpotifyRunConfig {
   private BigDecimal minEnergy;
 
   @Bean
+  public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
+    MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+    jsonConverter.setDefaultCharset(StandardCharsets.UTF_8);
+    return jsonConverter;
+  }
+
+  @Bean
   SpotifyRunPlaylistConfig getWorkoutPlaylistConfig() {
     SpotifyPlaylistDetails playlistDetails =
         PlaylistDetails.builder().name(this.name).description(this.description).build();
@@ -62,3 +71,4 @@ public class SpotifyRunConfig {
         .build();
   }
 }
+
