@@ -73,7 +73,7 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void itShouldCreatePlaylist() throws Exception{
+  void itShouldCreatePlaylist(){
     // Given
     SpotifyPlaylistItemDetails playlistItemDetails = getPlaylistItemDetails();
     SpotifyPlaylistItem playlistItem = getPlaylistItem();
@@ -131,7 +131,7 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() throws Exception{
+  void itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() {
     // Given
     String message = "message";
     SpotifyPlaylistItem playlistItem = getPlaylistItem();
@@ -151,7 +151,7 @@ class PlaylistServiceTest {
   }
 
   @Test
-  void itShouldGetPlaylist() throws Exception{
+  void itShouldGetPlaylist(){
     // Given
     SpotifyPlaylistItem playlistItem = getPlaylistItem();
     Playlist playlist = (Playlist) getPlaylist();
@@ -187,7 +187,7 @@ class PlaylistServiceTest {
 
   @Test
   void
-      getPlaylistShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() throws Exception{
+      getPlaylistShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() {
     // Given
     String message = "message";
     SpotifyPlaylistItem playlistItem = getPlaylistItem();

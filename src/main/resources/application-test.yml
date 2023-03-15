@@ -4,30 +4,10 @@ server:
     include-message: always
     include-binding-errors: always
     include-stacktrace: never
+
 spring:
   application:
     name: spotifyrun
-  main:
-    allow-bean-definition-overriding: true
-  security:
-    oauth2:
-      client:
-        registration:
-          spotify:
-            client-name: spotify
-            client-id: f9e2da24684d494981191203959dd4d4
-            client-secret: 17481f24711c449baa451d960c4b9e2c
-            provider: spotify
-            client-authentication-method: client_secret_basic
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
-            scope: user-read-email, user-top-read, playlist-modify-public, playlist-modify-private
-        provider:
-          spotify:
-            authorization-uri: https://accounts.spotify.com/authorize?show_dialog=false
-            token-uri: https://accounts.spotify.com/api/token
-            user-info-uri: https://api.spotify.com/v1/me
-            user-name-attribute: display_name
   cloud:
     openfeign:
       client:
@@ -35,9 +15,6 @@ spring:
           spotify:
             url: http://127.0.0.1:${wiremock.server.port}/v1
             logger-level: full
-      oauth2:
-        enabled: false
-        clientRegistrationId: spotify
 
 spotifyrun:
   playlist:
@@ -60,8 +37,5 @@ spotifyrun:
 
 logging:
   level:
-    com.ksaraev.spotifyrun.client.SpotifyClient: DEBUG
-    com.ksaraev.spotifyrun.service.RunService: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-
+    com.ksaraev.spotifyrun: INFO
+    org.springframework.web: INFO

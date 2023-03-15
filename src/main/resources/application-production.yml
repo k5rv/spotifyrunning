@@ -4,19 +4,18 @@ server:
     include-message: always
     include-binding-errors: always
     include-stacktrace: never
+
 spring:
   application:
-    name: spotifyRun
-  main:
-    allow-bean-definition-overriding: true
+    name: spotifyrun
   security:
     oauth2:
       client:
         registration:
           spotify:
             client-name: spotify
-            client-id: spotify-app-client-id
-            client-secret: spotify-app-client-secret
+            client-id: client-id-value
+            client-secret: client-secret-value
             provider: spotify
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
@@ -34,11 +33,10 @@ spring:
         config:
           spotify:
             url: https://api.spotify.com/v1
-            error-decoder: com.ksaraev.spotifyrun.client.config.decoders.SpotifyClientErrorDecoder
-            query-map-encoder: com.ksaraev.spotifyrun.client.config.encoders.SpotifyClientRequestQueryMapEncoder
-            request-interceptors:
-              - com.ksaraev.spotifyrun.client.config.interceptors.SpotifyClientAuthRequestInterceptor
-            logger-level: BASIC
+            logger-level: full
+      oauth2:
+        enabled: true
+        clientRegistrationId: spotify
 
 spotifyrun:
   playlist:
@@ -61,4 +59,4 @@ spotifyrun:
 
 logging:
   level:
-    com.ksaraev.spotifyrun.client.SpotifyClient: ERROR
+    com.ksaraev.spotifyrun: ERROR
