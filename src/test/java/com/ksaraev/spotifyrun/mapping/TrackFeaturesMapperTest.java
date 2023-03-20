@@ -6,11 +6,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.trackfeatures.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.model.trackfeatures.TrackFeatures;
-import com.ksaraev.spotifyrun.model.trackfeatures.TrackFeaturesMapper;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.model.track.TrackFeatures;
+import com.ksaraev.spotifyrun.model.track.TrackFeaturesMapper;
+import com.ksaraev.spotifyrun.model.track.TrackFeaturesMapperImpl;
 import java.math.BigDecimal;
-import com.ksaraev.spotifyrun.model.trackfeatures.TrackFeaturesMapperImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

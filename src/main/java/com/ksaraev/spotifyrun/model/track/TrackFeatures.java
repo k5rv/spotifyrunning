@@ -1,5 +1,6 @@
-package com.ksaraev.spotifyrun.model.trackfeatures;
+package com.ksaraev.spotifyrun.model.track;
 
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import java.math.BigDecimal;
 import lombok.Builder;
 import lombok.Data;

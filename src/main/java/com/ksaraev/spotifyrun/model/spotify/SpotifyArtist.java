@@ -1,6 +1,5 @@
-package com.ksaraev.spotifyrun.model.artist;
+package com.ksaraev.spotifyrun.model.spotify;
 
-import com.ksaraev.spotifyrun.model.spotify.SpotifyItem;
 import java.util.List;
 
 public interface SpotifyArtist extends SpotifyItem {

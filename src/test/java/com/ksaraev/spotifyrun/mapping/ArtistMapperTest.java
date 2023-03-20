@@ -8,7 +8,7 @@ import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapper;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
-import com.ksaraev.spotifyrun.model.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

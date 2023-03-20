@@ -3,7 +3,7 @@ package com.ksaraev.spotifyrun.model;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

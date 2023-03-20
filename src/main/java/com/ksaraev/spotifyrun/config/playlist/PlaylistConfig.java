@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.config.playlist;
 
-import com.ksaraev.spotifyrun.model.playlistdetails.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import lombok.Builder;
 import lombok.Data;
 

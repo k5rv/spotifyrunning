@@ -7,17 +7,17 @@ import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
 import com.ksaraev.spotifyrun.model.artist.Artist;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
-import com.ksaraev.spotifyrun.model.playlistdetails.PlaylistDetails;
+import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistMapper;
 import com.ksaraev.spotifyrun.model.playlist.PlaylistMapperImpl;
-import com.ksaraev.spotifyrun.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrun.model.playlistdetails.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.track.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.user.AppUserMapperImpl;
-import com.ksaraev.spotifyrun.model.user.SpotifyUser;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
 import com.ksaraev.spotifyrun.model.track.Track;
 import com.ksaraev.spotifyrun.model.track.TrackMapperImpl;
-import com.ksaraev.spotifyrun.model.user.AppUser;
+import com.ksaraev.spotifyrun.model.user.User;
+import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -35,7 +35,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
       PlaylistMapperImpl.class,
       ArtistMapperImpl.class,
       TrackMapperImpl.class,
-      AppUserMapperImpl.class
+      UserMapperImpl.class
     })
 class PlaylistMapperTest {
 
@@ -75,7 +75,7 @@ class PlaylistMapperTest {
 
     List<SpotifyArtist> artists = List.of(artist);
 
-    Track trackOne =
+    SpotifyTrack trackOne =
         Track.builder()
             .id(trackOneId)
             .name(trackOneName)
@@ -84,7 +84,7 @@ class PlaylistMapperTest {
             .artists(artists)
             .build();
 
-    Track trackTwo =
+    SpotifyTrack trackTwo =
         Track.builder()
             .id(trackTwoId)
             .name(trackTwoName)
@@ -93,8 +93,8 @@ class PlaylistMapperTest {
             .artists(artists)
             .build();
 
-    AppUser spotifyUser =
-        AppUser.builder().id(userId).name(userName).uri(userUri).email(email).build();
+    SpotifyUser spotifyUser =
+        User.builder().id(userId).name(userName).uri(userUri).email(email).build();
 
     Playlist playlist =
         Playlist.builder()

@@ -10,7 +10,7 @@ import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
 import com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException;
-import com.ksaraev.spotifyrun.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.TrackMapper;
 import java.util.Arrays;
 import java.util.List;
