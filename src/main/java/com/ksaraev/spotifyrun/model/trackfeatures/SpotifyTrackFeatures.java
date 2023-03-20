@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.model.spotify;
+package com.ksaraev.spotifyrun.model.trackfeatures;
 
 import java.math.BigDecimal;
 

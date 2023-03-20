@@ -4,9 +4,10 @@ import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException
 
 import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import com.ksaraev.spotifyrun.model.user.UserMapper;
-import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
+import com.ksaraev.spotifyrun.model.user.AppUserMapper;
+import com.ksaraev.spotifyrun.model.user.AppUserMapperImpl;
+import com.ksaraev.spotifyrun.model.user.SpotifyUser;
+import com.ksaraev.spotifyrun.model.user.AppUserMapperImpl;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.net.URL;
 import java.util.List;
@@ -19,10 +20,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserMapperImpl.class})
-class UserMapperTest {
+@ContextConfiguration(classes = {AppUserMapperImpl.class})
+class AppAppUserMapperTest {
 
-  @Autowired UserMapper underTest;
+  @Autowired AppUserMapper underTest;
 
   @Test
   void itShouldMapSpotifyUserProfileItemToUser() throws Exception {
