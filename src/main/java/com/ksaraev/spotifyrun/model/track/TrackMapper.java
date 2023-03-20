@@ -4,7 +4,6 @@ import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemTrack;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.artist.ArtistMapper;
 import com.ksaraev.spotifyrun.model.spotify.SpotifyMapper;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import java.util.List;
 import java.util.Objects;
 import org.mapstruct.Mapper;

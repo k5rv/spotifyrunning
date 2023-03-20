@@ -4,8 +4,9 @@ import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.model.playlist.Playlist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
+import com.ksaraev.spotifyrun.model.playlist.SpotifyPlaylist;
+import com.ksaraev.spotifyrun.model.user.AppUser;
+import com.ksaraev.spotifyrun.model.user.SpotifyUser;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -42,7 +43,13 @@ class PlaylistTest {
     }
 
     SpotifyPlaylist playlist =
-        Playlist.builder().id(id).name(name).uri(uri).snapshotId(snapshotId).owner(user).build();
+        Playlist.builder()
+            .id(id)
+            .name(name)
+            .uri(uri)
+            .snapshotId(snapshotId)
+            .owner((AppUser) user)
+            .build();
 
     // When
     Set<ConstraintViolation<SpotifyPlaylist>> constraintViolations = validator.validate(playlist);

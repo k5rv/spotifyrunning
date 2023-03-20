@@ -9,6 +9,11 @@ import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 public class SpotifyClientStub implements SpotifyClient {
 
   @Override
+  public SpotifyUserProfileItem getUserProfile(String userId) {
+    return null;
+  }
+
+  @Override
   public SpotifyUserProfileItem getCurrentUserProfile() {
     return null;
   }

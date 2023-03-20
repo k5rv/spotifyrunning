@@ -25,6 +25,12 @@ public interface SpotifyClient {
   @NotNull
   SpotifyUserProfileItem getCurrentUserProfile();
 
+  @GetMapping(path = "users/{user_id}")
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
+  SpotifyUserProfileItem getUserProfile(@PathVariable("user_id") String userId);
+
   @GetMapping(path = "me/top/tracks")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   @Valid

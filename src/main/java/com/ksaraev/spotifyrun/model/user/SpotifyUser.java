@@ -1,9 +1,9 @@
-package com.ksaraev.spotifyrun.model.spotify;
+package com.ksaraev.spotifyrun.model.user;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.ksaraev.spotifyrun.model.user.User;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyItem;
 
-@JsonDeserialize(as = User.class)
+@JsonDeserialize(as = AppUser.class)
 public interface SpotifyUser extends SpotifyItem {
 
   String getEmail();

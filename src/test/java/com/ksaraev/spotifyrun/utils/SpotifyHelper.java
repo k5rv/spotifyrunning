@@ -6,12 +6,17 @@ import static java.util.concurrent.ThreadLocalRandom.*;
 import com.ksaraev.spotifyrun.client.api.*;
 import com.ksaraev.spotifyrun.client.api.items.*;
 import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.playlist.Playlist;
-import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
+import com.ksaraev.spotifyrun.model.artist.SpotifyArtist;import com.ksaraev.spotifyrun.model.playlist.Playlist;
+import com.ksaraev.spotifyrun.model.playlistdetails.PlaylistDetails;
+import com.ksaraev.spotifyrun.model.playlist.SpotifyPlaylist;
+import com.ksaraev.spotifyrun.model.playlistdetails.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrun.model.spotify.*;
+import com.ksaraev.spotifyrun.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.track.TrackFeatures;
-import com.ksaraev.spotifyrun.model.user.User;
+import com.ksaraev.spotifyrun.model.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.model.trackfeatures.TrackFeatures;
+import com.ksaraev.spotifyrun.model.user.SpotifyUser;
+import com.ksaraev.spotifyrun.model.user.AppUser;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -33,7 +38,7 @@ public class SpotifyHelper {
     String name = getRandomName();
     URI uri = USER.getUri(id);
     String email = getRandomEmail();
-    return User.builder().id(id).name(name).uri(uri).email(email).build();
+    return AppUser.builder().id(id).name(name).uri(uri).email(email).build();
   }
 
   public static SpotifyArtist getArtist() {
@@ -88,7 +93,7 @@ public class SpotifyHelper {
         .description(description)
         .isPublic(isPublic)
         .isCollaborative(isCollaborative)
-        .owner(user)
+        .owner((AppUser) user)
         .snapshotId(snapshotId)
         .build();
   }

@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrun.model.artist;
 
-import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;

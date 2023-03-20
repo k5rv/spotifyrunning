@@ -2,8 +2,8 @@ package com.ksaraev.spotifyrun.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import com.ksaraev.spotifyrun.model.user.User;
+import com.ksaraev.spotifyrun.model.user.SpotifyUser;
+import com.ksaraev.spotifyrun.model.user.AppUser;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -13,7 +13,7 @@ import java.util.Set;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class UserTest {
+class AppUserTest {
   private static final Validator validator =
       Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -31,9 +31,9 @@ class UserTest {
   void itShouldDetectUserConstraintViolations(
       String id, String name, String email, URI uri, String message) {
     // Given
-    User user = User.builder().id(id).name(name).email(email).uri(uri).build();
+    AppUser appUser = AppUser.builder().id(id).name(name).email(email).uri(uri).build();
     // When
-    Set<ConstraintViolation<SpotifyUser>> constraintViolations = validator.validate(user);
+    Set<ConstraintViolation<SpotifyUser>> constraintViolations = validator.validate(appUser);
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations)).hasMessage(message);

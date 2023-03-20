@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 @Profile(value = {"development", "production"})
-public class ApplicationSecurityConfig {
+public class SpotifyRunSecurityConfig {
 
   @Bean
   public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
