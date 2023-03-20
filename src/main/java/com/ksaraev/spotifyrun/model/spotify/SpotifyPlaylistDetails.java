@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.model.playlistdetails;
+package com.ksaraev.spotifyrun.model.spotify;
 
 public interface SpotifyPlaylistDetails {
   String getName();

@@ -11,15 +11,13 @@ import static org.mockito.Mockito.*;
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
 import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
 import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
-import com.ksaraev.spotifyrun.model.playlist.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.model.playlistdetails.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrun.model.spotify.*;
 import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.trackfeatures.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.model.user.SpotifyUser;
-import com.ksaraev.spotifyrun.model.user.AppUser;
-import com.ksaraev.spotifyrun.security.AppAuthPrinciple;
-import com.ksaraev.spotifyrun.service.*;
+import com.ksaraev.spotifyrun.model.user.User;
+import com.ksaraev.spotifyrun.service.SpotifyPlaylistService;
+import com.ksaraev.spotifyrun.service.SpotifyRecommendationsService;
+import com.ksaraev.spotifyrun.service.SpotifyUserService;
+import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -40,8 +38,6 @@ class PlaylistControllerTest {
   @Mock private SpotifyPlaylistService playlistService;
   @Mock private SpotifyRunPlaylistConfig playlistConfig;
 
-  @Mock private AppUserService appUserService;
-
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
   @Captor private ArgumentCaptor<SpotifyUser> userArgumentCaptor;
   @Captor private ArgumentCaptor<SpotifyPlaylistDetails> playlistDetailsArgumentCaptor;
@@ -57,11 +53,7 @@ class PlaylistControllerTest {
     MockitoAnnotations.openMocks(this);
     underTest =
         new PlaylistController(
-            userService,
-            topTracksService,
-            recommendationsService,
-            playlistService,
-            appUserService);
+            userService, topTracksService, recommendationsService, playlistService, playlistConfig);
   }
 
   @Test
@@ -223,7 +215,7 @@ class PlaylistControllerTest {
   @Test
   void itShouldThrowUserTopTracksNotFoundExceptionWhenUserTopTracksIsEmpty() {
     // Given
-    given(userService.getCurrentUser()).willReturn(AppUser.builder().build());
+    given(userService.getCurrentUser()).willReturn(User.builder().build());
     given(topTracksService.getUserTopTracks()).willReturn(List.of());
     // Then
     Assertions.assertThatThrownBy(() -> underTest.createPlaylist())
@@ -234,7 +226,7 @@ class PlaylistControllerTest {
   @Test
   void itShouldThrowRecommendationsNotFoundExceptionWhenMusicRecommendationsIsEmpty() {
     // Given
-    given(userService.getCurrentUser()).willReturn(AppUser.builder().build());
+    given(userService.getCurrentUser()).willReturn(User.builder().build());
     given(topTracksService.getUserTopTracks()).willReturn(List.of(Track.builder().build()));
     given(recommendationsService.getRecommendations(anyList(), any())).willReturn(List.of());
     // Then

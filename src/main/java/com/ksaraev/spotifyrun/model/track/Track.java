@@ -1,6 +1,7 @@
 package com.ksaraev.spotifyrun.model.track;
 
-import com.ksaraev.spotifyrun.model.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

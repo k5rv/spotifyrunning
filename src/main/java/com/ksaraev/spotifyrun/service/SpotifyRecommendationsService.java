@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.service;
 
-import com.ksaraev.spotifyrun.model.track.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

@@ -8,8 +8,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(componentModel = SPRING)
-public interface AppUserMapper extends SpotifyMapper {
+public interface UserMapper extends SpotifyMapper {
 
   @Mapping(target = "name", source = "displayName")
-  AppUser mapToUser(SpotifyUserProfileItem userProfileItem);
+  User mapToUser(SpotifyUserProfileItem userProfileItem);
 }

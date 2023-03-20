@@ -13,9 +13,9 @@ import static org.mockito.Mockito.verify;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.exception.business.GetUserException;
-import com.ksaraev.spotifyrun.model.user.SpotifyUser;
-import com.ksaraev.spotifyrun.model.user.AppUser;
-import com.ksaraev.spotifyrun.model.user.AppUserMapper;
+import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
+import com.ksaraev.spotifyrun.model.user.User;
+import com.ksaraev.spotifyrun.model.user.UserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -23,9 +23,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class AppUserServiceTest {
+class UserServiceTest {
   @Mock private SpotifyClient spotifyClient;
-  @Mock private AppUserMapper appUserMapper;
+  @Mock private UserMapper userMapper;
   private SpotifyUserService underTest;
 
   @Captor private ArgumentCaptor<SpotifyUserProfileItem> userProfileItemArgumentCaptor;
@@ -33,7 +33,7 @@ class AppUserServiceTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    underTest = new UserService(spotifyClient, appUserMapper);
+    underTest = new UserService(spotifyClient, userMapper);
   }
 
   @Test
@@ -44,14 +44,14 @@ class AppUserServiceTest {
     SpotifyUserProfileItem userProfileItem = getUserProfileItem();
 
     given(spotifyClient.getCurrentUserProfile()).willReturn(userProfileItem);
-    given(appUserMapper.mapToUser(userProfileItem)).willReturn((AppUser) user);
+    given(userMapper.mapToUser(userProfileItem)).willReturn((User) user);
 
     // When
     underTest.getCurrentUser();
 
     // Then
     verify(spotifyClient, times(1)).getCurrentUserProfile();
-    then(appUserMapper).should().mapToUser(userProfileItemArgumentCaptor.capture());
+    then(userMapper).should().mapToUser(userProfileItemArgumentCaptor.capture());
     assertThat(userProfileItemArgumentCaptor.getValue()).isNotNull().isEqualTo(userProfileItem);
   }
 
@@ -70,7 +70,7 @@ class AppUserServiceTest {
   void itShouldThrowGetUserExceptionWhenUserMapperThrowsRuntimeException() {
     // Given
     String message = "message";
-    given(appUserMapper.mapToUser(any())).willThrow(new RuntimeException(message));
+    given(userMapper.mapToUser(any())).willThrow(new RuntimeException(message));
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUser())
         .isExactlyInstanceOf(GetUserException.class)

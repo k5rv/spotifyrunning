@@ -1,5 +1,6 @@
-package com.ksaraev.spotifyrun.model.playlistdetails;
+package com.ksaraev.spotifyrun.model.playlist;
 
+import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Data;
