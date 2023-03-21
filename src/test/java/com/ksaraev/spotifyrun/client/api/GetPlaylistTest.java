@@ -3,8 +3,8 @@ package com.ksaraev.spotifyrun.client.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
@@ -64,10 +64,10 @@ class GetPlaylistTest {
     // Given
     String message = ".<return value>.id: must not be null";
 
-    SpotifyUserProfileItem userProfileItem = SpotifyHelper.getUserProfileItem();
+    SpotifyUserProfileDto userProfileItem = SpotifyHelper.getUserProfileItem();
 
-    SpotifyPlaylistItem playlistItem =
-        SpotifyPlaylistItem.builder()
+    SpotifyPlaylistDto playlistItem =
+        SpotifyPlaylistDto.builder()
             .id(null)
             .name("playlist name")
             .uri(URI.create("spotify:playlist:0moWPCTPTShumonjlsDgLe"))

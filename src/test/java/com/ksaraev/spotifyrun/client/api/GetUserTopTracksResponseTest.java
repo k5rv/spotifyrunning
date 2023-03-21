@@ -2,8 +2,8 @@ package com.ksaraev.spotifyrun.client.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackDto;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -40,10 +40,10 @@ class GetUserTopTracksResponseTest {
   void itShouldDetectGetUserTopTracksResponseConstraintViolations(
       String id, String name, URI uri, Integer popularity, Boolean hasArtists, String message) {
     // Given
-    List<SpotifyArtistItem> artistItems = hasArtists ? SpotifyHelper.getArtistItems(1) : List.of();
+    List<SpotifyArtistDto> artistItems = hasArtists ? SpotifyHelper.getArtistItems(1) : List.of();
 
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItem =
+        SpotifyTrackDto.builder()
             .id(id)
             .name(name)
             .uri(uri)
@@ -51,7 +51,7 @@ class GetUserTopTracksResponseTest {
             .artistItems(artistItems)
             .build();
 
-    List<SpotifyTrackItem> trackItems = List.of(trackItem);
+    List<SpotifyTrackDto> trackItems = List.of(trackItem);
 
     GetUserTopTracksResponse getUserTopTracksResponse =
         GetUserTopTracksResponse.builder().trackItems(trackItems).build();

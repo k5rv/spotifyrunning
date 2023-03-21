@@ -2,8 +2,8 @@ package com.ksaraev.spotifyrun.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -30,9 +30,9 @@ class ArtistTest {
   void itShouldDetectSpotifyArtistConstraintViolations(
       String id, String name, URI uri, String message) {
     // Given
-    SpotifyArtist artist = Artist.builder().id(id).name(name).uri(uri).build();
+    SpotifyArtistItem artist = SpotifyArtist.builder().id(id).name(name).uri(uri).build();
     // When
-    Set<ConstraintViolation<SpotifyArtist>> constraintViolations = validator.validate(artist);
+    Set<ConstraintViolation<SpotifyArtistItem>> constraintViolations = validator.validate(artist);
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations)).hasMessage(message);

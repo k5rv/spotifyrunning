@@ -3,7 +3,7 @@ package com.ksaraev.spotifyrun.client.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -45,8 +45,8 @@ class GetCurrentUserProfileTest {
   void
       itShouldDetectGetCurrentUserProfileMethodConstraintViolationWhenReturnValueSpotifyUserProfileItemIsNotValid() {
     // Given
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
+    SpotifyUserProfileDto userProfileItem =
+        SpotifyUserProfileDto.builder()
             .id(null)
             .displayName("name")
             .email("email@gmail.com")

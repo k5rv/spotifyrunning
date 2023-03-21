@@ -11,10 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ksaraev.spotifyrun.client.api.AddItemsResponse;
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
 import java.util.List;
+import com.ksaraev.spotifyrun.app.playlist.PlaylistController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,12 +40,12 @@ class PlaylistControllerIntegrationTest {
   @Test
   void itShouldCreatePlaylistSuccessfully() throws Exception {
     // Given
-    SpotifyUserProfileItem userProfileItem = getUserProfileItem();
+    SpotifyUserProfileDto userProfileItem = getUserProfileItem();
     String userId = userProfileItem.id();
 
     stubFor(get(urlEqualTo("/v1/me")).willReturn(jsonResponse(objectToJson(userProfileItem), 200)));
 
-    List<SpotifyTrackItem> topTrackItems = getTrackItems(60);
+    List<SpotifyTrackDto> topTrackItems = getTrackItems(60);
     GetUserTopTracksResponse getUserTopTracksResponse =
         createGetUserTopTracksResponse(topTrackItems);
 
@@ -52,7 +53,7 @@ class PlaylistControllerIntegrationTest {
         get(urlPathEqualTo("/v1/me/top/tracks"))
             .willReturn(jsonResponse(objectToJson(getUserTopTracksResponse), 200)));
 
-    List<SpotifyTrackItem> musicRecommendations = getTrackItems(60);
+    List<SpotifyTrackDto> musicRecommendations = getTrackItems(60);
     GetRecommendationsResponse getRecommendationsResponse =
         createGetRecommendationsResponse(musicRecommendations);
 
@@ -61,7 +62,7 @@ class PlaylistControllerIntegrationTest {
             .inScenario("recommendations")
             .willReturn(jsonResponse(objectToJson(getRecommendationsResponse), 200)));
 
-    SpotifyPlaylistItem emptyPlaylist = getPlaylistItem(userId);
+    SpotifyPlaylistDto emptyPlaylist = getPlaylistItem(userId);
     String playlistId = emptyPlaylist.id();
 
     stubFor(
@@ -74,7 +75,7 @@ class PlaylistControllerIntegrationTest {
         post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
             .willReturn(jsonResponse(objectToJson(addItemsResponse), 200)));
 
-    SpotifyPlaylistItem playlist = updatePlaylist(emptyPlaylist, musicRecommendations);
+    SpotifyPlaylistDto playlist = updatePlaylist(emptyPlaylist, musicRecommendations);
 
     stubFor(
         get(urlEqualTo("/v1/playlists/" + playlistId))

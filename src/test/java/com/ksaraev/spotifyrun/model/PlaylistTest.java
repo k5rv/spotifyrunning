@@ -3,9 +3,9 @@ package com.ksaraev.spotifyrun.model;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.model.playlist.Playlist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylist;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -35,17 +35,17 @@ class PlaylistTest {
   void itShouldDetectSpotifyPlaylistConstraintViolations(
       String id, String name, URI uri, String snapshotId, Boolean hasOwner, String message) {
     // Given
-    SpotifyUser user = null;
+    SpotifyUserProfileItem user = null;
 
     if (hasOwner) {
       user = getUser();
     }
 
-    SpotifyPlaylist playlist =
-        Playlist.builder().id(id).name(name).uri(uri).snapshotId(snapshotId).owner(user).build();
+    SpotifyPlaylistItem playlist =
+        SpotifyPlaylist.builder().id(id).name(name).uri(uri).snapshotId(snapshotId).owner(user).build();
 
     // When
-    Set<ConstraintViolation<SpotifyPlaylist>> constraintViolations = validator.validate(playlist);
+    Set<ConstraintViolation<SpotifyPlaylistItem>> constraintViolations = validator.validate(playlist);
 
     // Then
     assertThat(constraintViolations).hasSize(1);
@@ -55,14 +55,14 @@ class PlaylistTest {
   @Test
   void itShouldDetectSpotifyPlaylistCascadeConstraintViolations() {
     // Given
-    SpotifyUser user = getUser();
+    SpotifyUserProfileItem user = getUser();
     user.setId(null);
 
-    SpotifyPlaylist playlist = getPlaylist();
+    SpotifyPlaylistItem playlist = getPlaylist();
     playlist.setOwner(user);
 
     // When
-    Set<ConstraintViolation<SpotifyPlaylist>> constraintViolations = validator.validate(playlist);
+    Set<ConstraintViolation<SpotifyPlaylistItem>> constraintViolations = validator.validate(playlist);
 
     // Then
     assertThat(constraintViolations).hasSize(1);

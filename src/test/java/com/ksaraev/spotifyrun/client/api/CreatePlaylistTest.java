@@ -3,9 +3,9 @@ package com.ksaraev.spotifyrun.client.api;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.utils.SpotifyClientStub;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
@@ -30,7 +30,7 @@ class CreatePlaylistTest {
     object = new SpotifyClientStub();
     method =
         SpotifyClient.class.getMethod(
-            CREATE_PLAYLIST, String.class, SpotifyPlaylistItemDetails.class);
+            CREATE_PLAYLIST, String.class, SpotifyPlaylistDetailsDto.class);
     executableValidator = Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
   }
 
@@ -39,8 +39,8 @@ class CreatePlaylistTest {
     // Given
     String message = ".userId: must not be null";
     // When
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        SpotifyPlaylistItemDetails.builder().name("name").build();
+    SpotifyPlaylistDetailsDto playlistItemDetails =
+        SpotifyPlaylistDetailsDto.builder().name("name").build();
     Object[] parameterValues = {null, playlistItemDetails};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
@@ -71,8 +71,8 @@ class CreatePlaylistTest {
     // Given
     String message = ".playlistItemDetails.name: must not be empty";
     String userId = "12122604372";
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        SpotifyPlaylistItemDetails.builder().name(null).build();
+    SpotifyPlaylistDetailsDto playlistItemDetails =
+        SpotifyPlaylistDetailsDto.builder().name(null).build();
     // When
     Object[] parameterValues = {userId, playlistItemDetails};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
@@ -89,11 +89,11 @@ class CreatePlaylistTest {
     // Given
     String message = ".<return value>.id: must not be null";
 
-    SpotifyUserProfileItem userProfileItem =
+    SpotifyUserProfileDto userProfileItem =
         SpotifyHelper.getUserProfileItem();
 
-    SpotifyPlaylistItem playlistItem =
-        SpotifyPlaylistItem.builder()
+    SpotifyPlaylistDto playlistItem =
+        SpotifyPlaylistDto.builder()
             .id(null)
             .name("playlist name")
             .uri(URI.create("spotify:playlist:0moWPCTPTShumonjlsDgLe"))

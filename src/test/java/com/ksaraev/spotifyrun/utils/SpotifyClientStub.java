@@ -2,14 +2,14 @@ package com.ksaraev.spotifyrun.utils;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.*;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
 
 public class SpotifyClientStub implements SpotifyClient {
 
   @Override
-  public SpotifyUserProfileItem getCurrentUserProfile() {
+  public SpotifyUserProfileDto getCurrentUserProfile() {
     return null;
   }
 
@@ -24,13 +24,13 @@ public class SpotifyClientStub implements SpotifyClient {
   }
 
   @Override
-  public SpotifyPlaylistItem createPlaylist(
-      String userId, SpotifyPlaylistItemDetails playlistItemDetails) {
+  public SpotifyPlaylistDto createPlaylist(
+      String userId, SpotifyPlaylistDetailsDto playlistItemDetails) {
     return null;
   }
 
   @Override
-  public SpotifyPlaylistItem getPlaylist(String playlistId) {
+  public SpotifyPlaylistDto getPlaylist(String playlistId) {
     return null;
   }
 

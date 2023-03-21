@@ -2,10 +2,10 @@ package com.ksaraev.spotifyrun.config;
 
 import com.ksaraev.spotifyrun.config.playlist.PlaylistConfig;
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
-import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.model.track.TrackFeatures;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -54,11 +54,11 @@ public class SpotifyRunConfig {
 
   @Bean
   SpotifyRunPlaylistConfig getWorkoutPlaylistConfig() {
-    SpotifyPlaylistDetails playlistDetails =
-        PlaylistDetails.builder().name(this.name).description(this.description).build();
+    SpotifyPlaylistItemDetails playlistDetails =
+        SpotifyPlaylistDetails.builder().name(this.name).description(this.description).build();
 
-    SpotifyTrackFeatures trackFeatures =
-        TrackFeatures.builder()
+    SpotifyTrackItemFeatures trackFeatures =
+        SpotifyTrackFeatures.builder()
             .minTempo(this.minTempo)
             .maxTempo(this.maxTempo)
             .minEnergy(this.minEnergy)

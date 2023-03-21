@@ -6,10 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.model.track.TrackFeatures;
-import com.ksaraev.spotifyrun.model.track.TrackFeaturesMapper;
-import com.ksaraev.spotifyrun.model.track.TrackFeaturesMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeaturesMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeaturesMapper;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +18,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TrackFeaturesMapperImpl.class})
+@ContextConfiguration(classes = {SpotifyTrackFeaturesMapperImpl.class})
 class TrackFeaturesMapperTest {
 
-  @Autowired TrackFeaturesMapper underTest;
+  @Autowired SpotifyTrackFeaturesMapper underTest;
 
   @Test
   void itShouldMapSpotifyTrackFeaturesToGetRecommendationsRequestTrackFeatures() {
@@ -114,8 +114,8 @@ class TrackFeaturesMapperTest {
             minValence,
             valence);
 
-    SpotifyTrackFeatures spotifyTrackFeatures =
-        TrackFeatures.builder()
+    SpotifyTrackItemFeatures spotifyTrackFeatures =
+        SpotifyTrackFeatures.builder()
             .maxPopularity(maxPopularity)
             .minPopularity(minPopularity)
             .popularity(popularity)

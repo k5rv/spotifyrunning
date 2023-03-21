@@ -3,17 +3,17 @@ package com.ksaraev.spotifyrun.mapping;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 
 import com.ksaraev.spotifyrun.client.api.items.*;
-import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.track.TrackMapper;
-import com.ksaraev.spotifyrun.model.track.TrackMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrack;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapperImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,38 +22,38 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {TrackMapperImpl.class, ArtistMapperImpl.class})
+@ContextConfiguration(classes = {SpotifyTrackMapperImpl.class, SpotifyArtistMapperImpl.class})
 class TrackMapperTest {
 
-  @Autowired TrackMapper underTest;
+  @Autowired SpotifyTrackMapper underTest;
 
   @Test
   void itShouldMapSpotifyTrackItemToTrack() throws Exception {
     // Given
-    SpotifyArtist artist = getArtist();
+    SpotifyArtistItem artist = getArtist();
 
-    List<SpotifyArtist> artists = List.of(artist);
+    List<SpotifyArtistItem> artists = List.of(artist);
 
-    SpotifyTrack track = getTrack();
+    SpotifyTrackItem track = getTrack();
     track.setArtists(artists);
 
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder()
+    SpotifyArtistDto artistItem =
+        SpotifyArtistDto.builder()
             .id(artist.getId())
             .name(artist.getName())
             .uri(artist.getUri())
             .genres(artist.getGenres())
             .build();
 
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
+    List<SpotifyArtistDto> artistItems = List.of(artistItem);
 
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItem =
+        SpotifyTrackDto.builder()
             .id(track.getId())
             .name(track.getName())
             .uri(track.getUri())
             .artistItems(artistItems)
-            .albumItem(SpotifyAlbumItem.builder().build())
+            .albumItem(SpotifyAlbumDto.builder().build())
             .popularity(track.getPopularity())
             .href(new URL("https://api.spotify.com/v1/track/2222030405AaBbCcDdEeFf"))
             .track(true)
@@ -64,7 +64,7 @@ class TrackMapperTest {
             .durationMs(20000)
             .trackNumber(1)
             .discNumber(1)
-            .sourceAlbumItem(SpotifyAlbumItem.builder().build())
+            .sourceAlbumItem(SpotifyAlbumDto.builder().build())
             .availableMarkets(List.of("US"))
             .externalUrls(
                 Map.of("spotify", "https://open.spotify.com/track/2222030405AaBbCcDdEeFf"))
@@ -96,12 +96,12 @@ class TrackMapperTest {
     URI trackTwoUri = URI.create("spotify:track:2222030405AaBbCcDdEeFf");
     Integer trackTwoPopularity = 2;
 
-    SpotifyArtist artist = Artist.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtistItem artist = SpotifyArtist.builder().id(artistID).name(artistName).uri(artistUri).build();
 
-    List<SpotifyArtist> artists = List.of(artist);
+    List<SpotifyArtistItem> artists = List.of(artist);
 
-    SpotifyTrack trackOne =
-        Track.builder()
+    SpotifyTrackItem trackOne =
+        SpotifyTrack.builder()
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
@@ -109,8 +109,8 @@ class TrackMapperTest {
             .artists(artists)
             .build();
 
-    SpotifyTrack trackTwo =
-        Track.builder()
+    SpotifyTrackItem trackTwo =
+        SpotifyTrack.builder()
             .id(trackTwoId)
             .name(trackTwoName)
             .uri(trackTwoUri)
@@ -118,21 +118,21 @@ class TrackMapperTest {
             .artists(artists)
             .build();
 
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
+    SpotifyUserProfileDto userProfileItem =
+        SpotifyUserProfileDto.builder()
             .id("12122604372")
             .displayName("name")
             .uri(URI.create("spotify:user:12122604372"))
             .email("email@mail.com")
             .build();
 
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtistDto artistItem =
+        SpotifyArtistDto.builder().id(artistID).name(artistName).uri(artistUri).build();
 
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
+    List<SpotifyArtistDto> artistItems = List.of(artistItem);
 
-    SpotifyTrackItem trackItemOne =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItemOne =
+        SpotifyTrackDto.builder()
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
@@ -140,8 +140,8 @@ class TrackMapperTest {
             .popularity(trackOnePopularity)
             .build();
 
-    SpotifyTrackItem trackItemTwo =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItemTwo =
+        SpotifyTrackDto.builder()
             .id(trackTwoId)
             .name(trackTwoName)
             .uri(trackTwoUri)
@@ -151,21 +151,21 @@ class TrackMapperTest {
 
     String addedAt = "2020-12-04T14:14:36Z";
 
-    SpotifyPlaylistItemTrack playlistItemTrackOne =
-        SpotifyPlaylistItemTrack.builder()
+    SpotifyPlaylistTrackDto playlistItemTrackOne =
+        SpotifyPlaylistTrackDto.builder()
             .trackItem(trackItemOne)
             .addedBy(userProfileItem)
             .addedAt(addedAt)
             .build();
 
-    SpotifyPlaylistItemTrack playlistItemTrackTwo =
-        SpotifyPlaylistItemTrack.builder()
+    SpotifyPlaylistTrackDto playlistItemTrackTwo =
+        SpotifyPlaylistTrackDto.builder()
             .trackItem(trackItemTwo)
             .addedBy(userProfileItem)
             .addedAt(addedAt)
             .build();
 
-    List<SpotifyPlaylistItemTrack> playlistItemTracks =
+    List<SpotifyPlaylistTrackDto> playlistItemTracks =
         List.of(playlistItemTrackOne, playlistItemTrackTwo);
 
     // Then
@@ -190,12 +190,12 @@ class TrackMapperTest {
     URI trackTwoUri = URI.create("spotify:track:2222030405AaBbCcDdEeFf");
     Integer trackTwoPopularity = 2;
 
-    SpotifyArtist artist = Artist.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtistItem artist = SpotifyArtist.builder().id(artistID).name(artistName).uri(artistUri).build();
 
-    List<SpotifyArtist> artists = List.of(artist);
+    List<SpotifyArtistItem> artists = List.of(artist);
 
-    SpotifyTrack trackOne =
-        Track.builder()
+    SpotifyTrackItem trackOne =
+        SpotifyTrack.builder()
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
@@ -203,8 +203,8 @@ class TrackMapperTest {
             .artists(artists)
             .build();
 
-    SpotifyTrack trackTwo =
-        Track.builder()
+    SpotifyTrackItem trackTwo =
+        SpotifyTrack.builder()
             .id(trackTwoId)
             .name(trackTwoName)
             .uri(trackTwoUri)
@@ -212,13 +212,13 @@ class TrackMapperTest {
             .artists(artists)
             .build();
 
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtistDto artistItem =
+        SpotifyArtistDto.builder().id(artistID).name(artistName).uri(artistUri).build();
 
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
+    List<SpotifyArtistDto> artistItems = List.of(artistItem);
 
-    SpotifyTrackItem trackItemOne =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItemOne =
+        SpotifyTrackDto.builder()
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
@@ -226,8 +226,8 @@ class TrackMapperTest {
             .popularity(trackOnePopularity)
             .build();
 
-    SpotifyTrackItem trackItemTwo =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItemTwo =
+        SpotifyTrackDto.builder()
             .id(trackTwoId)
             .name(trackTwoName)
             .uri(trackTwoUri)
