@@ -36,3 +36,4 @@ build/
 /src/main/resources/application-development.yml
 /src/main/resources/application-test.yml.yml
 !/.jpb/
+/.jpb/jpb-settings.xml
