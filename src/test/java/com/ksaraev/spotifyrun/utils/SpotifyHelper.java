@@ -5,13 +5,17 @@ import static java.util.concurrent.ThreadLocalRandom.*;
 
 import com.ksaraev.spotifyrun.client.api.*;
 import com.ksaraev.spotifyrun.client.api.items.*;
-import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.playlist.Playlist;
-import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.*;
-import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.track.TrackFeatures;
-import com.ksaraev.spotifyrun.model.user.User;
+import com.ksaraev.spotifyrun.model.SpotifyItem;import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylist;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrack;import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -28,29 +32,29 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class SpotifyHelper {
 
-  public static SpotifyUser getUser() {
+  public static SpotifyUserProfileItem getUser() {
     String id = getRandomId();
     String name = getRandomName();
     URI uri = USER.getUri(id);
     String email = getRandomEmail();
-    return User.builder().id(id).name(name).uri(uri).email(email).build();
+    return SpotifyUserProfile.builder().id(id).name(name).uri(uri).email(email).build();
   }
 
-  public static SpotifyArtist getArtist() {
+  public static SpotifyArtistItem getArtist() {
     String id = getRandomId();
     String name = getRandomName();
     URI uri = ARTIST.getUri(id);
     List<String> genres = getRandomGenres();
-    return Artist.builder().id(id).name(name).uri(uri).genres(genres).build();
+    return SpotifyArtist.builder().id(id).name(name).uri(uri).genres(genres).build();
   }
 
-  public static SpotifyTrack getTrack() {
+  public static SpotifyTrackItem getTrack() {
     String id = getRandomId();
     String name = getRandomName();
     URI uri = TRACK.getUri(id);
     Integer popularity = getRandomPopularity();
-    List<SpotifyArtist> artists = getArtists(1);
-    return Track.builder()
+    List<SpotifyArtistItem> artists = getArtists(1);
+    return SpotifyTrack.builder()
         .id(id)
         .name(name)
         .uri(uri)
@@ -59,12 +63,12 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyPlaylistDetails getPlaylistDetails() {
+  public static SpotifyPlaylistItemDetails getPlaylistDetails() {
     String name = getRandomName();
     String description = getRandomDescription();
     Boolean isPublic = true;
     Boolean isCollaborative = false;
-    return PlaylistDetails.builder()
+    return SpotifyPlaylistDetails.builder()
         .name(name)
         .description(description)
         .isPublic(isPublic)
@@ -72,16 +76,16 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyPlaylist getPlaylist() {
+  public static SpotifyPlaylistItem getPlaylist() {
     String id = getRandomId();
     String name = getRandomName();
     String description = getRandomDescription();
     URI uri = PLAYLIST.getUri(id);
-    SpotifyUser user = getUser();
+    SpotifyUserProfileItem user = getUser();
     String snapshotId = getRandomSnapshotId();
     Boolean isPublic = true;
     Boolean isCollaborative = false;
-    return Playlist.builder()
+    return SpotifyPlaylist.builder()
         .id(id)
         .name(name)
         .uri(uri)
@@ -93,18 +97,18 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyTrackFeatures getSpotifyTrackFeatures() {
+  public static SpotifyTrackItemFeatures getSpotifyTrackFeatures() {
     BigDecimal minTempo = new BigDecimal(120);
     BigDecimal maxTempo = new BigDecimal(140);
     BigDecimal minEnergy = new BigDecimal("0.65");
-    return TrackFeatures.builder()
+    return SpotifyTrackFeatures.builder()
         .minTempo(minTempo)
         .maxTempo(maxTempo)
         .minEnergy(minEnergy)
         .build();
   }
 
-  public static SpotifyUserProfileItem getUserProfileItem() {
+  public static SpotifyUserProfileDto getUserProfileItem() {
     String id = getRandomId();
     String displayName = getRandomName();
     URI uri = USER.getUri(id);
@@ -116,7 +120,7 @@ public class SpotifyHelper {
     String country = getCountry();
     String product = getProduct();
     URL href = getHref(USER, id);
-    return SpotifyUserProfileItem.builder()
+    return SpotifyUserProfileDto.builder()
         .id(getRandomId())
         .displayName(displayName)
         .uri(uri)
@@ -131,14 +135,14 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyTrackItem getTrackItem() {
+  public static SpotifyTrackDto getTrackItem() {
     String id = getRandomId();
     String name = getRandomName();
     URI uri = TRACK.getUri(id);
-    SpotifyAlbumItem albumItem = getAlbumItem();
-    SpotifyAlbumItem sourceAlbumItem = getAlbumItem();
+    SpotifyAlbumDto albumItem = getAlbumItem();
+    SpotifyAlbumDto sourceAlbumItem = getAlbumItem();
     URL previewURL = getHref(TRACK, id);
-    List<SpotifyArtistItem> artistItems = getArtistItems(1);
+    List<SpotifyArtistDto> artistItems = getArtistItems(1);
     Integer popularity = getRandomPopularity();
     String type = ARTIST.getType();
     URL href = getHref(ARTIST, id);
@@ -153,7 +157,7 @@ public class SpotifyHelper {
     Integer trackNumber = 2;
     Map<String, Object> externalUrls = getExternalUrls(TRACK, id);
     Map<String, Object> externalIds = getExternalIds(TRACK, id);
-    return SpotifyTrackItem.builder()
+    return SpotifyTrackDto.builder()
         .id(id)
         .name(name)
         .uri(uri)
@@ -178,12 +182,12 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyPlaylistItemDetails getPlaylistItemDetails() {
+  public static SpotifyPlaylistDetailsDto getPlaylistItemDetails() {
     String name = getRandomName();
     String description = getRandomDescription();
     Boolean isPublic = true;
     Boolean isCollaborative = false;
-    return SpotifyPlaylistItemDetails.builder()
+    return SpotifyPlaylistDetailsDto.builder()
         .name(name)
         .description(description)
         .isPublic(isPublic)
@@ -191,7 +195,7 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyAlbumItem getAlbumItem() {
+  public static SpotifyAlbumDto getAlbumItem() {
     String id = getRandomId();
     String name = getRandomName();
     URI uri = ALBUM.getUri(id);
@@ -203,11 +207,11 @@ public class SpotifyHelper {
     String releaseDate = getReleaseDate();
     String precisionDate = getPrecisionDate();
     List<String> availableMarkets = getAvailableMarkets();
-    List<SpotifyArtistItem> artistItems = getArtistItems(1);
+    List<SpotifyArtistDto> artistItems = getArtistItems(1);
     List<Map<String, Object>> restrictions = getRestrictions();
     Map<String, Object> externalUrls = getExternalUrls(ARTIST, id);
     List<Map<String, Object>> images = getImages();
-    return SpotifyAlbumItem.builder()
+    return SpotifyAlbumDto.builder()
         .id(id)
         .name(name)
         .uri(uri)
@@ -226,7 +230,7 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyArtistItem getArtistItem() {
+  public static SpotifyArtistDto getArtistItem() {
     String id = getRandomId();
     String name = getRandomName();
     Integer popularity = getRandomPopularity();
@@ -237,7 +241,7 @@ public class SpotifyHelper {
     Map<String, Object> followers = getFollowers();
     Map<String, Object> externalUrls = getExternalUrls(ARTIST, id);
     List<Map<String, Object>> images = getImages();
-    return SpotifyArtistItem.builder()
+    return SpotifyArtistDto.builder()
         .id(id)
         .name(name)
         .popularity(popularity)
@@ -251,15 +255,15 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyPlaylistItem getPlaylistItem() {
+  public static SpotifyPlaylistDto getPlaylistItem() {
     String id = getRandomId();
     return getPlaylistItem(id);
   }
 
-  public static SpotifyPlaylistItem getPlaylistItem(String id) {
+  public static SpotifyPlaylistDto getPlaylistItem(String id) {
     String name = getRandomName();
     URI uri = PLAYLIST.getUri(id);
-    SpotifyUserProfileItem userProfileItem = getUserProfileItem();
+    SpotifyUserProfileDto userProfileItem = getUserProfileItem();
     String snapshotId = getRandomSnapshotId();
     String description = getRandomDescription();
     String type = PLAYLIST.getType();
@@ -270,7 +274,7 @@ public class SpotifyHelper {
     Map<String, Object> externalUrls = getExternalUrls(PLAYLIST, id);
     List<Map<String, Object>> images = getImages();
     URL href = getHref(PLAYLIST, id);
-    return SpotifyPlaylistItem.builder()
+    return SpotifyPlaylistDto.builder()
         .id(id)
         .name(name)
         .uri(uri)
@@ -288,19 +292,19 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyPlaylistItemTrack getSpotifyPlaylistItemTrack() {
-    SpotifyTrackItem trackItem = getTrackItem();
-    SpotifyUserProfileItem addedBy = getUserProfileItem();
+  public static SpotifyPlaylistTrackDto getSpotifyPlaylistItemTrack() {
+    SpotifyTrackDto trackItem = getTrackItem();
+    SpotifyUserProfileDto addedBy = getUserProfileItem();
     return getSpotifyPlaylistItemTrack(addedBy, trackItem);
   }
 
-  public static SpotifyPlaylistItemTrack getSpotifyPlaylistItemTrack(
-      SpotifyUserProfileItem addedBy, SpotifyTrackItem trackItem) {
+  public static SpotifyPlaylistTrackDto getSpotifyPlaylistItemTrack(
+      SpotifyUserProfileDto addedBy, SpotifyTrackDto trackItem) {
     String addedAt = ZonedDateTime.now().toString();
     Boolean isLocal = false;
     String primaryColor = getPrimaryColor();
     Map<String, Object> videoThumbnail = getVideoThumbNail(trackItem.id());
-    return SpotifyPlaylistItemTrack.builder()
+    return SpotifyPlaylistTrackDto.builder()
         .trackItem(trackItem)
         .addedBy(addedBy)
         .addedAt(addedAt)
@@ -310,19 +314,20 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static List<SpotifyPlaylistItemTrack> getSpotifyPlaylistItemTracks(
-      SpotifyUserProfileItem addedBy, List<SpotifyTrackItem> trackItems) {
+  public static List<SpotifyPlaylistTrackDto> getSpotifyPlaylistItemTracks(
+      SpotifyUserProfileDto addedBy, List<SpotifyTrackDto> trackItems) {
     return trackItems.stream()
         .filter(Objects::nonNull)
         .map(trackItem -> getSpotifyPlaylistItemTrack(addedBy, trackItem))
         .toList();
   }
 
-  public static SpotifyPlaylistItemMusic getSpotifyPlaylistItemMusic(
-      SpotifyUserProfileItem userProfileItem, List<SpotifyTrackItem> trackItems) {
-    List<SpotifyPlaylistItemTrack> playlistItemTracks =
+  public static SpotifyPlaylistMusicDto getSpotifyPlaylistItemMusic(
+      SpotifyUserProfileDto userProfileItem,
+      List<SpotifyTrackDto> trackItems) {
+    List<SpotifyPlaylistTrackDto> playlistItemTracks =
         getSpotifyPlaylistItemTracks(userProfileItem, trackItems);
-    return SpotifyPlaylistItemMusic.builder()
+    return SpotifyPlaylistMusicDto.builder()
         .playlistItemTracks(playlistItemTracks)
         .next(null)
         .previous(null)
@@ -333,12 +338,13 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyPlaylistItem updatePlaylist(
-      SpotifyPlaylistItem playlistItem, List<SpotifyTrackItem> trackItems) {
+  public static SpotifyPlaylistDto updatePlaylist(
+      SpotifyPlaylistDto playlistItem,
+      List<SpotifyTrackDto> trackItems) {
     String id = playlistItem.id();
     String name = playlistItem.name();
     URI uri = playlistItem.uri();
-    SpotifyUserProfileItem userProfileItem = playlistItem.userProfileItem();
+    SpotifyUserProfileDto userProfileItem = playlistItem.userProfileItem();
     String snapshotId = getRandomSnapshotId();
     String description = playlistItem.description();
     String type = PLAYLIST.getType();
@@ -349,9 +355,9 @@ public class SpotifyHelper {
     Map<String, Object> externalUrls = getExternalUrls(PLAYLIST, playlistItem.id());
     List<Map<String, Object>> images = getImages();
     URL href = getHref(PLAYLIST, playlistItem.id());
-    SpotifyPlaylistItemMusic playlistItemMusic =
+    SpotifyPlaylistMusicDto playlistItemMusic =
         getSpotifyPlaylistItemMusic(playlistItem.userProfileItem(), trackItems);
-    return SpotifyPlaylistItem.builder()
+    return SpotifyPlaylistDto.builder()
         .id(id)
         .name(name)
         .uri(uri)
@@ -393,7 +399,7 @@ public class SpotifyHelper {
   }
 
   public static GetUserTopTracksResponse createGetUserTopTracksResponse(
-      List<SpotifyTrackItem> trackItems) throws Exception {
+      List<SpotifyTrackDto> trackItems) throws Exception {
     URL href =
         new URL("https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0&time_range=short_term");
     Integer offset = 0;
@@ -412,7 +418,7 @@ public class SpotifyHelper {
   }
 
   public static GetRecommendationsResponse createGetRecommendationsResponse(
-      List<SpotifyTrackItem> trackItems) {
+      List<SpotifyTrackDto> trackItems) {
     List<Map<String, Object>> seeds =
         List.of(
             Map.of(
@@ -462,20 +468,20 @@ public class SpotifyHelper {
     return AddItemsResponse.builder().snapshotId(snapshotId).build();
   }
 
-  public static List<SpotifyArtist> getArtists(Integer size) {
-    return getSpotifyItems(size, SpotifyArtist.class);
+  public static List<SpotifyArtistItem> getArtists(Integer size) {
+    return getSpotifyItems(size, SpotifyArtistItem.class);
   }
 
-  public static List<SpotifyTrack> getTracks(Integer size) {
-    return getSpotifyItems(size, SpotifyTrack.class);
+  public static List<SpotifyTrackItem> getTracks(Integer size) {
+    return getSpotifyItems(size, SpotifyTrackItem.class);
   }
 
   private static <T extends SpotifyItem> T getSpotifyItem(Class<T> type) {
-    if (type.isAssignableFrom(SpotifyUser.class)) return type.cast(getUser());
-    if (type.isAssignableFrom(SpotifyTrack.class)) return type.cast(getTrack());
-    if (type.isAssignableFrom(SpotifyArtist.class)) return type.cast(getArtist());
-    if (type.isAssignableFrom(SpotifyPlaylistDetails.class)) return type.cast(getPlaylistDetails());
-    if (type.isAssignableFrom(SpotifyPlaylist.class)) return type.cast(getPlaylist());
+    if (type.isAssignableFrom(SpotifyUserProfileItem.class)) return type.cast(getUser());
+    if (type.isAssignableFrom(SpotifyTrackItem.class)) return type.cast(getTrack());
+    if (type.isAssignableFrom(SpotifyArtistItem.class)) return type.cast(getArtist());
+    if (type.isAssignableFrom(SpotifyPlaylistItemDetails.class)) return type.cast(getPlaylistDetails());
+    if (type.isAssignableFrom(SpotifyPlaylistItem.class)) return type.cast(getPlaylist());
     throw new UnsupportedOperationException("not supported type:" + type);
   }
 
@@ -485,12 +491,12 @@ public class SpotifyHelper {
     return items;
   }
 
-  public static List<SpotifyArtistItem> getArtistItems(Integer size) {
-    return getSpotifyClientItems(size, SpotifyArtistItem.class);
+  public static List<SpotifyArtistDto> getArtistItems(Integer size) {
+    return getSpotifyClientItems(size, SpotifyArtistDto.class);
   }
 
-  public static List<SpotifyTrackItem> getTrackItems(Integer size) {
-    return getSpotifyClientItems(size, SpotifyTrackItem.class);
+  public static List<SpotifyTrackDto> getTrackItems(Integer size) {
+    return getSpotifyClientItems(size, SpotifyTrackDto.class);
   }
 
   private static <T> List<T> getSpotifyClientItems(Integer size, Class<T> type) {
@@ -500,14 +506,14 @@ public class SpotifyHelper {
   }
 
   private static <T> T getSpotifyClientItem(Class<T> type) {
-    if (type.isAssignableFrom(SpotifyUserProfileItem.class)) return type.cast(getUserProfileItem());
-    if (type.isAssignableFrom(SpotifyAlbumItem.class)) return type.cast(getAlbumItem());
-    if (type.isAssignableFrom(SpotifyArtistItem.class)) return type.cast(getArtistItem());
-    if (type.isAssignableFrom(SpotifyTrackItem.class)) return type.cast(getTrackItem());
-    if (type.isAssignableFrom(SpotifyPlaylistItemDetails.class))
+    if (type.isAssignableFrom(SpotifyUserProfileDto.class)) return type.cast(getUserProfileItem());
+    if (type.isAssignableFrom(SpotifyAlbumDto.class)) return type.cast(getAlbumItem());
+    if (type.isAssignableFrom(SpotifyArtistDto.class)) return type.cast(getArtistItem());
+    if (type.isAssignableFrom(SpotifyTrackDto.class)) return type.cast(getTrackItem());
+    if (type.isAssignableFrom(SpotifyPlaylistDetailsDto.class))
       return type.cast(getPlaylistItemDetails());
-    if (type.isAssignableFrom(SpotifyPlaylistItem.class)) return type.cast(getPlaylistItem());
-    if (type.isAssignableFrom(SpotifyPlaylistItemTrack.class))
+    if (type.isAssignableFrom(SpotifyPlaylistDto.class)) return type.cast(getPlaylistItem());
+    if (type.isAssignableFrom(SpotifyPlaylistTrackDto.class))
       return type.cast(getSpotifyPlaylistItemTrack());
     throw new UnsupportedOperationException("not supported type:" + type);
   }

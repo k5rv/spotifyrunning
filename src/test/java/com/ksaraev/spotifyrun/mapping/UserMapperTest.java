@@ -2,11 +2,11 @@ package com.ksaraev.spotifyrun.mapping;
 
 import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
 
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import com.ksaraev.spotifyrun.model.user.UserMapper;
-import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapperImpl;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.net.URL;
 import java.util.List;
@@ -19,18 +19,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {UserMapperImpl.class})
+@ContextConfiguration(classes = {SpotifyUserProfileMapperImpl.class})
 class UserMapperTest {
 
-  @Autowired UserMapper underTest;
+  @Autowired SpotifyUserProfileMapper underTest;
 
   @Test
   void itShouldMapSpotifyUserProfileItemToUser() throws Exception {
     // Given
-    SpotifyUser user = SpotifyHelper.getUser();
+    SpotifyUserProfileItem user = SpotifyHelper.getUser();
 
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
+    SpotifyUserProfileDto userProfileItem =
+        SpotifyUserProfileDto.builder()
             .id(user.getId())
             .displayName(user.getName())
             .uri(user.getUri())

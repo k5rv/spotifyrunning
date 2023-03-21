@@ -7,8 +7,8 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDetailsDto;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -92,7 +92,7 @@ class CreatePlaylistIntegrationTest {
           """;
 
     String userId = "12122604372";
-    SpotifyPlaylistItemDetails playlistItemDetails = SpotifyHelper.getPlaylistItemDetails();
+    SpotifyPlaylistDetailsDto playlistItemDetails = SpotifyHelper.getPlaylistItemDetails();
 
     stubFor(
         post(urlEqualTo("/v1/users/" + userId + "/playlists"))
@@ -102,6 +102,6 @@ class CreatePlaylistIntegrationTest {
     assertThat(underTest.createPlaylist(userId, playlistItemDetails))
         .isNotNull()
         .usingRecursiveComparison()
-        .isEqualTo(jsonToObject(spotifyPlaylistItemJson, SpotifyPlaylistItem.class));
+        .isEqualTo(jsonToObject(spotifyPlaylistItemJson, SpotifyPlaylistDto.class));
   }
 }

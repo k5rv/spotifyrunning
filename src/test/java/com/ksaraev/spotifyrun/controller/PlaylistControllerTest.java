@@ -8,16 +8,22 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
+import com.ksaraev.spotifyrun.app.runner.SpotifyAppUserService;
 import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
 import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
 import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
-import com.ksaraev.spotifyrun.model.spotify.*;
-import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.user.User;
-import com.ksaraev.spotifyrun.service.SpotifyPlaylistService;
-import com.ksaraev.spotifyrun.service.SpotifyRecommendationsService;
-import com.ksaraev.spotifyrun.service.SpotifyUserService;
-import com.ksaraev.spotifyrun.service.SpotifyUserTopTracksService;
+import com.ksaraev.spotifyrun.app.playlist.PlaylistController;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrack;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.service.SpotifyPlaylistItemService;
+import com.ksaraev.spotifyrun.service.SpotifyRecommendationItemsService;
+import com.ksaraev.spotifyrun.service.SpotifyUserProfileItemService;
+import com.ksaraev.spotifyrun.service.SpotifyUserTopTrackItemsService;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -32,19 +38,21 @@ import org.mockito.MockitoAnnotations;
 
 class PlaylistControllerTest {
 
-  @Mock private SpotifyUserService userService;
-  @Mock private SpotifyUserTopTracksService topTracksService;
-  @Mock private SpotifyRecommendationsService recommendationsService;
-  @Mock private SpotifyPlaylistService playlistService;
+  @Mock private SpotifyUserProfileItemService userService;
+  @Mock private SpotifyUserTopTrackItemsService topTracksService;
+  @Mock private SpotifyRecommendationItemsService recommendationsService;
+  @Mock private SpotifyPlaylistItemService playlistService;
   @Mock private SpotifyRunPlaylistConfig playlistConfig;
 
+  @Mock private SpotifyAppUserService spotifyAppUserService;
+
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
-  @Captor private ArgumentCaptor<SpotifyUser> userArgumentCaptor;
-  @Captor private ArgumentCaptor<SpotifyPlaylistDetails> playlistDetailsArgumentCaptor;
-  @Captor private ArgumentCaptor<SpotifyPlaylist> playlistArgumentCaptor;
-  @Captor private ArgumentCaptor<SpotifyTrackFeatures> featuresArgumentCaptor;
-  @Captor private ArgumentCaptor<List<SpotifyTrack>> userTopTracksArgumentCaptor;
-  @Captor private ArgumentCaptor<List<SpotifyTrack>> musicRecommendationsArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyUserProfileItem> userArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyPlaylistItemDetails> playlistDetailsArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyPlaylistItem> playlistArgumentCaptor;
+  @Captor private ArgumentCaptor<SpotifyTrackItemFeatures> featuresArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> userTopTracksArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> musicRecommendationsArgumentCaptor;
 
   private PlaylistController underTest;
 
@@ -53,25 +61,30 @@ class PlaylistControllerTest {
     MockitoAnnotations.openMocks(this);
     underTest =
         new PlaylistController(
-            userService, topTracksService, recommendationsService, playlistService, playlistConfig);
+            userService,
+            topTracksService,
+            recommendationsService,
+            playlistService,
+            playlistConfig,
+            spotifyAppUserService);
   }
 
   @Test
   void itShouldCreatePlaylist() {
     // Given
-    SpotifyUser user = getUser();
+    SpotifyUserProfileItem user = getUser();
 
-    SpotifyTrack topTrackA = getTrack();
-    SpotifyTrack topTrackB = getTrack();
-    List<SpotifyTrack> userTopTracks = List.of(topTrackA, topTrackB);
+    SpotifyTrackItem topTrackA = getTrack();
+    SpotifyTrackItem topTrackB = getTrack();
+    List<SpotifyTrackItem> userTopTracks = List.of(topTrackA, topTrackB);
 
-    SpotifyTrack musicRecommendation = getTrack();
-    List<SpotifyTrack> musicRecommendations = List.of(musicRecommendation);
+    SpotifyTrackItem musicRecommendation = getTrack();
+    List<SpotifyTrackItem> musicRecommendations = List.of(musicRecommendation);
 
-    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
+    SpotifyTrackItemFeatures trackFeatures = getSpotifyTrackFeatures();
 
-    SpotifyPlaylistDetails playlistDetails = getPlaylistDetails();
-    SpotifyPlaylist playlist = getPlaylist();
+    SpotifyPlaylistItemDetails playlistDetails = getPlaylistDetails();
+    SpotifyPlaylistItem playlist = getPlaylist();
     playlist.setTracks(musicRecommendations);
 
     given(userService.getCurrentUser()).willReturn(user);
@@ -136,23 +149,23 @@ class PlaylistControllerTest {
       Boolean hasAllTracks,
       Integer playlistConfigSize) {
     // Given
-    SpotifyUser user = getUser();
+    SpotifyUserProfileItem user = getUser();
 
-    SpotifyTrack topTrackA = getTrack();
-    SpotifyTrack topTrackB = getTrack();
-    SpotifyTrack topTrackC = getTrack();
+    SpotifyTrackItem topTrackA = getTrack();
+    SpotifyTrackItem topTrackB = getTrack();
+    SpotifyTrackItem topTrackC = getTrack();
 
-    List<SpotifyTrack> userTopTracks = List.of(topTrackA, topTrackB, topTrackC);
+    List<SpotifyTrackItem> userTopTracks = List.of(topTrackA, topTrackB, topTrackC);
 
-    List<SpotifyTrack> musicRecommendationsA = getTracks(aTracksNumber);
-    List<SpotifyTrack> musicRecommendationsB = getTracks(bTracksNumber);
-    List<SpotifyTrack> musicRecommendationsC = getTracks(cTracksNumber);
+    List<SpotifyTrackItem> musicRecommendationsA = getTracks(aTracksNumber);
+    List<SpotifyTrackItem> musicRecommendationsB = getTracks(bTracksNumber);
+    List<SpotifyTrackItem> musicRecommendationsC = getTracks(cTracksNumber);
 
-    SpotifyTrackFeatures trackFeatures = getSpotifyTrackFeatures();
-    SpotifyPlaylistDetails playlistDetails = getPlaylistDetails();
-    SpotifyPlaylist playlist = getPlaylist();
+    SpotifyTrackItemFeatures trackFeatures = getSpotifyTrackFeatures();
+    SpotifyPlaylistItemDetails playlistDetails = getPlaylistDetails();
+    SpotifyPlaylistItem playlist = getPlaylist();
 
-    List<SpotifyTrack> playlistTracks = new ArrayList<>(musicRecommendationsA);
+    List<SpotifyTrackItem> playlistTracks = new ArrayList<>(musicRecommendationsA);
 
     if (hasAAndBTracks) {
       playlistTracks.addAll(musicRecommendationsB);
@@ -215,7 +228,7 @@ class PlaylistControllerTest {
   @Test
   void itShouldThrowUserTopTracksNotFoundExceptionWhenUserTopTracksIsEmpty() {
     // Given
-    given(userService.getCurrentUser()).willReturn(User.builder().build());
+    given(userService.getCurrentUser()).willReturn(SpotifyUserProfile.builder().build());
     given(topTracksService.getUserTopTracks()).willReturn(List.of());
     // Then
     Assertions.assertThatThrownBy(() -> underTest.createPlaylist())
@@ -226,8 +239,8 @@ class PlaylistControllerTest {
   @Test
   void itShouldThrowRecommendationsNotFoundExceptionWhenMusicRecommendationsIsEmpty() {
     // Given
-    given(userService.getCurrentUser()).willReturn(User.builder().build());
-    given(topTracksService.getUserTopTracks()).willReturn(List.of(Track.builder().build()));
+    given(userService.getCurrentUser()).willReturn(SpotifyUserProfile.builder().build());
+    given(topTracksService.getUserTopTracks()).willReturn(List.of(SpotifyTrack.builder().build()));
     given(recommendationsService.getRecommendations(anyList(), any())).willReturn(List.of());
     // Then
     Assertions.assertThatThrownBy(() -> underTest.createPlaylist())

@@ -4,24 +4,23 @@ import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException
 
 import com.ksaraev.spotifyrun.client.api.items.*;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
-import com.ksaraev.spotifyrun.model.playlist.Playlist;
-import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
-import com.ksaraev.spotifyrun.model.playlist.PlaylistMapper;
-import com.ksaraev.spotifyrun.model.playlist.PlaylistMapperImpl;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import com.ksaraev.spotifyrun.model.track.Track;
-import com.ksaraev.spotifyrun.model.track.TrackMapperImpl;
-import com.ksaraev.spotifyrun.model.user.User;
-import com.ksaraev.spotifyrun.model.user.UserMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylist;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistMapper;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrack;import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapperImpl;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapperImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,14 +31,14 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     classes = {
-      PlaylistMapperImpl.class,
-      ArtistMapperImpl.class,
-      TrackMapperImpl.class,
-      UserMapperImpl.class
+      SpotifyPlaylistMapperImpl.class,
+      SpotifyArtistMapperImpl.class,
+      SpotifyTrackMapperImpl.class,
+      SpotifyUserProfileMapperImpl.class
     })
 class PlaylistMapperTest {
 
-  @Autowired PlaylistMapper underTest;
+  @Autowired SpotifyPlaylistMapper underTest;
 
   @Test
   void itShouldMapToPlaylist() throws Exception {
@@ -71,12 +70,12 @@ class PlaylistMapperTest {
     URI trackTwoUri = URI.create("spotify:track:2222030405AaBbCcDdEeFf");
     Integer trackTwoPopularity = 2;
 
-    SpotifyArtist artist = Artist.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtistItem artist = SpotifyArtist.builder().id(artistID).name(artistName).uri(artistUri).build();
 
-    List<SpotifyArtist> artists = List.of(artist);
+    List<SpotifyArtistItem> artists = List.of(artist);
 
-    SpotifyTrack trackOne =
-        Track.builder()
+    SpotifyTrackItem trackOne =
+        SpotifyTrack.builder()
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
@@ -84,8 +83,8 @@ class PlaylistMapperTest {
             .artists(artists)
             .build();
 
-    SpotifyTrack trackTwo =
-        Track.builder()
+    SpotifyTrackItem trackTwo =
+        SpotifyTrack.builder()
             .id(trackTwoId)
             .name(trackTwoName)
             .uri(trackTwoUri)
@@ -93,11 +92,11 @@ class PlaylistMapperTest {
             .artists(artists)
             .build();
 
-    SpotifyUser spotifyUser =
-        User.builder().id(userId).name(userName).uri(userUri).email(email).build();
+    SpotifyUserProfileItem spotifyUser =
+        SpotifyUserProfile.builder().id(userId).name(userName).uri(userUri).email(email).build();
 
-    Playlist playlist =
-        Playlist.builder()
+    SpotifyPlaylist playlist =
+        SpotifyPlaylist.builder()
             .id(playlistId)
             .name(playlistName)
             .description(playlistDescription)
@@ -110,21 +109,21 @@ class PlaylistMapperTest {
             .tracks(List.of(trackOne, trackTwo))
             .build();
 
-    SpotifyUserProfileItem userProfileItem =
-        SpotifyUserProfileItem.builder()
+    SpotifyUserProfileDto userProfileItem =
+        SpotifyUserProfileDto.builder()
             .id(userId)
             .displayName(userName)
             .uri(userUri)
             .email(email)
             .build();
 
-    SpotifyArtistItem artistItem =
-        SpotifyArtistItem.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtistDto artistItem =
+        SpotifyArtistDto.builder().id(artistID).name(artistName).uri(artistUri).build();
 
-    List<SpotifyArtistItem> artistItems = List.of(artistItem);
+    List<SpotifyArtistDto> artistItems = List.of(artistItem);
 
-    SpotifyTrackItem trackItemOne =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItemOne =
+        SpotifyTrackDto.builder()
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
@@ -132,8 +131,8 @@ class PlaylistMapperTest {
             .popularity(trackOnePopularity)
             .build();
 
-    SpotifyTrackItem trackItemTwo =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItemTwo =
+        SpotifyTrackDto.builder()
             .id(trackTwoId)
             .name(trackTwoName)
             .uri(trackTwoUri)
@@ -143,28 +142,28 @@ class PlaylistMapperTest {
 
     String addedAt = "2020-12-04T14:14:36Z";
 
-    SpotifyPlaylistItemTrack playlistItemTrackOne =
-        SpotifyPlaylistItemTrack.builder()
+    SpotifyPlaylistTrackDto playlistItemTrackOne =
+        SpotifyPlaylistTrackDto.builder()
             .trackItem(trackItemOne)
             .addedBy(userProfileItem)
             .addedAt(addedAt)
             .build();
 
-    SpotifyPlaylistItemTrack playlistItemTrackTwo =
-        SpotifyPlaylistItemTrack.builder()
+    SpotifyPlaylistTrackDto playlistItemTrackTwo =
+        SpotifyPlaylistTrackDto.builder()
             .trackItem(trackItemTwo)
             .addedBy(userProfileItem)
             .addedAt(addedAt)
             .build();
 
-    List<SpotifyPlaylistItemTrack> playlistItemTracks =
+    List<SpotifyPlaylistTrackDto> playlistItemTracks =
         List.of(playlistItemTrackOne, playlistItemTrackTwo);
 
-    SpotifyPlaylistItemMusic playlistItemMusic =
-        SpotifyPlaylistItemMusic.builder().playlistItemTracks(playlistItemTracks).build();
+    SpotifyPlaylistMusicDto playlistItemMusic =
+        SpotifyPlaylistMusicDto.builder().playlistItemTracks(playlistItemTracks).build();
 
-    SpotifyPlaylistItem playlistItem =
-        SpotifyPlaylistItem.builder()
+    SpotifyPlaylistDto playlistItem =
+        SpotifyPlaylistDto.builder()
             .id(playlistId)
             .name(playlistName)
             .uri(playlistUri)
@@ -212,16 +211,16 @@ class PlaylistMapperTest {
     Boolean isCollaborative = false;
     Boolean isPublic = false;
 
-    SpotifyPlaylistDetails spotifyPlaylistDetails =
-        PlaylistDetails.builder()
+    SpotifyPlaylistItemDetails spotifyPlaylistDetails =
+        SpotifyPlaylistDetails.builder()
             .name(playlistName)
             .description(playlistDescription)
             .isCollaborative(isCollaborative)
             .isPublic(isPublic)
             .build();
 
-    SpotifyPlaylistItemDetails playlistItemDetails =
-        SpotifyPlaylistItemDetails.builder()
+    SpotifyPlaylistDetailsDto playlistItemDetails =
+        SpotifyPlaylistDetailsDto.builder()
             .name(playlistName)
             .description(playlistDescription)
             .isCollaborative(isCollaborative)

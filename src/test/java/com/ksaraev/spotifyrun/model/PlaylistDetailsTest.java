@@ -2,8 +2,8 @@ package com.ksaraev.spotifyrun.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.model.playlist.PlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -19,10 +19,10 @@ class PlaylistDetailsTest {
   void itShouldDetectSpotifyPlaylistConstraintViolations() {
     // Given
     String message = "name: must not be empty";
-    SpotifyPlaylistDetails playlistDetails = PlaylistDetails.builder().name(null).build();
+    SpotifyPlaylistItemDetails playlistDetails = SpotifyPlaylistDetails.builder().name(null).build();
 
     // When
-    Set<ConstraintViolation<SpotifyPlaylistDetails>> constraintViolations =
+    Set<ConstraintViolation<SpotifyPlaylistItemDetails>> constraintViolations =
         validator.validate(playlistDetails);
 
     // Then

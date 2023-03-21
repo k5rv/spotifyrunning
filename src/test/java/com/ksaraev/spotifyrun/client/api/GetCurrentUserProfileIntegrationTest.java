@@ -7,7 +7,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -75,6 +75,6 @@ class GetCurrentUserProfileIntegrationTest {
     // Then
     assertThat(underTest.getCurrentUserProfile())
         .usingRecursiveComparison()
-        .isEqualTo(jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileItem.class));
+        .isEqualTo(jsonToObject(spotifyUserProfileItemJson, SpotifyUserProfileDto.class));
   }
 }

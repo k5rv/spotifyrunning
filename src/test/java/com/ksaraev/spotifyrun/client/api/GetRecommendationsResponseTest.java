@@ -2,8 +2,8 @@ package com.ksaraev.spotifyrun.client.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistItem;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackDto;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -26,10 +26,10 @@ class GetRecommendationsResponseTest {
   @Test
   void itShouldDetectGetRecommendationsResponseConstraintViolations() {
     // Given
-    List<SpotifyArtistItem> artistItems = SpotifyHelper.getArtistItems(2);
+    List<SpotifyArtistDto> artistItems = SpotifyHelper.getArtistItems(2);
 
-    SpotifyTrackItem trackItem =
-        SpotifyTrackItem.builder()
+    SpotifyTrackDto trackItem =
+        SpotifyTrackDto.builder()
             .id(null)
             .name("track name")
             .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
@@ -37,7 +37,7 @@ class GetRecommendationsResponseTest {
             .artistItems(artistItems)
             .build();
 
-    List<SpotifyTrackItem> trackItems = List.of(trackItem);
+    List<SpotifyTrackDto> trackItems = List.of(trackItem);
 
     GetRecommendationsResponse getRecommendationsResponse =
         GetRecommendationsResponse.builder().trackItems(trackItems).build();

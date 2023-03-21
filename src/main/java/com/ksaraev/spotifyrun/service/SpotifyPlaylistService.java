@@ -1,22 +1,68 @@
 package com.ksaraev.spotifyrun.service;
 
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyUser;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import static com.ksaraev.spotifyrun.exception.business.AddTracksException.UNABLE_TO_ADD_TRACKS;
+import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
+import static com.ksaraev.spotifyrun.exception.business.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
+
+import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.ksaraev.spotifyrun.client.api.AddItemsRequest;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.exception.business.AddTracksException;
+import com.ksaraev.spotifyrun.exception.business.CreatePlaylistException;
+import com.ksaraev.spotifyrun.exception.business.GetPlaylistException;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistMapper;
+import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import java.net.URI;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
-public interface SpotifyPlaylistService {
+@Slf4j
+@Service
+@Validated
+@AllArgsConstructor
+public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
-  SpotifyPlaylist getPlaylist(@NotNull String playlistId);
+  private final SpotifyClient spotifyClient;
+  private final SpotifyPlaylistMapper playlistMapper;
 
-  SpotifyPlaylist createPlaylist(
-      @Valid @NotNull SpotifyUser user, @Valid @NotNull SpotifyPlaylistDetails playlistDetails);
+  @Override
+  public SpotifyPlaylistItem getPlaylist(String playlistId) throws GetPlaylistException {
+    try {
+      SpotifyPlaylistDto playlistItem = spotifyClient.getPlaylist(playlistId);
+      return playlistMapper.mapToPlaylist(playlistItem);
+    } catch (RuntimeException e) {
+      throw new GetPlaylistException(UNABLE_TO_GET_PLAYLIST + e.getMessage(), e);
+    }
+  }
 
-  void addTracks(
-      @Valid @NotNull SpotifyPlaylist playlist,
-      @Valid @Size(min = 1, max = 100) List<SpotifyTrack> tracks);
+  @Override
+  public SpotifyPlaylistItem createPlaylist(SpotifyUserProfileItem user, SpotifyPlaylistItemDetails playlistDetails) {
+    try {
+      SpotifyPlaylistDetailsDto playlistItemDetails =
+          playlistMapper.mapToPlaylistItemDetails(playlistDetails);
+      SpotifyPlaylistDto playlistItem =
+          spotifyClient.createPlaylist(user.getId(), playlistItemDetails);
+      return playlistMapper.mapToPlaylist(playlistItem);
+    } catch (RuntimeException e) {
+      throw new CreatePlaylistException(UNABLE_TO_CREATE_PLAYLIST + e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public void addTracks(SpotifyPlaylistItem playlist, List<SpotifyTrackItem> tracks) {
+    try {
+      List<URI> trackUris = tracks.stream().map(SpotifyTrackItem::getUri).toList();
+      AddItemsRequest request = new AddItemsRequest(trackUris);
+      spotifyClient.addItemsToPlaylist(playlist.getId(), request);
+    } catch (RuntimeException e) {
+      throw new AddTracksException(UNABLE_TO_ADD_TRACKS + e.getMessage(), e);
+    }
+  }
 }

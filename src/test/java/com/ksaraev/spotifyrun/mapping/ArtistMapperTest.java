@@ -3,12 +3,11 @@ package com.ksaraev.spotifyrun.mapping;
 import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 
-import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistItem;
+import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistDto;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.artist.Artist;
-import com.ksaraev.spotifyrun.model.artist.ArtistMapper;
-import com.ksaraev.spotifyrun.model.artist.ArtistMapperImpl;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistMapper;
+import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,18 +16,18 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ArtistMapperImpl.class})
+@ContextConfiguration(classes = {SpotifyArtistMapper.class})
 class ArtistMapperTest {
 
-  @Autowired ArtistMapper underTest;
+  @Autowired SpotifyArtistMapper underTest;
 
   @Test
   void itShouldMapSpotifyArtistItemToArtist() {
     // Given
-    SpotifyArtistItem artistItem = getArtistItem();
+    SpotifyArtistDto artistItem = getArtistItem();
 
-    SpotifyArtist artist =
-        Artist.builder()
+    SpotifyArtistItem artist =
+        SpotifyArtist.builder()
             .id(artistItem.id())
             .name(artistItem.name())
             .uri(artistItem.uri())
