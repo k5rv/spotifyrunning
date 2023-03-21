@@ -8,6 +8,18 @@ server:
 spring:
   application:
     name: spotifyrun
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spotifyrun
+    username: user
+    password: pass
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
   cloud:
     openfeign:
       client:
