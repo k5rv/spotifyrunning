@@ -2,18 +2,18 @@ package com.ksaraev.spotifyrun.mapping;
 
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 
-import com.ksaraev.spotifyrun.client.api.items.*;
+import com.ksaraev.spotifyrun.client.api.*;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistMapperImpl;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrack;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapperImpl;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapperImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

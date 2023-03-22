@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.model.spotify.artist;
 
-import com.ksaraev.spotifyrun.client.api.items.SpotifyArtistDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyArtistDto;
 import com.ksaraev.spotifyrun.model.SpotifyMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

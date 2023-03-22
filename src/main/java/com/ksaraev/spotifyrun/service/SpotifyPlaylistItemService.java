@@ -16,7 +16,7 @@ public interface SpotifyPlaylistItemService {
   SpotifyPlaylistItem createPlaylist(
       @Valid @NotNull SpotifyUserProfileItem user, @Valid @NotNull SpotifyPlaylistItemDetails playlistDetails);
 
-  void addTracks(
-      @Valid @NotNull SpotifyPlaylistItem playlist,
+  String addTracks(
+      @Valid @NotNull String playlistId,
       @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> tracks);
 }

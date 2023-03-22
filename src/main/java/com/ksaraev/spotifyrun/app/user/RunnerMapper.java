@@ -1,4 +1,4 @@
-package com.ksaraev.spotifyrun.app.runner;
+package com.ksaraev.spotifyrun.app.user;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
@@ -9,7 +9,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = SPRING)
 public interface RunnerMapper {
 
-  @Mapping(target = "uuid", ignore = true)
   @Mapping(target = "spotifyId", source = "id")
+  @Mapping(target = "playlists", ignore = true)
+  @Mapping(target = "uuid", ignore = true)
   Runner mapToEntity(SpotifyUserProfileItem userProfileItem);
 }

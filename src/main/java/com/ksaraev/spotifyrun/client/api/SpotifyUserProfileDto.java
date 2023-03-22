@@ -1,6 +1,7 @@
-package com.ksaraev.spotifyrun.client.api.items;
+package com.ksaraev.spotifyrun.client.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
@@ -10,13 +11,15 @@ import java.util.Map;
 import lombok.Builder;
 
 @Builder
-public record SpotifyArtistDto(
+public record SpotifyUserProfileDto(
+    @JsonProperty("display_name") @NotEmpty String displayName,
+    @JsonProperty("explicit_content") Map<String, Object> explicitContent,
     @JsonProperty("followers") Map<String, Object> followers,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,
     @NotNull String id,
-    @NotEmpty String name,
-    Integer popularity,
-    List<String> genres,
+    @Email String email,
+    String country,
+    String product,
     String type,
     @NotNull URI uri,
     URL href,

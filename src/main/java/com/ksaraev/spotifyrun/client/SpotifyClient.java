@@ -1,9 +1,9 @@
 package com.ksaraev.spotifyrun.client;
 
 import com.ksaraev.spotifyrun.client.api.*;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDetailsDto;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
 import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
 import jakarta.validation.Valid;

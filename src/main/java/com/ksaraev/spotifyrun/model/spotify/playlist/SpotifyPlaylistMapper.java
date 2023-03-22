@@ -1,8 +1,9 @@
 package com.ksaraev.spotifyrun.model.spotify.playlist;
 
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDetailsDto;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;import com.ksaraev.spotifyrun.model.SpotifyMapper;
+import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.model.SpotifyMapper;
+import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
 import org.mapstruct.Mapper;

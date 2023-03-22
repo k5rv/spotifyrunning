@@ -1,7 +1,8 @@
-package com.ksaraev.spotifyrun.app.runner;
+package com.ksaraev.spotifyrun.app.user;
 
 import com.ksaraev.spotifyrun.app.playlist.Playlist;
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -13,14 +14,24 @@ import org.hibernate.annotations.UuidGenerator;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Runner {
+public class Runner implements AppUser {
 
   @Id @GeneratedValue @UuidGenerator private UUID uuid;
 
   private String spotifyId;
 
   @OneToMany(mappedBy = "runner", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Playlist> playlists;
+  private List<Playlist> playlists = new ArrayList<>();
+
+  @Override
+  public String getExternalId() {
+    return this.spotifyId;
+  }
+
+  @Override
+  public void setExternalId(String id) {
+    this.spotifyId = id;
+  }
 
   public void addPlaylist(Playlist playlist) {
     playlists.add(playlist);

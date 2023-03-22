@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrun.client.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackDto;
 import jakarta.validation.Valid;
 import java.net.URL;
 import java.util.List;
