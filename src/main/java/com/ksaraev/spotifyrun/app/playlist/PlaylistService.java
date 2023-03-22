@@ -64,7 +64,7 @@ public class PlaylistService implements AppPlaylistService {
       SpotifyPlaylistItemDetails playlistItemDetails = config.getDetails();
       SpotifyPlaylistItem playlistItem =
           playlistItemService.createPlaylist(userProfileItem, playlistItemDetails);
-      Playlist playlist = mapper.mapToEntity(playlistItem);
+      Playlist playlist = mapper.updateEntity(playlistItem);
       playlist.setRunner((Runner) appUser);
       return repository.save(playlist);
     } catch (RuntimeException e) {
@@ -80,11 +80,7 @@ public class PlaylistService implements AppPlaylistService {
       String id = appPlaylist.getExternalId();
       playlistItemService.addTracks(id, recommendations);
       SpotifyPlaylistItem playlistItem = playlistItemService.getPlaylist(id);
-      UUID uuid = appPlaylist.getUuid();
-      Runner runner = ((Playlist) appPlaylist).getRunner();
-      Playlist playlist = mapper.mapToEntity(playlistItem);
-      playlist.setUuid(uuid);
-      playlist.setRunner(runner);
+      Playlist playlist = mapper.updateEntity((Playlist) appPlaylist, playlistItem);
       repository.save(playlist);
     } catch (RuntimeException e) {
       throw new AddMusicRecommendationsException(

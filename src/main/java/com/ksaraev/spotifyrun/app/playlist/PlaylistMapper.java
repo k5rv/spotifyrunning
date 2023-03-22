@@ -16,10 +16,18 @@ public interface PlaylistMapper {
   @Mapping(target = "runner", ignore = true)
   @Mapping(target = "spotifyId", source = "id")
   @Mapping(target = "trackIds", source = "tracks")
-  Playlist mapToEntity(SpotifyPlaylistItem playlistItem);
+  Playlist updateEntity(SpotifyPlaylistItem playlistItem);
+
+  @Mapping(target = "uuid", source = "playlist.uuid")
+  @Mapping(target = "runner",  source = "playlist.runner")
+  @Mapping(target = "trackIds", source = "playlistItem.tracks")
+  @Mapping(target = "spotifyId", source = "playlistItem.id")
+  Playlist updateEntity(Playlist playlist, SpotifyPlaylistItem playlistItem);
 
   default List<String> mapToEntityField(List<SpotifyTrackItem> spotifyTracks) {
     if (spotifyTracks == null) return List.of();
     return spotifyTracks.stream().filter(Objects::nonNull).map(SpotifyTrackItem::getId).toList();
   }
+
+
 }
