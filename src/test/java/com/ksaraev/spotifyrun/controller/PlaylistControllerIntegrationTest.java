@@ -8,14 +8,14 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.ksaraev.spotifyrun.app.playlist.PlaylistController;
 import com.ksaraev.spotifyrun.client.api.AddItemsResponse;
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackDto;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
 import java.util.List;
-import com.ksaraev.spotifyrun.app.playlist.PlaylistController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

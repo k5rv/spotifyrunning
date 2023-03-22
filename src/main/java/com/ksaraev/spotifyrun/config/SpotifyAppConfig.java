@@ -1,11 +1,11 @@
 package com.ksaraev.spotifyrun.config;
 
-import com.ksaraev.spotifyrun.config.playlist.PlaylistConfig;
-import com.ksaraev.spotifyrun.config.playlist.SpotifyRunPlaylistConfig;
+import com.ksaraev.spotifyrun.app.playlist.AppPlaylistConfig;
+import com.ksaraev.spotifyrun.app.playlist.PlaylistConfig;
 import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
 import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
-public class SpotifyRunConfig {
+public class SpotifyAppConfig {
 
   @Value("${spotifyrun.playlist.details.name}")
   @NotEmpty
@@ -53,7 +53,7 @@ public class SpotifyRunConfig {
   }
 
   @Bean
-  SpotifyRunPlaylistConfig getWorkoutPlaylistConfig() {
+  AppPlaylistConfig getWorkoutPlaylistConfig() {
     SpotifyPlaylistItemDetails playlistDetails =
         SpotifyPlaylistDetails.builder().name(this.name).description(this.description).build();
 

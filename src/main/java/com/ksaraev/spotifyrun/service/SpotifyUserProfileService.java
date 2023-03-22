@@ -4,7 +4,7 @@ import static com.ksaraev.spotifyrun.exception.business.GetUserException.UNABLE_
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.exception.business.GetUserException;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;

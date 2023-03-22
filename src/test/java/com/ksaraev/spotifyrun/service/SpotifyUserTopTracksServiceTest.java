@@ -14,7 +14,7 @@ import static org.mockito.Mockito.never;
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.api.GetUserTopTracksResponse;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyTrackDto;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
 import com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;

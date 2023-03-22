@@ -11,11 +11,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.exception.business.GetUserException;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;
+import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
-import com.ksaraev.spotifyrun.security.AuthenticationFacade;import org.junit.jupiter.api.BeforeEach;
+import com.ksaraev.spotifyrun.security.AuthenticationFacade;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;

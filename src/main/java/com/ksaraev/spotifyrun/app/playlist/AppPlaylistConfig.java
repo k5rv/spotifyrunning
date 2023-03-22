@@ -1,9 +1,9 @@
-package com.ksaraev.spotifyrun.config.playlist;
+package com.ksaraev.spotifyrun.app.playlist;
 
 import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
 
-public interface SpotifyRunPlaylistConfig {
+public interface AppPlaylistConfig {
 
   SpotifyPlaylistItemDetails getDetails();
 

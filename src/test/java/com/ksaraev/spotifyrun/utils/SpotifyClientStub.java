@@ -2,9 +2,9 @@ package com.ksaraev.spotifyrun.utils;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.*;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyPlaylistDetailsDto;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
 
 public class SpotifyClientStub implements SpotifyClient {
 

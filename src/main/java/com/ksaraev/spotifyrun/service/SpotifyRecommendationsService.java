@@ -5,14 +5,14 @@ import static com.ksaraev.spotifyrun.exception.business.GetRecommendationsExcept
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.client.api.GetRecommendationsResponse;
-import com.ksaraev.spotifyrun.client.api.items.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.api.SpotifyTrackDto;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
 import com.ksaraev.spotifyrun.exception.business.GetRecommendationsException;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
 import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
 import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeaturesMapper;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
+import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
