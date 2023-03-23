@@ -4,7 +4,7 @@ import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
+import com.ksaraev.spotifyrun.client.dto.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
 import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeaturesMapperImpl;
 import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;

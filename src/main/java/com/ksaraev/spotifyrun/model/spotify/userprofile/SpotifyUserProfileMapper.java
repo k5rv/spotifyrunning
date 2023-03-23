@@ -2,7 +2,7 @@ package com.ksaraev.spotifyrun.model.spotify.userprofile;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.model.SpotifyMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

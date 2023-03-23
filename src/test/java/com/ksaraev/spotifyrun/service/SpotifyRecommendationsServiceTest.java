@@ -11,9 +11,9 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
-import com.ksaraev.spotifyrun.client.api.GetRecommendationsResponse;
-import com.ksaraev.spotifyrun.client.api.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.dto.GetRecommendationsRequest;
+import com.ksaraev.spotifyrun.client.dto.GetRecommendationsResponse;
+import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
 import com.ksaraev.spotifyrun.exception.business.GetRecommendationsException;
 import com.ksaraev.spotifyrun.model.SpotifyItem;

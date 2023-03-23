@@ -11,7 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.exception.business.GetUserException;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;

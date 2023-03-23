@@ -9,8 +9,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = SPRING)
 public interface RunnerMapper {
 
-  @Mapping(target = "spotifyId", source = "id")
   @Mapping(target = "playlists", ignore = true)
-  @Mapping(target = "uuid", ignore = true)
   Runner mapToEntity(SpotifyUserProfileItem userProfileItem);
 }

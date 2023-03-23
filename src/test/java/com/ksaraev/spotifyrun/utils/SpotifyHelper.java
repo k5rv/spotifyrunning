@@ -3,7 +3,7 @@ package com.ksaraev.spotifyrun.utils;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.SpotifyItemType.*;
 import static java.util.concurrent.ThreadLocalRandom.*;
 
-import com.ksaraev.spotifyrun.client.api.*;
+import com.ksaraev.spotifyrun.client.dto.*;
 import com.ksaraev.spotifyrun.model.SpotifyItem;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
@@ -464,9 +464,9 @@ public class SpotifyHelper {
     return GetRecommendationsResponse.builder().trackItems(trackItems).seeds(seeds).build();
   }
 
-  public static AddItemsResponse createAddItemsResponse() {
+  public static UpdateItemsResponse createAddItemsResponse() {
     String snapshotId = getRandomSnapshotId();
-    return AddItemsResponse.builder().snapshotId(snapshotId).build();
+    return UpdateItemsResponse.builder().snapshotId(snapshotId).build();
   }
 
   public static List<SpotifyArtistItem> getArtists(Integer size) {

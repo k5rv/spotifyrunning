@@ -19,16 +19,30 @@ public class PlaylistController {
 
   @PostMapping
   public AppPlaylist createPlaylist() {
-    boolean isUserExists = userService.isUserExists();
-    AppUser user = isUserExists ? userService.getUser() : userService.createUser();
 
-    boolean isPlaylistExists = playlistService.playlistExists(user);
+    AppUser user = userService.isUserExists() ? userService.getUser() : userService.createUser();
 
-    if (!isPlaylistExists) {
-      AppPlaylist playlist = playlistService.createPlaylist(user);
-      playlistService.addMusicRecommendations(playlist);
-    }
+    AppPlaylist playlist =
+        playlistService.isRelationExists(user)
+            ? playlistService.getPlaylist(user)
+            : playlistService.createPlaylist(user);
 
+
+    playlistService.addMusic(playlist);
     return playlistService.getPlaylist(user);
   }
 }
+/*
+  1. user exist?
+  1.1 no -> create user
+  1.2 yes -> get user
+
+  2. user has playlist?
+  2.1 no -> create playlist
+  2.1.2 get tracks
+  2.1.3 add tracks to playlist
+  2.2 yes -> get tracks
+  2.2.1 get playlist
+  2.2.2 delete all tracks
+  2.2.3 add tracks
+*/
