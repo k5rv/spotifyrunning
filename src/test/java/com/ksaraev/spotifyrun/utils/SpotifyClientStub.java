@@ -1,10 +1,10 @@
 package com.ksaraev.spotifyrun.utils;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.*;
-import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDetailsDto;
-import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.dto.*;
+import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 
 public class SpotifyClientStub implements SpotifyClient {
 
@@ -35,7 +35,7 @@ public class SpotifyClientStub implements SpotifyClient {
   }
 
   @Override
-  public AddItemsResponse addItemsToPlaylist(String playlistId, AddItemsRequest request) {
+  public UpdateItemsResponse addPlaylistItems(String playlistId, UpdateItemsRequest request) {
     return null;
   }
 }

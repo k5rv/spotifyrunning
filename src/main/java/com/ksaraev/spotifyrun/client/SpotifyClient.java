@@ -1,9 +1,9 @@
 package com.ksaraev.spotifyrun.client;
 
-import com.ksaraev.spotifyrun.client.api.*;
-import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDetailsDto;
-import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.client.api.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.dto.*;
+import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
 import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
 import jakarta.validation.Valid;
@@ -11,10 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @Validated
 @FeignClient(name = "spotify")
@@ -57,7 +54,15 @@ public interface SpotifyClient {
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   @Valid
   @NotNull
-  AddItemsResponse addItemsToPlaylist(
+  UpdateItemsResponse addPlaylistItems(
       @NotNull @PathVariable(value = "playlist_id") String playlistId,
-      @Valid @NotNull @RequestBody AddItemsRequest request);
+      @Valid @NotNull @RequestBody UpdateItemsRequest request);
+
+  @DeleteMapping(path = "playlists/{playlist_id}/tracks")
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
+  UpdateItemsResponse deletePlaylistItems(
+      @NotNull @PathVariable(value = "playlist_id") String playlistId,
+      @Valid @NotNull @RequestBody UpdateItemsRequest request);
 }

@@ -3,9 +3,9 @@ package com.ksaraev.spotifyrun.service;
 import static com.ksaraev.spotifyrun.exception.business.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.GetRecommendationsRequest;
-import com.ksaraev.spotifyrun.client.api.GetRecommendationsResponse;
-import com.ksaraev.spotifyrun.client.api.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.dto.GetRecommendationsRequest;
+import com.ksaraev.spotifyrun.client.dto.GetRecommendationsResponse;
+import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
 import com.ksaraev.spotifyrun.exception.business.GetRecommendationsException;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;

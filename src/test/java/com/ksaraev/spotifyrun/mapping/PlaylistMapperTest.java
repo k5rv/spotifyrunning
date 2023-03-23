@@ -2,7 +2,7 @@ package com.ksaraev.spotifyrun.mapping;
 
 import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
 
-import com.ksaraev.spotifyrun.client.api.*;
+import com.ksaraev.spotifyrun.client.dto.*;
 import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;

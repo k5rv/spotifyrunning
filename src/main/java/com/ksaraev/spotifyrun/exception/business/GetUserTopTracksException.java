@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.exception.business;
 
-import com.ksaraev.spotifyrun.client.api.GetUserTopTracksRequest;
+import com.ksaraev.spotifyrun.client.dto.GetUserTopTracksRequest;
 import java.util.Arrays;
 import lombok.experimental.StandardException;
 

@@ -19,4 +19,10 @@ public interface SpotifyPlaylistItemService {
   String addTracks(
       @Valid @NotNull String playlistId,
       @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> tracks);
+
+  String removeTracks(
+          @Valid @NotNull String playlistId,
+          @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> tracks);
+
+
 }

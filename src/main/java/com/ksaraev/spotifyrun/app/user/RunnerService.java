@@ -9,6 +9,7 @@ import com.ksaraev.spotifyrun.exception.business.GetRegistrationStatusException;
 import com.ksaraev.spotifyrun.exception.business.UserRegistrationException;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.service.SpotifyUserProfileItemService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +30,7 @@ public class RunnerService implements AppUserService {
     try {
       SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
       String id = userProfileItem.getId();
-      return repository.existsBySpotifyId(id);
+      return repository.existsById(id);
     } catch (RuntimeException e) {
       throw new GetRegistrationStatusException(
           UNABLE_TO_GET_USER_REGISTRATION_STATUS + e.getMessage(), e);
@@ -38,13 +39,15 @@ public class RunnerService implements AppUserService {
 
   @Override
   public AppUser getUser() {
+    Optional<Runner> optionalRunner;
     try {
       SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
       String id = userProfileItem.getId();
-      return repository.findBySpotifyId(id);
+      optionalRunner = repository.findById(id);
     } catch (RuntimeException e) {
       throw new GetAppUserException(UNABLE_TO_GET_APP_USER + e.getMessage(), e);
     }
+    return optionalRunner.orElseThrow(() -> new GetAppUserException(UNABLE_TO_GET_APP_USER));
   }
 
   @Override

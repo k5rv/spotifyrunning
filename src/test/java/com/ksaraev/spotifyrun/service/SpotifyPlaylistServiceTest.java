@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrun.service;
 
-import static com.ksaraev.spotifyrun.exception.business.AddTracksException.UNABLE_TO_ADD_TRACKS;
 import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
 import static com.ksaraev.spotifyrun.exception.business.GetPlaylistException.UNABLE_TO_GET_PLAYLIST;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
@@ -11,10 +10,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.api.AddItemsRequest;
-import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDetailsDto;
-import com.ksaraev.spotifyrun.client.api.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.exception.business.AddTracksException;
+import com.ksaraev.spotifyrun.client.dto.UpdateItemsRequest;
+import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDetailsDto;
+import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
 import com.ksaraev.spotifyrun.exception.business.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.business.GetPlaylistException;
 import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylist;
@@ -58,7 +56,7 @@ class SpotifyPlaylistServiceTest {
 
   @Captor private ArgumentCaptor<SpotifyPlaylistDto> playlistItemArgumentCaptor;
   @Captor private ArgumentCaptor<SpotifyPlaylistDetails> playlistDetailsArgumentCaptor;
-  @Captor private ArgumentCaptor<AddItemsRequest> addItemsRequestArgumentCaptor;
+  @Captor private ArgumentCaptor<UpdateItemsRequest> addItemsRequestArgumentCaptor;
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
@@ -213,7 +211,7 @@ class SpotifyPlaylistServiceTest {
     String playlistId = "asdasdasd";
     List<SpotifyTrackItem> tracks = getTracks(2);
     List<URI> trackUris = tracks.stream().map(SpotifyTrackItem::getUri).toList();
-    AddItemsRequest addItemsRequest = new AddItemsRequest(trackUris);
+    UpdateItemsRequest updateItemsRequest = new UpdateItemsRequest(trackUris);
 
     // When
     underTest.addTracks(playlistId, tracks);
@@ -221,12 +219,12 @@ class SpotifyPlaylistServiceTest {
     // Then
     then(spotifyClient)
         .should()
-        .addItemsToPlaylist(
+        .addPlaylistItems(
             playlistIdArgumentCaptor.capture(), addItemsRequestArgumentCaptor.capture());
 
     assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
 
-    assertThat(addItemsRequestArgumentCaptor.getValue()).isEqualTo(addItemsRequest);
+    assertThat(addItemsRequestArgumentCaptor.getValue()).isEqualTo(updateItemsRequest);
   }
 
   @Test
@@ -235,7 +233,7 @@ class SpotifyPlaylistServiceTest {
     String message = "message";
     SpotifyPlaylistItem playlist = getPlaylist();
     List<SpotifyTrackItem> tracks = getTracks(2);
-    given(spotifyClient.addItemsToPlaylist(any(), any())).willThrow(new RuntimeException(message));
+    given(spotifyClient.addPlaylistItems(any(), any())).willThrow(new RuntimeException(message));
 
     // Then
 //    assertThatThrownBy(() -> underTest.addTracks(playlist, tracks))

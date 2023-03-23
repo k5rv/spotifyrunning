@@ -1,37 +1,29 @@
 package com.ksaraev.spotifyrun.app.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ksaraev.spotifyrun.app.playlist.Playlist;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import lombok.*;
 import org.hibernate.Hibernate;
-import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Getter
 @Setter
 @RequiredArgsConstructor
 public class Runner implements AppUser {
+  @Id private String id;
 
-  @Id @GeneratedValue @UuidGenerator private UUID uuid;
+  private String name;
 
-  private String spotifyId;
-
+  @JsonBackReference
   @OneToMany(mappedBy = "runner", cascade = CascadeType.ALL, orphanRemoval = true)
+  // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  // @JoinColumn(name = "runner_id")
   private List<Playlist> playlists = new ArrayList<>();
-
-  @Override
-  public String getExternalId() {
-    return this.spotifyId;
-  }
-
-  @Override
-  public void setExternalId(String id) {
-    this.spotifyId = id;
-  }
 
   public void addPlaylist(Playlist playlist) {
     playlists.add(playlist);
@@ -48,7 +40,7 @@ public class Runner implements AppUser {
     if (this == o) return true;
     if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
     Runner runner = (Runner) o;
-    return getUuid() != null && Objects.equals(getUuid(), runner.getUuid());
+    return getId() != null && Objects.equals(getId(), runner.getId());
   }
 
   @Override
