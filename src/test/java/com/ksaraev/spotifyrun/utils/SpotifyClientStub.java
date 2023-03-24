@@ -38,4 +38,9 @@ public class SpotifyClientStub implements SpotifyClient {
   public UpdateItemsResponse addPlaylistItems(String playlistId, UpdateItemsRequest request) {
     return null;
   }
+
+  @Override
+  public UpdateItemsResponse deletePlaylistItems(String playlistId, UpdateItemsRequest request) {
+    return null;
+  }
 }

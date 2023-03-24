@@ -1,7 +1,8 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ksaraev.spotifyrun.app.user.AppUser;
 import com.ksaraev.spotifyrun.app.user.Runner;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
@@ -21,6 +22,7 @@ import org.hibernate.annotations.Type;
 public class Playlist implements AppPlaylist {
 
   @Id private String id;
+
   @ManyToOne(fetch = FetchType.LAZY)
   private Runner runner;
 
@@ -28,6 +30,28 @@ public class Playlist implements AppPlaylist {
   @JsonManagedReference
   @Column(columnDefinition = "jsonb")
   private List<String> trackIds = new ArrayList<>();
+
+  @JsonIgnore
+  @Override
+  public AppUser getOwner() {
+    return this.runner;
+  }
+
+  @JsonIgnore
+  @Override
+  public void setOwner(AppUser appUser) {
+    this.runner = (Runner) appUser;
+  }
+
+  @Override
+  public List<String> getTrackIds() {
+    return this.trackIds;
+  }
+
+  @Override
+  public void setTrackIds(List<String> tracks) {
+    this.trackIds = tracks;
+  }
 
   @Override
   public boolean equals(Object o) {

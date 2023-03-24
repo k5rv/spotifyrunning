@@ -1,9 +1,12 @@
 package com.ksaraev.spotifyrun.app.user;
 
+import static com.ksaraev.spotifyrun.exception.business.GetAppPlaylistException.UNABLE_TO_GET_APP_PLAYLIST;
 import static com.ksaraev.spotifyrun.exception.business.GetAppUserException.*;
 import static com.ksaraev.spotifyrun.exception.business.GetRegistrationStatusException.*;
 import static com.ksaraev.spotifyrun.exception.business.UserRegistrationException.*;
 
+import com.ksaraev.spotifyrun.app.playlist.PlaylistRepository;
+import com.ksaraev.spotifyrun.exception.business.GetAppPlaylistException;
 import com.ksaraev.spotifyrun.exception.business.GetAppUserException;
 import com.ksaraev.spotifyrun.exception.business.GetRegistrationStatusException;
 import com.ksaraev.spotifyrun.exception.business.UserRegistrationException;
@@ -21,7 +24,8 @@ public class RunnerService implements AppUserService {
 
   private final SpotifyUserProfileItemService spotifyUserProfileService;
 
-  private final RunnerRepository repository;
+  private final RunnerRepository runnerRepository;
+  private final PlaylistRepository playlistRepository;
 
   private final RunnerMapper mapper;
 
@@ -30,10 +34,20 @@ public class RunnerService implements AppUserService {
     try {
       SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
       String id = userProfileItem.getId();
-      return repository.existsById(id);
+      return runnerRepository.existsById(id);
     } catch (RuntimeException e) {
       throw new GetRegistrationStatusException(
           UNABLE_TO_GET_USER_REGISTRATION_STATUS + e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public boolean hasPlaylist(AppUser appUser) {
+    try {
+      String id = appUser.getId();
+      return playlistRepository.existsByRunnerId(id);
+    } catch (RuntimeException e) {
+      throw new GetAppPlaylistException(UNABLE_TO_GET_APP_PLAYLIST + e.getMessage(), e);
     }
   }
 
@@ -43,7 +57,7 @@ public class RunnerService implements AppUserService {
     try {
       SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
       String id = userProfileItem.getId();
-      optionalRunner = repository.findById(id);
+      optionalRunner = runnerRepository.findById(id);
     } catch (RuntimeException e) {
       throw new GetAppUserException(UNABLE_TO_GET_APP_USER + e.getMessage(), e);
     }
@@ -55,7 +69,7 @@ public class RunnerService implements AppUserService {
     try {
       SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
       Runner runner = mapper.mapToEntity(userProfileItem);
-      repository.save(runner);
+      runnerRepository.save(runner);
       return runner;
     } catch (RuntimeException e) {
       throw new UserRegistrationException(UNABLE_TO_REGISTER_USER + e.getMessage(), e);

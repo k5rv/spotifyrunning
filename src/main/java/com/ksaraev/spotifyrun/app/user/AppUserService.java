@@ -6,4 +6,6 @@ public interface AppUserService {
   AppUser createUser();
 
   AppUser getUser();
+
+  boolean hasPlaylist(AppUser appUser);
 }
