@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-
+import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.user.AppUser;
 import java.util.List;
 
@@ -14,7 +14,7 @@ public interface AppPlaylist {
 
   void setOwner(AppUser appUser);
 
-  List<String> getTrackIds();
+  List<AppTrack> getTracks();
 
-  void setTrackIds(List<String> trackIds);
+  void setTracks(List<AppTrack> tracks);
 }

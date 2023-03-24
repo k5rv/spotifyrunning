@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrun.app.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ksaraev.spotifyrun.app.playlist.Playlist;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -21,8 +20,6 @@ public class Runner implements AppUser {
 
   @JsonBackReference
   @OneToMany(mappedBy = "runner", cascade = CascadeType.ALL, orphanRemoval = true)
-  // @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-  // @JoinColumn(name = "runner_id")
   private List<Playlist> playlists = new ArrayList<>();
 
   public void addPlaylist(Playlist playlist) {
