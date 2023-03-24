@@ -37,16 +37,6 @@ public class PlaylistService implements AppPlaylistService {
   private final SpotifyRecommendationItemsService spotifyRecommendationsService;
 
   @Override
-  public boolean isRelationExists(AppUser appUser) {
-    try {
-      String id = appUser.getId();
-      return repository.existsByRunnerId(id);
-    } catch (RuntimeException e) {
-      throw new PlaylistExistenceException(UNABLE_TO_GET_PLAYLIST_STATUS + e.getMessage(), e);
-    }
-  }
-
-  @Override
   public AppPlaylist getPlaylist(AppUser appUser) {
     Optional<Playlist> optionalPlaylist;
     try {
@@ -78,45 +68,9 @@ public class PlaylistService implements AppPlaylistService {
     try {
       List<SpotifyTrackItem> topTracks = getTopTracks();
       List<SpotifyTrackItem> recommendations = getRecommendations(topTracks);
-
       String id = appPlaylist.getId();
-
-      SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(id);
-
-      List<SpotifyTrackItem> workoutTracks = playlistItem.getTracks();
-
-      if (!workoutTracks.isEmpty()) {
-
-        List<SpotifyTrackItem> tracksDiff =
-            Stream.of(recommendations, workoutTracks)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toMap(SpotifyTrackItem::getId, p -> p, (p, q) -> p))
-                .values()
-                .stream()
-                .toList();
-
-        List<SpotifyTrackItem> tracksToRemove =
-            workoutTracks.stream()
-                .filter(
-                    workoutTrack ->
-                        tracksDiff.stream()
-                            .anyMatch(trackDiff -> trackDiff.getId().equals(workoutTrack.getId())))
-                .toList();
-
-        recommendations =
-            recommendations.stream()
-                .filter(
-                    recommendation ->
-                        tracksDiff.stream()
-                            .anyMatch(
-                                trackDiff -> trackDiff.getId().equals(recommendation.getId())))
-                .toList();
-
-        spotifyPlaylistService.removeTracks(id, tracksToRemove);
-      }
-
       spotifyPlaylistService.addTracks(id, recommendations);
-      playlistItem = spotifyPlaylistService.getPlaylist(id);
+      SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(id);
       Playlist playlist = mapper.updateEntity((Playlist) appPlaylist, playlistItem);
       repository.save(playlist);
     } catch (RuntimeException e) {
@@ -125,7 +79,45 @@ public class PlaylistService implements AppPlaylistService {
     }
   }
 
-  public void updateMusic(AppPlaylist appPlaylist) {}
+  @Override
+  public void updateMusic(AppPlaylist appPlaylist) {
+    try {
+      List<SpotifyTrackItem> topTracks = getTopTracks();
+      List<SpotifyTrackItem> recommendations = getRecommendations(topTracks);
+      String id = appPlaylist.getId();
+      SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(id);
+      List<SpotifyTrackItem> workoutTracks = playlistItem.getTracks();
+
+      List<SpotifyTrackItem> tracksToAdd =
+          recommendations.stream()
+              .filter(
+                  recommendation ->
+                      workoutTracks.stream()
+                          .noneMatch(
+                              workoutTrack -> workoutTrack.getId().equals(recommendation.getId())))
+              .toList();
+
+      List<SpotifyTrackItem> tracksToRemove =
+          workoutTracks.stream()
+              .filter(
+                  workoutTrack ->
+                      recommendations.stream()
+                          .noneMatch(
+                              recommendation ->
+                                  recommendation.getId().equals(workoutTrack.getId())))
+              .toList();
+
+      spotifyPlaylistService.removeTracks(id, tracksToRemove);
+      spotifyPlaylistService.addTracks(id, tracksToAdd);
+      playlistItem = spotifyPlaylistService.getPlaylist(id);
+      Playlist playlist = mapper.updateEntity((Playlist) appPlaylist, playlistItem);
+      repository.save(playlist);
+
+    } catch (RuntimeException e) {
+      throw new AddMusicRecommendationsException(
+          UNABLE_TO_ADD_MUSIC_RECOMMENDATIONS + e.getMessage(), e);
+    }
+  }
 
   private List<SpotifyTrackItem> getTopTracks() {
     List<SpotifyTrackItem> topTracks = spotifyTopTracksService.getUserTopTracks();
