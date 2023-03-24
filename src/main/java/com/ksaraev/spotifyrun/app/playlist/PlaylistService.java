@@ -3,7 +3,6 @@ package com.ksaraev.spotifyrun.app.playlist;
 import static com.ksaraev.spotifyrun.exception.business.AddMusicRecommendationsException.*;
 import static com.ksaraev.spotifyrun.exception.business.CreateAppPlaylistException.*;
 import static com.ksaraev.spotifyrun.exception.business.GetAppPlaylistException.*;
-import static com.ksaraev.spotifyrun.exception.business.PlaylistExistenceException.*;
 import static com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException.*;
 
 import com.ksaraev.spotifyrun.app.user.AppUser;
@@ -16,7 +15,6 @@ import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.service.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
