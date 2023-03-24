@@ -26,7 +26,7 @@ public class PlaylistController {
             ? playlistService.getPlaylist(user)
             : playlistService.createPlaylist(user);
 
-    boolean hasTracks = !playlist.getTrackIds().isEmpty();
+    boolean hasTracks = !playlist.getTracks().isEmpty();
 
     if (hasTracks) {
       playlistService.updateMusic(playlist);

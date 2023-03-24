@@ -1,7 +1,8 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.ksaraev.spotifyrun.app.track.AppTrack;
+import com.ksaraev.spotifyrun.app.track.Track;
 import com.ksaraev.spotifyrun.app.user.AppUser;
 import com.ksaraev.spotifyrun.app.user.Runner;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -27,9 +28,8 @@ public class Playlist implements AppPlaylist {
   private Runner runner;
 
   @Type(JsonType.class)
-  @JsonManagedReference
   @Column(columnDefinition = "jsonb")
-  private List<String> trackIds = new ArrayList<>();
+  private List<Track> tracks = new ArrayList<>();
 
   @JsonIgnore
   @Override
@@ -44,13 +44,13 @@ public class Playlist implements AppPlaylist {
   }
 
   @Override
-  public List<String> getTrackIds() {
-    return this.trackIds;
+  public List<AppTrack> getTracks() {
+    return this.tracks.stream().map(AppTrack.class::cast).toList();
   }
 
   @Override
-  public void setTrackIds(List<String> tracks) {
-    this.trackIds = tracks;
+  public void setTracks(List<AppTrack> appTracks) {
+    this.tracks = appTracks.stream().map(Track.class::cast).toList();
   }
 
   @Override
