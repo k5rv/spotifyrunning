@@ -36,7 +36,7 @@ class SpotifyUserProfileServiceTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    underTest = new SpotifyUserProfileService(spotifyClient, userMapper, authenticationFacade);
+    underTest = new SpotifyUserProfileService(spotifyClient, userMapper/*, authenticationFacade*/);
   }
 
   @Test
@@ -47,14 +47,14 @@ class SpotifyUserProfileServiceTest {
     SpotifyUserProfileDto userProfileItem = getUserProfileItem();
 
     given(spotifyClient.getCurrentUserProfile()).willReturn(userProfileItem);
-    given(userMapper.mapToUser(userProfileItem)).willReturn((SpotifyUserProfile) user);
+    given(userMapper.mapToModel(userProfileItem)).willReturn((SpotifyUserProfile) user);
 
     // When
     underTest.getCurrentUser();
 
     // Then
     verify(spotifyClient, times(1)).getCurrentUserProfile();
-    then(userMapper).should().mapToUser(userProfileItemArgumentCaptor.capture());
+    then(userMapper).should().mapToModel(userProfileItemArgumentCaptor.capture());
     assertThat(userProfileItemArgumentCaptor.getValue()).isNotNull().isEqualTo(userProfileItem);
   }
 
@@ -73,7 +73,7 @@ class SpotifyUserProfileServiceTest {
   void itShouldThrowGetUserExceptionWhenUserMapperThrowsRuntimeException() {
     // Given
     String message = "message";
-    given(userMapper.mapToUser(any())).willThrow(new RuntimeException(message));
+    given(userMapper.mapToModel(any())).willThrow(new RuntimeException(message));
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUser())
         .isExactlyInstanceOf(GetUserException.class)

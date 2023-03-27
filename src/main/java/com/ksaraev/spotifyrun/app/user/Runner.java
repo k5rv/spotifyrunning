@@ -12,7 +12,9 @@ import org.hibernate.Hibernate;
 @Entity
 @Getter
 @Setter
-@RequiredArgsConstructor
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Runner implements AppUser {
   @Id private String id;
 

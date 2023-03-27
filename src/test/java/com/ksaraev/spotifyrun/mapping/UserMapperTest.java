@@ -54,7 +54,7 @@ class UserMapperTest {
             .build();
 
     // Then
-    Assertions.assertThat(underTest.mapToUser(userProfileItem))
+    Assertions.assertThat(underTest.mapToModel(userProfileItem))
         .isNotNull()
         .isEqualTo(user)
         .hasOnlyFields("id", "name", "email", "uri");
@@ -64,7 +64,7 @@ class UserMapperTest {
   @Test
   void itShouldThrowNullMappingSourceExceptionWhenUserProfileItemIsNull() {
     // Then
-    Assertions.assertThatThrownBy(() -> underTest.mapToUser(null))
+    Assertions.assertThatThrownBy(() -> underTest.mapToModel(null))
         .isExactlyInstanceOf(NullMappingSourceException.class)
         .hasMessage(MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE);
   }
