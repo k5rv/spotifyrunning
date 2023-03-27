@@ -45,6 +45,11 @@ public class SpotifyAppConfig {
   @DecimalMax("1.0")
   private BigDecimal minEnergy;
 
+  @Value("${spotifyrun.playlist.features.min-popularity}")
+  @DecimalMin("0.1")
+  @DecimalMax("1.0")
+  private Integer minPopularity;
+
   @Bean
   public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
     MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
@@ -62,6 +67,7 @@ public class SpotifyAppConfig {
             .minTempo(this.minTempo)
             .maxTempo(this.maxTempo)
             .minEnergy(this.minEnergy)
+            .minPopularity(this.minPopularity)
             .build();
 
     return PlaylistConfig.builder()
@@ -71,4 +77,3 @@ public class SpotifyAppConfig {
         .build();
   }
 }
-

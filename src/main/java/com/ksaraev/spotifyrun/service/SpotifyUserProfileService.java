@@ -21,20 +21,21 @@ import org.springframework.stereotype.Service;
 public class SpotifyUserProfileService implements SpotifyUserProfileItemService {
   private final SpotifyClient spotifyClient;
   private final SpotifyUserProfileMapper userMapper;
-  private final AuthenticationFacade authenticationFacade;
+ // private final AuthenticationFacade authenticationFacade;
 
   @Override
   public SpotifyUserProfileItem getCurrentUser() {
     try {
-      SpotifyUserProfileDto userProfileDto = getAuthenticatedUserSpotifyProfile();
-      if (userProfileDto == null) userProfileDto = spotifyClient.getCurrentUserProfile();
-      return userMapper.mapToUser(userProfileDto);
+  /*    SpotifyUserProfileDto userProfileDto = getAuthenticatedUserSpotifyProfile();
+      if (userProfileDto == null) userProfileDto = spotifyClient.getCurrentUserProfile();*/
+      SpotifyUserProfileDto userProfileDto = spotifyClient.getCurrentUserProfile();
+      return userMapper.mapToModel(userProfileDto);
     } catch (RuntimeException e) {
       throw new GetUserException(UNABLE_TO_GET_USER + e.getMessage(), e);
     }
   }
 
-  private SpotifyUserProfileDto getAuthenticatedUserSpotifyProfile() {
+/*  private SpotifyUserProfileDto getAuthenticatedUserSpotifyProfile() {
     boolean isAuthenticated = authenticationFacade.getAuthentication().isAuthenticated();
     if (!isAuthenticated) {
       return null;
@@ -44,5 +45,5 @@ public class SpotifyUserProfileService implements SpotifyUserProfileItemService 
     Map<String, Object> attributes = principal.getAttributes();
     ObjectMapper objectMapper = new ObjectMapper();
     return objectMapper.convertValue(attributes, SpotifyUserProfileDto.class);
-  }
+  }*/
 }
