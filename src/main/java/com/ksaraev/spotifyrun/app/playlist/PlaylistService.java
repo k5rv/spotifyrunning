@@ -15,6 +15,7 @@ import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.service.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -103,11 +104,13 @@ public class PlaylistService implements AppPlaylistService {
             .toList();
 
     if (tracksRemove.isEmpty()) {
+      spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
+      playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
       playlist = mapper.updateEntity(playlist, playlistItem);
       return playlistRepository.save(playlist);
     }
 
-    spotifyPlaylistService.removeTracks(appPlaylistId, recommendations);
+    spotifyPlaylistService.removeTracks(appPlaylistId, tracksRemove);
     spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
     playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
     playlist = mapper.updateEntity(playlist, playlistItem);
@@ -128,13 +131,12 @@ public class PlaylistService implements AppPlaylistService {
         .sorted(Comparator.comparingInt(SpotifyTrackItem::getPopularity).reversed())
         .distinct()
         .limit(config.getSize())
-        //        .collect(
-        //            Collectors.collectingAndThen(
-        //                Collectors.toList(),
-        //                list -> {
-        //                  Collections.shuffle(list);
-        //                  return list;
-        //                }));
-        .toList();
+        .collect(
+            Collectors.collectingAndThen(
+                Collectors.toList(),
+                list -> {
+                  Collections.shuffle(list);
+                  return list;
+                }));
   }
 }
