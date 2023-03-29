@@ -1,13 +1,14 @@
 package com.ksaraev.spotifyrun.app.user;
 
+import java.util.Optional;
+
 public interface AppUserService {
-  boolean isUserExists();
 
-  boolean isUserExists(String id);
+  boolean isUserRegistered(String userId);
 
-  AppUser createUser();
+  Optional<AppUser> getUser(String userId);
 
-  AppUser getUser();
+  AppUser registerUser(String userId, String userName);
 
-  boolean hasPlaylist(AppUser appUser);
-AppUser getUser(String id);AppUser createUser(String id, String name);}
+  Optional<AppUser> getAuthenticatedUser();
+}

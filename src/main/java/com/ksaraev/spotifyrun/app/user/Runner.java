@@ -1,6 +1,7 @@
 package com.ksaraev.spotifyrun.app.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ksaraev.spotifyrun.app.playlist.AppPlaylist;
 import com.ksaraev.spotifyrun.app.playlist.Playlist;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -32,6 +33,21 @@ public class Runner implements AppUser {
   public void removePlaylist(Playlist playlist) {
     playlists.remove(playlist);
     playlist.setRunner(null);
+  }
+
+  @Override
+  public List<AppPlaylist> getPlaylists() {
+    if (this.playlists == null) return List.of();
+    return this.playlists.stream().map(AppPlaylist.class::cast).toList();
+  }
+
+  @Override
+  public void setPlaylists(List<AppPlaylist> playlists) {
+    if (playlists == null) {
+      this.playlists = List.of();
+      return;
+    }
+    this.playlists = playlists.stream().map(Playlist.class::cast).toList();
   }
 
   @Override

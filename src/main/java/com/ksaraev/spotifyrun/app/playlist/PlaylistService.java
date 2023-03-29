@@ -1,13 +1,10 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-import static com.ksaraev.spotifyrun.exception.business.AddMusicRecommendationsException.*;
 import static com.ksaraev.spotifyrun.exception.business.CreateAppPlaylistException.*;
-import static com.ksaraev.spotifyrun.exception.business.GetAppPlaylistException.*;
-import static com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException.*;
+import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
 
-import com.ksaraev.spotifyrun.app.user.AppUser;
-import com.ksaraev.spotifyrun.app.user.AppUserService;
-import com.ksaraev.spotifyrun.app.user.Runner;
+import com.ksaraev.spotifyrun.app.track.AppTrack;
+import com.ksaraev.spotifyrun.app.user.*;
 import com.ksaraev.spotifyrun.exception.business.*;
 import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
@@ -23,48 +20,68 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PlaylistService implements AppPlaylistService {
-  private final PlaylistMapper mapper;
-  private final PlaylistRepository playlistRepository;
-
+  private final AppUserMapper appUserMapper;
   private final AppUserService userService;
-  private final AppPlaylistConfig config;
+  private final AppPlaylistMapper playlistMapper;
+  private final AppPlaylistConfig playlistConfig;
+  private final PlaylistRepository playlistRepository;
   private final SpotifyPlaylistItemService spotifyPlaylistService;
-  private final SpotifyUserTopTrackItemsService spotifyTopTracksService;
   private final SpotifyUserProfileItemService spotifyUserProfileService;
+  private final SpotifyUserTopTrackItemsService spotifyTopTracksService;
   private final SpotifyRecommendationItemsService spotifyRecommendationsService;
 
+  @Transactional
+  public AppPlaylist createPlaylist(AppUser appUser) {
+    SpotifyUserProfileItem userProfileItem = appUserMapper.mapToDto(appUser);
+    SpotifyPlaylistItemDetails playlistItemDetails = playlistConfig.getDetails();
+    SpotifyPlaylistItem playlistItem =
+        spotifyPlaylistService.createPlaylist(userProfileItem, playlistItemDetails);
+    AppPlaylist appPlaylist = playlistMapper.mapToEntity(playlistItem);
+    return playlistRepository.save((Playlist) appPlaylist);
+  }
+
   @Override
-  public AppPlaylist createPlaylist() {
-    SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
-    String spotifyUserId = userProfileItem.getId();
-    String spotifyUserName = userProfileItem.getName();
+  @Transactional
+  public Optional<AppPlaylist> getPlaylist(AppUser appUser) {
+    try {
+      String appUserId = appUser.getId();
+      Optional<Playlist> optionalPlaylist = playlistRepository.findByRunnerId(appUserId);
+      if (optionalPlaylist.isEmpty()) return Optional.empty();
 
-    AppUser appUser =
-        userService.isUserExists(spotifyUserId)
-            ? userService.getUser(spotifyUserId)
-            : userService.createUser(spotifyUserId, spotifyUserName);
+      AppPlaylist appPlaylist = optionalPlaylist.get();
+      String appPlaylistId = appPlaylist.getId();
+      String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
 
-    boolean isUserPlaylistExists = userService.hasPlaylist(appUser);
+      SpotifyUserProfileItem userProfileItem = appUserMapper.mapToDto(appUser);
 
-    Playlist playlist;
-    if (!isUserPlaylistExists) {
-      SpotifyPlaylistItemDetails playlistItemDetails = config.getDetails();
-      SpotifyPlaylistItem playlistItem =
-          spotifyPlaylistService.createPlaylist(userProfileItem, playlistItemDetails);
-      playlist = mapper.mapToEntity(playlistItem, (Runner) appUser);
-      playlistRepository.save(playlist);
-    } else {
-      String id = appUser.getId();
-      playlist =
-          playlistRepository
-              .findByRunnerId(id)
-              .orElseThrow(() -> new CreateAppPlaylistException(UNABLE_TO_CREATE_APP_PLAYLIST));
+      List<SpotifyPlaylistItem> playlistItems =
+          spotifyPlaylistService.getUserPlaylists(userProfileItem);
+
+      boolean isFound =
+          playlistItems.stream()
+              .anyMatch(
+                  playlistItem ->
+                      playlistItem.getId().equals(appPlaylistId)
+                          && playlistItem.getSnapshotId().equals(appPlaylistSnapshotId));
+
+      if (!isFound) {
+        playlistRepository.deleteByIdAndSnapshotId(appPlaylistId, appPlaylistSnapshotId);
+        appPlaylist = createPlaylist(appUser);
+        return Optional.of(appPlaylist);
+      }
+      return optionalPlaylist.map(AppPlaylist.class::cast);
+    } catch (RuntimeException e) {
+      throw new AppPlaylistSearchingException(appUser.getId(), e);
     }
+  }
 
-    String appPlaylistId = playlist.getId();
+  public AppPlaylist updateTracks(AppPlaylist appPlaylist, List<AppTrack> appTracks) {
+    return null;
+
+    /*
+     String appPlaylistId = playlist.getId();
     SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
     List<SpotifyTrackItem> playlistTracks = playlistItem.getTracks();
 
@@ -89,7 +106,7 @@ public class PlaylistService implements AppPlaylistService {
     if (playlistTracks.isEmpty()) {
       spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
       playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
-      playlist = mapper.updateEntity(playlist, playlistItem);
+      playlist = playlistMapper.updateEntity(playlist, playlistItem);
       return playlistRepository.save(playlist);
     }
 
@@ -106,15 +123,100 @@ public class PlaylistService implements AppPlaylistService {
     if (tracksRemove.isEmpty()) {
       spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
       playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
-      playlist = mapper.updateEntity(playlist, playlistItem);
+      playlist = playlistMapper.updateEntity(playlist, playlistItem);
       return playlistRepository.save(playlist);
     }
 
     spotifyPlaylistService.removeTracks(appPlaylistId, tracksRemove);
     spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
     playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
-    playlist = mapper.updateEntity(playlist, playlistItem);
+    playlist = playlistMapper.updateEntity(playlist, playlistItem);
     return playlistRepository.save(playlist);
+     */
+  }
+
+  @Override
+  public AppPlaylist createPlaylist() {
+    SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
+    AppUser appUser = appUserMapper.mapToEntity(userProfileItem);
+    String appUserId = appUser.getId();
+    String appUserName = appUser.getName();
+
+    appUser =
+        userService.isUserRegistered(appUserId)
+            ? userService
+                .getUser(appUserId)
+                .orElseThrow(() -> new AppUserSearchingException(appUserId))
+            : userService.registerUser(appUserId, appUserName);
+
+    boolean isEmpty = Optional.ofNullable(appUser.getPlaylists()).isEmpty();
+
+    AppPlaylist appPlaylist;
+    if (!isEmpty) {
+      SpotifyPlaylistItemDetails playlistItemDetails = playlistConfig.getDetails();
+      SpotifyPlaylistItem playlistItem =
+          spotifyPlaylistService.createPlaylist(userProfileItem, playlistItemDetails);
+      appPlaylist = playlistMapper.mapToEntity(playlistItem);
+      playlistRepository.save((Playlist) appPlaylist);
+    } else {
+      String id = appUser.getId();
+      appPlaylist =
+          playlistRepository
+              .findByRunnerId(id)
+              .orElseThrow(() -> new CreateAppPlaylistException(UNABLE_TO_CREATE_APP_PLAYLIST));
+    }
+
+    String appPlaylistId = appPlaylist.getId();
+    SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
+    List<SpotifyTrackItem> playlistTracks = playlistItem.getTracks();
+
+    List<SpotifyTrackItem> topTracks = getUserTopTracks();
+    List<SpotifyTrackItem> recommendations = getRecommendations(topTracks);
+
+    List<SpotifyTrackItem> tracksUpdate =
+        recommendations.stream()
+            .filter(
+                recommendation ->
+                    playlistTracks.stream()
+                        .noneMatch(
+                            playlistTrackItem ->
+                                playlistTrackItem.getId().equals(recommendation.getId())))
+            .toList();
+
+    if (tracksUpdate.isEmpty()) {
+      log.warn("playlist include tracks already, no changes will be be applied");
+      return appPlaylist;
+    }
+
+    if (playlistTracks.isEmpty()) {
+      spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
+      playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
+      appPlaylist = playlistMapper.mapToEntity(playlistItem);
+      return playlistRepository.save((Playlist) appPlaylist);
+    }
+
+    List<SpotifyTrackItem> tracksRemove =
+        playlistTracks.stream()
+            .filter(
+                playlistTrackItem ->
+                    recommendations.stream()
+                        .noneMatch(
+                            recommendation ->
+                                recommendation.getId().equals(playlistTrackItem.getId())))
+            .toList();
+
+    if (tracksRemove.isEmpty()) {
+      spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
+      playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
+      appPlaylist = playlistMapper.mapToEntity(playlistItem);
+      return playlistRepository.save((Playlist) appPlaylist);
+    }
+
+    spotifyPlaylistService.removeTracks(appPlaylistId, tracksRemove);
+    spotifyPlaylistService.addTracks(appPlaylistId, tracksUpdate);
+    playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
+    appPlaylist = playlistMapper.mapToEntity(playlistItem);
+    return playlistRepository.save((Playlist) appPlaylist);
   }
 
   private List<SpotifyTrackItem> getUserTopTracks() {
@@ -126,11 +228,11 @@ public class PlaylistService implements AppPlaylistService {
         .map(
             track ->
                 spotifyRecommendationsService.getRecommendations(
-                    List.of(track), config.getMusicFeatures()))
+                    List.of(track), playlistConfig.getMusicFeatures()))
         .flatMap(List::stream)
         .sorted(Comparator.comparingInt(SpotifyTrackItem::getPopularity).reversed())
         .distinct()
-        .limit(config.getSize())
+        .limit(playlistConfig.getSize())
         .collect(
             Collectors.collectingAndThen(
                 Collectors.toList(),

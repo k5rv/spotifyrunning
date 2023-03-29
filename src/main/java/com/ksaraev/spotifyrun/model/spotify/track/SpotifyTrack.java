@@ -24,5 +24,5 @@ public class SpotifyTrack implements SpotifyTrackItem {
   @Max(100)
   private Integer popularity;
 
-  @Valid @NotEmpty private List<SpotifyArtistItem> artists;
+  @Valid private List<SpotifyArtistItem> artists;
 }

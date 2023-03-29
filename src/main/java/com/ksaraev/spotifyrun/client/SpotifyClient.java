@@ -6,6 +6,7 @@ import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
 import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
+import feign.Headers;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -35,6 +36,14 @@ public interface SpotifyClient {
   @NotNull
   GetRecommendationsResponse getRecommendations(
       @NotNull @SpringQueryMap GetRecommendationsRequest request);
+
+  @GetMapping(path = "/users/{user_id}/playlists")
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
+  GetUserPlaylistsResponse getPlaylists(
+      @NotNull @PathVariable(value = "user_id") String userId,
+      @Valid @NotNull @SpringQueryMap GetUserPlaylistsRequest request);
 
   @GetMapping(path = "playlists/{playlist_id}")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
