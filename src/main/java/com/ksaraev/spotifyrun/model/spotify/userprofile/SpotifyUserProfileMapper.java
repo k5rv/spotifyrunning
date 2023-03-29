@@ -11,5 +11,5 @@ import org.mapstruct.Mapping;
 public interface SpotifyUserProfileMapper extends SpotifyMapper {
 
   @Mapping(target = "name", source = "displayName")
-  SpotifyUserProfile mapToModel(SpotifyUserProfileDto userProfileItem);
+  SpotifyUserProfile mapToModel(SpotifyUserProfileDto userProfileDto);
 }

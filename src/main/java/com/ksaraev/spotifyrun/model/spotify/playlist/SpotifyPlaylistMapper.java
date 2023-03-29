@@ -13,7 +13,7 @@ import org.mapstruct.MappingConstants;
 @Mapper(
     componentModel = MappingConstants.ComponentModel.SPRING,
     uses = {SpotifyUserProfileMapper.class, SpotifyTrackMapper.class})
-public interface SpotifyPlaylistMapper extends SpotifyMapper {
+public interface SpotifyPlaylistMapper {
 
   @Mapping(target = "owner", source = "userProfileItem")
   @Mapping(target = "tracks", source = "playlistItemMusic.playlistItemTracks")

@@ -25,6 +25,10 @@ public class SpotifyAppConfig {
   @NotEmpty
   private String description;
 
+  @Value("${spotifyrun.playlist.details.public}")
+  @NotEmpty
+  private Boolean isPublic;
+
   @Value("${spotifyrun.playlist.details.size}")
   @Min(1)
   @Max(50)
@@ -60,7 +64,11 @@ public class SpotifyAppConfig {
   @Bean
   AppPlaylistConfig getWorkoutPlaylistConfig() {
     SpotifyPlaylistItemDetails playlistDetails =
-        SpotifyPlaylistDetails.builder().name(this.name).description(this.description).build();
+        SpotifyPlaylistDetails.builder()
+            .name(this.name)
+            .description(this.description)
+            .isPublic(this.isPublic)
+            .build();
 
     SpotifyTrackItemFeatures trackFeatures =
         SpotifyTrackFeatures.builder()

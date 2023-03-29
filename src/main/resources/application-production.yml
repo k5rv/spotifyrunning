@@ -48,6 +48,7 @@ spotifyrun:
       min-tempo: "120"
       max-tempo: "140"
       min-energy: "0.65"
+      min-popularity: ""
   client:
     requests:
       get-user-top-tracks:

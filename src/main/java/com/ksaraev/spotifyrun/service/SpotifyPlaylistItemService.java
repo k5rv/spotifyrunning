@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface SpotifyPlaylistItemService {
 
+  List<SpotifyPlaylistItem> getUserPlaylists(SpotifyUserProfileItem userProfileItem);
+
   SpotifyPlaylistItem getPlaylist(@NotNull String playlistId);
 
   SpotifyPlaylistItem createPlaylist(

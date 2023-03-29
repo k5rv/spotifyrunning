@@ -61,7 +61,7 @@ class PlaylistControllerTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    underTest = new PlaylistController(appPlaylistService);
+    underTest = new PlaylistController( appPlaylistService, appUserService);
   }
 
   @Test

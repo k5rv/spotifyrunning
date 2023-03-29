@@ -1,21 +1,11 @@
 package com.ksaraev.spotifyrun.app.user;
 
-import static com.ksaraev.spotifyrun.exception.business.GetAppPlaylistException.UNABLE_TO_GET_APP_PLAYLIST;
-import static com.ksaraev.spotifyrun.exception.business.GetAppUserException.*;
-import static com.ksaraev.spotifyrun.exception.business.GetRegistrationStatusException.*;
-import static com.ksaraev.spotifyrun.exception.business.UserCreationException.*;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ksaraev.spotifyrun.app.playlist.PlaylistRepository;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
-import com.ksaraev.spotifyrun.exception.business.GetAppPlaylistException;
-import com.ksaraev.spotifyrun.exception.business.GetAppUserException;
-import com.ksaraev.spotifyrun.exception.business.GetRegistrationStatusException;
-import com.ksaraev.spotifyrun.exception.business.UserCreationException;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
 import com.ksaraev.spotifyrun.security.AuthenticationFacade;
-import com.ksaraev.spotifyrun.service.SpotifyUserProfileItemService;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,100 +17,59 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class RunnerService implements AppUserService {
-
-  private final SpotifyUserProfileItemService spotifyUserProfileService;
-
-  private final AuthenticationFacade authenticationFacade;
-
+  private final AppUserMapper appUserMapper;
   private final RunnerRepository runnerRepository;
-  private final PlaylistRepository playlistRepository;
-
-  private final SpotifyUserProfileMapper spotifyUserProfileMapper;
-  private final RunnerMapper runnerMapper;
+  private final AuthenticationFacade authenticationFacade;
+  private final SpotifyUserProfileMapper userProfileMapper;
 
   @Override
-  public boolean isUserExists() {
+  public boolean isUserRegistered(String userId) {
     try {
-      SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
-      String id = userProfileItem.getId();
-      return runnerRepository.existsById(id);
+      return runnerRepository.existsById(userId);
     } catch (RuntimeException e) {
-      throw new GetRegistrationStatusException(
-          UNABLE_TO_GET_USER_REGISTRATION_STATUS + e.getMessage(), e);
+      throw new AppUserRegistrationStatusSearchingException(userId, e);
     }
   }
 
   @Override
-  public boolean isUserExists(String id) {
+  public Optional<AppUser> getUser(String userId) {
     try {
-      runnerRepository.existsById(id);
-      return runnerRepository.existsById(id);
+      Optional<Runner> optionalAppUser = runnerRepository.findById(userId);
+      if (optionalAppUser.isEmpty()) return Optional.empty();
+      return optionalAppUser.map(AppUser.class::cast);
     } catch (RuntimeException e) {
-      throw new GetRegistrationStatusException(
-          UNABLE_TO_GET_USER_REGISTRATION_STATUS + e.getMessage(), e);
+      throw new AppUserSearchingException(userId, e);
     }
   }
 
   @Override
-  public AppUser createUser() {
-    return null;
-  }
-
-  @Override
-  public AppUser getUser() {
-    return null;
-  }
-
-  @Override
-  public boolean hasPlaylist(AppUser appUser) {
+  public AppUser registerUser(String userId, String userName) {
     try {
-      String id = appUser.getId();
-      return playlistRepository.existsByRunnerId(id);
-    } catch (RuntimeException e) {
-      throw new GetAppPlaylistException(UNABLE_TO_GET_APP_PLAYLIST + e.getMessage(), e);
-    }
-  }
-
-  @Override
-  public AppUser getUser(String id) {
-    Optional<Runner> optionalRunner;
-    try {
-      //SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
-      //String id = userProfileItem.getId();
-      optionalRunner = runnerRepository.findById(id);
-    } catch (RuntimeException e) {
-      throw new GetAppUserException(UNABLE_TO_GET_APP_USER + e.getMessage(), e);
-    }
-    return optionalRunner.orElseThrow(() -> new GetAppUserException(UNABLE_TO_GET_APP_USER));
-  }
-
-  @Override
-  public AppUser createUser(String id, String name) {
-    try {
-//      SpotifyUserProfileItem userProfileItem = getAuthenticatedUserSpotifyProfile();
-//      if (userProfileItem == null) {
-//        userProfileItem = spotifyUserProfileService.getCurrentUser();
-//      }
-//      Runner runner = runnerMapper.mapToEntity(userProfileItem);
-      Runner runner = Runner.builder().id(id).name(name).build();
+      Runner runner = Runner.builder().id(userId).name(userName).build();
       runnerRepository.save(runner);
       return runner;
     } catch (RuntimeException e) {
-      throw new UserCreationException(UNABLE_TO_CREATE_USER + e.getMessage(), e);
+      throw new AppUserRegistrationException(userId, e);
     }
   }
 
-  private SpotifyUserProfileItem getAuthenticatedUserSpotifyProfile() {
-    boolean isAuthenticated = authenticationFacade.getAuthentication().isAuthenticated();
-    if (!isAuthenticated) {
-      return null;
+  public Optional<AppUser> getAuthenticatedUser() {
+    try {
+      boolean isAuthenticated = authenticationFacade.getAuthentication().isAuthenticated();
+      if (!isAuthenticated) {
+        return Optional.empty();
+      }
+      OAuth2AuthenticatedPrincipal principal =
+          (OAuth2AuthenticatedPrincipal) authenticationFacade.getAuthentication().getPrincipal();
+      Map<String, Object> attributes = principal.getAttributes();
+      ObjectMapper objectMapper = new ObjectMapper();
+      SpotifyUserProfileDto userProfileDto =
+          objectMapper.convertValue(attributes, SpotifyUserProfileDto.class);
+      SpotifyUserProfileItem userProfileItem = userProfileMapper.mapToModel(userProfileDto);
+      AppUser appUser = appUserMapper.mapToEntity(userProfileItem);
+      return Optional.ofNullable(appUser);
+    } catch (RuntimeException e) {
+      throw new AppUserGetAuthenticatedException(e);
     }
-    OAuth2AuthenticatedPrincipal principal =
-        (OAuth2AuthenticatedPrincipal) authenticationFacade.getAuthentication().getPrincipal();
-    Map<String, Object> attributes = principal.getAttributes();
-    ObjectMapper objectMapper = new ObjectMapper();
-    SpotifyUserProfileDto userProfileDto =
-        objectMapper.convertValue(attributes, SpotifyUserProfileDto.class);
-    return spotifyUserProfileMapper.mapToModel(userProfileDto);
   }
 }

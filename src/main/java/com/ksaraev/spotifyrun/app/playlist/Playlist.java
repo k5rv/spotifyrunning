@@ -31,6 +31,8 @@ public class Playlist implements AppPlaylist {
   @Column(columnDefinition = "jsonb")
   private List<Track> tracks = new ArrayList<>();
 
+  private String snapshotId;
+
   @JsonIgnore
   @Override
   public AppUser getOwner() {

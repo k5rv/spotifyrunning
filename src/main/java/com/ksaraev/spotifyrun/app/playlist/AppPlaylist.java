@@ -17,4 +17,8 @@ public interface AppPlaylist {
   List<AppTrack> getTracks();
 
   void setTracks(List<AppTrack> tracks);
+
+  String getSnapshotId();
+
+  void setSnapshotId(String snapshotId);
 }
