@@ -41,12 +41,3 @@ public class PlaylistController {
             .orElseThrow(() -> new AppPlaylistSearchingException(appUserId));
   }
 }
-
-/*
-appUser =
-       userService.isUserRegistered(appUserId)
-           ? userService
-               .getUser(appUserId)
-               .orElseThrow(() -> new AppUserSearchingException(appUserId))
-           : userService.registerUser(appUserId, appUserName);
-*/
