@@ -5,7 +5,6 @@ import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
 import com.ksaraev.spotifyrun.security.AuthenticationFacade;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+//@Transactional
 @RequiredArgsConstructor
 public class RunnerService implements AppUserService {
+
   private final AppUserMapper appUserMapper;
+
   private final RunnerRepository runnerRepository;
+
   private final AuthenticationFacade authenticationFacade;
+
   private final SpotifyUserProfileMapper userProfileMapper;
 
   @Override

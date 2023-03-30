@@ -1,7 +1,10 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
 import java.util.Optional;
+import lombok.NonNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,5 +15,15 @@ public interface PlaylistRepository extends JpaRepository<Playlist, String> {
 
   Optional<Playlist> findByRunnerId(String id);
 
-  void deleteByIdAndSnapshotId(String id, String snapshotId);
+
+
+  @Transactional
+  @Modifying
+  @Query("DELETE FROM Playlist p WHERE p.id = :id")
+  void deleteById(@NonNull String id);
+
+  @Transactional
+  @Modifying
+  @Query("DELETE FROM Playlist p WHERE p.id = :id AND p.snapshotId=:snapshotId")
+  void deleteByIdAndSnapshotId(@NonNull String id, @NonNull String snapshotId);
 }

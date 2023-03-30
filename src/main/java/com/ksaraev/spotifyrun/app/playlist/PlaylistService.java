@@ -1,7 +1,6 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
 import static com.ksaraev.spotifyrun.exception.business.CreateAppPlaylistException.*;
-import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.UNABLE_TO_CREATE_PLAYLIST;
 
 import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.user.*;
@@ -16,23 +15,30 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PlaylistService implements AppPlaylistService {
+
   private final AppUserMapper appUserMapper;
+
   private final AppUserService userService;
+
   private final AppPlaylistMapper playlistMapper;
+
   private final AppPlaylistConfig playlistConfig;
+
   private final PlaylistRepository playlistRepository;
+
   private final SpotifyPlaylistItemService spotifyPlaylistService;
+
   private final SpotifyUserProfileItemService spotifyUserProfileService;
+
   private final SpotifyUserTopTrackItemsService spotifyTopTracksService;
+
   private final SpotifyRecommendationItemsService spotifyRecommendationsService;
 
-  @Transactional
   public AppPlaylist createPlaylist(AppUser appUser) {
     SpotifyUserProfileItem userProfileItem = appUserMapper.mapToDto(appUser);
     SpotifyPlaylistItemDetails playlistItemDetails = playlistConfig.getDetails();
@@ -43,33 +49,40 @@ public class PlaylistService implements AppPlaylistService {
   }
 
   @Override
-  @Transactional
   public Optional<AppPlaylist> getPlaylist(AppUser appUser) {
     try {
-      String appUserId = appUser.getId();
-      Optional<Playlist> optionalPlaylist = playlistRepository.findByRunnerId(appUserId);
+      String userId = appUser.getId();
+      Optional<Playlist> optionalPlaylist = playlistRepository.findByRunnerId(userId);
       if (optionalPlaylist.isEmpty()) return Optional.empty();
 
       AppPlaylist appPlaylist = optionalPlaylist.get();
-      String appPlaylistId = appPlaylist.getId();
-      String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
+      String playlistId = appPlaylist.getId();
+      String playlistSnapshotId = appPlaylist.getSnapshotId();
 
       SpotifyUserProfileItem userProfileItem = appUserMapper.mapToDto(appUser);
-
       List<SpotifyPlaylistItem> playlistItems =
           spotifyPlaylistService.getUserPlaylists(userProfileItem);
 
-      boolean isFound =
+      boolean isPlaylistFound =
           playlistItems.stream()
-              .anyMatch(
-                  playlistItem ->
-                      playlistItem.getId().equals(appPlaylistId)
-                          && playlistItem.getSnapshotId().equals(appPlaylistSnapshotId));
+              .anyMatch(playlistItem -> playlistItem.getId().equals(playlistId));
 
-      if (!isFound) {
-        playlistRepository.deleteByIdAndSnapshotId(appPlaylistId, appPlaylistSnapshotId);
+      if (!isPlaylistFound) {
+        playlistRepository.deleteById(playlistId);
         appPlaylist = createPlaylist(appUser);
         return Optional.of(appPlaylist);
+      }
+
+      boolean isSnapshotIdentical =
+          playlistItems.stream()
+              .anyMatch(playlistItem -> playlistItem.getSnapshotId().equals(playlistSnapshotId));
+
+      if (!isSnapshotIdentical) {
+        SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(playlistId);
+        appPlaylist = playlistMapper.mapToEntity(playlistItem);
+        Playlist playlist = playlistRepository.save((Playlist) appPlaylist);
+        playlistRepository.deleteByIdAndSnapshotId(playlistId, playlistSnapshotId);
+        return Optional.of(playlist);
       }
       return optionalPlaylist.map(AppPlaylist.class::cast);
     } catch (RuntimeException e) {
