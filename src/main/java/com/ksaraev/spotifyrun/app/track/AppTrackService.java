@@ -1,7 +1,8 @@
 package com.ksaraev.spotifyrun.app.track;
 
-import java.util.List;public interface AppTrackService {
+import java.util.List;
 
-    List<AppTrack> getTracks();
+public interface AppTrackService {
 
+  List<AppTrack> getTracks();
 }

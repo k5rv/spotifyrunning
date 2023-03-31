@@ -25,12 +25,16 @@ public class Runner implements AppUser {
   @OneToMany(mappedBy = "runner", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Playlist> playlists = new ArrayList<>();
 
-  public void addPlaylist(Playlist playlist) {
+  @Override
+  public void addPlaylist(AppPlaylist appPlaylist) {
+    Playlist playlist = (Playlist) appPlaylist;
     playlists.add(playlist);
     playlist.setRunner(this);
   }
 
-  public void removePlaylist(Playlist playlist) {
+  @Override
+  public void removePlaylist(AppPlaylist appPlaylist) {
+    Playlist playlist = (Playlist) appPlaylist;
     playlists.remove(playlist);
     playlist.setRunner(null);
   }
