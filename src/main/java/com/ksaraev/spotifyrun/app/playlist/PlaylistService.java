@@ -40,10 +40,15 @@ public class PlaylistService implements AppPlaylistService {
   private final SpotifyRecommendationItemsService spotifyRecommendationsService;
 
   public AppPlaylist createPlaylist(AppUser appUser) {
+    /*
+
+     */
     SpotifyUserProfileItem userProfileItem = appUserMapper.mapToDto(appUser);
     SpotifyPlaylistItemDetails playlistItemDetails = playlistConfig.getDetails();
     SpotifyPlaylistItem playlistItem =
         spotifyPlaylistService.createPlaylist(userProfileItem, playlistItemDetails);
+    String playlistId = playlistItem.getId();
+    playlistItem = spotifyPlaylistService.getPlaylist(playlistId);
     AppPlaylist appPlaylist = playlistMapper.mapToEntity(playlistItem);
     return playlistRepository.save((Playlist) appPlaylist);
   }
@@ -63,24 +68,23 @@ public class PlaylistService implements AppPlaylistService {
       List<SpotifyPlaylistItem> playlistItems =
           spotifyPlaylistService.getUserPlaylists(userProfileItem);
 
-      boolean isPlaylistFound =
-          playlistItems.stream()
-              .anyMatch(playlistItem -> playlistItem.getId().equals(playlistId));
+      boolean isFound =
+          playlistItems.stream().anyMatch(playlistItem -> playlistItem.getId().equals(playlistId));
 
-      if (!isPlaylistFound) {
-        ((Runner)appUser).removePlaylist((Playlist) appPlaylist);
+      if (!isFound) {
+        appUser.removePlaylist(appPlaylist);
         playlistRepository.deleteById(playlistId);
         appPlaylist = createPlaylist(appUser);
         return Optional.of(appPlaylist);
       }
 
-      boolean isSnapshotIdentical =
+      boolean isIdentical =
           playlistItems.stream()
               .anyMatch(playlistItem -> playlistItem.getSnapshotId().equals(playlistSnapshotId));
 
-      if (!isSnapshotIdentical) {
+      if (!isIdentical) {
         SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(playlistId);
-        ((Runner)appUser).removePlaylist((Playlist) appPlaylist);
+        appUser.removePlaylist(appPlaylist);
         appPlaylist = playlistMapper.mapToEntity(playlistItem);
         playlistRepository.deleteByIdAndSnapshotId(playlistId, playlistSnapshotId);
         Playlist playlist = playlistRepository.save((Playlist) appPlaylist);
@@ -150,7 +154,12 @@ public class PlaylistService implements AppPlaylistService {
      */
   }
 
-  @Override
+  /*
+  1. get tracks
+  2.
+  3.
+   */
+
   public AppPlaylist createPlaylist() {
     SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUser();
     AppUser appUser = appUserMapper.mapToEntity(userProfileItem);
