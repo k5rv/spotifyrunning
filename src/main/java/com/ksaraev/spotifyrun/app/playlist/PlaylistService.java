@@ -68,6 +68,7 @@ public class PlaylistService implements AppPlaylistService {
               .anyMatch(playlistItem -> playlistItem.getId().equals(playlistId));
 
       if (!isPlaylistFound) {
+        ((Runner)appUser).removePlaylist((Playlist) appPlaylist);
         playlistRepository.deleteById(playlistId);
         appPlaylist = createPlaylist(appUser);
         return Optional.of(appPlaylist);
@@ -79,9 +80,10 @@ public class PlaylistService implements AppPlaylistService {
 
       if (!isSnapshotIdentical) {
         SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(playlistId);
+        ((Runner)appUser).removePlaylist((Playlist) appPlaylist);
         appPlaylist = playlistMapper.mapToEntity(playlistItem);
-        Playlist playlist = playlistRepository.save((Playlist) appPlaylist);
         playlistRepository.deleteByIdAndSnapshotId(playlistId, playlistSnapshotId);
+        Playlist playlist = playlistRepository.save((Playlist) appPlaylist);
         return Optional.of(playlist);
       }
       return optionalPlaylist.map(AppPlaylist.class::cast);

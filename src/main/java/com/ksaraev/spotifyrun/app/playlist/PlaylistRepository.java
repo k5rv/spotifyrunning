@@ -22,7 +22,7 @@ public interface PlaylistRepository extends JpaRepository<Playlist, String> {
   @Query("DELETE FROM Playlist p WHERE p.id = :id")
   void deleteById(@NonNull String id);
 
-  @Transactional
+ @Transactional
   @Modifying
   @Query("DELETE FROM Playlist p WHERE p.id = :id AND p.snapshotId=:snapshotId")
   void deleteByIdAndSnapshotId(@NonNull String id, @NonNull String snapshotId);
