@@ -26,7 +26,6 @@ public interface AppPlaylistMapper {
   }
 
   @Mapping(target = "owner", source = "playlistItem.owner")
-  @Mapping(target = "tracks", ignore = true)
   AppPlaylist mapToEntity(SpotifyPlaylistItem playlistItem);
 
   @Mapping(
