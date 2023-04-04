@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-import com.ksaraev.spotifyrun.app.user.AppUser;
 import lombok.experimental.StandardException;
 
 @StandardException
@@ -18,7 +17,7 @@ public class AppPlaylistSearchingException extends RuntimeException {
         cause);
   }
 
-  public AppPlaylistSearchingException(String appUserId) {
-    super(ERROR_WHILE_SEARCHING_PLAYLIST + " that belongs to user with id [" + appUserId + "]");
+  public AppPlaylistSearchingException(String appPlaylistId) {
+    super(ERROR_WHILE_SEARCHING_PLAYLIST + " with id [" + appPlaylistId + "]");
   }
 }
