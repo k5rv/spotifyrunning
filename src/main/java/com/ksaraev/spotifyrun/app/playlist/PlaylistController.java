@@ -4,7 +4,6 @@ import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.track.AppTrackService;
 import com.ksaraev.spotifyrun.app.user.AppUser;
 import com.ksaraev.spotifyrun.app.user.AppUserGetAuthenticatedException;
-import com.ksaraev.spotifyrun.app.user.AppUserSearchingException;
 import com.ksaraev.spotifyrun.app.user.AppUserService;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -29,18 +28,22 @@ public class PlaylistController {
   public AppPlaylist createPlaylist() {
     AppUser appUser =
         userService.getAuthenticatedUser().orElseThrow(AppUserGetAuthenticatedException::new);
+
     String appUserId = appUser.getId();
     String appUserName = appUser.getName();
-
     appUser =
-        userService.isUserRegistered(appUserId)
-            ? userService
-                .getUser(appUserId)
-                .orElseThrow(() -> new AppUserSearchingException(appUserId))
-            : userService.registerUser(appUserId, appUserName);
+        userService
+            .getUser(appUserId)
+            .orElseGet(() -> userService.registerUser(appUserId, appUserName));
 
-    AppPlaylist appPlaylist = playlistService.createPlaylist(appUser);
+    AppPlaylist appPlaylist = createPlaylistIfNotExists(appUser);
     List<AppTrack> appTracks = trackService.getTracks();
     return playlistService.addTracks(appPlaylist, appTracks);
+  }
+
+  private AppPlaylist createPlaylistIfNotExists(AppUser appUser) {
+    return playlistService
+        .getPlaylist(appUser)
+        .orElseGet(() -> playlistService.createPlaylist(appUser));
   }
 }
