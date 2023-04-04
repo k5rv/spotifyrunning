@@ -6,6 +6,6 @@ import lombok.experimental.StandardException;
 public class AppPlaylistDoesNotExistException extends RuntimeException {
 
   public AppPlaylistDoesNotExistException(String appUserId) {
-    super("User with id [" + appUserId + "] doesn't have any playlists");
+    super("Playlist with id [" + appUserId + "] doesn't exist");
   }
 }

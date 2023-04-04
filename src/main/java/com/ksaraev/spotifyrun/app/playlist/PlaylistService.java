@@ -113,12 +113,15 @@ public class PlaylistService implements AppPlaylistService {
   @Override
   public AppPlaylist addTracks(AppPlaylist appPlaylist, List<AppTrack> appTracks) {
     try {
+      String appPlaylistId = appPlaylist.getId();
+      Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findById(appPlaylistId);
+      if (appRunningWorkoutPlaylist.isEmpty())
+        throw new AppPlaylistDoesNotExistException(appPlaylistId);
+
       AppUser appUser = appPlaylist.getOwner();
       SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
       List<SpotifyPlaylistItem> spotifyUserPublicPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
-
-      String appPlaylistId = appPlaylist.getId();
 
       Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
           spotifyUserPublicPlaylists.stream()
@@ -128,11 +131,6 @@ public class PlaylistService implements AppPlaylistService {
       boolean spotifyPlaylistExists = spotifyRunningWorkoutPlaylist.isPresent();
 
       if (!spotifyPlaylistExists) {
-
-        String appUserId = appUser.getId();
-        appUser.removePlaylist(appPlaylist);
-        playlistRepository.deleteByRunnerId(appUserId);
-
         SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
         SpotifyPlaylistItem spotifyPlaylist =
             spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
@@ -142,8 +140,11 @@ public class PlaylistService implements AppPlaylistService {
 
         String spotifyPlaylistId = spotifyPlaylist.getId();
         spotifyPlaylistService.addTracks(spotifyPlaylistId, spotifyAddTracks);
-
         spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+
+
+        appUser.removePlaylist(appPlaylist);
+        playlistRepository.deleteById(appPlaylistId);
         appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
         return playlistRepository.save((Playlist) appPlaylist);
       }
