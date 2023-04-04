@@ -70,41 +70,70 @@ public class PlaylistService implements AppPlaylistService {
   @Override
   public Optional<AppPlaylist> getPlaylist(AppUser appUser) {
     try {
-      String userId = appUser.getId();
-      Optional<Playlist> optionalPlaylist = playlistRepository.findByRunnerId(userId);
-      if (optionalPlaylist.isEmpty()) return Optional.empty();
+      String appUserId = appUser.getId();
+      Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findByRunnerId(appUserId);
+      boolean appPlaylistExists = appRunningWorkoutPlaylist.isPresent();
+      if (!appPlaylistExists) {
+        log.info(
+            "User with id ["
+                + appUserId
+                + "] doesn't have any playlists saved in app, returning empty result");
+        return Optional.empty();
+      }
 
-      AppPlaylist appPlaylist = optionalPlaylist.get();
-      String playlistId = appPlaylist.getId();
-      String playlistSnapshotId = appPlaylist.getSnapshotId();
-
-      SpotifyUserProfileItem userProfileItem = appUserMapper.mapToDto(appUser);
-      List<SpotifyPlaylistItem> playlistItems =
-          spotifyPlaylistService.getUserPlaylists(userProfileItem);
-
-      boolean isFound =
-          playlistItems.stream().anyMatch(playlistItem -> playlistItem.getId().equals(playlistId));
-
-      if (!isFound) {
+      SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
+      List<SpotifyPlaylistItem> spotifyUserPlaylists =
+          spotifyPlaylistService.getUserPlaylists(spotifyUser);
+      AppPlaylist appPlaylist = appRunningWorkoutPlaylist.get();
+      String appPlaylistId = appPlaylist.getId();
+      Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
+          spotifyUserPlaylists.stream()
+              .filter(spotifyPlaylist -> spotifyPlaylist.getId().equals(appPlaylistId))
+              .findFirst();
+      boolean spotifyPlaylistExists = spotifyRunningWorkoutPlaylist.isPresent();
+      if (!spotifyPlaylistExists) {
+        log.info(
+            "User with id ["
+                + appUserId
+                + "] doesn't have any running workout playlists saved in spotify that correspond to app playlist with id ["
+                + appPlaylistId
+                + "], deleting saved in app playlist, returning empty result");
         appUser.removePlaylist(appPlaylist);
-        playlistRepository.deleteById(playlistId);
-        appPlaylist = createPlaylist(appUser);
+        playlistRepository.deleteById(appPlaylistId);
+        return Optional.empty();
+      }
+
+      SpotifyPlaylistItem spotifyPlaylist = spotifyRunningWorkoutPlaylist.get();
+      String spotifyPlaylistId = spotifyPlaylist.getId();
+      spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+      String spotifyPlaylistSnapshotId = spotifyPlaylist.getSnapshotId();
+      String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
+      boolean snapshotIdentical = spotifyPlaylistSnapshotId.equals(appPlaylistSnapshotId);
+      if (snapshotIdentical) {
+        log.info(
+            "User with id ["
+                + appUserId
+                + "] has running workout playlists, both saved in app and spotify with the exact same snapshot id ["
+                + appPlaylistSnapshotId
+                + "] returning playlist with id ["
+                + appPlaylistId
+                + "]");
         return Optional.of(appPlaylist);
       }
 
-      boolean isIdentical =
-          playlistItems.stream()
-              .anyMatch(playlistItem -> playlistItem.getSnapshotId().equals(playlistSnapshotId));
-
-      if (!isIdentical) {
-        SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(playlistId);
-        appUser.removePlaylist(appPlaylist);
-        appPlaylist = playlistMapper.mapToEntity(playlistItem);
-        playlistRepository.deleteByIdAndSnapshotId(playlistId, playlistSnapshotId);
-        Playlist playlist = playlistRepository.save((Playlist) appPlaylist);
-        return Optional.of(playlist);
-      }
-      return optionalPlaylist.map(AppPlaylist.class::cast);
+      log.info(
+          "User with id ["
+              + appUserId
+              + "] has running workout playlists, both saved in app and spotify with different snapshot ids: ["
+              + appPlaylistSnapshotId
+              + "] and ["
+              + spotifyPlaylistSnapshotId
+              + "] respectively. Removing playlist saved in app and updating from spotify.");
+      appUser.removePlaylist(appPlaylist);
+      playlistRepository.deleteById(appPlaylistId);
+      appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
+      appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+      return Optional.of(appPlaylist);
     } catch (RuntimeException e) {
       throw new AppPlaylistSearchingException(appUser.getId(), e);
     }
@@ -120,11 +149,11 @@ public class PlaylistService implements AppPlaylistService {
 
       AppUser appUser = appPlaylist.getOwner();
       SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
-      List<SpotifyPlaylistItem> spotifyUserPublicPlaylists =
+      List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
 
       Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
-          spotifyUserPublicPlaylists.stream()
+          spotifyUserPlaylists.stream()
               .filter(playlist -> playlist.getId().equals(appPlaylistId))
               .findFirst();
 
@@ -141,7 +170,6 @@ public class PlaylistService implements AppPlaylistService {
         String spotifyPlaylistId = spotifyPlaylist.getId();
         spotifyPlaylistService.addTracks(spotifyPlaylistId, spotifyAddTracks);
         spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
-
 
         appUser.removePlaylist(appPlaylist);
         playlistRepository.deleteById(appPlaylistId);
