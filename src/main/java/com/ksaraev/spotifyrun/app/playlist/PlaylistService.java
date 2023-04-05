@@ -3,6 +3,7 @@ package com.ksaraev.spotifyrun.app.playlist;
 import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.track.AppTrackMapper;
 import com.ksaraev.spotifyrun.app.user.*;
+import com.ksaraev.spotifyrun.model.SpotifyItem;
 import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
@@ -32,36 +33,24 @@ public class PlaylistService implements AppPlaylistService {
   @Override
   public AppPlaylist createPlaylist(AppUser appUser) {
     try {
-      String userId = appUser.getId();
-      Optional<Playlist> optionalPlaylist = playlistRepository.findByRunnerId(userId);
-
-      boolean isEmpty = optionalPlaylist.isEmpty();
-
-      if (isEmpty) {
-        SpotifyUserProfileItem userProfileItem = appUserMapper.mapToDto(appUser);
-        SpotifyPlaylistItemDetails playlistItemDetails = playlistConfig.getDetails();
-        SpotifyPlaylistItem playlistItem =
-            spotifyPlaylistService.createPlaylist(userProfileItem, playlistItemDetails);
-        String playlistId = playlistItem.getId();
-        playlistItem = spotifyPlaylistService.getPlaylist(playlistId);
-        AppPlaylist appPlaylist = playlistMapper.mapToEntity(playlistItem);
-        return playlistRepository.save((Playlist) appPlaylist);
-      }
-
-      AppPlaylist appPlaylist = optionalPlaylist.get();
+      String appUserId = appUser.getId();
+      log.info("Creating playlist for user with id [" + appUserId + "]");
+      SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
+      SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
+      SpotifyPlaylistItem spotifyPlaylist =
+          spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
+      String spotifyPlaylistId = spotifyPlaylist.getId();
+      spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+      AppPlaylist appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
+      appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
-      SpotifyPlaylistItem playlistItem = spotifyPlaylistService.getPlaylist(appPlaylistId);
-
-      boolean isIdentical = appPlaylist.getSnapshotId().equals(playlistItem.getSnapshotId());
-
-      if (isIdentical) {
-        return appPlaylist;
-      }
-
-      appUser.removePlaylist(appPlaylist);
-      playlistRepository.deleteById(appPlaylistId);
-      appPlaylist = playlistMapper.mapToEntity(playlistItem);
-      return playlistRepository.save((Playlist) appPlaylist);
+      log.info(
+          "Created playlist with id ["
+              + appPlaylistId
+              + "] for user with id ["
+              + appUserId
+              + "], saved in app");
+      return appPlaylist;
     } catch (RuntimeException e) {
       throw new AppPlaylistCreatingException(appUser.getId(), e);
     }
@@ -71,6 +60,7 @@ public class PlaylistService implements AppPlaylistService {
   public Optional<AppPlaylist> getPlaylist(AppUser appUser) {
     try {
       String appUserId = appUser.getId();
+      log.info("Getting playlist for user with id [" + appUserId + "]");
       Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findByRunnerId(appUserId);
       boolean appPlaylistExists = appRunningWorkoutPlaylist.isPresent();
       if (!appPlaylistExists) {
@@ -96,16 +86,16 @@ public class PlaylistService implements AppPlaylistService {
             "User with id ["
                 + appUserId
                 + "] doesn't have any running workout playlists saved in spotify that correspond to app playlist with id ["
-                + appPlaylistId
+                + appPlaylist.getId()
                 + "], deleting saved in app playlist, returning empty result");
         appUser.removePlaylist(appPlaylist);
         playlistRepository.deleteById(appPlaylistId);
         return Optional.empty();
       }
 
-      SpotifyPlaylistItem spotifyPlaylist = spotifyRunningWorkoutPlaylist.get();
-      String spotifyPlaylistId = spotifyPlaylist.getId();
-      spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+      String spotifyPlaylistId =
+          spotifyRunningWorkoutPlaylist.map(SpotifyItem::getId).orElseThrow();
+      SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       String spotifyPlaylistSnapshotId = spotifyPlaylist.getSnapshotId();
       String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
       boolean snapshotIdentical = spotifyPlaylistSnapshotId.equals(appPlaylistSnapshotId);
@@ -133,6 +123,15 @@ public class PlaylistService implements AppPlaylistService {
       playlistRepository.deleteById(appPlaylistId);
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+      appPlaylistSnapshotId = appPlaylist.getSnapshotId();
+      log.info(
+          "Returning playlist with id ["
+              + appPlaylist.getId()
+              + "] and snapshotId ["
+              + appPlaylistSnapshotId
+              + "] for user ["
+              + appUserId
+              + "]");
       return Optional.of(appPlaylist);
     } catch (RuntimeException e) {
       throw new AppPlaylistSearchingException(appUser.getId(), e);
@@ -143,24 +142,49 @@ public class PlaylistService implements AppPlaylistService {
   public AppPlaylist addTracks(AppPlaylist appPlaylist, List<AppTrack> appTracks) {
     try {
       String appPlaylistId = appPlaylist.getId();
+      int appTracksNumber = appTracks.size();
+      log.info(
+          "Adding [" + appTracksNumber + "] tracks to playlist with id [" + appPlaylistId + "]");
       Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findById(appPlaylistId);
-      if (appRunningWorkoutPlaylist.isEmpty())
+      if (appRunningWorkoutPlaylist.isEmpty()) {
+        log.error("Playlist with id [" + appPlaylistId + "] doesn't exist in app");
         throw new AppPlaylistDoesNotExistException(appPlaylistId);
+      }
 
       AppUser appUser = appPlaylist.getOwner();
       SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
-
       Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
           spotifyUserPlaylists.stream()
               .filter(playlist -> playlist.getId().equals(appPlaylistId))
               .findFirst();
-
       boolean spotifyPlaylistExists = spotifyRunningWorkoutPlaylist.isPresent();
-
       if (!spotifyPlaylistExists) {
-        SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
+        log.info(
+            "Playlist saved in app with id ["
+                + appPlaylistId
+                + "] doesn't correspond to any playlist in spotify, deleting saved in app playlist and creating new one");
+        appUser.removePlaylist(appPlaylist);
+        playlistRepository.deleteById(appPlaylistId);
+        appPlaylist = createPlaylist(appUser);
+        List<SpotifyTrackItem> spotifyAddTracks =
+            appTracks.stream().map(appTrackMapper::mapToDto).toList();
+        spotifyPlaylistService.addTracks(appPlaylist.getId(), spotifyAddTracks);
+        SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(appPlaylistId);
+        appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
+        appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+        String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
+        log.info(
+            "Added ["
+                + appTracksNumber
+                + "] tracks to playlist with id ["
+                + appPlaylistId
+                + "] and snapshot id ["
+                + appPlaylistSnapshotId
+                + "] saved in app");
+        return appPlaylist;
+        /*        SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
         SpotifyPlaylistItem spotifyPlaylist =
             spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
 
@@ -174,12 +198,12 @@ public class PlaylistService implements AppPlaylistService {
         appUser.removePlaylist(appPlaylist);
         playlistRepository.deleteById(appPlaylistId);
         appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-        return playlistRepository.save((Playlist) appPlaylist);
+        return playlistRepository.save((Playlist) appPlaylist);*/
       }
 
-      SpotifyPlaylistItem spotifyPlaylist = spotifyRunningWorkoutPlaylist.get();
-      String spotifyPlaylistId = spotifyPlaylist.getId();
-      spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+      String spotifyPlaylistId =
+          spotifyRunningWorkoutPlaylist.map(SpotifyItem::getId).orElseThrow();
+      SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       List<SpotifyTrackItem> spotifyPlaylistTracks = spotifyPlaylist.getTracks().stream().toList();
 
       List<SpotifyTrackItem> spotifyAddTracks =
@@ -216,7 +240,20 @@ public class PlaylistService implements AppPlaylistService {
 
       spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      return playlistRepository.save((Playlist) appPlaylist);
+      appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+      int addTracksNumber = spotifyAddTracks.size();
+      int removeTracksNumber = spotifyRemoveTracks.size();
+      log.info(
+          "Added ["
+              + addTracksNumber
+              + "] and removed ["
+              + removeTracksNumber
+              + "] tracks to playlist with id ["
+              + appPlaylist.getId()
+              + "], snapshotId ["
+              + appPlaylist.getSnapshotId()
+              + "], saved in app");
+      return appPlaylist;
     } catch (RuntimeException e) {
       throw new AppPlaylistAddTracksException(appPlaylist.getId(), e);
     }
