@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 import com.ksaraev.spotifyrun.app.playlist.AppPlaylistConfig;
 import com.ksaraev.spotifyrun.app.playlist.AppPlaylistService;
 import com.ksaraev.spotifyrun.app.playlist.PlaylistController;
+import com.ksaraev.spotifyrun.app.track.AppTrackService;
 import com.ksaraev.spotifyrun.app.user.AppUserService;
 import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
 import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
@@ -47,6 +48,7 @@ class PlaylistControllerTest {
 
   @Mock private AppUserService appUserService;
   @Mock private AppPlaylistService appPlaylistService;
+  @Mock private AppTrackService appTrackService;
 
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
   @Captor private ArgumentCaptor<SpotifyUserProfileItem> userArgumentCaptor;
@@ -61,7 +63,7 @@ class PlaylistControllerTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    underTest = new PlaylistController( appPlaylistService, appUserService);
+    underTest = new PlaylistController(  appUserService, appTrackService, appPlaylistService);
   }
 
   @Test

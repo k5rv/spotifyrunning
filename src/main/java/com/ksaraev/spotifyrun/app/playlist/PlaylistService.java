@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class PlaylistService implements AppPlaylistService {
+
   private final AppTrackMapper appTrackMapper;
 
   private final AppUserMapper appUserMapper;
@@ -34,7 +35,7 @@ public class PlaylistService implements AppPlaylistService {
   public AppPlaylist createPlaylist(AppUser appUser) {
     try {
       String appUserId = appUser.getId();
-      log.info("Creating playlist for user with id [" + appUserId + "]");
+      log.info("Creating playlist for user with id [" + appUser.getId() + "]");
       SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
       SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
       SpotifyPlaylistItem spotifyPlaylist =
@@ -45,7 +46,7 @@ public class PlaylistService implements AppPlaylistService {
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
       log.info(
-          "Created playlist with id ["
+          "Created playlist ["+appPlaylist+"] with id ["
               + appPlaylistId
               + "] for user with id ["
               + appUserId
@@ -110,7 +111,7 @@ public class PlaylistService implements AppPlaylistService {
                 + "]");
         return Optional.of(appPlaylist);
       }
-
+      
       log.info(
           "User with id ["
               + appUserId
@@ -159,7 +160,9 @@ public class PlaylistService implements AppPlaylistService {
           spotifyUserPlaylists.stream()
               .filter(playlist -> playlist.getId().equals(appPlaylistId))
               .findFirst();
+
       boolean spotifyPlaylistExists = spotifyRunningWorkoutPlaylist.isPresent();
+
       if (!spotifyPlaylistExists) {
         log.info(
             "Playlist saved in app with id ["
@@ -184,21 +187,6 @@ public class PlaylistService implements AppPlaylistService {
                 + appPlaylistSnapshotId
                 + "] saved in app");
         return appPlaylist;
-        /*        SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
-        SpotifyPlaylistItem spotifyPlaylist =
-            spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
-
-        List<SpotifyTrackItem> spotifyAddTracks =
-            appTracks.stream().map(appTrackMapper::mapToDto).toList();
-
-        String spotifyPlaylistId = spotifyPlaylist.getId();
-        spotifyPlaylistService.addTracks(spotifyPlaylistId, spotifyAddTracks);
-        spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
-
-        appUser.removePlaylist(appPlaylist);
-        playlistRepository.deleteById(appPlaylistId);
-        appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-        return playlistRepository.save((Playlist) appPlaylist);*/
       }
 
       String spotifyPlaylistId =
@@ -229,6 +217,7 @@ public class PlaylistService implements AppPlaylistService {
               .toList();
 
       boolean spotifyRemoveTracksExist = !spotifyRemoveTracks.isEmpty();
+
       if (spotifyRemoveTracksExist) {
         spotifyPlaylistService.removeTracks(spotifyPlaylistId, spotifyRemoveTracks);
       }

@@ -63,6 +63,7 @@ public class Playlist implements AppPlaylist {
     return getId() != null && Objects.equals(getId(), playlist.getId());
   }
 
+
   @Override
   public int hashCode() {
     return getClass().hashCode();

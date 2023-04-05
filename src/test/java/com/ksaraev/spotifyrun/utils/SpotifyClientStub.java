@@ -24,6 +24,11 @@ public class SpotifyClientStub implements SpotifyClient {
   }
 
   @Override
+  public GetUserPlaylistsResponse getPlaylists(String userId, GetUserPlaylistsRequest request) {
+    return null;
+  }
+
+  @Override
   public SpotifyPlaylistDto createPlaylist(
       String userId, SpotifyPlaylistDetailsDto playlistItemDetails) {
     return null;
