@@ -1,10 +1,12 @@
 package com.ksaraev.spotifyrun.app.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
 import com.ksaraev.spotifyrun.security.AuthenticationFacade;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-//@Transactional
+// @Transactional
 @RequiredArgsConstructor
 public class RunnerService implements AppUserService {
 
@@ -74,5 +76,65 @@ public class RunnerService implements AppUserService {
     } catch (RuntimeException e) {
       throw new AppUserGetAuthenticatedException(e);
     }
+  }
+
+
+
+  private List<AppTrack> reviseFavoriteTracks(
+          List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> favoriteTracks) {
+
+    List<AppTrack> addTracks =
+            sourceTracks.stream()
+                    .filter(
+                            sourceTrack ->
+                                    targetTracks.stream()
+                                            .noneMatch(targetTrack -> targetTrack.getId().equals(sourceTrack.getId())))
+                    .filter(
+                            track ->
+                                    favoriteTracks.stream()
+                                            .noneMatch(favoriteTrack -> favoriteTrack.getId().equals(track.getId())))
+                    .toList();
+
+    List<AppTrack> removeTracks =
+            favoriteTracks.stream()
+                    .filter(
+                            favoriteTrack ->
+                                    sourceTracks.stream()
+                                            .noneMatch(
+                                                    sourceTrack -> sourceTrack.getId().equals(favoriteTrack.getId())))
+                    .toList();
+
+
+    favoriteTracks.removeAll(removeTracks);
+    favoriteTracks.addAll(addTracks);
+    return favoriteTracks;
+  }
+
+  private List<AppTrack> reviseRejectedTracks(
+          List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> rejectedTracks) {
+
+    List<AppTrack> addTracks =
+            targetTracks.stream()
+                    .filter(
+                            targetTrack ->
+                                    sourceTracks.stream()
+                                            .noneMatch(sourceTrack -> sourceTrack.getId().equals(targetTrack.getId())))
+                    .filter(
+                            track ->
+                                    rejectedTracks.stream()
+                                            .noneMatch(rejectedTrack -> rejectedTrack.getId().equals(track.getId())))
+                    .toList();
+
+    List<AppTrack> removeTracks =
+            rejectedTracks.stream()
+                    .filter(
+                            rejectedTrack ->
+                                    sourceTracks.stream()
+                                            .anyMatch(sourceTrack -> sourceTrack.getId().equals(rejectedTrack.getId())))
+                    .toList();
+
+    rejectedTracks.removeAll(removeTracks);
+    rejectedTracks.addAll(addTracks);
+    return rejectedTracks;
   }
 }

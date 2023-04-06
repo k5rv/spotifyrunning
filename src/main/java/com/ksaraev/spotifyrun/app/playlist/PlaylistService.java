@@ -10,6 +10,7 @@ import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.service.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,9 @@ public class PlaylistService implements AppPlaylistService {
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
       log.info(
-          "Created playlist ["+appPlaylist+"] with id ["
+          "Created playlist ["
+              + appPlaylist
+              + "] with id ["
               + appPlaylistId
               + "] for user with id ["
               + appUserId
@@ -111,7 +114,7 @@ public class PlaylistService implements AppPlaylistService {
                 + "]");
         return Optional.of(appPlaylist);
       }
-      
+
       log.info(
           "User with id ["
               + appUserId
