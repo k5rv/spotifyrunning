@@ -3,12 +3,14 @@ package com.ksaraev.spotifyrun.app.user;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ksaraev.spotifyrun.app.playlist.AppPlaylist;
 import com.ksaraev.spotifyrun.app.playlist.Playlist;
-import jakarta.persistence.*;
+import com.ksaraev.spotifyrun.app.track.AppTrack;
+import com.ksaraev.spotifyrun.app.track.Track;
+import io.hypersistence.utils.hibernate.type.json.JsonType;import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import lombok.*;
-import org.hibernate.Hibernate;
+import org.hibernate.Hibernate;import org.hibernate.annotations.Type;
 
 @Entity
 @Getter
@@ -20,6 +22,14 @@ public class Runner implements AppUser {
   @Id private String id;
 
   private String name;
+
+  @Type(JsonType.class)
+  @Column(columnDefinition = "jsonb")
+  private List<AppTrack> favoriteTracks = new ArrayList<>();
+
+  @Type(JsonType.class)
+  @Column(columnDefinition = "jsonb")
+  private List<AppTrack> rejectedTracks = new ArrayList<>();
 
   @JsonBackReference
   @OneToMany(mappedBy = "runner", cascade = CascadeType.ALL, orphanRemoval = true)
