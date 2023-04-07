@@ -25,6 +25,8 @@ public interface AppPlaylistMapper {
     return PLAYLIST.createUri(id);
   }
 
+  @Mapping(target = "rejectedTracks", ignore = true)
+  @Mapping(target = "customTracks", ignore = true)
   @Mapping(target = "owner", source = "playlistItem.owner")
   AppPlaylist mapToEntity(SpotifyPlaylistItem playlistItem);
 
@@ -40,7 +42,11 @@ public interface AppPlaylistMapper {
 
   @ObjectFactory
   default AppPlaylist createEntity() {
-    return Playlist.builder().tracks(List.of()).build();
+    return Playlist.builder()
+        .tracks(List.of())
+        .customTracks(List.of())
+        .rejectedTracks(List.of())
+        .build();
   }
 
   @ObjectFactory

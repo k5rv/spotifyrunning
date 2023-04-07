@@ -18,6 +18,14 @@ public interface AppPlaylist {
 
   void setTracks(List<AppTrack> tracks);
 
+  List<AppTrack> getCustomTracks();
+
+  void setCustomTracks(List<AppTrack> customTracks);
+
+  List<AppTrack> getRejectedTracks();
+
+  void setRejectedTracks(List<AppTrack> rejectedTracks);
+
   String getSnapshotId();
 
   void setSnapshotId(String snapshotId);
