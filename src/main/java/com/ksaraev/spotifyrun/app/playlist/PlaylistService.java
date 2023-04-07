@@ -156,7 +156,6 @@ public class PlaylistService implements AppPlaylistService {
       }
 
       AppUser appUser = appPlaylist.getOwner();
-      String appUserId = appUser.getId();
       SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
@@ -204,9 +203,7 @@ public class PlaylistService implements AppPlaylistService {
         log.info(
             "Considering ["
                 + rejectedTracksSize
-                + "] tracks previously removed from spotify playlist by user with id ["
-                + appUserId
-                + "] while adding tracks to playlist with id ["
+                + "] tracks previously removed manually from spotify playlist while adding tracks to playlist with id ["
                 + appPlaylistId
                 + "]");
 
@@ -233,9 +230,7 @@ public class PlaylistService implements AppPlaylistService {
         log.info(
             "Considering ["
                 + customTracksSize
-                + "] tracks previously added to spotify playlist by user with id ["
-                + appUserId
-                + "] while adding tracks to playlist with id ["
+                + "] tracks previously added manually to spotify playlist while adding tracks to playlist with id ["
                 + appPlaylistId
                 + "]");
 

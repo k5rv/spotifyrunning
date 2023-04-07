@@ -34,22 +34,22 @@ public class SpotifyAppConfig {
   @Max(50)
   private Integer size;
 
-  @Value("${spotifyrun.playlist.features.min-tempo}")
+  @Value("${spotifyrun.playlist.music-features.min-tempo}")
   @Min(1)
   @Max(220)
   private BigDecimal minTempo;
 
-  @Value("${spotifyrun.playlist.features.max-tempo}")
+  @Value("${spotifyrun.playlist.music-features.max-tempo}")
   @Min(1)
   @Max(220)
   private BigDecimal maxTempo;
 
-  @Value("${spotifyrun.playlist.features.min-energy}")
+  @Value("${spotifyrun.playlist.music-features.min-energy}")
   @DecimalMin("0.1")
   @DecimalMax("1.0")
   private BigDecimal minEnergy;
 
-  @Value("${spotifyrun.playlist.features.min-popularity}")
+  @Value("${spotifyrun.playlist.music-features.min-popularity}")
   @DecimalMin("0.1")
   @DecimalMax("1.0")
   private Integer minPopularity;

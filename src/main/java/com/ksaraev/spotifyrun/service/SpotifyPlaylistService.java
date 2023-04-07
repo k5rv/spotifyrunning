@@ -9,6 +9,8 @@ import static com.ksaraev.spotifyrun.exception.business.GetPlaylistException.UNA
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.dto.*;
 import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyNotFoundException;
+import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
+import com.ksaraev.spotifyrun.config.requests.SpotifyUpdatePlaylistItemsRequestConfig;
 import com.ksaraev.spotifyrun.exception.business.*;
 import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistMapper;
@@ -18,7 +20,6 @@ import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
   private final SpotifyClient spotifyClient;
   private final SpotifyPlaylistMapper playlistMapper;
+  private final SpotifyUpdatePlaylistItemsRequestConfig updatePlaylistItemsRequestConfig;
 
   @Override
   public List<SpotifyPlaylistItem> getUserPlaylists(SpotifyUserProfileItem userProfileItem) {
@@ -89,9 +91,13 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
   public String addTracks(String playlistId, List<SpotifyTrackItem> tracks) {
     try {
       List<URI> trackUris = tracks.stream().map(SpotifyTrackItem::getUri).toList();
-      UpdateItemsRequest request = new UpdateItemsRequest(trackUris);
-      UpdateItemsResponse updateItemsResponse = spotifyClient.addPlaylistItems(playlistId, request);
-      return updateItemsResponse.snapshotId();
+      UpdatePlaylistItemsRequest request =
+          UpdatePlaylistItemsRequest.builder()
+              .itemUris(trackUris)
+              .position(updatePlaylistItemsRequestConfig.getPosition())
+              .build();
+      UpdateUpdateItemsResponse response = spotifyClient.addPlaylistItems(playlistId, request);
+      return response.snapshotId();
     } catch (RuntimeException e) {
       throw new AddTracksException(UNABLE_TO_ADD_TRACKS + e.getMessage(), e);
     }
@@ -101,10 +107,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
   public String removeTracks(String playlistId, List<SpotifyTrackItem> tracks) {
     try {
       List<URI> trackUris = tracks.stream().map(SpotifyTrackItem::getUri).toList();
-      UpdateItemsRequest request = new UpdateItemsRequest(trackUris);
-      UpdateItemsResponse updateItemsResponse =
-          spotifyClient.deletePlaylistItems(playlistId, request);
-      return updateItemsResponse.snapshotId();
+      RemovePlaylistItemsRequest request =
+          RemovePlaylistItemsRequest.builder().itemUris(trackUris).build();
+      RemovePlaylistItemsResponse response = spotifyClient.removePlaylistItems(playlistId, request);
+      return response.snapshotId();
     } catch (RuntimeException e) {
       throw new DeleteTracksException(UNABLE_TO_DELETE_TRACKS + e.getMessage(), e);
     }

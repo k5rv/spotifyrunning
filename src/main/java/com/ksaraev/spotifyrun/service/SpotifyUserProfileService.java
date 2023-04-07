@@ -21,29 +21,14 @@ import org.springframework.stereotype.Service;
 public class SpotifyUserProfileService implements SpotifyUserProfileItemService {
   private final SpotifyClient spotifyClient;
   private final SpotifyUserProfileMapper userMapper;
- // private final AuthenticationFacade authenticationFacade;
 
   @Override
   public SpotifyUserProfileItem getCurrentUser() {
     try {
-  /*    SpotifyUserProfileDto userProfileDto = getAuthenticatedUserSpotifyProfile();
-      if (userProfileDto == null) userProfileDto = spotifyClient.getCurrentUserProfile();*/
       SpotifyUserProfileDto userProfileDto = spotifyClient.getCurrentUserProfile();
       return userMapper.mapToModel(userProfileDto);
     } catch (RuntimeException e) {
       throw new GetUserException(UNABLE_TO_GET_USER + e.getMessage(), e);
     }
   }
-
-/*  private SpotifyUserProfileDto getAuthenticatedUserSpotifyProfile() {
-    boolean isAuthenticated = authenticationFacade.getAuthentication().isAuthenticated();
-    if (!isAuthenticated) {
-      return null;
-    }
-    OAuth2AuthenticatedPrincipal principal =
-        (OAuth2AuthenticatedPrincipal) authenticationFacade.getAuthentication().getPrincipal();
-    Map<String, Object> attributes = principal.getAttributes();
-    ObjectMapper objectMapper = new ObjectMapper();
-    return objectMapper.convertValue(attributes, SpotifyUserProfileDto.class);
-  }*/
 }

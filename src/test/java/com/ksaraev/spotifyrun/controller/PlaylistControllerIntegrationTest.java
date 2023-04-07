@@ -9,12 +9,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.ksaraev.spotifyrun.app.playlist.PlaylistController;
-import com.ksaraev.spotifyrun.client.dto.UpdateItemsResponse;
 import com.ksaraev.spotifyrun.client.dto.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.dto.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
 import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.client.dto.UpdateUpdateItemsResponse;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,11 +69,11 @@ class PlaylistControllerIntegrationTest {
         post(urlEqualTo("/v1/users/" + userId + "/playlists"))
             .willReturn(jsonResponse(objectToJson(emptyPlaylist), 200)));
 
-    UpdateItemsResponse updateItemsResponse = createAddItemsResponse();
+    UpdateUpdateItemsResponse updateUpdateItemsResponse = createAddItemsResponse();
 
     stubFor(
         post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(jsonResponse(objectToJson(updateItemsResponse), 200)));
+            .willReturn(jsonResponse(objectToJson(updateUpdateItemsResponse), 200)));
 
     SpotifyPlaylistDto playlist = updatePlaylist(emptyPlaylist, musicRecommendations);
 
