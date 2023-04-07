@@ -57,7 +57,8 @@ class AddItemsToPlaylistIntegrationTest {
     String playlistId = "3zw6WSVfzWX3mj0tUuZpTK";
     URI trackUri = URI.create("spotify:track:1234567890AaBbCcDdEeFfG");
     List<URI> uris = List.of(trackUri);
-    UpdateItemsRequest updateItemsRequest = UpdateItemsRequest.builder().itemUris(uris).build();
+    UpdatePlaylistItemsRequest updateItemsRequest =
+        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
 
     stubFor(
         post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
@@ -67,6 +68,6 @@ class AddItemsToPlaylistIntegrationTest {
     assertThat(underTest.addPlaylistItems(playlistId, updateItemsRequest))
         .isNotNull()
         .usingRecursiveComparison()
-        .isEqualTo(jsonToObject(addItemsResponseJson, UpdateItemsResponse.class));
+        .isEqualTo(jsonToObject(addItemsResponseJson, UpdateUpdateItemsResponse.class));
   }
 }

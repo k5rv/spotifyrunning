@@ -10,9 +10,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.dto.UpdateItemsRequest;
 import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDetailsDto;
 import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
+import com.ksaraev.spotifyrun.client.dto.UpdatePlaylistItemsRequest;
 import com.ksaraev.spotifyrun.exception.business.CreatePlaylistException;
 import com.ksaraev.spotifyrun.exception.business.GetPlaylistException;
 import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylist;
@@ -56,7 +56,7 @@ class SpotifyPlaylistServiceTest {
 
   @Captor private ArgumentCaptor<SpotifyPlaylistDto> playlistItemArgumentCaptor;
   @Captor private ArgumentCaptor<SpotifyPlaylistDetails> playlistDetailsArgumentCaptor;
-  @Captor private ArgumentCaptor<UpdateItemsRequest> addItemsRequestArgumentCaptor;
+  @Captor private ArgumentCaptor<UpdatePlaylistItemsRequest> addItemsRequestArgumentCaptor;
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
@@ -211,7 +211,8 @@ class SpotifyPlaylistServiceTest {
     String playlistId = "asdasdasd";
     List<SpotifyTrackItem> tracks = getTracks(2);
     List<URI> trackUris = tracks.stream().map(SpotifyTrackItem::getUri).toList();
-    UpdateItemsRequest updateItemsRequest = new UpdateItemsRequest(trackUris);
+    UpdatePlaylistItemsRequest updateItemsRequest =
+        new UpdatePlaylistItemsRequest(trackUris, UpdatePlaylistItemsRequest.Position.BEGINNING);
 
     // When
     underTest.addTracks(playlistId, tracks);

@@ -14,6 +14,4 @@ public class PlaylistConfig implements AppPlaylistConfig {
   private SpotifyTrackItemFeatures musicFeatures;
 
   private Integer size;
-
-
 }

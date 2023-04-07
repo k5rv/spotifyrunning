@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class UpdateItemsRequestTest {
+class UpdatePlaylistItemsRequestTest {
 
   private Validator validator;
 
@@ -27,9 +27,10 @@ class UpdateItemsRequestTest {
   void itShouldDetectAddItemsRequestConstraintViolationsWhenUriListIsEmpty() {
     // Given
     List<URI> uris = List.of();
-    UpdateItemsRequest updateItemsRequest = UpdateItemsRequest.builder().itemUris(uris).build();
+    UpdatePlaylistItemsRequest updateItemsRequest =
+        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
     // When
-    Set<ConstraintViolation<UpdateItemsRequest>> constraintViolations =
+    Set<ConstraintViolation<UpdatePlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
     // Then
     assertThat(constraintViolations).hasSize(1);
@@ -43,9 +44,10 @@ class UpdateItemsRequestTest {
     URI uri = URI.create("spotify:resource:a");
     List<URI> uris = new ArrayList<>();
     IntStream.rangeClosed(0,100).forEach(index -> uris.add(index, uri));
-    UpdateItemsRequest updateItemsRequest = UpdateItemsRequest.builder().itemUris(uris).build();
+    UpdatePlaylistItemsRequest updateItemsRequest =
+        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
     // When
-    Set<ConstraintViolation<UpdateItemsRequest>> constraintViolations =
+    Set<ConstraintViolation<UpdatePlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
     // Then
     assertThat(constraintViolations).hasSize(1);
@@ -62,9 +64,10 @@ class UpdateItemsRequestTest {
     uris.add(uriA);
     uris.add(null);
     uris.add(uriC);
-    UpdateItemsRequest updateItemsRequest = UpdateItemsRequest.builder().itemUris(uris).build();
+    UpdatePlaylistItemsRequest updateItemsRequest =
+        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
     // When
-    Set<ConstraintViolation<UpdateItemsRequest>> constraintViolations =
+    Set<ConstraintViolation<UpdatePlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
     // Then
     assertThat(constraintViolations).hasSize(1);

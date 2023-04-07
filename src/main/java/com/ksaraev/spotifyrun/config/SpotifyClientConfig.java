@@ -1,9 +1,6 @@
 package com.ksaraev.spotifyrun.config;
 
-import com.ksaraev.spotifyrun.config.requests.GetRecommendationsRequestConfig;
-import com.ksaraev.spotifyrun.config.requests.GetUserTopTracksRequestConfig;
-import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
-import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
+import com.ksaraev.spotifyrun.config.requests.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +20,9 @@ public class SpotifyClientConfig {
   @Value("${spotifyrun.client.requests.get-recommendations.limit}")
   private Integer getRecommendationsRequestLimit;
 
+  @Value("${spotifyrun.client.requests.update-playlist-items-request.position}")
+  private Integer updatePlaylistItemsRequestPosition;
+
   @Bean
   SpotifyGetUserTopTracksRequestConfig getUserTopTracksRequestConfig() {
     return GetUserTopTracksRequestConfig.builder()
@@ -36,6 +36,13 @@ public class SpotifyClientConfig {
   SpotifyGetRecommendationsRequestConfig getRecommendationsRequestConfig() {
     return GetRecommendationsRequestConfig.builder()
         .limit(this.getRecommendationsRequestLimit)
+        .build();
+  }
+
+  @Bean
+  SpotifyUpdatePlaylistItemsRequestConfig getUpdatePlaylistRequestConfig() {
+    return UpdatePlaylistItemsRequestConfig.builder()
+        .position(this.updatePlaylistItemsRequestPosition)
         .build();
   }
 }

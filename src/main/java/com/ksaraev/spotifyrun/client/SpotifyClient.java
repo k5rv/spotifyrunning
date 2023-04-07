@@ -6,7 +6,6 @@ import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
 import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
-import feign.Headers;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -63,15 +62,15 @@ public interface SpotifyClient {
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   @Valid
   @NotNull
-  UpdateItemsResponse addPlaylistItems(
+  UpdateUpdateItemsResponse addPlaylistItems(
       @NotNull @PathVariable(value = "playlist_id") String playlistId,
-      @Valid @NotNull @RequestBody UpdateItemsRequest request);
+      @Valid @NotNull @RequestBody UpdatePlaylistItemsRequest request);
 
   @DeleteMapping(path = "playlists/{playlist_id}/tracks")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   @Valid
   @NotNull
-  UpdateItemsResponse deletePlaylistItems(
+  RemovePlaylistItemsResponse removePlaylistItems(
       @NotNull @PathVariable(value = "playlist_id") String playlistId,
-      @Valid @NotNull @RequestBody UpdateItemsRequest request);
+      @Valid @NotNull @RequestBody RemovePlaylistItemsRequest request);
 }

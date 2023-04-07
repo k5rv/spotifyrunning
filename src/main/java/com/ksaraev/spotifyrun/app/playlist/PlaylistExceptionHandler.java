@@ -1,8 +1,9 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
 import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.*;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
+import com.ksaraev.spotifyrun.app.user.AppUserGetAuthenticatedException;
 import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
 import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
 import java.time.ZonedDateTime;
@@ -16,6 +17,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class PlaylistExceptionHandler {
+
+  @ExceptionHandler(
+      value = {AppUserGetAuthenticatedException.class})
+  public ResponseEntity<ErrorResponse> handle(AppUserGetAuthenticatedException e) {
+    log.error(e.getMessage(), e);
+    return ResponseEntity.status(UNAUTHORIZED)
+            .body(new ErrorResponse(UNAUTHORIZED, "User is not authenticated in Spotify", ZonedDateTime.now()));
+  }
 
   @ExceptionHandler(
       value = {UserTopTracksNotFoundException.class, RecommendationsNotFoundException.class})

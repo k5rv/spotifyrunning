@@ -464,9 +464,9 @@ public class SpotifyHelper {
     return GetRecommendationsResponse.builder().trackItems(trackItems).seeds(seeds).build();
   }
 
-  public static UpdateItemsResponse createAddItemsResponse() {
+  public static UpdateUpdateItemsResponse createAddItemsResponse() {
     String snapshotId = getRandomSnapshotId();
-    return UpdateItemsResponse.builder().snapshotId(snapshotId).build();
+    return UpdateUpdateItemsResponse.builder().snapshotId(snapshotId).build();
   }
 
   public static List<SpotifyArtistItem> getArtists(Integer size) {

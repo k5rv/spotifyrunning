@@ -40,12 +40,12 @@ public class SpotifyClientStub implements SpotifyClient {
   }
 
   @Override
-  public UpdateItemsResponse addPlaylistItems(String playlistId, UpdateItemsRequest request) {
+  public UpdateUpdateItemsResponse addPlaylistItems(String playlistId, UpdatePlaylistItemsRequest request) {
     return null;
   }
 
   @Override
-  public UpdateItemsResponse deletePlaylistItems(String playlistId, UpdateItemsRequest request) {
+  public RemovePlaylistItemsResponse removePlaylistItems(String playlistId, RemovePlaylistItemsRequest request) {
     return null;
   }
 }
