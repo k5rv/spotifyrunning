@@ -10,7 +10,7 @@ import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.service.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,9 +47,7 @@ public class PlaylistService implements AppPlaylistService {
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
       log.info(
-          "Created playlist ["
-              + appPlaylist
-              + "] with id ["
+          "Created playlist with id ["
               + appPlaylistId
               + "] for user with id ["
               + appUserId
@@ -122,20 +120,22 @@ public class PlaylistService implements AppPlaylistService {
               + appPlaylistSnapshotId
               + "] and ["
               + spotifyPlaylistSnapshotId
-              + "] respectively. Removing playlist saved in app and updating from spotify.");
-      appUser.removePlaylist(appPlaylist);
-      playlistRepository.deleteById(appPlaylistId);
+              + "] respectively. Updating saved in app playlist from spotify.");
+      List<AppTrack> customTracks = reviseCustomTracks(appPlaylist, spotifyPlaylist);
+      List<AppTrack> rejectedTracks = reviseRejectedTracks(appPlaylist, spotifyPlaylist);
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
+      appPlaylist.setCustomTracks(customTracks);
+      appPlaylist.setRejectedTracks(rejectedTracks);
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       appPlaylistSnapshotId = appPlaylist.getSnapshotId();
       log.info(
-          "Returning playlist with id ["
+          "Updated playlist with id ["
               + appPlaylist.getId()
               + "] and snapshotId ["
               + appPlaylistSnapshotId
               + "] for user ["
               + appUserId
-              + "]");
+              + "] from spotify");
       return Optional.of(appPlaylist);
     } catch (RuntimeException e) {
       throw new AppPlaylistSearchingException(appUser.getId(), e);
@@ -156,6 +156,7 @@ public class PlaylistService implements AppPlaylistService {
       }
 
       AppUser appUser = appPlaylist.getOwner();
+      String appUserId = appUser.getId();
       SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
@@ -197,6 +198,18 @@ public class PlaylistService implements AppPlaylistService {
       SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       List<SpotifyTrackItem> spotifyPlaylistTracks = spotifyPlaylist.getTracks().stream().toList();
 
+      List<AppTrack> rejectedTracks = appPlaylist.getRejectedTracks();
+      int rejectedTracksSize = rejectedTracks.size();
+      if (rejectedTracksSize > 0)
+        log.info(
+            "Considering ["
+                + rejectedTracksSize
+                + "] tracks previously removed from spotify playlist by user with id ["
+                + appUserId
+                + "] while adding tracks to playlist with id ["
+                + appPlaylistId
+                + "]");
+
       List<SpotifyTrackItem> spotifyAddTracks =
           appTracks.stream()
               .filter(Objects::nonNull)
@@ -206,8 +219,25 @@ public class PlaylistService implements AppPlaylistService {
                           .noneMatch(
                               spotifyPlaylistTrack ->
                                   spotifyPlaylistTrack.getId().equals(appTrack.getId())))
+              .filter(
+                  appTrack ->
+                      rejectedTracks.stream()
+                          .noneMatch(
+                              rejectedTrack -> rejectedTrack.getId().equals(appTrack.getId())))
               .map(appTrackMapper::mapToDto)
               .toList();
+
+      List<AppTrack> customTracks = appPlaylist.getCustomTracks();
+      int customTracksSize = customTracks.size();
+      if (customTracksSize > 0)
+        log.info(
+            "Considering ["
+                + customTracksSize
+                + "] tracks previously added to spotify playlist by user with id ["
+                + appUserId
+                + "] while adding tracks to playlist with id ["
+                + appPlaylistId
+                + "]");
 
       List<SpotifyTrackItem> spotifyRemoveTracks =
           spotifyPlaylistTracks.stream()
@@ -217,10 +247,13 @@ public class PlaylistService implements AppPlaylistService {
                       appTracks.stream()
                           .noneMatch(
                               appTrack -> appTrack.getId().equals(spotifyPlaylistTrack.getId())))
+              .filter(
+                  appTrack ->
+                      customTracks.stream()
+                          .noneMatch(customTrack -> customTrack.getId().equals(appTrack.getId())))
               .toList();
 
       boolean spotifyRemoveTracksExist = !spotifyRemoveTracks.isEmpty();
-
       if (spotifyRemoveTracksExist) {
         spotifyPlaylistService.removeTracks(spotifyPlaylistId, spotifyRemoveTracks);
       }
@@ -232,6 +265,8 @@ public class PlaylistService implements AppPlaylistService {
 
       spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
+      appPlaylist.setCustomTracks(customTracks);
+      appPlaylist.setRejectedTracks(rejectedTracks);
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       int addTracksNumber = spotifyAddTracks.size();
       int removeTracksNumber = spotifyRemoveTracks.size();
@@ -249,5 +284,79 @@ public class PlaylistService implements AppPlaylistService {
     } catch (RuntimeException e) {
       throw new AppPlaylistAddTracksException(appPlaylist.getId(), e);
     }
+  }
+
+  private List<AppTrack> reviseCustomTracks(
+      AppPlaylist appPlaylist, SpotifyPlaylistItem spotifyPlaylist) {
+
+    List<AppTrack> targetTracks = appPlaylist.getTracks();
+    List<AppTrack> customTracks = appPlaylist.getCustomTracks();
+    List<SpotifyTrackItem> sourceTracks = spotifyPlaylist.getTracks();
+
+    List<AppTrack> tracksInclusion =
+        sourceTracks.stream()
+            .filter(
+                sourceTrack ->
+                    targetTracks.stream()
+                        .noneMatch(targetTrack -> targetTrack.getId().equals(sourceTrack.getId())))
+            .filter(
+                track ->
+                    customTracks.stream()
+                        .noneMatch(favoriteTrack -> favoriteTrack.getId().equals(track.getId())))
+            .map(appTrackMapper::mapToEntity)
+            .toList();
+
+    List<AppTrack> tracksExclusion =
+        customTracks.stream()
+            .filter(
+                favoriteTrack ->
+                    sourceTracks.stream()
+                        .noneMatch(
+                            sourceTrack -> sourceTrack.getId().equals(favoriteTrack.getId())))
+            .toList();
+
+    return Stream.of(customTracks, tracksInclusion)
+        .flatMap(Collection::stream)
+        .filter(
+            track ->
+                tracksExclusion.stream()
+                    .noneMatch(removeTrack -> removeTrack.getId().equals(track.getId())))
+        .toList();
+  }
+
+  private List<AppTrack> reviseRejectedTracks(
+      AppPlaylist appPlaylist, SpotifyPlaylistItem spotifyPlaylist) {
+
+    List<AppTrack> targetTracks = appPlaylist.getTracks();
+    List<AppTrack> rejectedTracks = appPlaylist.getRejectedTracks();
+    List<SpotifyTrackItem> sourceTracks = spotifyPlaylist.getTracks();
+
+    List<AppTrack> tracksInclusion =
+        targetTracks.stream()
+            .filter(
+                targetTrack ->
+                    sourceTracks.stream()
+                        .noneMatch(sourceTrack -> sourceTrack.getId().equals(targetTrack.getId())))
+            .filter(
+                track ->
+                    rejectedTracks.stream()
+                        .noneMatch(rejectedTrack -> rejectedTrack.getId().equals(track.getId())))
+            .toList();
+
+    List<AppTrack> tracksExclusion =
+        rejectedTracks.stream()
+            .filter(
+                rejectedTrack ->
+                    sourceTracks.stream()
+                        .anyMatch(sourceTrack -> sourceTrack.getId().equals(rejectedTrack.getId())))
+            .toList();
+
+    return Stream.of(rejectedTracks, tracksInclusion)
+        .flatMap(Collection::stream)
+        .filter(
+            track ->
+                tracksExclusion.stream()
+                    .noneMatch(removeTrack -> removeTrack.getId().equals(track.getId())))
+        .toList();
   }
 }

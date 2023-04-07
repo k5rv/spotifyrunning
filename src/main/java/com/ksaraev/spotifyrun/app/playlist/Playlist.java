@@ -29,6 +29,33 @@ public class Playlist implements AppPlaylist {
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
+  private List<Track> customTracks = new ArrayList<>();
+  @Type(JsonType.class)
+  @Column(columnDefinition = "jsonb")
+  private List<Track> rejectedTracks = new ArrayList<>();
+
+  @Override
+  public List<AppTrack> getCustomTracks() {
+    return this.customTracks.stream().map(AppTrack.class::cast).toList();
+  }
+
+  @Override
+  public void setCustomTracks(List<AppTrack> customTracks) {
+    this.customTracks = customTracks.stream().map(Track.class::cast).toList();
+  }
+
+  @Override
+  public List<AppTrack> getRejectedTracks() {
+    return this.rejectedTracks.stream().map(AppTrack.class::cast).toList();
+  }
+
+  @Override
+  public void setRejectedTracks(List<AppTrack> rejectedTracks) {
+    this.rejectedTracks = rejectedTracks.stream().map(Track.class::cast).toList();
+  }
+
+  @Type(JsonType.class)
+  @Column(columnDefinition = "jsonb")
   private List<Track> tracks = new ArrayList<>();
 
   private String snapshotId;
@@ -62,7 +89,6 @@ public class Playlist implements AppPlaylist {
     Playlist playlist = (Playlist) o;
     return getId() != null && Objects.equals(getId(), playlist.getId());
   }
-
 
   @Override
   public int hashCode() {
