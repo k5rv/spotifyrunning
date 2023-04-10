@@ -1,9 +1,9 @@
 package com.ksaraev.spotifyrun.client.feign.encoders;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
 import static org.mockito.BDDMockito.*;
 
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientRequestEncodingException;
 import feign.Param;
 import java.util.HashMap;
 import java.util.List;

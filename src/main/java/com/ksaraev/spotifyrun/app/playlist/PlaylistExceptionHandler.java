@@ -1,11 +1,8 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-import static com.ksaraev.spotifyrun.exception.business.CreatePlaylistException.*;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.ksaraev.spotifyrun.app.user.AppUserGetAuthenticatedException;
-import com.ksaraev.spotifyrun.exception.business.RecommendationsNotFoundException;
-import com.ksaraev.spotifyrun.exception.business.UserTopTracksNotFoundException;
 import java.time.ZonedDateTime;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -26,18 +23,9 @@ public class PlaylistExceptionHandler {
             .body(new ErrorResponse(UNAUTHORIZED, "User is not authenticated in Spotify", ZonedDateTime.now()));
   }
 
-  @ExceptionHandler(
-      value = {UserTopTracksNotFoundException.class, RecommendationsNotFoundException.class})
-  public ResponseEntity<ErrorResponse> handleBusinessException(
-      RuntimeException e) {
-    log.error(UNABLE_TO_CREATE_PLAYLIST + e.getMessage(), e);
-    return ResponseEntity.status(INTERNAL_SERVER_ERROR)
-        .body(new ErrorResponse(INTERNAL_SERVER_ERROR, e.getMessage(), ZonedDateTime.now()));
-  }
 
   @ExceptionHandler(value = {RuntimeException.class})
   public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException e) {
-    log.error(UNABLE_TO_CREATE_PLAYLIST + e.getMessage(), e);
     return ResponseEntity.status(INTERNAL_SERVER_ERROR)
         .body(new ErrorResponse(INTERNAL_SERVER_ERROR, ZonedDateTime.now()));
   }

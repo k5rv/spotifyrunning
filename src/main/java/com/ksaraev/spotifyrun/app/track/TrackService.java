@@ -1,9 +1,9 @@
 package com.ksaraev.spotifyrun.app.track;
 
 import com.ksaraev.spotifyrun.app.playlist.AppPlaylistConfig;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.service.SpotifyRecommendationItemsService;
-import com.ksaraev.spotifyrun.service.SpotifyUserTopTrackItemsService;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyRecommendationItemsService;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserTopTrackItemsService;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,9 +32,9 @@ public class TrackService implements AppTrackService {
     List<SpotifyTrackItem> recommendations =
         userTopTracks.stream()
             .map(
-                userTopTrackItem ->
+                userTopTrack ->
                     spotifyRecommendationsService.getRecommendations(
-                        List.of(userTopTrackItem), playlistConfig.getMusicFeatures()))
+                        List.of(userTopTrack), playlistConfig.getMusicFeatures()))
             .flatMap(List::stream)
             .sorted(Comparator.comparingInt(SpotifyTrackItem::getPopularity).reversed())
             .distinct()

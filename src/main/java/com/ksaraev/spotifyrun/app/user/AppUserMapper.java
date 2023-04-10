@@ -1,10 +1,10 @@
 package com.ksaraev.spotifyrun.app.user;
 
-import static com.ksaraev.spotifyrun.model.spotify.SpotifyItemType.USER;
+import static com.ksaraev.spotifyrun.spotify.model.SpotifyItemType.USER;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfile;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import java.net.URI;
 import org.mapstruct.*;
 

@@ -1,11 +1,8 @@
 package com.ksaraev.spotifyrun.mapping;
 
-import com.ksaraev.spotifyrun.app.track.AppTrack;import com.ksaraev.spotifyrun.app.track.AppTrackMapper;import com.ksaraev.spotifyrun.app.track.AppTrackMapperImpl;import com.ksaraev.spotifyrun.app.track.Track;import com.ksaraev.spotifyrun.app.user.AppUser;
-import com.ksaraev.spotifyrun.app.user.AppUserMapper;
-import com.ksaraev.spotifyrun.app.user.AppUserMapperImpl;
-import com.ksaraev.spotifyrun.app.user.Runner;
-import com.ksaraev.spotifyrun.model.spotify.SpotifyItemType;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.app.track.AppTrack;import com.ksaraev.spotifyrun.app.track.AppTrackMapper;import com.ksaraev.spotifyrun.app.track.AppTrackMapperImpl;import com.ksaraev.spotifyrun.app.track.Track;
+import com.ksaraev.spotifyrun.spotify.model.SpotifyItemType;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
 import java.net.URI;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

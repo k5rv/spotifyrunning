@@ -1,8 +1,8 @@
 package com.ksaraev.spotifyrun.client.feign.decoders;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientDecodingErrorResponseIsNullException.*;
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientDecodingErrorResponseIsNullException.*;
 
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientDecodingErrorResponseIsNullException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientDecodingErrorResponseIsNullException;
 import com.ksaraev.spotifyrun.client.feign.exception.FeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.feign.exception.HandleFeignException;
 import feign.Feign;

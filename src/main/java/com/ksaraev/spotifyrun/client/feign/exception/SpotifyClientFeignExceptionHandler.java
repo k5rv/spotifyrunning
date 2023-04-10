@@ -1,11 +1,11 @@
 package com.ksaraev.spotifyrun.client.feign.exception;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseException.*;
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException.*;
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseException.*;
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseIsNullException.*;
 
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseException;
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException;
 import com.ksaraev.spotifyrun.client.feign.exception.http.*;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseIsNullException;
 import feign.Response;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

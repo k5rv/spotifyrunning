@@ -1,12 +1,12 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-import static com.ksaraev.spotifyrun.model.spotify.SpotifyItemType.*;
+import static com.ksaraev.spotifyrun.spotify.model.SpotifyItemType.*;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
 import com.ksaraev.spotifyrun.app.track.AppTrackMapper;
 import com.ksaraev.spotifyrun.app.user.AppUserMapper;
-import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylist;
+import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistItem;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

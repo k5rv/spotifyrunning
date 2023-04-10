@@ -1,7 +1,7 @@
 package com.ksaraev.spotifyrun.service;
 
-import static com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
-import static com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
+import static com.ksaraev.spotifyrun.spotify.exception.business.GetUserTopTracksException.ILLEGAL_TIME_RANGE;
+import static com.ksaraev.spotifyrun.spotify.exception.business.GetUserTopTracksException.UNABLE_TO_GET_USER_TOP_TRACKS;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -15,10 +15,11 @@ import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.dto.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.dto.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
-import com.ksaraev.spotifyrun.config.requests.SpotifyGetUserTopTracksRequestConfig;
-import com.ksaraev.spotifyrun.exception.business.GetUserTopTracksException;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
+import com.ksaraev.spotifyrun.spotify.config.GetSpotifyUserTopItemsRequestConfig;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapper;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserTopTrackItemsService;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserTopTracksService;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,7 +35,7 @@ import org.mockito.MockitoAnnotations;
 
 class SpotifyUserTopTracksServiceTest {
   @Mock private SpotifyClient spotifyClient;
-  @Mock private SpotifyGetUserTopTracksRequestConfig requestConfig;
+  @Mock private GetSpotifyUserTopItemsRequestConfig requestConfig;
   @Mock private SpotifyTrackMapper trackMapper;
   @Captor private ArgumentCaptor<List<SpotifyTrackDto>> trackItemsArgumentCaptor;
   @Captor private ArgumentCaptor<GetUserTopTracksRequest> getUserTopTracksRequestArgumentCaptor;

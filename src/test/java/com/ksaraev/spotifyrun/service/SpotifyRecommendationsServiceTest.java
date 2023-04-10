@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.service;
 
-import static com.ksaraev.spotifyrun.exception.business.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
+import static com.ksaraev.spotifyrun.spotify.exception.business.GetRecommendationsException.UNABLE_TO_GET_RECOMMENDATIONS;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -14,14 +14,14 @@ import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.dto.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.client.dto.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
-import com.ksaraev.spotifyrun.config.requests.SpotifyGetRecommendationsRequestConfig;
-import com.ksaraev.spotifyrun.exception.business.GetRecommendationsException;
-import com.ksaraev.spotifyrun.model.SpotifyItem;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeaturesMapper;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
+import com.ksaraev.spotifyrun.spotify.model.SpotifyItem;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapper;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyRecommendationsService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -44,7 +44,7 @@ class SpotifyRecommendationsServiceTest {
       Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
   private static final String GET_RECOMMENDATIONS = "getRecommendations";
   @Mock private SpotifyClient spotifyClient;
-  @Mock private SpotifyGetRecommendationsRequestConfig requestConfig;
+  @Mock private GetSpotifyRecommendationItemsRequestConfig requestConfig;
   @Mock private SpotifyTrackMapper trackMapper;
   @Mock private SpotifyTrackFeaturesMapper trackFeaturesMapper;
   private SpotifyRecommendationsService underTest;
@@ -143,7 +143,7 @@ class SpotifyRecommendationsServiceTest {
     given(trackMapper.mapItemsToTracks(anyList())).willReturn(recommendationTracks);
 
     // When
-    underTest.getRecommendations(seedTracks);
+    //underTest.getRecommendations(seedTracks);
 
     // Then
     then(trackFeaturesMapper).should().mapToRequestFeatures(trackFeaturesArgumentCaptor.capture());

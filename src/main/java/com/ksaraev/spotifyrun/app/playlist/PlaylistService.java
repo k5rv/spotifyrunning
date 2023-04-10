@@ -3,14 +3,14 @@ package com.ksaraev.spotifyrun.app.playlist;
 import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.track.AppTrackMapper;
 import com.ksaraev.spotifyrun.app.user.*;
-import com.ksaraev.spotifyrun.model.SpotifyItem;
-import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.service.*;
+import com.ksaraev.spotifyrun.spotify.model.SpotifyItem;
+import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistItem;
+import com.ksaraev.spotifyrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import java.util.*;
 import java.util.stream.Stream;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyPlaylistItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -138,7 +138,7 @@ public class PlaylistService implements AppPlaylistService {
               + "] from spotify");
       return Optional.of(appPlaylist);
     } catch (RuntimeException e) {
-      throw new AppPlaylistSearchingException(appUser.getId(), e);
+      throw new AppPlaylistGettingException(appUser.getId(), e);
     }
   }
 

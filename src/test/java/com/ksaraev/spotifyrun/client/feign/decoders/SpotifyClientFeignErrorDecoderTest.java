@@ -1,6 +1,5 @@
 package com.ksaraev.spotifyrun.client.feign.decoders;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientDecodingErrorResponseIsNullException.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -8,7 +7,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientDecodingErrorResponseIsNullException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientDecodingErrorResponseIsNullException;
 import com.ksaraev.spotifyrun.client.feign.exception.FeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;

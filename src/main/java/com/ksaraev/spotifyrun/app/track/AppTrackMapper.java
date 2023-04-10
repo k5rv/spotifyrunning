@@ -1,10 +1,10 @@
 package com.ksaraev.spotifyrun.app.track;
 
-import static com.ksaraev.spotifyrun.model.spotify.SpotifyItemType.*;
+import static com.ksaraev.spotifyrun.spotify.model.SpotifyItemType.*;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
