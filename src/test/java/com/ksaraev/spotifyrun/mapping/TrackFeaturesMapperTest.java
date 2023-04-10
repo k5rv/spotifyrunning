@@ -1,15 +1,15 @@
 package com.ksaraev.spotifyrun.mapping;
 
-import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
+import static com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.ksaraev.spotifyrun.client.dto.GetRecommendationsRequest;
-import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
+import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
 import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeaturesMapperImpl;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeaturesMapper;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -169,7 +169,7 @@ class TrackFeaturesMapperTest {
   void itShouldThrowNullMappingSourceExceptionWhenSpotifyTrackFeaturesIsNull() {
     // Then
     assertThatThrownBy(() -> underTest.mapToRequestFeatures(null))
-        .isExactlyInstanceOf(NullMappingSourceException.class)
-        .hasMessage(MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE);
+        .isExactlyInstanceOf(MappingSourceIsNullException.class)
+        .hasMessage(MAPPING_SOURCE_IS_NULL);
   }
 }

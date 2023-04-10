@@ -3,12 +3,12 @@ package com.ksaraev.spotifyrun.mapping;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 
 import com.ksaraev.spotifyrun.client.dto.*;
-import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
-import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
+import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistItem;
 import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistMapperImpl;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrack;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapper;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrack;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapper;
 import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapperImpl;
 import java.net.URI;
 import java.net.URL;

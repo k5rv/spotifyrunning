@@ -2,12 +2,12 @@ package com.ksaraev.spotifyrun.app.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapper;
 import com.ksaraev.spotifyrun.security.AuthenticationFacade;
 import java.util.Map;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileItemService;import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileService;import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -24,6 +24,8 @@ public class RunnerService implements AppUserService {
   private final AuthenticationFacade authenticationFacade;
 
   private final SpotifyUserProfileMapper userProfileMapper;
+
+  private final SpotifyUserProfileItemService spotifyUserProfileService;
 
   @Override
   public boolean isUserRegistered(String userId) {

@@ -1,9 +1,7 @@
 package com.ksaraev.spotifyrun.client.feign.exception;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException.*;
-
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseException;
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientReadingErrorResponseIsNullException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseIsNullException;
 import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyBadRequestException;
 import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;
 import feign.Request;

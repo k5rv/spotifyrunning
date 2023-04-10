@@ -1,11 +1,11 @@
 package com.ksaraev.spotifyrun.mapping;
 
-import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
+import static com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
-import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
+import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapper;
 import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapperImpl;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.net.URL;
@@ -65,7 +65,7 @@ class UserMapperTest {
   void itShouldThrowNullMappingSourceExceptionWhenUserProfileItemIsNull() {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.mapToModel(null))
-        .isExactlyInstanceOf(NullMappingSourceException.class)
-        .hasMessage(MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE);
+        .isExactlyInstanceOf(MappingSourceIsNullException.class)
+        .hasMessage(MAPPING_SOURCE_IS_NULL);
   }
 }

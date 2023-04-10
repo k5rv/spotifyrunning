@@ -2,10 +2,10 @@ package com.ksaraev.spotifyrun.config;
 
 import com.ksaraev.spotifyrun.app.playlist.AppPlaylistConfig;
 import com.ksaraev.spotifyrun.app.playlist.PlaylistConfig;
-import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistDetails;
-import com.ksaraev.spotifyrun.model.spotify.playlistdetails.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.model.spotify.trackfeatures.SpotifyTrackItemFeatures;
+import com.ksaraev.spotifyrun.spotify.model.playlistdetails.SpotifyPlaylistDetails;
+import com.ksaraev.spotifyrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeatures;
+import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;

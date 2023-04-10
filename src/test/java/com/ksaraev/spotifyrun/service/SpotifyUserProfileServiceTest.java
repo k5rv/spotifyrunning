@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.service;
 
-import static com.ksaraev.spotifyrun.exception.business.GetUserException.UNABLE_TO_GET_USER;
+import static com.ksaraev.spotifyrun.spotify.exception.business.GetUserException.UNABLE_TO_GET_USER;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -12,11 +12,12 @@ import static org.mockito.Mockito.verify;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
-import com.ksaraev.spotifyrun.exception.business.GetUserException;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfile;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapper;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfile;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapper;
 import com.ksaraev.spotifyrun.security.AuthenticationFacade;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileItemService;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,7 +37,7 @@ class SpotifyUserProfileServiceTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    underTest = new SpotifyUserProfileService(spotifyClient, userMapper/*, authenticationFacade*/);
+    underTest = new SpotifyUserProfileService(spotifyClient, userMapper /*, authenticationFacade*/);
   }
 
   @Test

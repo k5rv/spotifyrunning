@@ -1,13 +1,13 @@
 package com.ksaraev.spotifyrun.mapping;
 
-import static com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException.MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE;
+import static com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 import static com.ksaraev.spotifyrun.utils.SpotifyHelper.*;
 
 import com.ksaraev.spotifyrun.client.dto.SpotifyArtistDto;
-import com.ksaraev.spotifyrun.exception.mapper.NullMappingSourceException;
-import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtist;
-import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistItem;
-import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistMapper;
+import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
+import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtist;
+import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistItem;
+import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,7 @@ class ArtistMapperTest {
   void itShouldThrowNullMappingSourceExceptionWhenArtistItemIsNull() {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.mapToArtist(null))
-        .isExactlyInstanceOf(NullMappingSourceException.class)
-        .hasMessage(MAPPING_SOURCE_IS_NULL_EXCEPTION_MESSAGE);
+        .isExactlyInstanceOf(MappingSourceIsNullException.class)
+        .hasMessage(MAPPING_SOURCE_IS_NULL);
   }
 }

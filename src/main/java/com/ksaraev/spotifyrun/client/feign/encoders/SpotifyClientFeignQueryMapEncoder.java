@@ -1,10 +1,10 @@
 package com.ksaraev.spotifyrun.client.feign.encoders;
 
-import static com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
+import static com.ksaraev.spotifyrun.client.exception.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Maps;
-import com.ksaraev.spotifyrun.client.exceptions.SpotifyClientRequestEncodingException;
+import com.ksaraev.spotifyrun.client.exception.SpotifyClientRequestEncodingException;
 import feign.Param;
 import feign.QueryMapEncoder;
 import feign.codec.EncodeException;
