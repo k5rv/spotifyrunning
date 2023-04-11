@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PlaylistService implements AppPlaylistService {
 
+  public static final String PLAYLIST_WITH_ID = "Playlist with id";
+
   private final PlaylistRepository playlistRepository;
 
   private final SpotifyPlaylistItemService spotifyPlaylistService;
@@ -38,7 +40,7 @@ public class PlaylistService implements AppPlaylistService {
   public AppPlaylist createPlaylist(AppUser appUser) {
     try {
       String appUserId = appUser.getId();
-      log.info("Creating playlist for user with id [" + appUser.getId() + "]");
+      log.info("Creating playlist for user id with [" + appUserId + "]");
       SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
       SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
       SpotifyPlaylistItem spotifyPlaylist =
@@ -49,11 +51,7 @@ public class PlaylistService implements AppPlaylistService {
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
       log.info(
-          "Created playlist with id ["
-              + appPlaylistId
-              + "] for user with id ["
-              + appUserId
-              + "], saved in app");
+          "Created playlist with id [" + appPlaylistId + "] for user with id [" + appUserId + "]");
       return appPlaylist;
     } catch (SpotifyServiceAuthenticationException e) {
       throw new AppAuthenticationException(e);
@@ -75,7 +73,7 @@ public class PlaylistService implements AppPlaylistService {
         log.info(
             "User with id ["
                 + appUserId
-                + "] doesn't have any playlists saved in app, returning empty result");
+                + "] doesn't have any playlists in app. Returning empty result.");
         return Optional.empty();
       }
 
@@ -91,11 +89,10 @@ public class PlaylistService implements AppPlaylistService {
       boolean spotifyPlaylistExists = spotifyRunningWorkoutPlaylist.isPresent();
       if (!spotifyPlaylistExists) {
         log.info(
-            "User with id ["
-                + appUserId
-                + "] doesn't have any running workout playlists saved in spotify that correspond to app playlist with id ["
-                + appPlaylist.getId()
-                + "], deleting saved in app playlist, returning empty result");
+            PLAYLIST_WITH_ID
+                + " ["
+                + appPlaylistId
+                + "] not found in Spotify. Deleting app playlist and returning empty result.");
         appUser.removePlaylist(appPlaylist);
         playlistRepository.deleteById(appPlaylistId);
         return Optional.empty();
@@ -109,24 +106,23 @@ public class PlaylistService implements AppPlaylistService {
       boolean snapshotIdentical = spotifyPlaylistSnapshotId.equals(appPlaylistSnapshotId);
       if (snapshotIdentical) {
         log.info(
-            "User with id ["
-                + appUserId
-                + "] has running workout playlists, both saved in app and spotify with the exact same snapshot id ["
-                + appPlaylistSnapshotId
-                + "] returning playlist with id ["
+            PLAYLIST_WITH_ID
+                + " ["
                 + appPlaylistId
-                + "]");
+                + "] has the exact same snapshot version in app and Spotify. Returning playlist with snapshot id ["
+                + appPlaylistSnapshotId
+                + "].");
         return Optional.of(appPlaylist);
       }
-
       log.info(
-          "User with id ["
-              + appUserId
-              + "] has running workout playlists, both saved in app and spotify with different snapshot ids: ["
+          PLAYLIST_WITH_ID
+              + " ["
+              + appPlaylistId
+              + "] found in app and Spotify with the different snapshot versions ["
               + appPlaylistSnapshotId
               + "] and ["
               + spotifyPlaylistSnapshotId
-              + "] respectively. Updating saved in app playlist from spotify.");
+              + "] respectively. Updating app version from Spotify.");
       List<AppTrack> customTracks = reviseCustomTracks(appPlaylist, spotifyPlaylist);
       List<AppTrack> rejectedTracks = reviseRejectedTracks(appPlaylist, spotifyPlaylist);
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
@@ -136,12 +132,10 @@ public class PlaylistService implements AppPlaylistService {
       appPlaylistSnapshotId = appPlaylist.getSnapshotId();
       log.info(
           "Updated playlist with id ["
-              + appPlaylist.getId()
-              + "] and snapshotId ["
+              + appPlaylistId
+              + "] and snapshot id ["
               + appPlaylistSnapshotId
-              + "] for user ["
-              + appUserId
-              + "] from spotify");
+              + "] from Spotify. Returning playlist.");
       return Optional.of(appPlaylist);
     } catch (SpotifyServiceAuthenticationException e) {
       throw new AppAuthenticationException(e);
@@ -158,10 +152,16 @@ public class PlaylistService implements AppPlaylistService {
       String appPlaylistId = appPlaylist.getId();
       int appTracksNumber = appTracks.size();
       log.info(
-          "Adding [" + appTracksNumber + "] tracks to playlist with id [" + appPlaylistId + "]");
+          "Adding ["
+              + appTracksNumber
+              + "] tracks to "
+              + PLAYLIST_WITH_ID
+              + " ["
+              + appPlaylistId
+              + "]");
       Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findById(appPlaylistId);
       if (appRunningWorkoutPlaylist.isEmpty()) {
-        log.error("Playlist with id [" + appPlaylistId + "] doesn't exist in app");
+        log.error(PLAYLIST_WITH_ID + appPlaylistId + "] doesn't exist in app");
         throw new AppPlaylistServicePlaylistDoesNotExistException(appPlaylistId);
       }
 
@@ -178,9 +178,10 @@ public class PlaylistService implements AppPlaylistService {
 
       if (!spotifyPlaylistExists) {
         log.info(
-            "Playlist saved in app with id ["
+            PLAYLIST_WITH_ID
+                + " ["
                 + appPlaylistId
-                + "] doesn't correspond to any playlist in spotify, deleting saved in app playlist and creating new one");
+                + "] not found in Spotify. Deleting saved in app playlist and creating new one.");
         appUser.removePlaylist(appPlaylist);
         playlistRepository.deleteById(appPlaylistId);
         appPlaylist = createPlaylist(appUser);
@@ -194,11 +195,12 @@ public class PlaylistService implements AppPlaylistService {
         log.info(
             "Added ["
                 + appTracksNumber
-                + "] tracks to playlist with id ["
+                + PLAYLIST_WITH_ID
+                + " ["
                 + appPlaylistId
                 + "] and snapshot id ["
                 + appPlaylistSnapshotId
-                + "] saved in app");
+                + "]. Saved in app.");
         return appPlaylist;
       }
 
@@ -211,9 +213,9 @@ public class PlaylistService implements AppPlaylistService {
       int rejectedTracksSize = rejectedTracks.size();
       if (rejectedTracksSize > 0)
         log.info(
-            "Considering ["
+            "Determining ["
                 + rejectedTracksSize
-                + "] tracks previously removed manually from spotify playlist while adding tracks to playlist with id ["
+                + "] tracks previously removed outside of the app from Spotify playlist with id ["
                 + appPlaylistId
                 + "]");
 
@@ -238,9 +240,9 @@ public class PlaylistService implements AppPlaylistService {
       int customTracksSize = customTracks.size();
       if (customTracksSize > 0)
         log.info(
-            "Considering ["
-                + customTracksSize
-                + "] tracks previously added manually to spotify playlist while adding tracks to playlist with id ["
+            "Determining ["
+                + rejectedTracksSize
+                + "] tracks previously added outside of the app to Spotify playlist with id ["
                 + appPlaylistId
                 + "]");
 
@@ -279,12 +281,12 @@ public class PlaylistService implements AppPlaylistService {
           "Added ["
               + addTracksNumber
               + "] and removed ["
-              + removeTracksNumber
-              + "] tracks to playlist with id ["
-              + appPlaylist.getId()
-              + "], snapshotId ["
+              + removeTracksNumber + "] "
+              + PLAYLIST_WITH_ID
+              + appPlaylistId
+              + "] and  snapshotId ["
               + appPlaylist.getSnapshotId()
-              + "], saved in app");
+              + "]. Saved in app.");
       return appPlaylist;
     } catch (SpotifyServiceAuthenticationException e) {
       throw new AppAuthenticationException(e);
@@ -340,7 +342,6 @@ public class PlaylistService implements AppPlaylistService {
   private List<AppTrack> reviseRejectedTracks(
       AppPlaylist appPlaylist, SpotifyPlaylistItem spotifyPlaylist) {
     try {
-
       List<AppTrack> targetTracks = appPlaylist.getTracks();
       List<AppTrack> rejectedTracks = appPlaylist.getRejectedTracks();
       List<SpotifyTrackItem> sourceTracks = spotifyPlaylist.getTracks();
