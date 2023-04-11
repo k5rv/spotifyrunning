@@ -34,7 +34,10 @@ public class TrackService implements AppTrackService {
   @Override
   public List<AppTrack> getTracks() {
     try {
+      int playlistSizeLimit = playlistConfig.getSize();
       List<SpotifyTrackItem> userTopTracks = spotifyTopTracksService.getUserTopTracks();
+      int topTracksSize = userTopTracks.size();
+      log.info("Found [" + topTracksSize + "] top tracks in Spotify");
       List<SpotifyTrackItem> recommendations =
           userTopTracks.stream()
               .map(
@@ -44,7 +47,7 @@ public class TrackService implements AppTrackService {
               .flatMap(List::stream)
               .sorted(Comparator.comparingInt(SpotifyTrackItem::getPopularity).reversed())
               .distinct()
-              .limit(playlistConfig.getSize())
+              .limit(playlistSizeLimit)
               .collect(
                   Collectors.collectingAndThen(
                       Collectors.toList(),
@@ -52,6 +55,8 @@ public class TrackService implements AppTrackService {
                         Collections.shuffle(list);
                         return list;
                       }));
+      int recommendationsSize = recommendations.size();
+      log.info("Found [" + recommendationsSize + "] recommended tracks in Spotify");
       return recommendations.stream()
           .filter(Objects::nonNull)
           .map(appTrackMapper::mapToEntity)
