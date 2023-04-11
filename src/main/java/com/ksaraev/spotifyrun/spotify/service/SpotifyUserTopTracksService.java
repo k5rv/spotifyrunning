@@ -6,8 +6,10 @@ import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.dto.GetUserTopTracksRequest;
 import com.ksaraev.spotifyrun.client.dto.GetUserTopTracksResponse;
 import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.spotify.config.GetSpotifyUserTopItemsRequestConfig;
-import com.ksaraev.spotifyrun.spotify.exception.refactored.GetSpotifyUserTopTracksException;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyServiceAuthenticationException;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyUserTopTracksServiceException;
 import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapper;
 import java.util.List;
@@ -47,8 +49,10 @@ public class SpotifyUserTopTracksService implements SpotifyUserTopTrackItemsServ
               .toList();
 
       return trackItems.isEmpty() ? List.of() : trackMapper.mapItemsToTracks(trackItems);
+    } catch (SpotifyUnauthorizedException e) {
+      throw new SpotifyServiceAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new GetSpotifyUserTopTracksException(e);
+      throw new SpotifyUserTopTracksServiceException(e);
     }
   }
 }

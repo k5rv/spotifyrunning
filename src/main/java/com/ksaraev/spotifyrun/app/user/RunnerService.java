@@ -1,13 +1,16 @@
 package com.ksaraev.spotifyrun.app.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ksaraev.spotifyrun.app.exception.AppAuthenticationException;
 import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
+import com.ksaraev.spotifyrun.security.AuthenticationFacade;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyServiceAuthenticationException;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapper;
-import com.ksaraev.spotifyrun.security.AuthenticationFacade;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileItemService;
 import java.util.Map;
 import java.util.Optional;
-import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileItemService;import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileService;import lombok.RequiredArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
@@ -32,7 +35,7 @@ public class RunnerService implements AppUserService {
     try {
       return runnerRepository.existsById(userId);
     } catch (RuntimeException e) {
-      throw new AppUserRegistrationStatusSearchingException(userId, e);
+      throw new AppUserServiceGetUserRegistrationStatusException(userId, e);
     }
   }
 
@@ -48,7 +51,7 @@ public class RunnerService implements AppUserService {
       log.info("User with id [" + userId + "] found");
       return optionalRunner.map(AppUser.class::cast);
     } catch (RuntimeException e) {
-      throw new AppUserSearchingException(userId, e);
+      throw new AppUserServiceGetUserException(userId, e);
     }
   }
 
@@ -61,7 +64,7 @@ public class RunnerService implements AppUserService {
       log.info("Registered user with id [" + userId + "] and name [" + userName + "]");
       return runner;
     } catch (RuntimeException e) {
-      throw new AppUserRegistrationException(userId, e);
+      throw new AppUserServiceUserRegistrationException(userId, e);
     }
   }
 
@@ -80,8 +83,10 @@ public class RunnerService implements AppUserService {
       SpotifyUserProfileItem userProfileItem = userProfileMapper.mapToModel(userProfileDto);
       AppUser appUser = appUserMapper.mapToEntity(userProfileItem);
       return Optional.ofNullable(appUser);
+    } catch (SpotifyServiceAuthenticationException e) {
+      throw new AppAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new AppUserGetAuthenticatedException(e);
+      throw new AppUserServiceGetAuthenticatedUserException(e);
     }
   }
 }

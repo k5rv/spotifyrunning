@@ -2,9 +2,9 @@ package com.ksaraev.spotifyrun.spotify.service;
 
 import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.dto.*;
-import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyNotFoundException;
+import com.ksaraev.spotifyrun.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.spotify.config.AddSpotifyPlaylistItemsRequestConfig;
-import com.ksaraev.spotifyrun.spotify.exception.refactored.*;
+import com.ksaraev.spotifyrun.spotify.exception.*;
 import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistMapper;
 import com.ksaraev.spotifyrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
@@ -49,8 +49,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
               .map(SpotifyPlaylistItem.class::cast)
               .toList();
 
+    } catch (SpotifyUnauthorizedException e) {
+      throw new SpotifyServiceAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new GetSpotifyUserPlaylistsException(userId, e);
+      throw new SpotifyPlaylistServiceGetUserPlaylistsException(userId, e);
     }
   }
 
@@ -59,10 +61,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
     try {
       SpotifyPlaylistDto playlistItem = spotifyClient.getPlaylist(playlistId);
       return playlistMapper.mapToPlaylist(playlistItem);
-    } catch (SpotifyNotFoundException e) {
-      return null;
+    } catch (SpotifyUnauthorizedException e) {
+      throw new SpotifyServiceAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new GetSpotifyPlaylistException(playlistId, e);
+      throw new SpotifyPlaylistServiceGetPlaylistException(playlistId, e);
     }
   }
 
@@ -76,8 +78,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
           playlistMapper.mapToPlaylistItemDetails(spotifyPlaylistDetails);
       SpotifyPlaylistDto playlistItem = spotifyClient.createPlaylist(userId, playlistItemDetails);
       return playlistMapper.mapToPlaylist(playlistItem);
+    } catch (SpotifyUnauthorizedException e) {
+      throw new SpotifyServiceAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new CreateSpotifyPlaylistException(userId, e);
+      throw new SpotifyPlaylistServiceCreatePlaylistException(userId, e);
     }
   }
 
@@ -92,8 +96,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
               .build();
       UpdateUpdateItemsResponse response = spotifyClient.addPlaylistItems(playlistId, request);
       return response.snapshotId();
+    } catch (SpotifyUnauthorizedException e) {
+      throw new SpotifyServiceAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new AddSpotifyPlaylistTracksException(playlistId, e);
+      throw new SpotifyPlaylistServiceAddTracksException(playlistId, e);
     }
   }
 
@@ -105,8 +111,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
           RemovePlaylistItemsRequest.builder().itemUris(trackUris).build();
       RemovePlaylistItemsResponse response = spotifyClient.removePlaylistItems(playlistId, request);
       return response.snapshotId();
+    } catch (SpotifyUnauthorizedException e) {
+      throw new SpotifyServiceAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new RemoveSpotifyPlaylistTracksException(playlistId, e);
+      throw new SpotifyPlaylistServiceRemoveTracksException(playlistId, e);
     }
   }
 }

@@ -6,7 +6,7 @@ import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapper;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapperImpl;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapperImpl;
 import com.ksaraev.spotifyrun.utils.SpotifyHelper;
 import java.net.URL;
 import java.util.List;

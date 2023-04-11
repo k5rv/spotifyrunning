@@ -1,10 +1,11 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
+import com.ksaraev.spotifyrun.app.exception.AppAuthenticationException;
 import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.track.AppTrackService;
 import com.ksaraev.spotifyrun.app.user.AppUser;
-import com.ksaraev.spotifyrun.app.user.AppUserGetAuthenticatedException;
 import com.ksaraev.spotifyrun.app.user.AppUserService;
+import com.ksaraev.spotifyrun.app.user.AppUserServiceGetAuthenticatedUserException;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,12 @@ public class PlaylistController {
 
   @PostMapping
   public AppPlaylist createPlaylist() {
-    AppUser appUser =
-        userService.getAuthenticatedUser().orElseThrow(AppUserGetAuthenticatedException::new);
-
+    AppUser appUser;
+    try {
+      appUser = userService.getAuthenticatedUser().orElseThrow(AppAuthenticationException::new);
+    } catch (AppUserServiceGetAuthenticatedUserException e) {
+      throw new AppAuthenticationException(e);
+    }
     String appUserId = appUser.getId();
     String appUserName = appUser.getName();
     appUser =
