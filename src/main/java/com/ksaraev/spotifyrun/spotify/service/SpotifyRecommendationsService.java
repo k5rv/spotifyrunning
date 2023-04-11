@@ -4,8 +4,10 @@ import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.dto.GetRecommendationsRequest;
 import com.ksaraev.spotifyrun.client.dto.GetRecommendationsResponse;
 import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
+import com.ksaraev.spotifyrun.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotifyrun.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
-import com.ksaraev.spotifyrun.spotify.exception.refactored.GetSpotifyRecommendationsException;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyRecommendationsServiceException;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyServiceAuthenticationException;
 import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapper;
 import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
@@ -54,8 +56,10 @@ public class SpotifyRecommendationsService implements SpotifyRecommendationItems
               .toList();
 
       return trackItems.isEmpty() ? List.of() : trackMapper.mapItemsToTracks(trackItems);
+    } catch (SpotifyUnauthorizedException e) {
+      throw new SpotifyServiceAuthenticationException(e);
     } catch (RuntimeException e) {
-      throw new GetSpotifyRecommendationsException(e);
+      throw new SpotifyRecommendationsServiceException(e);
     }
   }
 }

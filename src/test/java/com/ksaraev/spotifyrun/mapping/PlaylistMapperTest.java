@@ -6,18 +6,18 @@ import com.ksaraev.spotifyrun.client.dto.*;
 import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
 import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtist;
 import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistItem;
-import com.ksaraev.spotifyrun.model.spotify.artist.SpotifyArtistMapperImpl;
+import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistMapperImpl;
 import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistMapper;
-import com.ksaraev.spotifyrun.model.spotify.playlist.SpotifyPlaylistMapperImpl;
+import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistMapperImpl;
 import com.ksaraev.spotifyrun.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.ksaraev.spotifyrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrack;
 import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.model.spotify.track.SpotifyTrackMapperImpl;
+import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapperImpl;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfile;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.model.spotify.userprofile.SpotifyUserProfileMapperImpl;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapperImpl;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -71,7 +71,8 @@ class PlaylistMapperTest {
     URI trackTwoUri = URI.create("spotify:track:2222030405AaBbCcDdEeFf");
     Integer trackTwoPopularity = 2;
 
-    SpotifyArtistItem artist = SpotifyArtist.builder().id(artistID).name(artistName).uri(artistUri).build();
+    SpotifyArtistItem artist =
+        SpotifyArtist.builder().id(artistID).name(artistName).uri(artistUri).build();
 
     List<SpotifyArtistItem> artists = List.of(artist);
 

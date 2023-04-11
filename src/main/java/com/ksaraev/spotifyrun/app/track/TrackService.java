@@ -1,6 +1,11 @@
 package com.ksaraev.spotifyrun.app.track;
 
+import com.ksaraev.spotifyrun.app.exception.AppAuthenticationException;
+import com.ksaraev.spotifyrun.app.exception.AppSpotifyServiceInteractionException;
 import com.ksaraev.spotifyrun.app.playlist.AppPlaylistConfig;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyRecommendationsServiceException;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyServiceAuthenticationException;
+import com.ksaraev.spotifyrun.spotify.exception.SpotifyUserTopTracksServiceException;
 import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.spotify.service.SpotifyRecommendationItemsService;
 import com.ksaraev.spotifyrun.spotify.service.SpotifyUserTopTrackItemsService;
@@ -28,27 +33,35 @@ public class TrackService implements AppTrackService {
 
   @Override
   public List<AppTrack> getTracks() {
-    List<SpotifyTrackItem> userTopTracks = spotifyTopTracksService.getUserTopTracks();
-    List<SpotifyTrackItem> recommendations =
-        userTopTracks.stream()
-            .map(
-                userTopTrack ->
-                    spotifyRecommendationsService.getRecommendations(
-                        List.of(userTopTrack), playlistConfig.getMusicFeatures()))
-            .flatMap(List::stream)
-            .sorted(Comparator.comparingInt(SpotifyTrackItem::getPopularity).reversed())
-            .distinct()
-            .limit(playlistConfig.getSize())
-            .collect(
-                Collectors.collectingAndThen(
-                    Collectors.toList(),
-                    list -> {
-                      Collections.shuffle(list);
-                      return list;
-                    }));
-    return recommendations.stream()
-        .filter(Objects::nonNull)
-        .map(appTrackMapper::mapToEntity)
-        .toList();
+    try {
+      List<SpotifyTrackItem> userTopTracks = spotifyTopTracksService.getUserTopTracks();
+      List<SpotifyTrackItem> recommendations =
+          userTopTracks.stream()
+              .map(
+                  userTopTrack ->
+                      spotifyRecommendationsService.getRecommendations(
+                          List.of(userTopTrack), playlistConfig.getMusicFeatures()))
+              .flatMap(List::stream)
+              .sorted(Comparator.comparingInt(SpotifyTrackItem::getPopularity).reversed())
+              .distinct()
+              .limit(playlistConfig.getSize())
+              .collect(
+                  Collectors.collectingAndThen(
+                      Collectors.toList(),
+                      list -> {
+                        Collections.shuffle(list);
+                        return list;
+                      }));
+      return recommendations.stream()
+          .filter(Objects::nonNull)
+          .map(appTrackMapper::mapToEntity)
+          .toList();
+    } catch (SpotifyServiceAuthenticationException e) {
+      throw new AppAuthenticationException(e);
+    } catch (SpotifyUserTopTracksServiceException | SpotifyRecommendationsServiceException e) {
+      throw new AppSpotifyServiceInteractionException(e);
+    } catch (RuntimeException e) {
+      throw new AppTrackServiceGetTracksException(e);
+    }
   }
 }

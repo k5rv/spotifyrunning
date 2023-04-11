@@ -2,8 +2,6 @@ package com.ksaraev.spotifyrun.client.feign.exception;
 
 import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseException;
 import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseIsNullException;
-import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyBadRequestException;
-import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;
@@ -59,7 +57,7 @@ class SpotifyClientFeignExceptionHandlerTest {
     // Then
     Assertions.assertThat(underTest.handle(response))
         .isExactlyInstanceOf(
-            Class.forName(SpotifyException.class.getPackage().getName() + "." + className));
+            Class.forName(SpotifyWebApiException.class.getPackage().getName() + "." + className));
   }
 
   @Test
@@ -78,7 +76,8 @@ class SpotifyClientFeignExceptionHandlerTest {
             .status(422)
             .build();
     // Then
-    Assertions.assertThat(underTest.handle(response)).isExactlyInstanceOf(SpotifyException.class);
+    Assertions.assertThat(underTest.handle(response))
+        .isExactlyInstanceOf(SpotifyWebApiException.class);
   }
 
   @ParameterizedTest
@@ -108,7 +107,7 @@ class SpotifyClientFeignExceptionHandlerTest {
     // Then
     Assertions.assertThat(underTest.handle(response))
         .isExactlyInstanceOf(
-            Class.forName(SpotifyException.class.getPackage().getName() + "." + className))
+            Class.forName(SpotifyWebApiException.class.getPackage().getName() + "." + className))
         .hasMessage(message);
   }
 
@@ -170,6 +169,6 @@ class SpotifyClientFeignExceptionHandlerTest {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.handle(null))
         .isExactlyInstanceOf(SpotifyClientReadingErrorResponseIsNullException.class)
-        .hasMessage(READING_ERROR_RESPONSE_IS_NULL);
+        .hasMessage(SpotifyClientReadingErrorResponseIsNullException.READING_ERROR_RESPONSE_IS_NULL);
   }
 }

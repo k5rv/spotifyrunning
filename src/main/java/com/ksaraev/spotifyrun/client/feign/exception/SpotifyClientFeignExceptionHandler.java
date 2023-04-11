@@ -3,7 +3,6 @@ package com.ksaraev.spotifyrun.client.feign.exception;
 import static com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseException.*;
 import static com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseIsNullException.*;
 
-import com.ksaraev.spotifyrun.client.feign.exception.http.*;
 import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseException;
 import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseIsNullException;
 import feign.Response;
@@ -57,7 +56,7 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
           return new SpotifyServiceUnavailableException(message);
         }
         default -> {
-          return new SpotifyException(message);
+          return new SpotifyWebApiException(message);
         }
       }
     } catch (IOException | RuntimeException e) {

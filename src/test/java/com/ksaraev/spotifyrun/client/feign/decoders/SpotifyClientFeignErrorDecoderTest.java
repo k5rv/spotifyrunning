@@ -10,7 +10,7 @@ import com.ksaraev.spotifyrun.client.SpotifyClient;
 import com.ksaraev.spotifyrun.client.exception.SpotifyClientDecodingErrorResponseIsNullException;
 import com.ksaraev.spotifyrun.client.feign.exception.FeignExceptionHandler;
 import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
-import com.ksaraev.spotifyrun.client.feign.exception.http.SpotifyException;
+import com.ksaraev.spotifyrun.client.feign.exception.SpotifyWebApiException;
 import feign.*;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -82,7 +82,7 @@ class SpotifyClientFeignErrorDecoderTest {
     given(feignExceptionHandlers.get(methodKey))
         .willReturn(new SpotifyClientFeignExceptionHandler());
     // Then
-    assertThat(underTest.decode(methodKey, response)).isInstanceOf(SpotifyException.class);
+    assertThat(underTest.decode(methodKey, response)).isInstanceOf(SpotifyWebApiException.class);
   }
 
   @Test
@@ -112,7 +112,7 @@ class SpotifyClientFeignErrorDecoderTest {
     // Then
     assertThatThrownBy(() -> underTest.decode("SpotifyClient#getSomething()", null))
         .isExactlyInstanceOf(SpotifyClientDecodingErrorResponseIsNullException.class)
-        .hasMessage(DECODING_ERROR_RESPONSE_IS_NULL);
+        .hasMessage(SpotifyClientDecodingErrorResponseIsNullException.DECODING_ERROR_RESPONSE_IS_NULL);
   }
 
   @Test

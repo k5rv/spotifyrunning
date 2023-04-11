@@ -1,12 +1,11 @@
 package com.ksaraev.spotifyrun.spotify.config;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
-public class GetSpotifyUserTopTracksRequestConfig
-    implements GetSpotifyUserTopItemsRequestConfig {
+public class GetSpotifyUserTopTracksRequestConfig implements GetSpotifyUserTopItemsRequestConfig {
   private Integer limit;
 
   private Integer offset;
