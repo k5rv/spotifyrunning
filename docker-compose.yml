@@ -1,4 +1,17 @@
 services:
+  spotifyrun:
+    image: k5rv/spotifyrun:latest
+    container_name: spotifyrun
+    ports:
+      - "8081:8081"
+    networks:
+      - spring
+      - postgres
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - postgres
+
   postgres:
     container_name: postgres
     image: postgres
