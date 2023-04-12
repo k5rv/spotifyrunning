@@ -241,7 +241,7 @@ public class PlaylistService implements AppPlaylistService {
       if (customTracksSize > 0)
         log.info(
             "Determining ["
-                + rejectedTracksSize
+                + customTracksSize
                 + "] tracks previously added outside of the app to Spotify playlist with id ["
                 + appPlaylistId
                 + "]");
@@ -281,8 +281,7 @@ public class PlaylistService implements AppPlaylistService {
           "Added ["
               + addTracksNumber
               + "] and removed ["
-              + removeTracksNumber + "] "
-              + PLAYLIST_WITH_ID
+              + removeTracksNumber + "] tracks for playlist with id ["
               + appPlaylistId
               + "] and  snapshotId ["
               + appPlaylist.getSnapshotId()
