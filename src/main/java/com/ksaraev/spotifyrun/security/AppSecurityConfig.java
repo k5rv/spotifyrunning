@@ -10,7 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@Profile(value = {"development", "production"})
+@Profile(value = {"development", "production", "docker"})
 public class AppSecurityConfig {
 
   @Bean
