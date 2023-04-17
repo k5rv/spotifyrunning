@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spotifyrun-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /oauth2/authorization/spotify
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /login/oauth2/code/spotify
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /api/v1/playlists
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
