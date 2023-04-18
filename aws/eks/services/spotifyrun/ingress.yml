@@ -6,32 +6,41 @@ metadata:
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+#    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+#    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0428a6d3cab5a0832
 spec:
   rules:
     - http:
         paths:
-          - path: /
+          - path: /app
+            pathType: Prefix
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /app/oauth2/authorization/spotify
             pathType: Exact
             backend:
               service:
                 name: spotifyrun
                 port:
                   number: 80
-          - path: /oauth2/authorization/spotify
+          - path: /app/login/oauth2/code/spotify
             pathType: Exact
             backend:
               service:
                 name: spotifyrun
                 port:
                   number: 80
-          - path: /login/oauth2/code/spotify
+          - path: /app/api/v1/playlists
             pathType: Exact
             backend:
               service:
                 name: spotifyrun
                 port:
                   number: 80
-          - path: /api/v1/playlists
+          - path: /app/actuator/health
             pathType: Exact
             backend:
               service:
