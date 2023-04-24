@@ -2,12 +2,32 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
-  name: spotifyrun-cluster
+  name: spotifyrun
   region: eu-north-1
   version: "1.25"
 managedNodeGroups:
-  - name: primary
-    instanceType: t2.small
+  - name: spotifyrun
     minSize: 1
     maxSize: 2
-    spot: true
+    desiredCapacity: 2
+    instanceType: t3.small
+    volumeSize: 5
+    privateNetworking: true
+vpc:
+  subnets:
+    private:
+      eu-north-1a:
+        id: "subnet-09f3f1da1eae43821"
+      eu-north-1b:
+        id: "subnet-03602ceb80ce55996"
+      eu-north-1c:
+        id: "subnet-0154e8fe765f4bb06"
+iam:
+  fargatePodExecutionRoleARN: arn:aws:iam::690837617850:role/AmazonEKSFargatePodExecutionRole
+fargateProfiles:
+  - name: spotifyrun
+    fargatePodExecutionRoleARN: arn:aws:iam::690837617850:role/AmazonEKSFargatePodExecutionRole
+    subnets:
+     - "subnet-09f3f1da1eae43821"
+     - "subnet-03602ceb80ce55996"
+     - "subnet-0154e8fe765f4bb06"
