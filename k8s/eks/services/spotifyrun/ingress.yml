@@ -4,10 +4,13 @@ metadata:
   name: spotifyrun-ingress
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/scheme: internet-facing
+#    must be internal
+#    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/scheme: internal
+#    service.beta.kubernetes.io/aws-load-balancer-eip-allocations: eipalloc-0a24cdd9f92c72f3c, eipalloc-01dc7885f2c8e4de5, eipalloc-0564b03aa8a624012
 spec:
+  ingressClassName: alb
   rules:
     - http:
         paths:
