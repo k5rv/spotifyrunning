@@ -2,6 +2,35 @@
 #
 # Creates AWS resources: VPC, internet gateway, public and private subnets, natgateway, route tables, security group
 
+region="eu-north-1"
+cluster_name="spotifyrun"
+vpc_name="spotifyrun"
+vpc_cidr_block="10.0.0.0/16"
+igw_name="spotifyrun"
+ngw_a_name="public-eu-north-1a"
+ngw_b_name="public-eu-north-1b"
+availability_zone_a="eu-north-1a"
+availability_zone_b="eu-north-1b"
+subnet_public_a_name="public-eu-north-1a"
+subnet_public_b_name="public-eu-north-1b"
+subnet_private_a_name="private-eu-north-1a"
+subnet_private_b_name="private-eu-north-1b"
+subnet_public_a_cidr="10.0.1.0/24"
+subnet_public_b_cidr="10.0.2.0/24"
+subnet_private_a_cidr="10.0.3.0/24"
+subnet_private_b_cidr="10.0.4.0/24"
+route_table_public_name="public-eu-north-1"
+route_table_private_a_name="private-eu-north-1a"
+route_table_private_b_name="private-eu-north-1b"
+eip_a_name="eu-north-1a"
+eip_b_name="eu-north-1b"
+eip_nlb_a_name="eu-north-1a-nlb"
+eip_nlb_b_name="eu-north-1b-nlb"
+eip_network_border_group="eu-north-1"
+sg_name="spotifyrun"
+subnet_public_elb_tag="{Key=kubernetes.io/role/elb,Value=1}"
+subnet_private_elb_tag="{Key=kubernetes.io/role/internal-elb,Value=1}"
+
 describe_flags() {
   echo "Available flags:"
   echo "-d: delete VPC and its dependencies"
@@ -22,7 +51,7 @@ create_vpc() {
   echo "$vpc_id"
 }
 
-enable_dns_hostname() {
+enable_dns_hostnames() {
   local vpc_id="$1"
   aws ec2 modify-vpc-attribute --vpc-id "$vpc_id" --enable-dns-hostnames "{\"Value\":true}"
 }
@@ -75,7 +104,7 @@ detach_internet_gateway() {
   aws ec2 detach-internet-gateway --internet-gateway-id "$igw_id" --vpc-id "$vpc_id"
 }
 
-allocate_eip() {
+create_eip() {
   local eip_name="$1"
   local network_border_group="$2"
   eip_id=$(aws ec2 allocate-address \
@@ -95,7 +124,7 @@ get_eip_id() {
   echo "$eip_id"
 }
 
-release_eip_id() {
+delete_eip() {
   local eip_id=$1
   aws ec2 release-address --allocation-id "$eip_id"
 }
@@ -110,7 +139,7 @@ create_subnet() {
     --vpc-id "$vpc_id" \
     --cidr-block "$cidr" \
     --availability-zone "$availability_zone" \
-    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$subnet_name}, $elb_tag]" \
+    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$subnet_name}, $elb_tag, {Key=kubernetes.io/cluster/$cluster_name,Value=owned}]" \
     --query "Subnet.{SubnetId:SubnetId}" \
     --output text)
   echo "$subnet_id"
@@ -130,9 +159,15 @@ delete_subnet() {
   aws ec2 delete-subnet --subnet-id="$subnet_id"
 }
 
-enable_subnet_public_ipv4_address_auto_assign() {
+enable_public_ipv4_address_auto_assign() {
   local subnet_id="$1"
   aws ec2 modify-subnet-attribute --subnet-id "$subnet_id" --map-public-ip-on-launch "{\"Value\":true}"
+}
+
+enable_resource_name_dns_a_record() {
+  local subnet_id="$1"
+  aws ec2 modify-subnet-attribute --subnet-id "$subnet_id" \
+    --enable-resource-name-dns-a-record-on-launch "{\"Value\":true}"
 }
 
 create_route_table() {
@@ -200,7 +235,7 @@ get_route_table_association_id() {
   local subnet_id="$2"
   association_id=$(aws ec2 describe-route-tables \
     --filter "Name=association.route-table-id,Values=$route_table_id" "Name=association.subnet-id,Values=$subnet_id" \
-    --query "RouteTables[].Associations[].RouteTableAssociationId" \
+    --query "RouteTables[].Associations[?SubnetId=='$subnet_id'].RouteTableAssociationId" \
     --output text)
   echo "$association_id"
 }
@@ -212,13 +247,17 @@ delete_route_table_association() {
 
 poll_natgateway_state() {
   local natgateway_id="$1"
-  local state="$2"
-  echo "Waiting for NGW $natgateway_id to become '$state' current state is '$(get_natgateway_state "$natgateway_id")'"
-  while [ "$natgateway_state" != "$state" ]; do
-    echo "..."
-    natgateway_state=$(get_natgateway_state "$natgateway_id")
-    sleep 5
-  done
+  local expected="$2"
+  local actual
+  actual=$(get_natgateway_state "$natgateway_id")
+  if [[ "$actual" != "$expected" ]]; then
+    echo "Waiting for NGW $natgateway_id to become $expected current state is $actual"
+    while [ "$actual" != "$expected" ]; do
+      echo "..."
+      sleep 5
+      actual=$(get_natgateway_state "$natgateway_id")
+    done
+  fi
 }
 
 create_natgateway() {
@@ -264,7 +303,7 @@ create_security_group() {
   sg_id=$(aws ec2 create-security-group --group-name "$sg_name" \
     --description "cluster security group" \
     --vpc-id "$vpc_id" \
-    --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=$sg_name}]" \
+    --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=$sg_name}, {Key=kubernetes.io/cluster/$cluster_name,Value=owned}]" \
     --query "{GroupId:GroupId}" \
     --output text)
   echo "$sg_id"
@@ -295,41 +334,22 @@ create_rule() {
     --cidr "$cidr" >/dev/null
 }
 
-while getopts "tcd" flag; do
+while getopts "cd" flag; do
   case "${flag}" in
-  t) ;;
-
   c)
-    cluster_name="spotifyrun"
-    region="eu-north-1"
-    vpc_name="spotifyrun"
-    igw_name="spotifyrun"
-    vpc_cidr_block="10.0.0.0/16"
-    subnet_public_a_name="public-eu-north-1a"
-    subnet_public_a_cidr="10.0.1.0/24"
-    subnet_private_a_name="private-eu-north-1a"
-    subnet_private_a_cidr="10.0.3.0/24"
-    availability_zone_a="eu-north-1a"
-    route_table_public_name="public-eu-north-1"
-    route_table_private_a_name="private-eu-north-1a"
-    eip_network_border_group="eu-north-1"
-    eip_a_name="eu-north-1a"
-    ngw_a_name="public-eu-north-1a"
-    sg_name="spotifyrun"
-
     # Create VPC
     echo "Creating VPC $vpc_name in region $region with CIDR $vpc_cidr_block for cluster $cluster_name"
-    vpc_id=$(create_vpc $vpc_name $cluster_name $region $vpc_cidr_block)
+    vpc_id=$(create_vpc "$vpc_name" "$cluster_name" "$region" $vpc_cidr_block)
     echo "Created VPC $vpc_id"
 
     # Enable VPC DNS hostname
     echo "Enabling DNS hostnames for $vpc_id"
-    enable_dns_hostname "$vpc_id"
+    enable_dns_hostnames "$vpc_id"
     echo "Enabled DNS hostnames for $vpc_id"
 
     # Create IGW
     echo "Creating IGW $igw_name in region $region"
-    igw_id=$(create_internet_gateway $igw_name $region)
+    igw_id=$(create_internet_gateway "$igw_name" "$region")
     echo "Created IGW $igw_id"
 
     # Attach IGW to VPC
@@ -337,24 +357,45 @@ while getopts "tcd" flag; do
     attach_internet_gateway "$vpc_id" "$igw_id"
     echo "Attached IGW $igw_id to VPC $vpc_id"
 
-    # Creating subnets
-    subnet_public_elb_tag="{Key=kubernetes.io/role/elb,Value=1}"
-    subnet_private_elb_tag="{Key=kubernetes.io/role/internal-elb,Value=1}"
-
-    # Create public subnet a
+    # Create public subnet A
     echo "Creating subnet $subnet_public_a_name in availability zone $availability_zone_a with CIDR $subnet_public_a_cidr"
     subnet_public_a_id=$(create_subnet "$subnet_public_a_name" "$subnet_public_a_cidr" "$availability_zone_a" "$vpc_id" "$subnet_public_elb_tag")
     echo "Created subnet $subnet_public_a_id"
 
-    # Create private subnet a
+    # Create public subnet B
+    echo "Creating subnet $subnet_public_b_name in availability zone $availability_zone_b with CIDR $subnet_public_b_cidr"
+    subnet_public_b_id=$(create_subnet "$subnet_public_b_name" "$subnet_public_b_cidr" "$availability_zone_b" "$vpc_id" "$subnet_public_elb_tag")
+    echo "Created subnet $subnet_public_b_id"
+
+    # Create private subnet A
     echo "Creating subnet $subnet_private_a_name in availability zone $availability_zone_a with CIDR $subnet_private_a_cidr"
     subnet_private_a_id=$(create_subnet "$subnet_private_a_name" "$subnet_private_a_cidr" "$availability_zone_a" "$vpc_id" "$subnet_private_elb_tag")
     echo "Created subnet $subnet_private_a_id"
 
-    # Enable public subnet a IPv4 auto-assigning
+    # Create private subnet B
+    echo "Creating subnet $subnet_private_b_name in availability zone $availability_zone_b with CIDR $subnet_private_b_cidr"
+    subnet_private_b_id=$(create_subnet "$subnet_private_b_name" "$subnet_private_b_cidr" "$availability_zone_b" "$vpc_id" "$subnet_private_elb_tag")
+    echo "Created subnet $subnet_private_b_id"
+
+    # Enable public subnet A IPv4 auto-assigning
     echo "Enabling public IPv4 address auto-assigning for $subnet_public_a_id"
-    enable_subnet_public_ipv4_address_auto_assign "$subnet_public_a_id"
+    enable_public_ipv4_address_auto_assign "$subnet_public_a_id"
     echo "Enabled public IPv4 address auto-assigning for $subnet_public_a_id"
+
+#    # Enable public subnet A resource name DNS record
+#    echo "Enabling public subnet A resource name DNS record for $subnet_public_a_id"
+#    enable_resource_name_dns_a_record "$subnet_public_a_id"
+#    echo "Enabled public IPv4 address auto-assigning for $subnet_public_a_id"
+
+    # Enable public subnet B IPv4 auto-assigning
+    echo "Enabling public IPv4 address auto-assigning for $subnet_public_b_id"
+    enable_public_ipv4_address_auto_assign "$subnet_public_b_id"
+    echo "Enabled public IPv4 address auto-assigning for $subnet_public_b_id"
+
+#    # Enable public subnet B resource name DNS record
+#    echo "Enabling public subnet A resource name DNS record for $subnet_public_b_id"
+#    enable_resource_name_dns_a_record "$subnet_public_b_id"
+#    echo "Enabled public IPv4 address auto-assigning for $subnet_public_b_id"
 
     # Create route table public
     echo "Creating route table $route_table_public_name"
@@ -366,36 +407,81 @@ while getopts "tcd" flag; do
     create_internet_gateway_route "$route_table_public_id" "$igw_id" "0.0.0.0/0"
     echo "Created route"
 
-    # Create association between public route table and subnet a
+    # Create association between public route table and subnet A
     echo "Creating association between route table $route_table_public_id and subnet $subnet_public_a_id"
     route_association_public_a_id=$(create_route_table_association "$route_table_public_id" "$subnet_public_a_id")
     echo "Created association $route_association_public_a_id"
 
-    # Allocate EIP address
+    # Create association between public route table and subnet B
+    echo "Creating association between route table $route_table_public_id and subnet $subnet_public_b_id"
+    route_association_public_b_id=$(create_route_table_association "$route_table_public_id" "$subnet_public_b_id")
+    echo "Created association $route_association_public_b_id"
+
+    # Allocate EIP A address
     echo "Allocating EIP address"
-    eip_a_id=$(allocate_eip $eip_a_name $eip_network_border_group)
+    eip_a_id=$(create_eip $eip_a_name $eip_network_border_group)
     echo "Allocated EIP $eip_a_id"
 
-    # Create NGW
+    # Allocate EIP B address
+    echo "Allocating EIP address"
+    eip_b_id=$(create_eip $eip_b_name $eip_network_border_group)
+    echo "Allocated EIP $eip_b_id"
+
+    # Allocate EIP NLB address
+    echo "Allocating EIP address"
+    eip_nlb_a_id=$(create_eip $eip_nlb_a_name $eip_network_border_group)
+    echo "Allocated EIP $eip_nlb_a_id"
+
+    # Allocate EIP NLB address
+    echo "Allocating EIP address"
+    eip_nlb_b_id=$(create_eip $eip_nlb_b_name $eip_network_border_group)
+    echo "Allocated EIP $eip_nlb_b_id"
+
+    # Create NGW A
     echo "Creating NGW $ngw_a_name"
     ngw_a_id=$(create_natgateway "$ngw_a_name" "$subnet_public_a_id" "$eip_a_id")
+
+    # Create NGW B
+    echo "Creating NGW $ngw_b_name"
+    ngw_b_id=$(create_natgateway "$ngw_b_name" "$subnet_public_b_id" "$eip_b_id")
+
+    # Waiting for NGW A
     poll_natgateway_state "$ngw_a_id" "available"
     echo "Created NGW $ngw_a_id"
 
-    # Create route table private a
+    # Waiting for NGW B
+    poll_natgateway_state "$ngw_b_id" "available"
+    echo "Created NGW $ngw_b_id"
+
+    # Create route table private A
     echo "Creating route table $route_table_private_a_name"
     route_table_private_a_id=$(create_route_table $route_table_private_a_name "$vpc_id")
     echo "Created route table $route_table_private_a_id"
 
-    # Create route from any IP address to NGW
+    # Create route from any IP address to NGW in route table A
     echo "Creating route from any IPv4 address to NGW $ngw_a_id in route table $route_table_private_a_id"
     create_natgateway_route "$route_table_private_a_id" "$ngw_a_id" "0.0.0.0/0"
     echo "Created route"
 
-    # Create association between private route table a and private subnet a
+    # Create association between private route table A and private subnet A
     echo "Creating association between route table $route_table_private_a_id and subnet $subnet_private_a_name"
     route_association_private_a_id=$(create_route_table_association "$route_table_private_a_id" "$subnet_private_a_id")
     echo "Created association $route_association_private_a_id"
+
+    # Create route table private B
+    echo "Creating route table $route_table_private_b_name"
+    route_table_private_b_id=$(create_route_table $route_table_private_b_name "$vpc_id")
+    echo "Created route table $route_table_private_b_id"
+
+    # Create route from any IP address to NGW in route table B
+    echo "Creating route from any IPv4 address to NGW $ngw_b_id in route table $route_table_private_b_id"
+    create_natgateway_route "$route_table_private_b_id" "$ngw_b_id" "0.0.0.0/0"
+    echo "Created route"
+
+    # Create association between private route table B and private subnet B
+    echo "Creating association between route table $route_table_private_b_id and subnet $subnet_private_b_name"
+    route_association_private_b_id=$(create_route_table_association "$route_table_private_b_id" "$subnet_private_b_id")
+    echo "Created association $route_association_private_b_id"
 
     # Create security group
     echo "Creating security group $sg_name"
@@ -403,44 +489,37 @@ while getopts "tcd" flag; do
     echo "Created security group $sg_id"
 
     # Create security group rules
-    echo "Creating rule for security group $sg_id to allow traffic on tcp port 80"
+    echo "Creating rule for security group $sg_id to allow HTTP traffic"
     create_rule "$sg_id" "tcp" "80" "0.0.0.0/0"
     echo "Created rule"
 
-    echo "Creating rule for security $sg_name to allow traffic on tcp port 443"
+    echo "Creating rule for security group $sg_id to allow HTTPS traffic"
     create_rule "$sg_id" "tcp" "443" "0.0.0.0/0"
     echo "Created rule"
 
-    echo "Creating rule for security $sg_name to allow traffic on tcp port 22"
+    echo "Creating rule for security group $sg_id to allow SSH traffic"
     create_rule "$sg_id" "tcp" "22" "0.0.0.0/0"
     echo "Created rule"
 
-    echo "Creating rule for security $sg_name to allow ping ip"
+    echo "Creating rule for security group $sg_id to allow Postgresql"
+    create_rule "$sg_id" "tcp" "5432" "0.0.0.0/0"
+    echo "Created rule"
+
+    echo "Creating rule for security group $sg_id to allow ping ip"
     create_rule "$sg_id" "icmp" "all" "0.0.0.0/0"
     echo "Created rule"
-    ;;
-  d)
-    cluster_name="spotifyrun"
-    region="eu-north-1"
-    vpc_name="spotifyrun"
-    igw_name="spotifyrun"
-    vpc_cidr_block="10.0.0.0/16"
-    subnet_public_a_name="public-eu-north-1a"
-    subnet_private_a_name="private-eu-north-1a"
-    route_table_public_name="public-eu-north-1"
-    route_table_private_a_name="private-eu-north-1a"
-    eip_a_name="eu-north-1a"
-    ngw_a_name="public-eu-north-1a"
-    sg_name="spotifyrun"
 
+    ;;
+
+  d)
     # Find VPC
     echo "Looking for VPC $vpc_name"
-    vpc_id=$(get_vpc_id $vpc_name)
+    vpc_id=$(get_vpc_id "$vpc_name")
     echo "Found VPC $vpc_id"
 
     # Find IGW
     echo "Looking for IGW $vpc_name"
-    igw_id=$(get_internet_gateway_id $igw_name)
+    igw_id=$(get_internet_gateway_id "$igw_name")
     echo "Found IGW $igw_id"
 
     # Find public route table
@@ -453,12 +532,12 @@ while getopts "tcd" flag; do
     delete_route "$route_table_public_id" "0.0.0.0/0"
     echo "Deleted route"
 
-    # Find public subnet a
+    # Find public subnet A
     echo "Looking for subnet $subnet_public_a_name"
     subnet_public_a_id=$(get_subnet_id $subnet_public_a_name)
     echo "Found subnet $subnet_public_a_id"
 
-    # Find public subnet a and public route table association
+    # Find public subnet A and public route table association
     echo "Looking for association between subnet $subnet_public_a_id and route table $route_table_public_id"
     route_association_public_a_id=$(get_route_table_association_id "$route_table_public_id" "$subnet_public_a_id")
     echo "Found association $route_association_public_a_id"
@@ -468,61 +547,131 @@ while getopts "tcd" flag; do
     delete_route_table_association "$route_association_public_a_id"
     echo "Deleted association $route_association_public_a_id"
 
+    # Find public subnet B
+    echo "Looking for subnet $subnet_public_b_name"
+    subnet_public_b_id=$(get_subnet_id $subnet_public_b_name)
+    echo "Found subnet $subnet_public_b_id"
+
+    # Find public subnet B and public route table association
+    echo "Looking for association between subnet $subnet_public_b_id and route table $route_table_public_id"
+    route_association_public_b_id=$(get_route_table_association_id "$route_table_public_id" "$subnet_public_b_id")
+    echo "Found association $route_association_public_b_id"
+
+    # Delete subnet B and public route table association
+    echo "Deleting association $route_association_public_b_id"
+    delete_route_table_association "$route_association_public_b_id"
+    echo "Deleted association $route_association_public_b_id"
+
     # Delete public route table
     echo "Deleting route table $route_table_public_id"
     delete_route_table "$route_table_public_id"
     echo "Deleted route table $route_table_public_id"
 
-    # Find NGW
+    # Find NGW A
     echo "Looking for NGW $ngw_a_name"
     ngw_a_id=$(get_natgateway_id "$ngw_a_name")
     echo "Found NGW $ngw_a_id"
 
-    # Find private route table
+    # Find NGW B
+    echo "Looking for NGW $ngw_b_name"
+    ngw_b_id=$(get_natgateway_id "$ngw_b_name")
+    echo "Found NGW $ngw_b_id"
+
+    # Find private route table A
     echo "Looking for route table $route_table_private_a_name"
     route_table_private_a_id=$(get_route_table_id "$vpc_id" $route_table_private_a_name)
     echo "Found route table $route_table_private_a_id"
 
-    # Delete route to NGW
+    # Delete route to NGW for route table private A
     echo "Deleting route from any IPv4 address to NGW $ngw_a_id in route table $route_table_private_a_id"
     delete_route "$route_table_private_a_id" "0.0.0.0/0"
     echo "Deleted route"
 
-    # Find private subnet a
+    # Find private subnet A
     echo "Looking for subnet $subnet_private_a_name"
     subnet_private_a_id=$(get_subnet_id $subnet_private_a_name)
     echo "Found subnet $subnet_private_a_id"
 
-    # Find private subnet a and private route a table association
+    # Find private subnet A and private route A table association
     echo "Looking for association between subnet $subnet_private_a_id and route table $route_table_private_a_id"
     route_association_private_a_id=$(get_route_table_association_id "$route_table_private_a_id" "$subnet_private_a_id")
     echo "Found association $route_association_private_a_id"
 
-    # Delete private subnet a and private route table association
+    # Delete private subnet A and private route A table association
     echo "Deleting association $route_association_private_a_id"
     delete_route_table_association "$route_association_private_a_id"
     echo "Deleted association $route_association_private_a_id"
 
-    # Delete private route a table
+    # Delete private route A table
     echo "Deleting route table $route_table_private_a_id"
     delete_route_table "$route_table_private_a_id"
     echo "Deleted route table $route_table_private_a_id"
 
-    # Delete NGW
+    # Find private route table B
+    echo "Looking for route table $route_table_private_b_name"
+    route_table_private_b_id=$(get_route_table_id "$vpc_id" $route_table_private_b_name)
+    echo "Found route table $route_table_private_b_id"
+
+    # Delete route to NGW for route table private B
+    echo "Deleting route from any IPv4 address to NGW $ngw_b_id in route table $route_table_private_b_id"
+    delete_route "$route_table_private_b_id" "0.0.0.0/0"
+    echo "Deleted route"
+
+    # Find private subnet B
+    echo "Looking for subnet $subnet_private_b_name"
+    subnet_private_b_id=$(get_subnet_id $subnet_private_b_name)
+    echo "Found subnet $subnet_private_b_id"
+
+    # Find private subnet B and private route B table association
+    echo "Looking for association between subnet $subnet_private_b_id and route table $route_table_private_b_id"
+    route_association_private_b_id=$(get_route_table_association_id "$route_table_private_b_id" "$subnet_private_b_id")
+    echo "Found association $route_association_private_b_id"
+
+    # Delete private subnet B and private route B table association
+    echo "Deleting association $route_association_private_b_id"
+    delete_route_table_association "$route_association_private_b_id"
+    echo "Deleted association $route_association_private_b_id"
+
+    # Delete private route B table
+    echo "Deleting route table $route_table_private_b_id"
+    delete_route_table "$route_table_private_b_id"
+    echo "Deleted route table $route_table_private_b_id"
+
+    # Delete NGW A
     echo "Deleting NGW $ngw_a_id"
     delete_natgateway "$ngw_a_id"
+
+    # Delete NGW B
+    echo "Deleting NGW $ngw_b_id"
+    delete_natgateway "$ngw_b_id"
+
+    # Waiting for NGW A
     poll_natgateway_state "$ngw_a_id" "deleted"
     echo "Deleted NGW $ngw_a_id"
 
-    # Delete public subnet a
+    # Waiting for NGW B
+    poll_natgateway_state "$ngw_b_id" "deleted"
+    echo "Deleted NGW $ngw_b_id"
+
+    # Delete public subnet A
     echo "Deleting subnet $subnet_public_a_id"
     delete_subnet "$subnet_public_a_id"
     echo "Deleted subnet $subnet_public_a_id"
 
-    # Delete private subnet a
+    # Delete public subnet B
+    echo "Deleting subnet $subnet_public_b_id"
+    delete_subnet "$subnet_public_b_id"
+    echo "Deleted subnet $subnet_public_b_id"
+
+    # Delete private subnet A
     echo "Deleting subnet $subnet_private_a_id"
     delete_subnet "$subnet_private_a_id"
     echo "Deleted subnet $subnet_private_a_id"
+
+    # Delete private subnet B
+    echo "Deleting subnet $subnet_private_b_id"
+    delete_subnet "$subnet_private_b_id"
+    echo "Deleted subnet $subnet_private_b_id"
 
     # Detach IGW
     echo "Detaching IGW $igw_id from VPC $vpc_id"
@@ -536,7 +685,7 @@ while getopts "tcd" flag; do
 
     # Find security group
     echo "Looking for security group $sg_name"
-    sg_id=$(get_security_group_id $sg_name)
+    sg_id=$(get_security_group_id "$sg_name")
     echo "Found security group $sg_id"
 
     # Delete security group
@@ -549,15 +698,45 @@ while getopts "tcd" flag; do
     delete_vpc "$vpc_id"
     echo "Deleted VPC $vpc_id"
 
-    # Find EIP
+    # Find EIP A
     echo "Looking for EIP $eip_a_name"
     eip_a_id=$(get_eip_id $eip_a_name)
     echo "Found EIP $eip_a_id"
 
-    # Release EIP
+    # Release EIP A
     echo "Releasing EIP $eip_a_id"
-    release_eip_id "$eip_a_id"
+    delete_eip "$eip_a_id"
     echo "Released EIP $eip_a_id"
+
+    # Find EIP B
+    echo "Looking for EIP $eip_b_name"
+    eip_b_id=$(get_eip_id $eip_b_name)
+    echo "Found EIP $eip_b_id"
+
+    # Release EIP B
+    echo "Releasing EIP $eip_b_id"
+    delete_eip "$eip_b_id"
+    echo "Released EIP $eip_b_id"
+
+    # Find EIP NLB
+    echo "Looking for EIP $eip_nlb_a_name"
+    eip_nlb_a_id=$(get_eip_id $eip_nlb_a_name)
+    echo "Found EIP $eip_nlb_a_id"
+
+    # Release EIP B
+    echo "Releasing EIP $eip_nlb_a_id"
+    delete_eip "$eip_nlb_a_id"
+    echo "Released EIP $eip_nlb_a_id"
+
+    # Find EIP NLB
+    echo "Looking for EIP $eip_nlb_b_name"
+    eip_nlb_b_id=$(get_eip_id $eip_nlb_b_name)
+    echo "Found EIP $eip_nlb_b_id"
+
+    # Release EIP B
+    echo "Releasing EIP $eip_nlb_b_id"
+    delete_eip "$eip_nlb_b_id"
+    echo "Released EIP $eip_nlb_b_id"
 
     ;;
   \?)
