@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 # Creates AWS resources: VPC, internet gateway, public and private subnets, natgateway, route tables, security group
+source ./utils.sh
 
 region="eu-north-1"
 cluster_name="spotifyrun"
@@ -24,8 +25,6 @@ route_table_private_a_name="private-eu-north-1a"
 route_table_private_b_name="private-eu-north-1b"
 eip_a_name="eu-north-1a"
 eip_b_name="eu-north-1b"
-eip_nlb_a_name="eu-north-1a-nlb"
-eip_nlb_b_name="eu-north-1b-nlb"
 eip_network_border_group="eu-north-1"
 sg_name="spotifyrun"
 subnet_public_elb_tag="{Key=kubernetes.io/role/elb,Value=1}"
@@ -35,303 +34,6 @@ describe_flags() {
   echo "Available flags:"
   echo "-d: delete VPC and its dependencies"
   echo "-c: create VPC and its dependencies"
-}
-
-create_vpc() {
-  local vpc_name="$1"
-  local cluster_name="$2"
-  local region="$3"
-  local cidr_block="$4"
-  vpc_id=$(aws ec2 create-vpc \
-    --cidr-block "$cidr_block" \
-    --region "$region" \
-    --tag-specification "ResourceType=vpc,Tags=[{Key=Name,Value=$vpc_name},{Key=kubernetes.io/cluster/$cluster_name,Value=owned}]" \
-    --query "Vpc.{VpcId:VpcId}" \
-    --output text)
-  echo "$vpc_id"
-}
-
-enable_dns_hostnames() {
-  local vpc_id="$1"
-  aws ec2 modify-vpc-attribute --vpc-id "$vpc_id" --enable-dns-hostnames "{\"Value\":true}"
-}
-
-get_vpc_id() {
-  local vpc_name=$1
-  vpc_id=$(aws ec2 describe-vpcs --filter Name=tag:Name,Values="$vpc_name" --query "Vpcs[].VpcId" --output text)
-  echo "$vpc_id"
-}
-
-delete_vpc() {
-  local vpc_id="$1"
-  aws ec2 delete-vpc --vpc-id "$vpc_id"
-}
-
-create_internet_gateway() {
-  igw_name="$1"
-  region="$2"
-  igw_id=$(aws ec2 create-internet-gateway \
-    --region "$region" \
-    --tag-specifications "ResourceType=internet-gateway,Tags=[{Key=Name,Value=$igw_name}]" \
-    --query "InternetGateway.{InternetGatewayId:InternetGatewayId}" \
-    --output text)
-  echo "$igw_id"
-}
-
-get_internet_gateway_id() {
-  local project="$1"
-  igw_id=$(aws ec2 describe-internet-gateways \
-    --filter "Name=tag:Name,Values=$project" \
-    --query "InternetGateways[].InternetGatewayId" \
-    --output text)
-  echo "$igw_id"
-}
-
-delete_internet_gateway() {
-  local igw_id="$1"
-  aws ec2 delete-internet-gateway --internet-gateway-id "$igw_id"
-}
-
-attach_internet_gateway() {
-  local vpc_id="$1"
-  local igw_id="$2"
-  aws ec2 attach-internet-gateway --internet-gateway-id "$igw_id" --vpc-id "$vpc_id"
-}
-
-detach_internet_gateway() {
-  local vpc_id="$1"
-  local igw_id="$2"
-  aws ec2 detach-internet-gateway --internet-gateway-id "$igw_id" --vpc-id "$vpc_id"
-}
-
-create_eip() {
-  local eip_name="$1"
-  local network_border_group="$2"
-  eip_id=$(aws ec2 allocate-address \
-    --network-border-group "$network_border_group" \
-    --tag-specifications "ResourceType=elastic-ip,Tags=[{Key=Name,Value=$eip_name}]" \
-    --query '{AllocationId:AllocationId}' \
-    --output text)
-  echo "$eip_id"
-}
-
-get_eip_id() {
-  local eip_name="$1"
-  eip_id=$(aws ec2 describe-addresses \
-    --filter "Name=tag:Name,Values=$eip_name" \
-    --query Addresses[].AllocationId \
-    --output text)
-  echo "$eip_id"
-}
-
-delete_eip() {
-  local eip_id=$1
-  aws ec2 release-address --allocation-id "$eip_id"
-}
-
-create_subnet() {
-  subnet_name="$1"
-  cidr="$2"
-  availability_zone="$3"
-  vpc_id="$4"
-  elb_tag="$5"
-  subnet_id=$(aws ec2 create-subnet \
-    --vpc-id "$vpc_id" \
-    --cidr-block "$cidr" \
-    --availability-zone "$availability_zone" \
-    --tag-specifications "ResourceType=subnet,Tags=[{Key=Name,Value=$subnet_name}, $elb_tag, {Key=kubernetes.io/cluster/$cluster_name,Value=owned}]" \
-    --query "Subnet.{SubnetId:SubnetId}" \
-    --output text)
-  echo "$subnet_id"
-}
-
-get_subnet_id() {
-  local subnet_name="$1"
-  subnet_id=$(aws ec2 describe-subnets \
-    --filter "Name=tag:Name,Values=$subnet_name" \
-    --query 'Subnets[].SubnetId' \
-    --output text)
-  echo "$subnet_id"
-}
-
-delete_subnet() {
-  local subnet_id="$1"
-  aws ec2 delete-subnet --subnet-id="$subnet_id"
-}
-
-enable_public_ipv4_address_auto_assign() {
-  local subnet_id="$1"
-  aws ec2 modify-subnet-attribute --subnet-id "$subnet_id" --map-public-ip-on-launch "{\"Value\":true}"
-}
-
-enable_resource_name_dns_a_record() {
-  local subnet_id="$1"
-  aws ec2 modify-subnet-attribute --subnet-id "$subnet_id" \
-    --enable-resource-name-dns-a-record-on-launch "{\"Value\":true}"
-}
-
-create_route_table() {
-  local route_table_name="$1"
-  local vpc_id="$2"
-  route_table_id=$(aws ec2 create-route-table --vpc-id "$vpc_id" \
-    --tag-specifications "ResourceType=route-table,Tags=[{Key=Name,Value=$route_table_name}]" \
-    --query "RouteTable.{RouteTableId:RouteTableId}" \
-    --output text)
-  echo "$route_table_id"
-}
-
-get_route_table_id() {
-  local vpc_id="$1"
-  local route_table_name="$2"
-  route_table_id=$(aws ec2 describe-route-tables \
-    --filter "Name=vpc-id,Values=$vpc_id" "Name=tag:Name,Values=$route_table_name" \
-    --query "RouteTables[].RouteTableId" \
-    --output text)
-  echo "$route_table_id"
-}
-
-delete_route_table() {
-  local route_table_id="$1"
-  aws ec2 delete-route-table --route-table-id "$route_table_id"
-}
-
-create_internet_gateway_route() {
-  local route_table_id="$1"
-  local igw_id="$2"
-  local destination_cidr_block="$3"
-  aws ec2 create-route --route-table-id "$route_table_id" \
-    --gateway-id "$igw_id" \
-    --destination-cidr-block "$destination_cidr_block" >/dev/null
-}
-
-create_natgateway_route() {
-  local route_table_id="$1"
-  local ngw_id="$2"
-  local destination_cidr_block="$3"
-  aws ec2 create-route --route-table-id "$route_table_id" \
-    --nat-gateway-id "$ngw_id" \
-    --destination-cidr-block "$destination_cidr_block" >/dev/null
-}
-
-delete_route() {
-  local route_table_id="$1"
-  local destination_cidr_block="$2"
-  aws ec2 delete-route --route-table-id "$route_table_id" --destination-cidr-block "$destination_cidr_block"
-}
-
-create_route_table_association() {
-  local route_table_id="$1"
-  local subnet_id="$2"
-  association_id=$(aws ec2 associate-route-table \
-    --route-table-id "$route_table_id" \
-    --subnet-id "$subnet_id" \
-    --query "{AssociationId:AssociationId}" \
-    --output text)
-  echo "$association_id"
-}
-
-get_route_table_association_id() {
-  local route_table_id="$1"
-  local subnet_id="$2"
-  association_id=$(aws ec2 describe-route-tables \
-    --filter "Name=association.route-table-id,Values=$route_table_id" "Name=association.subnet-id,Values=$subnet_id" \
-    --query "RouteTables[].Associations[?SubnetId=='$subnet_id'].RouteTableAssociationId" \
-    --output text)
-  echo "$association_id"
-}
-
-delete_route_table_association() {
-  local route_table_association_id="$1"
-  aws ec2 disassociate-route-table --association-id "$route_table_association_id"
-}
-
-poll_natgateway_state() {
-  local natgateway_id="$1"
-  local expected="$2"
-  local actual
-  actual=$(get_natgateway_state "$natgateway_id")
-  if [[ "$actual" != "$expected" ]]; then
-    echo "Waiting for NGW $natgateway_id to become $expected current state is $actual"
-    while [ "$actual" != "$expected" ]; do
-      echo "..."
-      sleep 5
-      actual=$(get_natgateway_state "$natgateway_id")
-    done
-  fi
-}
-
-create_natgateway() {
-  local natgateway_name="$1"
-  local subnet_id="$2"
-  local eip_id="$3"
-  natgateway_id=$(aws ec2 create-nat-gateway \
-    --connectivity-type "public" \
-    --subnet-id "$subnet_id" \
-    --allocation-id "$eip_id" \
-    --tag-specifications "ResourceType=natgateway,Tags=[{Key=Name,Value=$natgateway_name}]" \
-    --query "NatGateway.{NatGatewayId:NatGatewayId}" \
-    --output text)
-  echo "$natgateway_id"
-}
-
-get_natgateway_id() {
-  local natgateway_name="$1"
-  natgateway_id=$(aws ec2 describe-nat-gateways \
-    --filter "Name=tag:Name,Values=$natgateway_name" "Name=state,Values=available,pending" \
-    --query "NatGateways[].NatGatewayId" \
-    --output text)
-  echo "$natgateway_id"
-}
-
-get_natgateway_state() {
-  local natgateway_id="$1"
-  natgateway_state=$(aws ec2 describe-nat-gateways \
-    --filter "Name=nat-gateway-id,Values=$natgateway_id" \
-    --query "NatGateways[].State" \
-    --output text)
-  echo "$natgateway_state"
-}
-
-delete_natgateway() {
-  local natgateway_id="$1"
-  aws ec2 delete-nat-gateway --nat-gateway-id "$natgateway_id" >/dev/null
-}
-
-create_security_group() {
-  local sg_name="$1"
-  local vpc_id="$2"
-  sg_id=$(aws ec2 create-security-group --group-name "$sg_name" \
-    --description "cluster security group" \
-    --vpc-id "$vpc_id" \
-    --tag-specifications "ResourceType=security-group,Tags=[{Key=Name,Value=$sg_name}, {Key=kubernetes.io/cluster/$cluster_name,Value=owned}]" \
-    --query "{GroupId:GroupId}" \
-    --output text)
-  echo "$sg_id"
-}
-
-get_security_group_id() {
-  local sg_name="$1"
-  sg_id=$(aws ec2 describe-security-groups \
-    --filter "Name=tag:Name,Values=$sg_name" \
-    --query "SecurityGroups[].GroupId" \
-    --output text)
-  echo "$sg_id"
-}
-
-delete_security_group() {
-  local sg_id="$1"
-  aws ec2 delete-security-group --group-id "$sg_id" >/dev/null
-}
-
-create_rule() {
-  local sg_id="$1"
-  local protocol="$2"
-  local port="$3"
-  local cidr="$4"
-  aws ec2 authorize-security-group-ingress --group-id "$sg_id" \
-    --protocol "$protocol" \
-    --port "$port" \
-    --cidr "$cidr" >/dev/null
 }
 
 while getopts "cd" flag; do
@@ -382,20 +84,10 @@ while getopts "cd" flag; do
     enable_public_ipv4_address_auto_assign "$subnet_public_a_id"
     echo "Enabled public IPv4 address auto-assigning for $subnet_public_a_id"
 
-#    # Enable public subnet A resource name DNS record
-#    echo "Enabling public subnet A resource name DNS record for $subnet_public_a_id"
-#    enable_resource_name_dns_a_record "$subnet_public_a_id"
-#    echo "Enabled public IPv4 address auto-assigning for $subnet_public_a_id"
-
     # Enable public subnet B IPv4 auto-assigning
     echo "Enabling public IPv4 address auto-assigning for $subnet_public_b_id"
     enable_public_ipv4_address_auto_assign "$subnet_public_b_id"
     echo "Enabled public IPv4 address auto-assigning for $subnet_public_b_id"
-
-#    # Enable public subnet B resource name DNS record
-#    echo "Enabling public subnet A resource name DNS record for $subnet_public_b_id"
-#    enable_resource_name_dns_a_record "$subnet_public_b_id"
-#    echo "Enabled public IPv4 address auto-assigning for $subnet_public_b_id"
 
     # Create route table public
     echo "Creating route table $route_table_public_name"
@@ -426,16 +118,6 @@ while getopts "cd" flag; do
     echo "Allocating EIP address"
     eip_b_id=$(create_eip $eip_b_name $eip_network_border_group)
     echo "Allocated EIP $eip_b_id"
-
-    # Allocate EIP NLB address
-    echo "Allocating EIP address"
-    eip_nlb_a_id=$(create_eip $eip_nlb_a_name $eip_network_border_group)
-    echo "Allocated EIP $eip_nlb_a_id"
-
-    # Allocate EIP NLB address
-    echo "Allocating EIP address"
-    eip_nlb_b_id=$(create_eip $eip_nlb_b_name $eip_network_border_group)
-    echo "Allocated EIP $eip_nlb_b_id"
 
     # Create NGW A
     echo "Creating NGW $ngw_a_name"
@@ -717,27 +399,6 @@ while getopts "cd" flag; do
     echo "Releasing EIP $eip_b_id"
     delete_eip "$eip_b_id"
     echo "Released EIP $eip_b_id"
-
-    # Find EIP NLB
-    echo "Looking for EIP $eip_nlb_a_name"
-    eip_nlb_a_id=$(get_eip_id $eip_nlb_a_name)
-    echo "Found EIP $eip_nlb_a_id"
-
-    # Release EIP B
-    echo "Releasing EIP $eip_nlb_a_id"
-    delete_eip "$eip_nlb_a_id"
-    echo "Released EIP $eip_nlb_a_id"
-
-    # Find EIP NLB
-    echo "Looking for EIP $eip_nlb_b_name"
-    eip_nlb_b_id=$(get_eip_id $eip_nlb_b_name)
-    echo "Found EIP $eip_nlb_b_id"
-
-    # Release EIP B
-    echo "Releasing EIP $eip_nlb_b_id"
-    delete_eip "$eip_nlb_b_id"
-    echo "Released EIP $eip_nlb_b_id"
-
     ;;
   \?)
     describe_flags
