@@ -1,23 +1,51 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Spotifyrun</title>
-    <meta content="Create playlist for your running workout" name="description">
-    <meta charset="utf-8">
-    <meta content="IE=edge" http-equiv="X-UA-Compatible">
-    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-    <link href="https://sp-bootstrap.global.ssl.fastly.net/8.0.0/sp-bootstrap.min.css" rel="stylesheet">
-    <link href="/style.css" rel="stylesheet">
+    <title>Suddenrun</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.js"
+            integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+    <style>
+        body {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
 </head>
-<div class="container">
-    <header>
-        <h1>Spotifyrun</h1>
-        <p>create playlist for your running workout</p>
-    </header>
-    <main>
-        <form action="api/v1/playlists" method="post">
-            <button class="btn btn-sm btn-primary" name="createPlaylist" value="createPlaylist">CREATE PLAYLIST</button>
-        </form>
-    </main>
-</div>
+<body>
+<div id="embed-iframe"></div>
+<script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async></script>
+<script type="text/javascript">
+    function sendRequest(type, url, body) {
+        const request = new XMLHttpRequest();
+        request.open(type, url, false);
+        request.send(body);
+        if (request.status === 200) {
+            return request.responseText;
+        } else {
+            throw new Error('Request failed: ' + request.statusText);
+        }
+    }
+    function getPlaylist() {
+        const response = sendRequest('POST','http://localhost:8082/api/v1/playlists', null);
+        return JSON.parse(response)
+    }
+    function createPlaylistUri(id) {
+        return 'spotify:playlist:'+id
+    }
+    window.onSpotifyIframeApiReady = (IFrameAPI) => {
+        const playlist = getPlaylist();
+        const playlistId = playlist['id']
+        const playlistUri = createPlaylistUri(playlistId)
+        const element = document.getElementById('embed-iframe');
+        const options = {
+            width: '100%',
+            height: '200',
+            uri: playlistUri
+        };
+        const callback = (EmbedController) => {
+        };
+        IFrameAPI.createController(element, options, callback);
+    };
+</script>
+</body>
 </html>
