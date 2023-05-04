@@ -1,0 +1,60 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spotifyrun-ingress
+  namespace: default
+  annotations:
+    alb.ingress.kubernetes.io/load-balancer-name: spotifyrun-alb
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/scheme: internal
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+#    alb.ingress.kubernetes.io/healthcheck-path: /app/actuator/health
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '10'
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '300'
+#    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+#    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-1:180789647333:certificate/9f042b5d-86fd-4fad-96d0-c81c5abc71e1
+spec:
+  rules:
+#    - host: suddenrun.com
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /oauth2/authorization/spotify
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /login/oauth2/code/spotify
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /api/v1/playlists
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80
+          - path: /actuator/health
+            pathType: Exact
+            backend:
+              service:
+                name: spotifyrun
+                port:
+                  number: 80

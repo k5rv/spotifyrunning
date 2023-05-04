@@ -5,7 +5,6 @@ metadata:
   labels:
     app: spotifyrun
 spec:
-#  replicas: 1
   template:
     metadata:
       name: spotifyrun
@@ -16,10 +15,6 @@ spec:
         - name: spotifyrun
           image: k5rv/spotifyrun:latest
           imagePullPolicy: Always
-#          resources:
-#            limits:
-#              memory: "128Mi"
-#              cpu: "500m"
           ports:
             - name: tcp
               containerPort: 8081
