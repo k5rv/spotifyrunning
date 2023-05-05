@@ -35,6 +35,8 @@ build/
 /features.txt
 /src/main/resources/application-development.yml
 /src/main/resources/application-test.yml.yml
+/src/main/resources/application-kube.yml.yml.yml
 !/.jpb/
 /.jpb/jpb-settings.xml
 !/aws.txt
+.DS_Store
