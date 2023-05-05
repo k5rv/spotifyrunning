@@ -32,11 +32,21 @@ build/
 ### VS Code ###
 .vscode/
 
-/features.txt
+### Spring Boot Profiles ###
 /src/main/resources/application-development.yml
-/src/main/resources/application-test.yml.yml
-/src/main/resources/application-kube.yml.yml.yml
-!/.jpb/
+/src/main/resources/application-test.yml
+/src/main/resources/application-kube.yml
+
+
+### AWS Scripts Output ###
+/aws/cluster.yaml
+/aws/route53-create-record.json
+/aws/route53-delete-record.json
+
+### Personal ###
+/features.txt
+
+### Unidentified ###
+/.jpb/
 /.jpb/jpb-settings.xml
-!/aws.txt
 .DS_Store
