@@ -49,3 +49,4 @@ build/
 ### Unidentified ###
 /.jpb/
 /.jpb/jpb-settings.xml
+.DS_Store
