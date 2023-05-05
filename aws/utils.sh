@@ -575,9 +575,9 @@ get_route_53_hosted_zone_id() {
 }
 
 get_load_balancer_dns_name() {
-  local nlb_name="$1"
+  local lb_name="$1"
   dns_name=$(aws elbv2 describe-load-balancers \
-    --names "$nlb_name" \
+    --names "$lb_name" \
     --query "LoadBalancers[].DNSName" \
     --output text)
   echo "$dns_name"
@@ -591,9 +591,6 @@ poll_elb_instance_state() {
   if [[ "$actual" != "$expected" ]]; then
     printf "Waiting for Load Balancer '%s' to become '%s' current state is '%s'\n" "$elb_arn" "$expected" "$actual"
     while [ "$actual" != "$expected" ]; do
-#      if [[ "$actual" == "" ]]; then
-#        return
-#      fi
       printf "%s\n" "..."
       sleep 5
       actual=$(get_elbv2_state "$elb_arn")
@@ -612,4 +609,10 @@ poll_elb_creation() {
       actual=$(get_target_group_alb_arn)
     done
   fi
+}
+
+change_resource_record_sets() {
+  local hosted_zone_id="$1"
+  local file_name="$2"
+  aws route53 change-resource-record-sets --hosted-zone-id "$hosted_zone_id" --change-batch file://"$file_name"
 }
