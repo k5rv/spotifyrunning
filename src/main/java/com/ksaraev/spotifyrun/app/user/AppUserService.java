@@ -9,6 +9,4 @@ public interface AppUserService {
   Optional<AppUser> getUser(String userId);
 
   AppUser registerUser(String userId, String userName);
-
-  Optional<AppUser> getAuthenticatedUser();
 }

@@ -18,10 +18,8 @@ import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfile;
 import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.spotify.service.SpotifyPlaylistItemService;
-import com.ksaraev.spotifyrun.spotify.service.SpotifyRecommendationItemsService;
-import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileItemService;
-import com.ksaraev.spotifyrun.spotify.service.SpotifyUserTopTrackItemsService;
+import com.ksaraev.spotifyrun.spotify.service.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -46,6 +44,8 @@ class PlaylistControllerTest {
   @Mock private AppPlaylistService appPlaylistService;
   @Mock private AppTrackService appTrackService;
 
+  @Mock private SpotifyUserProfileService userProfileService;
+
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
   @Captor private ArgumentCaptor<SpotifyUserProfileItem> userArgumentCaptor;
   @Captor private ArgumentCaptor<SpotifyPlaylistItemDetails> playlistDetailsArgumentCaptor;
@@ -59,7 +59,7 @@ class PlaylistControllerTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    underTest = new PlaylistController(  appUserService, appTrackService, appPlaylistService);
+    underTest = new PlaylistController(  appUserService, appTrackService, appPlaylistService, userProfileService);
   }
 
   @Test

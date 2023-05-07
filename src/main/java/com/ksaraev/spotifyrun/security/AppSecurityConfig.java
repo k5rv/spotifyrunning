@@ -24,6 +24,12 @@ public class AppSecurityConfig {
         .authorizeHttpRequests(authorize -> authorize.requestMatchers(GET, "/*").authenticated())
         .authorizeHttpRequests(
             authorize -> authorize.requestMatchers(POST, "/api/v1/playlists").authenticated())
+        .authorizeHttpRequests(
+            authorize -> authorize.requestMatchers(GET, "/api/v1/playlists").authenticated())
+        .authorizeHttpRequests(
+            authorize -> authorize.requestMatchers(POST, "/api/v1/users").authenticated())
+        .authorizeHttpRequests(
+            authorize -> authorize.requestMatchers(GET, "/api/v1/users").authenticated())
         .oauth2Login(Customizer.withDefaults())
         .build();
   }

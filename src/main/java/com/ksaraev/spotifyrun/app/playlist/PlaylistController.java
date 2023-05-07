@@ -1,17 +1,17 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-import com.ksaraev.spotifyrun.app.exception.AppAuthenticationException;
+import com.ksaraev.spotifyrun.app.exception.*;
 import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.track.AppTrackService;
 import com.ksaraev.spotifyrun.app.user.AppUser;
 import com.ksaraev.spotifyrun.app.user.AppUserService;
-import com.ksaraev.spotifyrun.app.user.AppUserServiceGetAuthenticatedUserException;
+import com.ksaraev.spotifyrun.client.feign.exception.SpotifyUnauthorizedException;
+import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileService;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -25,29 +25,47 @@ public class PlaylistController {
 
   private final AppPlaylistService playlistService;
 
+  private final SpotifyUserProfileService userProfileService;
+
   @PostMapping
   public AppPlaylist createPlaylist() {
-    AppUser appUser;
     try {
-      appUser = userService.getAuthenticatedUser().orElseThrow(AppAuthenticationException::new);
-    } catch (AppUserServiceGetAuthenticatedUserException e) {
-      throw new AppAuthenticationException(e);
+      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+      String userId = userProfileItem.getId();
+      AppUser appUser =
+          userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
+      playlistService
+          .getPlaylist(appUser)
+          .ifPresent(
+              playlist -> {
+                throw new AppPlaylistAlreadyExistException(userId, playlist.getId());
+              });
+      AppPlaylist appPlaylist = createPlaylistIfNotExists(appUser);
+      List<AppTrack> appTracks = trackService.getTracks();
+      return playlistService.addTracks(appPlaylist, appTracks);
+    } catch (SpotifyUnauthorizedException e) {
+      throw new AppAuthorizationException(e);
     }
-    String appUserId = appUser.getId();
-    String appUserName = appUser.getName();
-    appUser =
-        userService
-            .getUser(appUserId)
-            .orElseGet(() -> userService.registerUser(appUserId, appUserName));
-
-    AppPlaylist appPlaylist = createPlaylistIfNotExists(appUser);
-    List<AppTrack> appTracks = trackService.getTracks();
-    return playlistService.addTracks(appPlaylist, appTracks);
   }
 
   private AppPlaylist createPlaylistIfNotExists(AppUser appUser) {
     return playlistService
         .getPlaylist(appUser)
         .orElseGet(() -> playlistService.createPlaylist(appUser));
+  }
+
+  @GetMapping
+  public AppPlaylist getPlaylist() {
+    try {
+      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+      String userId = userProfileItem.getId();
+      AppUser appUser =
+          userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
+      return playlistService
+          .getPlaylist(appUser)
+          .orElseThrow(() -> new AppPlaylistNotFoundException(userId));
+    } catch (SpotifyUnauthorizedException e) {
+      throw new AppAuthorizationException(e);
+    }
   }
 }

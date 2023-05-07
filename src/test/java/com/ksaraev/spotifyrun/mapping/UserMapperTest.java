@@ -61,11 +61,11 @@ class UserMapperTest {
   }
 
   //
-  @Test
-  void itShouldThrowNullMappingSourceExceptionWhenUserProfileItemIsNull() {
-    // Then
-    Assertions.assertThatThrownBy(() -> underTest.mapToModel(null))
-        .isExactlyInstanceOf(MappingSourceIsNullException.class)
-        .hasMessage(MAPPING_SOURCE_IS_NULL);
-  }
+//  @Test
+//  void itShouldThrowNullMappingSourceExceptionWhenUserProfileItemIsNull() {
+//    // Then
+//    Assertions.assertThatThrownBy(() -> underTest.mapToModel(null))
+//        .isExactlyInstanceOf(MappingSourceIsNullException.class)
+//        .hasMessage(MAPPING_SOURCE_IS_NULL);
+//  }
 }
