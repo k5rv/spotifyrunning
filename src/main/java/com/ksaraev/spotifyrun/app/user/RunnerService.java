@@ -1,18 +1,8 @@
 package com.ksaraev.spotifyrun.app.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ksaraev.spotifyrun.app.exception.AppAuthenticationException;
-import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
-import com.ksaraev.spotifyrun.security.AuthenticationFacade;
-import com.ksaraev.spotifyrun.spotify.exception.SpotifyServiceAuthenticationException;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapper;
-import com.ksaraev.spotifyrun.spotify.service.SpotifyUserProfileItemService;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -20,13 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RunnerService implements AppUserService {
 
-  private final AppUserMapper appUserMapper;
-
   private final RunnerRepository runnerRepository;
-
-  private final AuthenticationFacade authenticationFacade;
-
-  private final SpotifyUserProfileMapper userProfileMapper;
 
   @Override
   public boolean isUserRegistered(String userId) {
@@ -63,31 +47,6 @@ public class RunnerService implements AppUserService {
       return runner;
     } catch (RuntimeException e) {
       throw new AppUserServiceUserRegistrationException(userId, e);
-    }
-  }
-
-  public Optional<AppUser> getAuthenticatedUser() {
-    try {
-      boolean isAuthenticated = authenticationFacade.getAuthentication().isAuthenticated();
-      if (!isAuthenticated) {
-        log.info("Authenticated Spotify user not found. Returning empty result.");
-        return Optional.empty();
-      }
-      OAuth2AuthenticatedPrincipal principal =
-          (OAuth2AuthenticatedPrincipal) authenticationFacade.getAuthentication().getPrincipal();
-      Map<String, Object> attributes = principal.getAttributes();
-      ObjectMapper objectMapper = new ObjectMapper();
-      SpotifyUserProfileDto userProfileDto =
-          objectMapper.convertValue(attributes, SpotifyUserProfileDto.class);
-      SpotifyUserProfileItem userProfileItem = userProfileMapper.mapToModel(userProfileDto);
-      AppUser appUser = appUserMapper.mapToEntity(userProfileItem);
-      String appUserId = appUser.getId();
-      log.info("Found authenticated Spotify user with id [" + appUserId + "]. Returning Spotify user.");
-      return Optional.of(appUser);
-    } catch (SpotifyServiceAuthenticationException e) {
-      throw new AppAuthenticationException(e);
-    } catch (RuntimeException e) {
-      throw new AppUserServiceGetAuthenticatedUserException(e);
     }
   }
 }

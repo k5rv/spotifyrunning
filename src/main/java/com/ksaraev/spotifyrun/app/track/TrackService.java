@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.app.track;
 
-import com.ksaraev.spotifyrun.app.exception.AppAuthenticationException;
+import com.ksaraev.spotifyrun.app.exception.AppAuthorizationException;
 import com.ksaraev.spotifyrun.app.exception.AppSpotifyServiceInteractionException;
 import com.ksaraev.spotifyrun.app.playlist.AppPlaylistConfig;
 import com.ksaraev.spotifyrun.spotify.exception.SpotifyRecommendationsServiceException;
@@ -62,7 +62,7 @@ public class TrackService implements AppTrackService {
           .map(appTrackMapper::mapToEntity)
           .toList();
     } catch (SpotifyServiceAuthenticationException e) {
-      throw new AppAuthenticationException(e);
+      throw new AppAuthorizationException(e);
     } catch (SpotifyUserTopTracksServiceException | SpotifyRecommendationsServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {

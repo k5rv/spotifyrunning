@@ -1,6 +1,6 @@
 package com.ksaraev.spotifyrun.app.playlist;
 
-import com.ksaraev.spotifyrun.app.exception.AppAuthenticationException;
+import com.ksaraev.spotifyrun.app.exception.AppAuthorizationException;
 import com.ksaraev.spotifyrun.app.exception.AppSpotifyServiceInteractionException;
 import com.ksaraev.spotifyrun.app.track.AppTrack;
 import com.ksaraev.spotifyrun.app.track.AppTrackMapper;
@@ -54,7 +54,7 @@ public class PlaylistService implements AppPlaylistService {
           "Created playlist with id [" + appPlaylistId + "] for user with id [" + appUserId + "]");
       return appPlaylist;
     } catch (SpotifyServiceAuthenticationException e) {
-      throw new AppAuthenticationException(e);
+      throw new AppAuthorizationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {
@@ -138,7 +138,7 @@ public class PlaylistService implements AppPlaylistService {
               + "] from Spotify. Returning playlist.");
       return Optional.of(appPlaylist);
     } catch (SpotifyServiceAuthenticationException e) {
-      throw new AppAuthenticationException(e);
+      throw new AppAuthorizationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {
@@ -281,14 +281,15 @@ public class PlaylistService implements AppPlaylistService {
           "Added ["
               + addTracksNumber
               + "] and removed ["
-              + removeTracksNumber + "] tracks for playlist with id ["
+              + removeTracksNumber
+              + "] tracks for playlist with id ["
               + appPlaylistId
               + "] and  snapshotId ["
               + appPlaylist.getSnapshotId()
               + "]. Saved in app.");
       return appPlaylist;
     } catch (SpotifyServiceAuthenticationException e) {
-      throw new AppAuthenticationException(e);
+      throw new AppAuthorizationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {

@@ -35,7 +35,9 @@ public class Runner implements AppUser {
   @Override
   public void removePlaylist(AppPlaylist appPlaylist) {
     Playlist playlist = (Playlist) appPlaylist;
-    playlists.remove(playlist);
+    if (!this.playlists.isEmpty()) {
+      playlists.remove(playlist);
+    }
     playlist.setRunner(null);
   }
 

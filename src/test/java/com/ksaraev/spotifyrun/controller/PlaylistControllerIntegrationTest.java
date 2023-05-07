@@ -33,7 +33,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class PlaylistControllerIntegrationTest {
 
-  @Autowired PlaylistController underTest;
+  @Autowired
+  PlaylistController underTest;
 
   @Autowired private MockMvc mockMvc;
 
