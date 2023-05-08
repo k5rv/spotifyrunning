@@ -10,35 +10,36 @@
 <script type="text/javascript">
 
     document.addEventListener("DOMContentLoaded", function () {
-        let element = document.getElementById('embed-iframe');
-        let options = {
+        let targetElement = document.querySelector('#embed-iframe');
+        let callbackElement = document.querySelector('#embed-callback-btn')
+        let embedOptions = {
             width: '100%',
             height: 600
         };
-        embedSpotifyPlaylist(element, options, getPlaylistUri, createPlaylistResource)
+        embedSpotifyPlaylist(targetElement, callbackElement, embedOptions, getPlaylistUri, createPlaylistResource)
     });
 
-    function embedSpotifyPlaylist(element, options, getUri, createResource) {
+    function embedSpotifyPlaylist(targetElement, callbackElement, embedOptions, getUri, createResource) {
         let uri = getUri();
         if (uri === null) {
             window.onSpotifyIframeApiReady = (IFrameAPI) => {
                 let callback = (EmbedController) => {
-                    document.getElementById('embedPlaylist').addEventListener('click', function () {
+                    callbackElement.addEventListener('click', function () {
                             let resource = createResource()
                             let uri = buildSpotifyPlaylistUri(resource)
                             EmbedController.loadUri(uri)
                         }
                     )
                 };
-                IFrameAPI.createController(element, options, callback);
+                IFrameAPI.createController(targetElement, embedOptions, callback);
             }
             return;
         }
         window.onSpotifyIframeApiReady = (IFrameAPI) => {
-            options.uri = uri
+            embedOptions.uri = uri
             let callback = (EmbedController) => {
             };
-            IFrameAPI.createController(element, options, callback);
+            IFrameAPI.createController(targetElement, embedOptions, callback);
         }
     }
 
@@ -108,7 +109,7 @@
     <div id="embed-iframe">Player must be here</div>
 </div>
 <div class="container-sm border">
-    <button class="btn btn-primary" id="embedPlaylist" type="button">Embed playlist</button>
+    <button class="btn btn-primary" id="embed-callback-btn" type="button">Embed playlist</button>
 </div>
 <script crossorigin="anonymous"
         integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
