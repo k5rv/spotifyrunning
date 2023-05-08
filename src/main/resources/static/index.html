@@ -9,14 +9,17 @@
 <body>
 <script type="text/javascript">
 
-    embedSpotifyPlaylist()
+    document.addEventListener("DOMContentLoaded", function () {
+        let element = document.getElementById('embed-iframe');
+        embedSpotifyPlaylist(element)
+    });
 
-    function embedSpotifyPlaylist() {
-        let playlist;
-        playlist = getPlaylist();
+    function embedSpotifyPlaylist(element) {
+        // let element = document.getElementById('embed-iframe');
+        let playlist = getPlaylist();
         if (playlist !== null) {
             window.onSpotifyIframeApiReady = (IFrameAPI) => {
-                let element = document.getElementById('embed-iframe');
+                // let element = document.getElementById('embed-iframe');
                 let options = {
                     width: '100%',
                     height: 600,
@@ -28,7 +31,7 @@
             }
         } else {
             window.onSpotifyIframeApiReady = (IFrameAPI) => {
-                let element = document.getElementById('embed-iframe');
+                // let element = document.getElementById('embed-iframe');
                 let options = {
                     width: '100%',
                     height: 600
