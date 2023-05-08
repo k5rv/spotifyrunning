@@ -15,21 +15,27 @@ import org.springframework.security.web.SecurityFilterChain;
 @Profile(value = {"development", "production", "docker", "kube"})
 public class AppSecurityConfig {
 
+  private static final String API_V1_USERS = "/api/v1/users";
+  private static final String API_V1_PLAYLISTS = "/api/v1/playlists";
+  private static final String ACTUATOR_HEALTH = "/actuator/health";
+
   @Bean
   public SecurityFilterChain oauth2FilterChain(HttpSecurity http) throws Exception {
     return http.csrf()
         .disable()
         .authorizeHttpRequests(
-            authorize -> authorize.requestMatchers(GET, "/actuator/health").permitAll())
+            authorize -> authorize.requestMatchers(GET, ACTUATOR_HEALTH).permitAll())
         .authorizeHttpRequests(authorize -> authorize.requestMatchers(GET, "/*").authenticated())
         .authorizeHttpRequests(
-            authorize -> authorize.requestMatchers(POST, "/api/v1/playlists").authenticated())
+            authorize -> authorize.requestMatchers(GET, API_V1_PLAYLISTS).authenticated())
         .authorizeHttpRequests(
-            authorize -> authorize.requestMatchers(GET, "/api/v1/playlists").authenticated())
+            authorize -> authorize.requestMatchers(POST, API_V1_PLAYLISTS).authenticated())
         .authorizeHttpRequests(
-            authorize -> authorize.requestMatchers(POST, "/api/v1/users").authenticated())
+            authorize -> authorize.requestMatchers(PUT, API_V1_PLAYLISTS).authenticated())
         .authorizeHttpRequests(
-            authorize -> authorize.requestMatchers(GET, "/api/v1/users").authenticated())
+            authorize -> authorize.requestMatchers(GET, API_V1_USERS).authenticated())
+        .authorizeHttpRequests(
+            authorize -> authorize.requestMatchers(POST, API_V1_USERS).authenticated())
         .oauth2Login(Customizer.withDefaults())
         .build();
   }
