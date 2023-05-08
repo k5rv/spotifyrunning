@@ -9,7 +9,6 @@
 <body>
 <script type="text/javascript">
 
-
     document.addEventListener("DOMContentLoaded", function () {
         let element = document.getElementById('embed-iframe');
         let options = {
@@ -26,8 +25,7 @@
                 let callback = (EmbedController) => {
                     document.getElementById('embedPlaylist').addEventListener('click', function () {
                             let resource = createResource()
-                            let id = resource.id
-                            let uri = buildSpotifyUri('playlist', id)
+                            let uri = buildSpotifyPlaylistUri(resource)
                             EmbedController.loadUri(uri)
                         }
                     )
@@ -42,18 +40,17 @@
             };
             IFrameAPI.createController(element, options, callback);
         }
-
     }
 
-    function buildSpotifyUri(type, id) {
-        return 'spotify:' + type + ':' + id
+    function buildSpotifyPlaylistUri(resource) {
+        let id = resource.id
+        return 'spotify:playlist:' + id
     }
 
     function getPlaylistUri() {
         let playlist = getPlaylist();
         if (playlist === null) return playlist;
-        let id = playlist.id
-        return buildSpotifyUri('playlist', id)
+        return buildSpotifyPlaylistUri(playlist)
     }
 
     function createPlaylistResource() {
