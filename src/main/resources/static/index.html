@@ -9,49 +9,62 @@
 <body>
 <script type="text/javascript">
 
+
     document.addEventListener("DOMContentLoaded", function () {
         let element = document.getElementById('embed-iframe');
-        embedSpotifyPlaylist(element)
+        let options = {
+            width: '100%',
+            height: 600
+        };
+        embedSpotifyPlaylist(element, options, getPlaylistUri, createPlaylistResource)
     });
 
-    function embedSpotifyPlaylist(element) {
-        // let element = document.getElementById('embed-iframe');
-        let playlist = getPlaylist();
-        if (playlist !== null) {
+    function embedSpotifyPlaylist(element, options, getUri, createResource) {
+        let uri = getUri();
+        if (uri === null) {
             window.onSpotifyIframeApiReady = (IFrameAPI) => {
-                // let element = document.getElementById('embed-iframe');
-                let options = {
-                    width: '100%',
-                    height: 600,
-                    uri: 'spotify:playlist:' + playlist.id
-                };
-                let callback = (EmbedController) => {
-                };
-                IFrameAPI.createController(element, options, callback);
-            }
-        } else {
-            window.onSpotifyIframeApiReady = (IFrameAPI) => {
-                // let element = document.getElementById('embed-iframe');
-                let options = {
-                    width: '100%',
-                    height: 600
-                };
                 let callback = (EmbedController) => {
                     document.getElementById('embedPlaylist').addEventListener('click', function () {
-                            let user;
-                            let playlist;
-                            user = getUser();
-                            if (user == null) {
-                                registerUser();
-                            }
-                            playlist = createPlaylist();
-                            EmbedController.loadUri('spotify:playlist:' + playlist.id)
+                            let resource = createResource()
+                            let id = resource.id
+                            let uri = buildSpotifyUri('playlist', id)
+                            EmbedController.loadUri(uri)
                         }
                     )
                 };
                 IFrameAPI.createController(element, options, callback);
             }
+            return;
         }
+        window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            options.uri = uri
+            let callback = (EmbedController) => {
+            };
+            IFrameAPI.createController(element, options, callback);
+        }
+
+    }
+
+    function buildSpotifyUri(type, id) {
+        return 'spotify:' + type + ':' + id
+    }
+
+    function getPlaylistUri() {
+        let playlist = getPlaylist();
+        if (playlist === null) return playlist;
+        let id = playlist.id
+        return buildSpotifyUri('playlist', id)
+    }
+
+    function createPlaylistResource() {
+        let user;
+        let playlist;
+        user = getUser();
+        if (user == null) {
+            registerUser();
+        }
+        playlist = createPlaylist();
+        return playlist
     }
 
     function getUser() {
