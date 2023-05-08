@@ -54,6 +54,20 @@ public class PlaylistController {
         .orElseGet(() -> playlistService.createPlaylist(appUser));
   }
 
+  @PutMapping
+  public AppPlaylist updatePlaylist() {
+    SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+    String userId = userProfileItem.getId();
+    AppUser appUser =
+        userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
+    AppPlaylist appPlaylist =
+        playlistService
+            .getPlaylist(appUser)
+            .orElseThrow(() -> new AppPlaylistNotFoundException(userId));
+    List<AppTrack> appTracks = trackService.getTracks();
+    return playlistService.addTracks(appPlaylist, appTracks);
+  }
+
   @GetMapping
   public AppPlaylist getPlaylist() {
     try {
