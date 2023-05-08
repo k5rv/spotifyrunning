@@ -9,37 +9,54 @@
 <body>
 <script type="text/javascript">
 
-    document.addEventListener("DOMContentLoaded", function () {
-        let targetElement = document.querySelector('#embed-iframe');
-        let callbackElement = document.querySelector('#embed-callback-btn')
-        let embedOptions = {
+    document.addEventListener("DOMContentLoaded", () => {
+        let target = document.querySelector('#playlist');
+        let create = document.querySelector('#create-playlist')
+        let update = document.querySelector('#update-playlist')
+        let options = {
             width: '100%',
             height: 600
         };
-        embedSpotifyPlaylist(targetElement, callbackElement, embedOptions, getPlaylistUri, createPlaylistResource)
+        embedSpotifyPlaylist(target, create, update, options, getPlaylistUri, createPlaylistResource, updatePlaylistResource)
     });
 
-    function embedSpotifyPlaylist(targetElement, callbackElement, embedOptions, getUri, createResource) {
+    function embedSpotifyPlaylist(target, create, update, options, getUri, createResource, updateResource) {
         let uri = getUri();
         if (uri === null) {
             window.onSpotifyIframeApiReady = (IFrameAPI) => {
                 let callback = (EmbedController) => {
-                    callbackElement.addEventListener('click', function () {
+                    create.addEventListener('click', () => {
                             let resource = createResource()
                             let uri = buildSpotifyPlaylistUri(resource)
                             EmbedController.loadUri(uri)
                         }
                     )
+                    update.addEventListener('click', () => {
+                        let resource = updateResource()
+                        let uri = buildSpotifyPlaylistUri(resource)
+                        EmbedController.loadUri(uri)
+                    })
                 };
-                IFrameAPI.createController(targetElement, embedOptions, callback);
+                IFrameAPI.createController(target, options, callback);
             }
             return;
         }
         window.onSpotifyIframeApiReady = (IFrameAPI) => {
-            embedOptions.uri = uri
+            options.uri = uri
             let callback = (EmbedController) => {
+                create.addEventListener('click', () => {
+                        let resource = createResource()
+                        let uri = buildSpotifyPlaylistUri(resource)
+                        EmbedController.loadUri(uri)
+                    }
+                )
+                update.addEventListener('click', () => {
+                    let resource = updateResource()
+                    let uri = buildSpotifyPlaylistUri(resource)
+                    EmbedController.loadUri(uri)
+                })
             };
-            IFrameAPI.createController(targetElement, embedOptions, callback);
+            IFrameAPI.createController(target, options, callback);
         }
     }
 
@@ -63,6 +80,10 @@
         }
         playlist = createPlaylist();
         return playlist
+    }
+
+    function updatePlaylistResource() {
+        return updatePlaylist();
     }
 
     function getUser() {
@@ -97,6 +118,14 @@
         return null;
     }
 
+    function updatePlaylist() {
+        const request = sendRequest('PUT', 'http://localhost:8082/api/v1/playlists', null);
+        if (request.status === 200) {
+            return JSON.parse(request.responseText);
+        }
+        return null;
+    }
+
     function sendRequest(type, url, body) {
         const request = new XMLHttpRequest();
         request.open(type, url, false);
@@ -106,10 +135,11 @@
 
 </script>
 <div class="container-sm border">
-    <div id="embed-iframe">Player must be here</div>
+    <div id="playlist">Player must be here</div>
 </div>
 <div class="container-sm border">
-    <button class="btn btn-primary" id="embed-callback-btn" type="button">Embed playlist</button>
+    <button class="btn btn-primary" id="create-playlist" type="button">Create playlist</button>
+    <button class="btn btn-primary" id="update-playlist" type="button">Update playlist</button>
 </div>
 <script crossorigin="anonymous"
         integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
