@@ -23,9 +23,15 @@
     function embedSpotifyPlaylist(target, create, update, options, getUri, createResource, updateResource) {
         let uri = getUri();
         if (uri === null) {
+            // update.setAttribute("class", create.getAttribute("class") + " invisible")
+            update.style.visibility = "hidden"
             window.onSpotifyIframeApiReady = (IFrameAPI) => {
                 let callback = (EmbedController) => {
                     create.addEventListener('click', () => {
+                            // create.setAttribute("class", create.getAttribute("class") + " invisible")
+                            create.style.visibility = "hidden"
+                            update.style.visibility = "visible"
+
                             let resource = createResource()
                             let uri = buildSpotifyPlaylistUri(resource)
                             EmbedController.loadUri(uri)
@@ -44,12 +50,15 @@
         window.onSpotifyIframeApiReady = (IFrameAPI) => {
             options.uri = uri
             let callback = (EmbedController) => {
-                create.addEventListener('click', () => {
-                        let resource = createResource()
-                        let uri = buildSpotifyPlaylistUri(resource)
-                        EmbedController.loadUri(uri)
-                    }
-                )
+                // create.addEventListener('click', () => {
+                //         let resource = createResource()
+                //         let uri = buildSpotifyPlaylistUri(resource)
+                //         EmbedController.loadUri(uri)
+                //     }
+                // )
+
+                create.style.visibility = "hidden"
+                update.style.visibility = "visible"
                 update.addEventListener('click', () => {
                     let resource = updateResource()
                     let uri = buildSpotifyPlaylistUri(resource)
