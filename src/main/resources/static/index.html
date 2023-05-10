@@ -174,14 +174,14 @@
 
     <main class="px-3">
         <h1>Create your running playlist.</h1>
-        <p class="lead">Suddenrun uses a Spotify Web API in order to create a playlist for your running workouts. It
+        <p class="lead">Suddenrun uses Spotify Web API in order to create a playlist for your running workouts. It
             looks up for recommendations based on favorite tracks with an appropriate tempo for running.</p>
         <p class="lead">
-            <a role="button" id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Create
+            <button id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Create
                 playlist
-            </a>
+            </button>
         </p>
-        <div id="playlist-view"></div>
+        <div style="height: 352px;" id="playlist-view"></div>
     </main>
 
     <footer class="mt-auto text-white-50">
@@ -219,14 +219,17 @@
                         let playlistUri = 'spotify:playlist:' + playlistId
                         EmbedController.loadUri(playlistUri)
                         control.innerText = "Update playlist"
+                        addUpdatePlaylistTooltip(control)
                     })
                 }
                 IFrameAPI.createController(target, options, callback);
             }
             return
         }
+
         window.onSpotifyIframeApiReady = (IFrameAPI) => {
             control.innerText = "Update playlist"
+            addUpdatePlaylistTooltip(control)
             let playlistId = playlist.id
             options.uri = 'spotify:playlist:' + playlistId
             let callback = (EmbedController) => {
@@ -240,6 +243,18 @@
             IFrameAPI.createController(target, options, callback);
         }
     }
+
+    function addUpdatePlaylistTooltip(element) {
+        let attributes = {
+            "data-toggle": "tooltip",
+            "data-placement": "auto",
+            "title": "It looks like you already created playlist. Click the button to request Spotify recommendations one more time and update your tracks."
+        }
+        Object.keys(attributes).forEach((key) => {
+            element.setAttribute(key, attributes[key]);
+        });
+    }
+
 </script>
 <script type="text/javascript" src="suddenrun-rest-api-client.js"></script>
 <script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async></script>
