@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spotifyrun
+  name: suddenrun
   labels:
-    app: spotifyrun
+    app: suddenrun
 spec:
   template:
     metadata:
-      name: spotifyrun
+      name: suddenrun
       labels:
-        app: spotifyrun
+        app: suddenrun
     spec:
       containers:
-        - name: spotifyrun
-          image: k5rv/spotifyrun:latest
+        - name: suddenrun
+          image: k5rv/suddenrun:latest
           imagePullPolicy: Always
           ports:
             - name: tcp
@@ -24,4 +24,4 @@ spec:
       restartPolicy: Always
   selector:
     matchLabels:
-      app: spotifyrun
+      app: suddenrun
