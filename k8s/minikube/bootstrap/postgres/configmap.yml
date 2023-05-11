@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: postgres-config
 data:
-  POSTGRES_DB: "spotifyrun"
-  POSTGRES_USER: "user"
-  POSTGRES_PASSWORD: "password"
+  POSTGRES_DB: "suddenrun"
+  POSTGRES_USER: "suddenrun"
+  POSTGRES_PASSWORD: "suddenrun"
