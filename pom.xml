@@ -216,7 +216,7 @@
                         <artifactId>jib-maven-plugin</artifactId>
                         <configuration>
                             <container>
-                                <mainClass>com.ksaraev.spotifyrun.SpotifyRunApplication</mainClass>
+                                <mainClass>com.suddenrun.SuddenrunApplication</mainClass>
                             </container>
                         </configuration>
                     </plugin>
