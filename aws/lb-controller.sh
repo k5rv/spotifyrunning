@@ -5,7 +5,7 @@
 source ./utils.sh
 
 AWS_ACCOUNT_ID="690837617850"
-CLUSTER_NAME="spotifyrun"
+CLUSTER_NAME="suddenrun"
 REGION="eu-north-1"
 POLICY_NAME="AWSLoadBalancerControllerIAMPolicy"
 ROLE_NAME="AmazonEKSLoadBalancerControllerRole"

@@ -5,10 +5,10 @@
 source ./utils.sh
 
 REGION="eu-north-1"
-CLUSTER_NAME="spotifyrun"
-VPC_NAME="spotifyrun"
+CLUSTER_NAME="suddenrun"
+VPC_NAME="suddenrun"
 VPC_CIDR_BLOCK="10.0.0.0/16"
-INTERNET_GATEWAY_NAME="spotifyrun"
+INTERNET_GATEWAY_NAME="suddenrun"
 NATGATEWAY_A_NAME="public-eu-north-1a"
 NATGATEWAY_B_NAME="public-eu-north-1b"
 AVAILABILITY_ZONE_A="eu-north-1a"
@@ -29,7 +29,7 @@ ROUTE_TABLE_PRIVATE_B_NAME="private-eu-north-1b"
 EIP_A_NAME="eu-north-1a"
 EIP_B_NAME="eu-north-1b"
 EIP_NETWORK_BORDER_GROUP="eu-north-1"
-SECURITY_GROUP_NAME="spotifyrun"
+SECURITY_GROUP_NAME="suddenrun"
 
 describe_flags() {
   echo "Available flags:"
