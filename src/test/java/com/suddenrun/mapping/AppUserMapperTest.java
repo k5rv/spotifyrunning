@@ -1,11 +1,11 @@
 package com.suddenrun.mapping;
 
-import com.ksaraev.spotifyrun.app.user.AppUser;
-import com.ksaraev.spotifyrun.app.user.AppUserMapper;
-import com.ksaraev.spotifyrun.app.user.AppUserMapperImpl;
-import com.ksaraev.spotifyrun.app.user.Runner;
-import com.ksaraev.spotifyrun.spotify.model.SpotifyItemType;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.suddenrun.app.user.AppUser;
+import com.suddenrun.app.user.AppUserMapper;
+import com.suddenrun.app.user.AppUserMapperImpl;
+import com.suddenrun.app.user.Runner;
+import com.suddenrun.spotify.model.SpotifyItemType;
+import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import java.net.URI;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

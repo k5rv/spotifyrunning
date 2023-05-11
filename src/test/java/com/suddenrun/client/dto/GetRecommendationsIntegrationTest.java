@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.ksaraev.spotifyrun.client.SpotifyClient;
+import com.suddenrun.client.SpotifyClient;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;

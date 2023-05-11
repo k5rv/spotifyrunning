@@ -1,12 +1,12 @@
 package com.suddenrun.mapping;
 
-import static com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
+import static com.suddenrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 
-import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
-import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapper;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileMapperImpl;
+import com.suddenrun.client.dto.SpotifyUserProfileDto;
+import com.suddenrun.spotify.model.MappingSourceIsNullException;
+import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileMapper;
+import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileMapperImpl;
 import com.suddenrun.utils.SpotifyHelper;
 import java.net.URL;
 import java.util.List;

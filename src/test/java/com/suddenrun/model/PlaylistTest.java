@@ -3,9 +3,9 @@ package com.suddenrun.model;
 import static com.suddenrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylist;
-import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.suddenrun.spotify.model.playlist.SpotifyPlaylist;
+import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
+import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

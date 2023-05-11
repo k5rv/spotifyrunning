@@ -1,7 +1,7 @@
 package com.suddenrun.client.feign.exception;
 
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseException;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientReadingErrorResponseIsNullException;
+import com.suddenrun.client.exception.SpotifyClientReadingErrorResponseException;
+import com.suddenrun.client.exception.SpotifyClientReadingErrorResponseIsNullException;
 import feign.Request;
 import feign.RequestTemplate;
 import feign.Response;

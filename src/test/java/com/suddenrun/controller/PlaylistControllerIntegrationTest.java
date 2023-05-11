@@ -7,13 +7,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.ksaraev.spotifyrun.app.playlist.PlaylistController;
-import com.ksaraev.spotifyrun.client.dto.GetRecommendationsResponse;
-import com.ksaraev.spotifyrun.client.dto.GetUserTopTracksResponse;
-import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.client.dto.SpotifyTrackDto;
-import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
-import com.ksaraev.spotifyrun.client.dto.UpdateUpdateItemsResponse;
+import com.suddenrun.app.playlist.PlaylistController;
+import com.suddenrun.client.dto.GetRecommendationsResponse;
+import com.suddenrun.client.dto.GetUserTopTracksResponse;
+import com.suddenrun.client.dto.SpotifyPlaylistDto;
+import com.suddenrun.client.dto.SpotifyTrackDto;
+import com.suddenrun.client.dto.SpotifyUserProfileDto;
+import com.suddenrun.client.dto.UpdateUpdateItemsResponse;
 import java.util.List;
 
 import com.suddenrun.utils.JsonHelper;

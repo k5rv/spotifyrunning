@@ -1,8 +1,8 @@
 package com.suddenrun.mapping;
 
-import com.ksaraev.spotifyrun.app.track.AppTrack;import com.ksaraev.spotifyrun.app.track.AppTrackMapper;import com.ksaraev.spotifyrun.app.track.AppTrackMapperImpl;import com.ksaraev.spotifyrun.app.track.Track;
-import com.ksaraev.spotifyrun.spotify.model.SpotifyItemType;
-import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
+import com.suddenrun.app.track.AppTrack;import com.suddenrun.app.track.AppTrackMapper;import com.suddenrun.app.track.AppTrackMapperImpl;import com.suddenrun.app.track.Track;
+import com.suddenrun.spotify.model.SpotifyItemType;
+import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import java.net.URI;
 import com.suddenrun.utils.SpotifyHelper;
 import org.assertj.core.api.Assertions;

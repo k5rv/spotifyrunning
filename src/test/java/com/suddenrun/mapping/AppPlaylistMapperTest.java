@@ -1,16 +1,16 @@
 package com.suddenrun.mapping;
 
-import com.ksaraev.spotifyrun.app.playlist.AppPlaylist;
-import com.ksaraev.spotifyrun.app.playlist.AppPlaylistMapper;
-import com.ksaraev.spotifyrun.app.playlist.AppPlaylistMapperImpl;
-import com.ksaraev.spotifyrun.app.playlist.Playlist;
-import com.ksaraev.spotifyrun.app.track.AppTrackMapperImpl;
-import com.ksaraev.spotifyrun.app.user.AppUser;
-import com.ksaraev.spotifyrun.app.user.AppUserMapper;
-import com.ksaraev.spotifyrun.app.user.AppUserMapperImpl;
-import com.ksaraev.spotifyrun.app.user.Runner;
-import com.ksaraev.spotifyrun.spotify.model.playlist.SpotifyPlaylistItem;
-import com.ksaraev.spotifyrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.suddenrun.app.playlist.AppPlaylist;
+import com.suddenrun.app.playlist.AppPlaylistMapper;
+import com.suddenrun.app.playlist.AppPlaylistMapperImpl;
+import com.suddenrun.app.playlist.Playlist;
+import com.suddenrun.app.track.AppTrackMapperImpl;
+import com.suddenrun.app.user.AppUser;
+import com.suddenrun.app.user.AppUserMapper;
+import com.suddenrun.app.user.AppUserMapperImpl;
+import com.suddenrun.app.user.Runner;
+import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
+import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.suddenrun.utils.SpotifyHelper;
 import java.util.List;
 

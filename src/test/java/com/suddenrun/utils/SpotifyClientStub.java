@@ -1,7 +1,7 @@
 package com.suddenrun.utils;
 
-import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.dto.*;
+import com.suddenrun.client.SpotifyClient;
+import com.suddenrun.client.dto.*;
 
 public class SpotifyClientStub implements SpotifyClient {
 

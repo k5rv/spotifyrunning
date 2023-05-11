@@ -2,8 +2,8 @@ package com.suddenrun.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistItem;
+import com.suddenrun.spotify.model.artist.SpotifyArtist;
+import com.suddenrun.spotify.model.artist.SpotifyArtistItem;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
