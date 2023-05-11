@@ -1,10 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: spotifyrun-ingress
+  name: suddenrun-ingress
   namespace: default
   annotations:
-    alb.ingress.kubernetes.io/load-balancer-name: spotifyrun-alb
+    alb.ingress.kubernetes.io/load-balancer-name: suddenrun-alb
     kubernetes.io/ingress.class: alb
     alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/scheme: internet-facing
@@ -27,34 +27,34 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: spotifyrun
+                name: suddenrun
                 port:
                   number: 80
           - path: /oauth2/authorization/spotify
             pathType: Exact
             backend:
               service:
-                name: spotifyrun
+                name: suddenrun
                 port:
                   number: 80
           - path: /login/oauth2/code/spotify
             pathType: Exact
             backend:
               service:
-                name: spotifyrun
+                name: suddenrun
                 port:
                   number: 80
           - path: /api/v1/playlists
             pathType: Exact
             backend:
               service:
-                name: spotifyrun
+                name: suddenrun
                 port:
                   number: 80
           - path: /actuator/health
             pathType: Exact
             backend:
               service:
-                name: spotifyrun
+                name: suddenrun
                 port:
                   number: 80

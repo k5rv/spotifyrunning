@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: spotifyrun
+  name: suddenrun
 spec:
   selector:
-    app: spotifyrun
+    app: suddenrun
   ports:
     - protocol: TCP
       port: 80
