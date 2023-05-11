@@ -17,39 +17,39 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 @Configuration
 public class SpotifyAppConfig {
 
-  @Value("${spotifyrun.playlist.details.name}")
+  @Value("${suddenrun.playlist.details.name}")
   @NotEmpty
   private String name;
 
-  @Value("${spotifyrun.playlist.details.description}")
+  @Value("${suddenrun.playlist.details.description}")
   @NotEmpty
   private String description;
 
-  @Value("${spotifyrun.playlist.details.public}")
+  @Value("${suddenrun.playlist.details.public}")
   @NotEmpty
   private Boolean isPublic;
 
-  @Value("${spotifyrun.playlist.details.size}")
+  @Value("${suddenrun.playlist.details.size}")
   @Min(1)
   @Max(50)
   private Integer size;
 
-  @Value("${spotifyrun.playlist.music-features.min-tempo}")
+  @Value("${suddenrun.playlist.music-features.min-tempo}")
   @Min(1)
   @Max(220)
   private BigDecimal minTempo;
 
-  @Value("${spotifyrun.playlist.music-features.max-tempo}")
+  @Value("${suddenrun.playlist.music-features.max-tempo}")
   @Min(1)
   @Max(220)
   private BigDecimal maxTempo;
 
-  @Value("${spotifyrun.playlist.music-features.min-energy}")
+  @Value("${suddenrun.playlist.music-features.min-energy}")
   @DecimalMin("0.1")
   @DecimalMax("1.0")
   private BigDecimal minEnergy;
 
-  @Value("${spotifyrun.playlist.music-features.min-popularity}")
+  @Value("${suddenrun.playlist.music-features.min-popularity}")
   @DecimalMin("0.1")
   @DecimalMax("1.0")
   private Integer minPopularity;

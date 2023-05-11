@@ -7,19 +7,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpotifyClientConfig {
 
-  @Value("${spotifyrun.client.requests.get-user-top-tracks.limit}")
+  @Value("${suddenrun.client.requests.get-user-top-tracks.limit}")
   private Integer getUserTopTracksRequestLimit;
 
-  @Value("${spotifyrun.client.requests.get-user-top-tracks.offset}")
+  @Value("${suddenrun.client.requests.get-user-top-tracks.offset}")
   private Integer getUserTopTracksRequestOffset;
 
-  @Value("${spotifyrun.client.requests.get-user-top-tracks.time-range}")
+  @Value("${suddenrun.client.requests.get-user-top-tracks.time-range}")
   private String getUserTopTracksRequestTimeRange;
 
-  @Value("${spotifyrun.client.requests.get-recommendations.limit}")
+  @Value("${suddenrun.client.requests.get-recommendations.limit}")
   private Integer getRecommendationsRequestLimit;
 
-  @Value("${spotifyrun.client.requests.update-playlist-items-request.position}")
+  @Value("${suddenrun.client.requests.update-playlist-items-request.position}")
   private Integer updatePlaylistItemsRequestPosition;
 
   @Bean
