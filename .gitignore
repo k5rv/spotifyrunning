@@ -34,9 +34,8 @@ build/
 
 ### Spring Boot Profiles ###
 /src/main/resources/application-development.yml
-/src/main/resources/application-test.yml
 /src/main/resources/application-kube.yml
-/src/main/resources/application-docker.yml.yml
+/src/main/resources/application-docker.yml
 
 
 ### AWS Scripts Output ###
