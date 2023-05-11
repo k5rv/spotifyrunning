@@ -4,16 +4,16 @@
 #
 source ./utils.sh
 
-DB_NAME="spotifyrun"
-DB_INSTANCE_IDENTIFIER="spotifyrun"
+DB_NAME="suddenrun"
+DB_INSTANCE_IDENTIFIER="suddenrun"
 ENGINE="postgres"
 ENGINE_VERSION="15.2"
-MASTER_USER_NAME="spotifyrun"
-MASTER_USER_PASSWORD="spotifyrun"
-SECURITY_GROUP_NAME="spotifyrun"
+MASTER_USER_NAME="suddenrun"
+MASTER_USER_PASSWORD="suddenrun"
+SECURITY_GROUP_NAME="suddenrun"
 SUBNET_PRIVATE_A_NAME="private-eu-north-1a"
 SUBNET_PRIVATE_B_NAME="private-eu-north-1b"
-DB_SUBNET_GROUP_NAME="spotifyrunsubnetgroup"
+DB_SUBNET_GROUP_NAME="suddenrunsubnetgroup"
 DB_INSTANCE_CLASS="db.t3.micro"
 STORAGE_TYPE="gp2"
 ALLOCATED_STORAGE=10

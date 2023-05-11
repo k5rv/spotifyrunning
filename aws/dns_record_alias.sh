@@ -6,7 +6,7 @@ source ./utils.sh
 
 RECORD_NAME="suddenrun.com"
 ROUTE_53_HOSTED_ZONE_NAME="suddenrun.com."
-ALB_NAME="spotifyrun-alb"
+ALB_NAME="suddenrun-alb"
 CREATE_RECORD_FILE_NAME="route53-create-record.json"
 DELETE_RECORD_FILE_NAME="route53-delete-record.json"
 

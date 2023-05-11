@@ -4,14 +4,14 @@
 #
 source ./utils.sh
 
-CLUSTER_NAME="spotifyrun"
+CLUSTER_NAME="suddenrun"
 REGION="eu-north-1"
-VPC_NAME="spotifyrun"
+VPC_NAME="suddenrun"
 SUBNET_PRIVATE_A_NAME="private-eu-north-1a"
 SUBNET_PRIVATE_B_NAME="private-eu-north-1b"
 VERSION="1.26"
 INSTANCE_TYPE="t3.small"
-MANAGED_NODES_GROUP_NAME="spotifyrun"
+MANAGED_NODES_GROUP_NAME="suddenrun"
 MIN_SIZE=1
 MAX_SIZE=2
 DESIRED_CAPACITY=1
