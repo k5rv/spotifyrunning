@@ -1,0 +1,57 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+
+spring:
+  application:
+    name: suddenrun
+  datasource:
+    url: jdbc:postgresql://localhost:5432/suddenrun
+    username: suddenrun
+    password: suddenrun
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  cloud:
+    openfeign:
+      client:
+        config:
+          spotify:
+            url: http://127.0.0.1:${wiremock.server.port}/v1
+            logger-level: basic
+
+suddenrun:
+  playlist:
+    details:
+      name: "Running Workout"
+      description: "Music for your training based on Spotify recommendations"
+      public: TRUE
+      size: 50
+    music-features:
+      min-tempo: "120"
+      max-tempo: "140"
+      min-energy: "0.65"
+      min-popularity: ""
+  client:
+    requests:
+      get-user-top-tracks:
+        limit: 4
+        offset: 0
+        time-range: LONG_TERM
+      get-recommendations:
+        limit: 100
+      update-playlist-items-request:
+        position: 0
+
+logging:
+  level:
+    com.ksaraev.suddenrun: INFO
+    org.springframework.web: INFO

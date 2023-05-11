@@ -1,0 +1,66 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never
+
+spring:
+  application:
+    name: suddenrun
+  security:
+    oauth2:
+      client:
+        registration:
+          spotify:
+            client-name: spotify
+            client-id: client-id-value
+            client-secret: client-secret-value
+            provider: spotify
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: user-read-email, user-top-read, playlist-modify-public, playlist-modify-private
+        provider:
+          spotify:
+            authorization-uri: https://accounts.spotify.com/authorize?show_dialog=false
+            token-uri: https://accounts.spotify.com/api/token
+            user-info-uri: https://api.spotify.com/v1/me
+            user-name-attribute: display_name
+  cloud:
+    openfeign:
+      client:
+        config:
+          spotify:
+            url: https://api.spotify.com/v1
+            logger-level: none
+      oauth2:
+        enabled: true
+        clientRegistrationId: spotify
+
+suddenrun:
+  playlist:
+    details:
+      name: "Running Workout"
+      description: "Music for your training based on Spotify recommendations"
+      public: TRUE
+      size: 50
+    music-features:
+      min-tempo: "120"
+      max-tempo: "140"
+      min-energy: "0.65"
+      min-popularity: ""
+  client:
+    requests:
+      get-user-top-tracks:
+        limit: 4
+        offset: 0
+        time-range: LONG_TERM
+      get-recommendations:
+        limit: 100
+      update-playlist-items-request:
+        position: 0
+
+logging:
+  level:
+    com.ksaraev.suddenrun: ERROR
