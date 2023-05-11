@@ -33,10 +33,13 @@ build/
 .vscode/
 
 ### Spring Boot Profiles ###
-/src/main/resources/application-development.yml
-/src/main/resources/application-test.yml
-/src/main/resources/application-kube.yml
-/src/main/resources/application-docker.yml.yml
+!/src/main/resources/application-development.yml
+#/src/main/resources/application-test.yml
+#/src/main/resources/application-kube.yml
+#/src/main/resources/application-docker.yml.yml
+!/src/main/resources/application-docker.yml
+!/src/main/resources/application-kube.yml
+!/src/main/resources/application-test.yml
 
 
 ### AWS Scripts Output ###
@@ -51,3 +54,4 @@ build/
 /.jpb/
 /.jpb/jpb-settings.xml
 .DS_Store
+
