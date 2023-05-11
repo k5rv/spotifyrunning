@@ -7,11 +7,11 @@ server:
 
 spring:
   application:
-    name: spotifyrun
+    name: suddenrun
   datasource:
-    url: jdbc:postgresql://localhost:5432/spotifyrun
-    username: user
-    password: pass
+    url: jdbc:postgresql://localhost:5432/suddenrun
+    username: suddenrun
+    password: suddenrun
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -28,7 +28,7 @@ spring:
             url: http://127.0.0.1:${wiremock.server.port}/v1
             logger-level: basic
 
-spotifyrun:
+suddenrun:
   playlist:
     details:
       name: "Running Workout"
@@ -53,5 +53,5 @@ spotifyrun:
 
 logging:
   level:
-    com.ksaraev.spotifyrun: INFO
+    com.ksaraev.suddenrun: INFO
     org.springframework.web: INFO

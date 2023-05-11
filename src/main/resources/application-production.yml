@@ -63,4 +63,4 @@ suddenrun:
 
 logging:
   level:
-    com.ksaraev.spotifyrun: ERROR
+    com.ksaraev.suddenrun: ERROR
