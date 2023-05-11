@@ -1,10 +1,11 @@
-const BASE_URL = "http://localhost:8082"
-const PLAYLIST_API = "/api/v1/playlists"
-const USER_API = "/api/v1/users"
+//const BASE_URL = "http://localhost:8082"
+const BASE_URL = "https://suddenrun.com"
+const PLAYLIST = "/api/v1/playlists"
+const USER = "/api/v1/users"
 
 
 function registerUser() {
-    const request = sendRequest("POST", BASE_URL + USER_API, null);
+    const request = sendRequest("POST", BASE_URL + USER, null);
     if (request.status === 200) {
         return JSON.parse(request.responseText);
     }
@@ -12,7 +13,7 @@ function registerUser() {
 }
 
 function getUser() {
-    const request = sendRequest("GET", BASE_URL + USER_API, null);
+    const request = sendRequest("GET", BASE_URL + USER, null);
     if (request.status === 200) {
         return JSON.parse(request.responseText);
     }
@@ -20,7 +21,7 @@ function getUser() {
 }
 
 function createPlaylist() {
-    const request = sendRequest("POST", BASE_URL + PLAYLIST_API, null);
+    const request = sendRequest("POST", BASE_URL + PLAYLIST, null);
     if (request.status === 200) {
         return JSON.parse(request.responseText);
     }
@@ -28,7 +29,7 @@ function createPlaylist() {
 }
 
 function getPlaylist() {
-    const request = sendRequest("GET", BASE_URL + PLAYLIST_API, null);
+    const request = sendRequest("GET", BASE_URL + PLAYLIST, null);
     if (request.status === 200) {
         return JSON.parse(request.responseText);
     }
@@ -36,7 +37,7 @@ function getPlaylist() {
 }
 
 function updatePlaylist() {
-    const request = sendRequest("PUT", BASE_URL + PLAYLIST_API, null);
+    const request = sendRequest("PUT", BASE_URL + PLAYLIST, null);
     if (request.status === 200) {
         return JSON.parse(request.responseText);
     }
