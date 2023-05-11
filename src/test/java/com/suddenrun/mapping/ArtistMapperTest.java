@@ -1,12 +1,12 @@
 package com.suddenrun.mapping;
 
-import static com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
+import static com.suddenrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 
-import com.ksaraev.spotifyrun.client.dto.SpotifyArtistDto;
-import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistItem;
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistMapper;
+import com.suddenrun.client.dto.SpotifyArtistDto;
+import com.suddenrun.spotify.model.MappingSourceIsNullException;
+import com.suddenrun.spotify.model.artist.SpotifyArtist;
+import com.suddenrun.spotify.model.artist.SpotifyArtistItem;
+import com.suddenrun.spotify.model.artist.SpotifyArtistMapper;
 import com.suddenrun.utils.SpotifyHelper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

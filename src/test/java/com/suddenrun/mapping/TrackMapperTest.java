@@ -1,13 +1,13 @@
 package com.suddenrun.mapping;
 
-import com.ksaraev.spotifyrun.client.dto.*;
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtist;
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistItem;
-import com.ksaraev.spotifyrun.spotify.model.artist.SpotifyArtistMapperImpl;
-import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrack;
-import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackItem;
-import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapper;
-import com.ksaraev.spotifyrun.spotify.model.track.SpotifyTrackMapperImpl;
+import com.suddenrun.client.dto.*;
+import com.suddenrun.spotify.model.artist.SpotifyArtist;
+import com.suddenrun.spotify.model.artist.SpotifyArtistItem;
+import com.suddenrun.spotify.model.artist.SpotifyArtistMapperImpl;
+import com.suddenrun.spotify.model.track.SpotifyTrack;
+import com.suddenrun.spotify.model.track.SpotifyTrackItem;
+import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
+import com.suddenrun.spotify.model.track.SpotifyTrackMapperImpl;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;

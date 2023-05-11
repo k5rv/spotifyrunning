@@ -6,11 +6,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
-import com.ksaraev.spotifyrun.client.SpotifyClient;
-import com.ksaraev.spotifyrun.client.exception.SpotifyClientDecodingErrorResponseIsNullException;
-import com.ksaraev.spotifyrun.client.feign.exception.FeignExceptionHandler;
-import com.ksaraev.spotifyrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
-import com.ksaraev.spotifyrun.client.feign.exception.SpotifyWebApiException;
+import com.suddenrun.client.SpotifyClient;
+import com.suddenrun.client.exception.SpotifyClientDecodingErrorResponseIsNullException;
+import com.suddenrun.client.feign.exception.FeignExceptionHandler;
+import com.suddenrun.client.feign.exception.SpotifyClientFeignExceptionHandler;
+import com.suddenrun.client.feign.exception.SpotifyWebApiException;
 import feign.*;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;

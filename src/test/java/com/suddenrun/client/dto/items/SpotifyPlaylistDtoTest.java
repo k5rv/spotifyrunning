@@ -2,8 +2,8 @@ package com.suddenrun.client.dto.items;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotifyrun.client.dto.SpotifyPlaylistDto;
-import com.ksaraev.spotifyrun.client.dto.SpotifyUserProfileDto;
+import com.suddenrun.client.dto.SpotifyPlaylistDto;
+import com.suddenrun.client.dto.SpotifyUserProfileDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

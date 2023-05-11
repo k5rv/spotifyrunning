@@ -1,15 +1,15 @@
 package com.suddenrun.mapping;
 
-import static com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
+import static com.suddenrun.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.ksaraev.spotifyrun.client.dto.GetRecommendationsRequest;
-import com.ksaraev.spotifyrun.spotify.model.MappingSourceIsNullException;
-import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeatures;
-import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
-import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapperImpl;
-import com.ksaraev.spotifyrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
+import com.suddenrun.client.dto.GetRecommendationsRequest;
+import com.suddenrun.spotify.model.MappingSourceIsNullException;
+import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackFeatures;
+import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
+import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapperImpl;
+import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
