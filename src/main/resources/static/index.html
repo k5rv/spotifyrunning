@@ -200,7 +200,7 @@
 <script type="text/javascript">
 
     let state = "initial";
-    let resource = "spotify:playlist:"
+    const PLAYLIST_RESOURCE = "spotify:playlist:"
     let spinner = document.getElementById("playlist-update")
     let element = document.getElementById("playlist-view")
     let control = document.getElementById("playlist-control")
@@ -213,9 +213,13 @@
     show(spinner)
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        httpGetAsync((text) => {
-            if (text !== null) {
-                let uri = "spotify:playlist:" + JSON.parse(text).id;
+        sendAsyncHttpRequest("POST", "http://localhost:8082/api/v1/users", (response) => {
+            if (response !== null) console.log("registered user: " + JSON.parse(response).id)
+        })
+
+        sendAsyncHttpRequest("GET", "http://localhost:8082/api/v1/playlists", (response) => {
+            if (response !== null) {
+                let uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
                 console.log("received existing uri: " + uri)
                 options.uri = uri
                 state = "loaded"
@@ -235,8 +239,8 @@
                         case "initial":
                             hide(control)
                             show(spinner)
-                            httpPostAsync((text) => {
-                                    options.uri = "spotify:playlist:" + JSON.parse(text).id;
+                            sendAsyncHttpRequest("POST", "http://localhost:8082/api/v1/playlists", (response) => {
+                                    options.uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
                                     console.log("received created uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
                                     state = "created"
@@ -248,8 +252,8 @@
                         case "loaded":
                             hide(control)
                             show(spinner)
-                            httpPutAsync((text) => {
-                                    options.uri = "spotify:playlist:" + JSON.parse(text).id;
+                            sendAsyncHttpRequest("PUT", "http://localhost:8082/api/v1/playlists", (response) => {
+                                    options.uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
                                     console.log("received updated uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
                                     state = "updated"
@@ -268,61 +272,6 @@
         })
     }
 
-    function httpGetAsync(callback) {
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(xmlHttp.responseText)
-            }
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(null)
-            }
-        }
-        xmlHttp.open("GET", "http://localhost:8082/api/v1/playlists", true);
-        xmlHttp.send(null);
-    }
-
-    function httpPostAsync(callback) {
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(xmlHttp.responseText)
-            }
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(null)
-            }
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 409) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(null)
-            }
-        }
-        xmlHttp.open("POST", "http://localhost:8082/api/v1/playlists", true);
-        xmlHttp.send(null);
-    }
-
-    function httpPutAsync(callback) {
-        const xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(xmlHttp.responseText)
-            }
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(null)
-            }
-            if (xmlHttp.readyState === 4 && xmlHttp.status === 409) {
-                console.log("client received HTTP status: " + xmlHttp.status)
-                callback(null)
-            }
-        }
-        xmlHttp.open("PUT", "http://localhost:8082/api/v1/playlists", true);
-        xmlHttp.send(null);
-    }
 
     function show(element) {
         element.classList.remove("hidden")

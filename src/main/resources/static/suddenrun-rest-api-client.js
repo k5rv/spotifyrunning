@@ -4,6 +4,22 @@ const PLAYLIST = "/api/v1/playlists"
 const USER = "/api/v1/users"
 
 
+function sendAsyncHttpRequest(httpMethod, url, callback) {
+    const xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function () {
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+            console.log("client received HTTP status: " + xmlHttp.status)
+            callback(xmlHttp.responseText)
+        }
+        if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
+            console.log("client received HTTP status: " + xmlHttp.status)
+            callback(null)
+        }
+    }
+    xmlHttp.open(httpMethod, url, true);
+    xmlHttp.send(null);
+}
+
 function registerUser() {
     const request = sendRequest("POST", BASE_URL + USER, null);
     if (request.status === 200) {
