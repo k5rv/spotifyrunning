@@ -199,8 +199,8 @@
 
 <script type="text/javascript">
 
-    // const BASE_URL = "https://suddenrun.com"
-    const BASE_URL = "http://localhost:8082"
+    const BASE_URL = "https://suddenrun.com"
+    // const BASE_URL = "http://localhost:8082"
     const API_V1_PLAYLISTS = "/api/v1/playlists"
     const API_V1_USERS = "/api/v1/users"
     const PLAYLIST_RESOURCE = "spotify:playlist:"
@@ -241,7 +241,6 @@
                     console.log("state is: " + state)
                 });
                 control.addEventListener('click', () => {
-                    console.log("inside listener state is: " + state)
                     switch (state) {
                         case "initial":
                             hide(control)
@@ -251,10 +250,10 @@
                                     options.uri = PLAYLIST_RESOURCE + id;
                                     console.log("received created uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
-                                    state = "created"
-                                    console.log("state is: " + state)
                                     control.innerText = "Update playlist"
                                     addTooltip(control)
+                                    state = "created"
+                                    console.log("state is: " + state)
                                 }
                             )
                             break;
@@ -267,10 +266,10 @@
                                     options.uri = PLAYLIST_RESOURCE + id;
                                     console.log("received updated uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
-                                    state = "updated"
-                                    console.log("state is: " + state)
                                     control.innerText = "Update playlist"
                                     addTooltip(control)
+                                    state = "updated"
+                                    console.log("state is: " + state)
                                 }
                             )
                             break;
@@ -311,11 +310,12 @@
         const xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function () {
             if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-                console.log("client received HTTP status: " + xmlHttp.status)
                 callback(xmlHttp.responseText)
             }
             if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
-                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(null)
+            }
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 409) {
                 callback(null)
             }
         }
