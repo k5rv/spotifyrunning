@@ -199,6 +199,10 @@
 
 <script type="text/javascript">
 
+    const BASE_URL = "http://localhost:8082"
+    // const BASE_URL = "https://suddenrun.com"
+    const API_V1_PLAYLISTS = "/api/v1/playlists"
+    const API_V1_USERS = "/api/v1/users"
     const PLAYLIST_RESOURCE = "spotify:playlist:"
     let spinner = document.getElementById("playlist-update")
     let element = document.getElementById("playlist-view")
@@ -213,11 +217,11 @@
     show(spinner)
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        sendAsyncHttpRequest("POST", "http://localhost:8082/api/v1/users", (response) => {
+        sendAsyncHttpRequest("POST", BASE_URL + API_V1_USERS, (response) => {
             if (response !== null) console.log("registered user: " + JSON.parse(response).id)
         })
 
-        sendAsyncHttpRequest("GET", "http://localhost:8082/api/v1/playlists", (response) => {
+        sendAsyncHttpRequest("GET", BASE_URL + API_V1_PLAYLISTS, (response) => {
             if (response !== null) {
                 let uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
                 console.log("received existing uri: " + uri)
@@ -241,7 +245,7 @@
                         case "initial":
                             hide(control)
                             show(spinner)
-                            sendAsyncHttpRequest("POST", "http://localhost:8082/api/v1/playlists", (response) => {
+                            sendAsyncHttpRequest("POST", BASE_URL + API_V1_PLAYLISTS, (response) => {
                                     options.uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
                                     console.log("received created uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
@@ -256,7 +260,7 @@
                         case "loaded":
                             hide(control)
                             show(spinner)
-                            sendAsyncHttpRequest("PUT", "http://localhost:8082/api/v1/playlists", (response) => {
+                            sendAsyncHttpRequest("PUT", BASE_URL + API_V1_PLAYLISTS, (response) => {
                                     options.uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
                                     console.log("received updated uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
@@ -272,6 +276,7 @@
                     }
                 })
             }
+
             IFrameAPI.createController(element, options, callback);
             hide(spinner)
             show(control)
@@ -299,8 +304,23 @@
         });
     }
 
+    function sendAsyncHttpRequest(httpMethod, url, callback) {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(xmlHttp.responseText)
+            }
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(null)
+            }
+        }
+        xmlHttp.open(httpMethod, url, true);
+        xmlHttp.send(null);
+    }
+
 </script>
-<script type="text/javascript" src="suddenrun-rest-api-client.js"></script>
 <script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
