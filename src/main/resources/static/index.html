@@ -183,7 +183,7 @@
         <p class="lead">Suddenrun uses Spotify Web API in order to create a playlist for your running workouts. It
             looks up for recommendations based on favorite tracks with an appropriate tempo for running.</p>
         <p class="lead">
-            <button id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Click me
+            <button id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Create playlist
             </button>
         </p>
         <div id="playlist-update" class="spinner-grow hidden" style="width: 3rem; height: 3rem;" role="status">
@@ -199,11 +199,11 @@
 
 <script type="text/javascript">
 
-    let state = "initial";
     const PLAYLIST_RESOURCE = "spotify:playlist:"
     let spinner = document.getElementById("playlist-update")
     let element = document.getElementById("playlist-view")
     let control = document.getElementById("playlist-control")
+    let state = "initial";
     let options = {
         width: '100%',
         height: 352
@@ -224,6 +224,8 @@
                 options.uri = uri
                 state = "loaded"
                 console.log("state changed to: " + state)
+                control.innerText = "Update playlist"
+                addTooltip(control)
             }
             console.log("state is: " + state)
             let callback = (EmbedController) => {
@@ -245,6 +247,8 @@
                                     EmbedController.loadUri(options.uri)
                                     state = "created"
                                     console.log("state is: " + state)
+                                    control.innerText = "Update playlist"
+                                    addTooltip(control)
                                 }
                             )
                             break;
@@ -258,6 +262,8 @@
                                     EmbedController.loadUri(options.uri)
                                     state = "updated"
                                     console.log("state is: " + state)
+                                    control.innerText = "Update playlist"
+                                    addTooltip(control)
                                 }
                             )
                             break;
