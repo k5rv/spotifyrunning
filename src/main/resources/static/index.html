@@ -12,57 +12,57 @@
           integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 
     <style>
-        /*.bd-placeholder-img {*/
-        /*    font-size: 1.125rem;*/
-        /*    text-anchor: middle;*/
-        /*    -webkit-user-select: none;*/
-        /*    -moz-user-select: none;*/
-        /*    user-select: none;*/
-        /*}*/
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
 
-        /*@media (min-width: 768px) {*/
-        /*    .bd-placeholder-img-lg {*/
-        /*        font-size: 3.5rem;*/
-        /*    }*/
-        /*}*/
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
 
-        /*.b-example-divider {*/
-        /*    width: 100%;*/
-        /*    height: 3rem;*/
-        /*    background-color: rgba(0, 0, 0, .1);*/
-        /*    border: solid rgba(0, 0, 0, .15);*/
-        /*    border-width: 1px 0;*/
-        /*    box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);*/
-        /*}*/
+        .b-example-divider {
+            width: 100%;
+            height: 3rem;
+            background-color: rgba(0, 0, 0, .1);
+            border: solid rgba(0, 0, 0, .15);
+            border-width: 1px 0;
+            box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+        }
 
-        /*.b-example-vr {*/
-        /*    flex-shrink: 0;*/
-        /*    width: 1.5rem;*/
-        /*    height: 100vh;*/
-        /*}*/
+        .b-example-vr {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 100vh;
+        }
 
         .bi {
             vertical-align: -.125em;
             fill: currentColor;
         }
 
-        /*.nav-scroller {*/
-        /*    position: relative;*/
-        /*    z-index: 2;*/
-        /*    height: 2.75rem;*/
-        /*    overflow-y: hidden;*/
-        /*}*/
+        .nav-scroller {
+            position: relative;
+            z-index: 2;
+            height: 2.75rem;
+            overflow-y: hidden;
+        }
 
-        /*.nav-scroller .nav {*/
-        /*    display: flex;*/
-        /*    flex-wrap: nowrap;*/
-        /*    padding-bottom: 1rem;*/
-        /*    margin-top: -1px;*/
-        /*    overflow-x: auto;*/
-        /*    text-align: center;*/
-        /*    white-space: nowrap;*/
-        /*    -webkit-overflow-scrolling: touch;*/
-        /*}*/
+        .nav-scroller .nav {
+            display: flex;
+            flex-wrap: nowrap;
+            padding-bottom: 1rem;
+            margin-top: -1px;
+            overflow-x: auto;
+            text-align: center;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
 
         .btn-bd-primary {
             --bd-violet-bg: #712cf9;
@@ -84,6 +84,15 @@
         .bd-mode-toggle {
             z-index: 1500;
         }
+
+        div.hidden {
+            display: none;
+        }
+
+        button.hidden {
+            display: none;
+        }
+
     </style>
 
     <link href="cover.css" rel="stylesheet">
@@ -174,9 +183,11 @@
         <p class="lead">Suddenrun uses Spotify Web API in order to create a playlist for your running workouts. It
             looks up for recommendations based on favorite tracks with an appropriate tempo for running.</p>
         <p class="lead">
-            <button id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Create playlist
+            <button id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Click me
             </button>
         </p>
+        <div id="playlist-update" class="spinner-grow hidden" style="width: 3rem; height: 3rem;" role="status">
+        </div>
         <div style="height: 352px;" id="playlist-view"></div>
     </main>
 
@@ -187,59 +198,141 @@
 </div>
 
 <script type="text/javascript">
-    document.addEventListener("DOMContentLoaded", () => {
-        let target = document.getElementById("playlist-view")
-        let control = document.getElementById("playlist-control")
-        let options = {
-            width: '100%',
-            height: 352
-        };
-        embedPlaylist(target, options, control)
-    });
 
-    function embedPlaylist(target, options, control) {
-        let playlist = getPlaylist()
-        if (playlist === null) {
-            window.onSpotifyIframeApiReady = (IFrameAPI) => {
-                let callback = (EmbedController) => {
-                    control.addEventListener('click', () => {
-                        let user = getUser()
-                        if (user === null) {
-                            registerUser()
-                        }
-                        playlist = createPlaylist()
-                        if (playlist === null) {
-                            playlist = updatePlaylist()
-                        }
-                        let playlistId = playlist.id
-                        let playlistUri = 'spotify:playlist:' + playlistId
-                        EmbedController.loadUri(playlistUri)
-                        control.innerText = "Update playlist"
-                        addUpdatePlaylistTooltip(control)
-                    })
-                }
-                IFrameAPI.createController(target, options, callback);
+    let state = "initial";
+    let resource = "spotify:playlist:"
+    let spinner = document.getElementById("playlist-update")
+    let element = document.getElementById("playlist-view")
+    let control = document.getElementById("playlist-control")
+    let options = {
+        width: '100%',
+        height: 352
+    };
+
+    hide(control)
+    show(spinner)
+
+    window.onSpotifyIframeApiReady = (IFrameAPI) => {
+        httpGetAsync((text) => {
+            if (text !== null) {
+                let uri = "spotify:playlist:" + JSON.parse(text).id;
+                console.log("received existing uri: " + uri)
+                options.uri = uri
+                state = "loaded"
+                console.log("state changed to: " + state)
             }
-            return
-        }
-        window.onSpotifyIframeApiReady = (IFrameAPI) => {
-            control.innerText = "Update playlist"
-            addUpdatePlaylistTooltip(control)
-            let playlistId = playlist.id
-            options.uri = 'spotify:playlist:' + playlistId
+            console.log("state is: " + state)
             let callback = (EmbedController) => {
+                EmbedController.addListener('ready', () => {
+                    hide(spinner)
+                    show(control)
+                    state = "loaded"
+                    console.log("state is: " + state)
+                });
                 control.addEventListener('click', () => {
-                    let playlist = updatePlaylist()
-                    let playlistId = playlist.id
-                    let playlistUri = 'spotify:playlist:' + playlistId
-                    EmbedController.loadUri(playlistUri)
+                    console.log("inside listener state is: " + state)
+                    switch (state) {
+                        case "initial":
+                            hide(control)
+                            show(spinner)
+                            httpPostAsync((text) => {
+                                    options.uri = "spotify:playlist:" + JSON.parse(text).id;
+                                    console.log("received created uri: " + options.uri)
+                                    EmbedController.loadUri(options.uri)
+                                    state = "created"
+                                    console.log("state is: " + state)
+                                }
+                            )
+                            break;
+                        case "created":
+                        case "loaded":
+                            hide(control)
+                            show(spinner)
+                            httpPutAsync((text) => {
+                                    options.uri = "spotify:playlist:" + JSON.parse(text).id;
+                                    console.log("received updated uri: " + options.uri)
+                                    EmbedController.loadUri(options.uri)
+                                    state = "updated"
+                                    console.log("state is: " + state)
+                                }
+                            )
+                            break;
+                        default:
+                            break;
+                    }
                 })
             }
-            IFrameAPI.createController(target, options, callback);
-        }
+            IFrameAPI.createController(element, options, callback);
+            hide(spinner)
+            show(control)
+        })
     }
 
-    function addUpdatePlaylistTooltip(element) {
+    function httpGetAsync(callback) {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(xmlHttp.responseText)
+            }
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(null)
+            }
+        }
+        xmlHttp.open("GET", "http://localhost:8082/api/v1/playlists", true);
+        xmlHttp.send(null);
+    }
+
+    function httpPostAsync(callback) {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(xmlHttp.responseText)
+            }
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(null)
+            }
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 409) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(null)
+            }
+        }
+        xmlHttp.open("POST", "http://localhost:8082/api/v1/playlists", true);
+        xmlHttp.send(null);
+    }
+
+    function httpPutAsync(callback) {
+        const xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function () {
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(xmlHttp.responseText)
+            }
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 404) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(null)
+            }
+            if (xmlHttp.readyState === 4 && xmlHttp.status === 409) {
+                console.log("client received HTTP status: " + xmlHttp.status)
+                callback(null)
+            }
+        }
+        xmlHttp.open("PUT", "http://localhost:8082/api/v1/playlists", true);
+        xmlHttp.send(null);
+    }
+
+    function show(element) {
+        element.classList.remove("hidden")
+    }
+
+    function hide(element) {
+        element.classList.add("hidden")
+    }
+
+    function addTooltip(element) {
         let attributes = {
             "data-toggle": "tooltip",
             "data-placement": "auto",
