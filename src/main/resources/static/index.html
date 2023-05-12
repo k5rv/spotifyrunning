@@ -186,9 +186,9 @@
             <button id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Create playlist
             </button>
         </p>
-        <div id="playlist-update" class="spinner-grow hidden" style="width: 3rem; height: 3rem;" role="status">
+        <div id="playlist-state-transition" class="spinner-grow hidden" role="status" style="height: 66px; width: 66px">
         </div>
-        <div style="height: 352px;" id="playlist-view"></div>
+        <div id="playlist-view" style="height: 352px"></div>
     </main>
 
     <footer class="mt-auto text-white-50">
@@ -199,12 +199,12 @@
 
 <script type="text/javascript">
 
-    const BASE_URL = "http://localhost:8082"
     // const BASE_URL = "https://suddenrun.com"
+    const BASE_URL = "http://localhost:8082"
     const API_V1_PLAYLISTS = "/api/v1/playlists"
     const API_V1_USERS = "/api/v1/users"
     const PLAYLIST_RESOURCE = "spotify:playlist:"
-    let spinner = document.getElementById("playlist-update")
+    let spinner = document.getElementById("playlist-state-transition")
     let element = document.getElementById("playlist-view")
     let control = document.getElementById("playlist-control")
     let state = "initial";
@@ -223,7 +223,8 @@
 
         sendAsyncHttpRequest("GET", BASE_URL + API_V1_PLAYLISTS, (response) => {
             if (response !== null) {
-                let uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
+                let id = JSON.parse(response).id
+                let uri = PLAYLIST_RESOURCE + id;
                 console.log("received existing uri: " + uri)
                 options.uri = uri
                 state = "loaded"
@@ -246,7 +247,8 @@
                             hide(control)
                             show(spinner)
                             sendAsyncHttpRequest("POST", BASE_URL + API_V1_PLAYLISTS, (response) => {
-                                    options.uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
+                                    let id = JSON.parse(response).id
+                                    options.uri = PLAYLIST_RESOURCE + id;
                                     console.log("received created uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
                                     state = "created"
@@ -261,7 +263,8 @@
                             hide(control)
                             show(spinner)
                             sendAsyncHttpRequest("PUT", BASE_URL + API_V1_PLAYLISTS, (response) => {
-                                    options.uri = PLAYLIST_RESOURCE + JSON.parse(response).id;
+                                    let id = JSON.parse(response).id
+                                    options.uri = PLAYLIST_RESOURCE + id;
                                     console.log("received updated uri: " + options.uri)
                                     EmbedController.loadUri(options.uri)
                                     state = "updated"
