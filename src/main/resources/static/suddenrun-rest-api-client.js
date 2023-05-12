@@ -1,5 +1,5 @@
-//const BASE_URL = "http://localhost:8082"
-const BASE_URL = "https://suddenrun.com"
+const BASE_URL = "http://localhost:8082"
+// const BASE_URL = "https://suddenrun.com"
 const PLAYLIST = "/api/v1/playlists"
 const USER = "/api/v1/users"
 
