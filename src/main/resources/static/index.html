@@ -199,8 +199,8 @@
 
 <script type="text/javascript">
 
-    const BASE_URL = "https://suddenrun.com"
-    // const BASE_URL = "http://localhost:8082"
+    // const BASE_URL = "https://suddenrun.com"
+    const BASE_URL = "http://localhost:8082"
     const API_V1_PLAYLISTS = "/api/v1/playlists"
     const API_V1_USERS = "/api/v1/users"
     const PLAYLIST_RESOURCE = "spotify:playlist:"
@@ -217,9 +217,18 @@
     show(spinner)
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        sendAsyncHttpRequest("POST", BASE_URL + API_V1_USERS, (response) => {
-            if (response !== null) console.log("registered user: " + JSON.parse(response).id)
-        })
+
+        makeRequest('GET', BASE_URL + API_V1_USERS)
+            .then(function (response) {
+                console.log(response);
+            })
+            .catch(function (error) {
+                if (error.status === 404) {
+                    console.error("user not found: ", error.status);
+                    return makeRequest('POST', BASE_URL + API_V1_USERS)
+                }
+            });
+
 
         sendAsyncHttpRequest("GET", BASE_URL + API_V1_PLAYLISTS, (response) => {
             if (response !== null) {
@@ -324,6 +333,7 @@
     }
 
 </script>
+<script src="http-client.js"></script>
 <script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
