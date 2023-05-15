@@ -221,8 +221,19 @@
         console.log("Looking for existing playlist")
         makeRequest("GET", API_V1_PLAYLISTS).then((response) => {
             let playlistId = JSON.parse(response).id
+            options.id = playlistId
             options.uri = PLAYLIST_RESOURCE + playlistId
             console.log("Found playlist [" + options.uri + "]")
+        }).then(() => {
+            console.log("waiting for cache to update");
+            return new Promise(function (resolve, reject) {
+                setTimeout(() => {
+                    console.log("waiting complete");
+                    control.innerText = "Update playlist"
+                    addTooltip(control, PLAYLIST_EXISTS_TITLE)
+                    resolve();
+                }, 5000)
+            });
         }).catch((error) => {
             let status = error.status
             switch (status) {
@@ -234,116 +245,126 @@
                     break
             }
         }).finally(() => {
-            let callback = (EmbedController) => {
-                EmbedController.addListener("ready", () => {
-                    console.log("Embed is ready");
-                    control.innerText = "Update playlist"
-                    addTooltip(control, PLAYLIST_EXISTS_TITLE)
-                    hide(spinner)
-                    show(control)
-                    state = "loaded"
-                    console.log("State is [" + state + "]")
-                })
+                let callback = (EmbedController) => {
+                    EmbedController.addListener("ready", () => {
+                        console.log("Embed is ready");
+                        control.innerText = "Update playlist"
+                        addTooltip(control, PLAYLIST_EXISTS_TITLE)
+                        hide(spinner)
+                        show(control)
+                        state = "loaded"
+                        console.log("State is [" + state + "]")
+                    })
 
-                control.addEventListener("click", () => {
-                    hide(control)
-                    show(spinner)
-                    switch (state) {
-                        case "initial":
-                            console.log("Getting registered user")
-                            makeRequest("GET", API_V1_USERS)
-                                .then((response) => {
-                                    let userId = JSON.parse(response).id
-                                    console.log("Found user [" + userId + "]")
-                                })
-                                .catch(function (error) {
-                                    let status = error.status
-                                    switch (status) {
-                                        case (404):
-                                            console.log("User is not registered")
-                                            console.log("Registering user")
-                                            return makeRequest("POST", API_V1_USERS).then((response) => {
-                                                let userId = JSON.parse(response).id
-                                                console.log("Registered user [" + userId + "]")
+                    control.addEventListener("click", () => {
+                            hide(control)
+                            show(spinner)
+                            switch (state) {
+                                case "initial":
+                                    console.log("Getting registered user")
+                                    makeRequest("GET", API_V1_USERS)
+                                        .then((response) => {
+                                            let userId = JSON.parse(response).id
+                                            console.log("Found user [" + userId + "]")
+                                        })
+                                        .catch(function (error) {
+                                            let status = error.status
+                                            switch (status) {
+                                                case (404):
+                                                    console.log("User is not registered")
+                                                    console.log("Registering user")
+                                                    return makeRequest("POST", API_V1_USERS).then((response) => {
+                                                        let userId = JSON.parse(response).id
+                                                        console.log("Registered user [" + userId + "]")
+                                                    })
+                                                case (409):
+                                                    console.log("User already registered")
+                                                    break
+                                                default:
+                                                    console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
+                                                    break
+                                            }
+                                        }).finally(() => {
+                                        makeRequest("POST", API_V1_PLAYLISTS).then((response) => {
+                                            console.log("Creating playlist")
+                                            let playlistId = JSON.parse(response).id
+                                            options.id = playlistId
+                                            options.uri = PLAYLIST_RESOURCE + playlistId
+                                            console.log("Created playlist [" + options.uri + "]")
+                                            state = "created"
+                                            console.log("State is [" + state + "]")
+                                        }).then(() => {
+                                            console.log("waiting for cache to update");
+                                            control.innerText = "Update playlist"
+                                            addTooltip(control, PLAYLIST_EXISTS_TITLE)
+                                            return new Promise(function (resolve, reject) {
+                                                setTimeout(() => {
+                                                    console.log("waiting complete");
+                                                    resolve();
+                                                    console.log("Loading created playlist [" + options.uri + "] in embed")
+                                                    EmbedController.loadUri(options.uri)
+                                                }, 5000)
                                             })
-                                        case (409):
-                                            console.log("User already registered")
-                                            break
-                                        default:
-                                            console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                                            break
-                                    }
-                                }).finally(() => {
-                                makeRequest("POST", API_V1_PLAYLISTS).then((response) => {
-                                    console.log("Creating playlist")
-                                    let playlistId = JSON.parse(response).id
-                                    options.uri = PLAYLIST_RESOURCE + playlistId
-                                    console.log("Created playlist [" + options.uri + "]")
-                                    state = "created"
-                                    console.log("State is [" + state + "]")
-                                }).catch((error) => {
-                                    let status = error.status
-                                    switch (status) {
-                                        case 409:
-                                            console.log("Playlist already exists")
-                                            break
-                                        default:
-                                            console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                                            break
-                                    }
-                                }).finally(() => {
-                                    return makeRequest("GET", API_V1_PLAYLISTS).then((response) => {
-                                        console.log("Looking for created playlist")
-                                        let playlistId = JSON.parse(response).id
-                                        options.uri = PLAYLIST_RESOURCE + playlistId
-                                        console.log("Found created playlist [" + options.uri + "]")
-                                        console.log("Loading playlist [" + options.uri + "] in embed")
-                                        EmbedController.loadUri(options.uri)
+                                        }).catch((error) => {
+                                            let status = error.status
+                                            switch (status) {
+                                                case 409:
+                                                    console.log("Playlist already exists")
+                                                    break
+                                                default:
+                                                    console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
+                                                    break
+                                            }
+                                        })
                                     })
-                                })
-                            })
-                            break
-                        case "loaded":
-                        case "updated":
-                            makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
-                                console.log("Updating playlist")
-                                let playlistId = JSON.parse(response).id
-                                options.uri = PLAYLIST_RESOURCE + playlistId
-                                console.log("Updated playlist [" + options.uri + "]")
-                                state = "updated"
-                                console.log("State is [" + state + "]")
-                            }).catch((error) => {
-                                let status = error.status
-                                switch (status) {
-                                    case 404:
-                                        console.log("Playlist not found")
-                                        break
-                                    default:
-                                        console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                                        break
-                                }
-                            }).finally(() => {
-                                return makeRequest("GET", API_V1_PLAYLISTS).then((response) => {
-                                    console.log("Looking for updated playlist")
-                                    let playlistId = JSON.parse(response).id
-                                    options.uri = PLAYLIST_RESOURCE + playlistId
-                                    console.log("Found updated playlist [" + options.uri + "]")
-                                    console.log("Loading playlist [" + options.uri + "] in embed")
-                                    EmbedController.loadUri(options.uri)
-                                })
-                            })
-                            break
-                        default:
-                            break
-                    }
-                })
-            }
+                                    break
+                                case "loaded":
+                                case "updated":
+                                    makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
+                                        console.log("Updating playlist")
+                                        let playlistId = JSON.parse(response).id
+                                        options.id = playlistId
+                                        options.uri = PLAYLIST_RESOURCE + playlistId
+                                        console.log("Updated playlist [" + options.uri + "]")
+                                        state = "updated"
+                                        console.log("State is [" + state + "]")
+                                    }).then(() => {
+                                        console.log("waiting for cache to update");
+                                        control.innerText = "Update playlist"
+                                        addTooltip(control, PLAYLIST_EXISTS_TITLE)
+                                        return new Promise(function (resolve, reject) {
+                                            setTimeout(() => {
+                                                console.log("waiting complete");
+                                                resolve();
+                                                console.log("Loading updated playlist [" + options.uri + "] in embed")
+                                                EmbedController.loadUri(options.uri)
+                                            }, 5000)
+                                        });
+                                    }).catch((error) => {
+                                        let status = error.status
+                                        switch (status) {
+                                            case 404:
+                                                console.log("Playlist not found")
+                                                break
+                                            default:
+                                                console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
+                                                break
+                                        }
+                                    })
+                                    break
+                                default:
+                                    break
+                            }
+                        }
+                    )
+                }
 
-            IFrameAPI.createController(element, options, callback);
-            console.log("Created embed controller with uri [" + options.uri + "] height [" + options.height + "] width [" + options.width + "]")
-            hide(spinner)
-            show(control)
-        })
+                IFrameAPI.createController(element, options, callback);
+                console.log("Created embed controller with uri [" + options.uri + "] height [" + options.height + "] width [" + options.width + "]")
+                hide(spinner)
+                show(control)
+            }
+        )
 
 
     }
