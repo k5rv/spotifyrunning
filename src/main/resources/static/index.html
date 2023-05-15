@@ -240,7 +240,6 @@
             console.log("Waiting for cache to update");
             return wait(5000).then(() => {
                     control.innerText = "Update playlist"
-                    addTooltip(control, PLAYLIST_EXISTS_TITLE)
                     console.log("Embedding existing playlist [" + options.uri + "]")
                 }
             )
@@ -259,7 +258,7 @@
                     EmbedController.addListener("ready", () => {
                         console.log("Embedded playlist [" + options.uri + "]");
                         control.innerText = "Update playlist"
-                        addTooltip(control, PLAYLIST_EXISTS_TITLE)
+                        // addTooltip(control, PLAYLIST_EXISTS_TITLE)
                         hide(spinner)
                         show(control)
                         state = "embedded"
@@ -305,7 +304,6 @@
                                             console.log("Waiting for cache to update");
                                             return wait(5000).then(() => {
                                                     control.innerText = "Update playlist"
-                                                    addTooltip(control, PLAYLIST_EXISTS_TITLE)
                                                     console.log("Embedding created playlist [" + options.uri + "]")
                                                     EmbedController.loadUri(options.uri)
                                                 }
@@ -336,7 +334,6 @@
                                         console.log("Waiting for cache to update");
                                         return wait(5000).then(() => {
                                                 control.innerText = "Update playlist"
-                                                addTooltip(control, PLAYLIST_EXISTS_TITLE)
                                                 console.log("Embedding updated playlist [" + options.uri + "]")
                                                 EmbedController.loadUri(options.uri)
                                             }
