@@ -258,7 +258,6 @@
                     EmbedController.addListener("ready", () => {
                         console.log("Embedded playlist [" + options.uri + "]");
                         control.innerText = "Update playlist"
-                        // addTooltip(control, PLAYLIST_EXISTS_TITLE)
                         hide(spinner)
                         show(control)
                         state = "embedded"
@@ -351,6 +350,7 @@
                                     })
                                     break
                                 default:
+                                    console.log("State is [" + state + "] expected [initial,embedded,updated]")
                                     break
                             }
                         }
@@ -366,6 +366,48 @@
 
 
     }
+
+    function getRegisteredUser() {
+        return makeRequest("GET", API_V1_USERS)
+            .then((response) => {
+                let userId = JSON.parse(response).id
+                console.log("Found user [" + userId + "]")
+            })
+            .catch(function (error) {
+                let status = error.status
+                switch (status) {
+                    case (404):
+                        console.log("User is not registered")
+                        break
+                    case (409):
+                        console.log("User already registered")
+                        break
+                    default:
+                        console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
+                        break
+                }
+            })
+    }
+
+    function registerUser() {
+        return makeRequest("POST", API_V1_USERS)
+            .then((response) => {
+                let userId = JSON.parse(response).id
+                console.log("Registered user [" + userId + "]")
+            })
+            .catch(function (error) {
+                let status = error.status
+                switch (status) {
+                    case (409):
+                        console.log("User already registered")
+                        break
+                    default:
+                        console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
+                        break
+                }
+            })
+    }
+
 
     function wait(ms) {
         return new Promise(function (resolve, reject) {
