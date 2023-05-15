@@ -49,7 +49,26 @@ public class PlaylistService implements AppPlaylistService {
       SpotifyPlaylistItem spotifyPlaylist =
           spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
       String spotifyPlaylistId = spotifyPlaylist.getId();
+      String spotifySnapshotId = spotifyPlaylist.getSnapshotId();
+      log.info(
+          "Created "
+              + PLAYLIST_WITH_ID
+              + " ["
+              + spotifyPlaylistId
+              + "] and snapshot id ["
+              + spotifySnapshotId
+              + "]");
       spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+      spotifyPlaylistId = spotifyPlaylist.getId();
+      spotifySnapshotId = spotifyPlaylist.getSnapshotId();
+      log.info(
+          "Get "
+              + PLAYLIST_WITH_ID
+              + " ["
+              + spotifyPlaylistId
+              + "] and snapshot id ["
+              + spotifySnapshotId
+              + "]");
       AppPlaylist appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist = playlistRepository.save((Playlist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
@@ -163,6 +182,7 @@ public class PlaylistService implements AppPlaylistService {
               + appPlaylistId
               + "]");
       Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findById(appPlaylistId);
+
       if (appRunningWorkoutPlaylist.isEmpty()) {
         log.error(PLAYLIST_WITH_ID + appPlaylistId + "] doesn't exist in app");
         throw new AppPlaylistServicePlaylistDoesNotExistException(appPlaylistId);
@@ -265,15 +285,41 @@ public class PlaylistService implements AppPlaylistService {
 
       boolean spotifyRemoveTracksExist = !spotifyRemoveTracks.isEmpty();
       if (spotifyRemoveTracksExist) {
-        spotifyPlaylistService.removeTracks(spotifyPlaylistId, spotifyRemoveTracks);
+        String snapshotId =
+            spotifyPlaylistService.removeTracks(spotifyPlaylistId, spotifyRemoveTracks);
+        log.info(
+            "Removed tracks from "
+                + PLAYLIST_WITH_ID
+                + " ["
+                + spotifyPlaylistId
+                + "] and snapshot id ["
+                + snapshotId
+                + "]");
       }
 
       boolean spotifyAddTracksExist = !spotifyAddTracks.isEmpty();
       if (spotifyAddTracksExist) {
-        spotifyPlaylistService.addTracks(spotifyPlaylistId, spotifyAddTracks);
+        String snapshotId = spotifyPlaylistService.addTracks(spotifyPlaylistId, spotifyAddTracks);
+        log.info(
+            "Added tracks to "
+                + PLAYLIST_WITH_ID
+                + " ["
+                + spotifyPlaylistId
+                + "] and snapshot id ["
+                + snapshotId
+                + "]");
       }
 
       spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+      String snapshotId = spotifyPlaylist.getSnapshotId();
+      log.info(
+          "Received "
+              + PLAYLIST_WITH_ID
+              + " ["
+              + spotifyPlaylistId
+              + "] and snapshot id ["
+              + snapshotId
+              + "]");
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist.setCustomTracks(customTracks);
       appPlaylist.setRejectedTracks(rejectedTracks);
