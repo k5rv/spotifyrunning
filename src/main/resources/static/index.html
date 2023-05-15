@@ -198,31 +198,43 @@
 </div>
 
 <script type="text/javascript">
-
-    const BASE_URL = "https://suddenrun.com"
-    // const BASE_URL = "http://localhost:8082"
+    // const BASE_URL = "https://suddenrun.com"
+    const BASE_URL = "http://localhost:8082"
     const API_V1_PLAYLISTS = BASE_URL + "/api/v1/playlists"
     const API_V1_USERS = BASE_URL + "/api/v1/users"
     const PLAYLIST_RESOURCE = "spotify:playlist:"
+    const SPOTIFY = "spotify"
+    const PLAYLIST = "playlist"
+
+
     const PLAYLIST_EXISTS_TITLE = "It looks like you already created playlist. Click the button to request Spotify recommendations one more time and update your tracks."
+
     let spinner = document.getElementById("playlist-state-transition")
     let element = document.getElementById("playlist-view")
     let control = document.getElementById("playlist-control")
-    let state = "initial";
     let options = {
         width: '100%',
         height: 352
     };
 
+    let state = "initial";
+
     hide(control)
     show(spinner)
+
+    function buildSpotifyPlaylistUri(id) {
+        return "spotify:playlist:" + id
+    }
+
+    function buildUri(owner, type, id) {
+        return owner + ":" + type + ":" + id
+    }
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
         console.log("Looking for existing playlist")
         makeRequest("GET", API_V1_PLAYLISTS).then((response) => {
-            let playlistId = JSON.parse(response).id
-            options.id = playlistId
-            options.uri = PLAYLIST_RESOURCE + playlistId
+            let id = JSON.parse(response).id
+            options.uri = buildUri(SPOTIFY, PLAYLIST, id)
             console.log("Found playlist [" + options.uri + "]")
         }).then(() => {
             console.log("waiting for cache to update");
@@ -255,7 +267,6 @@
                         state = "loaded"
                         console.log("State is [" + state + "]")
                     })
-
                     control.addEventListener("click", () => {
                             hide(control)
                             show(spinner)
@@ -285,11 +296,10 @@
                                                     break
                                             }
                                         }).finally(() => {
+                                        console.log("Creating playlist [" + options.uri + "]")
                                         makeRequest("POST", API_V1_PLAYLISTS).then((response) => {
-                                            console.log("Creating playlist")
-                                            let playlistId = JSON.parse(response).id
-                                            options.id = playlistId
-                                            options.uri = PLAYLIST_RESOURCE + playlistId
+                                            let id = JSON.parse(response).id
+                                            options.uri = buildUri(SPOTIFY, PLAYLIST, id)
                                             console.log("Created playlist [" + options.uri + "]")
                                             state = "created"
                                             console.log("State is [" + state + "]")
@@ -320,11 +330,10 @@
                                     break
                                 case "loaded":
                                 case "updated":
+                                    console.log("Updating playlist [" + options.uri + "]")
                                     makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
-                                        console.log("Updating playlist")
-                                        let playlistId = JSON.parse(response).id
-                                        options.id = playlistId
-                                        options.uri = PLAYLIST_RESOURCE + playlistId
+                                        let id = JSON.parse(response).id
+                                        options.uri = buildUri(SPOTIFY, PLAYLIST, id)
                                         console.log("Updated playlist [" + options.uri + "]")
                                         state = "updated"
                                         console.log("State is [" + state + "]")
@@ -368,6 +377,8 @@
 
 
     }
+
+
 
     function show(element) {
         element.classList.remove("hidden")
