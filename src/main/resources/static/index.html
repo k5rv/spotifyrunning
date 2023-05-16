@@ -183,12 +183,14 @@
         <p class="lead">Suddenrun uses Spotify Web API in order to create a playlist for your running workouts. It
             looks up for recommendations based on favorite tracks with an appropriate tempo for running.</p>
         <p class="lead">
-            <button id="playlist-control" class="btn btn-lg btn-light fw-bold border-white bg-white">Create playlist
+            <button id="embed-control-button" class="btn btn-lg btn-light fw-bold border-white bg-white">Create
+                playlist
             </button>
         </p>
-        <div id="playlist-state-transition" class="spinner-grow hidden" role="status" style="height: 66px; width: 66px">
+        <div id="embed-state-transition-spinner" class="spinner-grow hidden" role="status"
+             style="height: 66px; width: 66px">
         </div>
-        <div id="playlist-view" style="height: 352px"></div>
+        <div id="embed-iframe" style="height: 352px"></div>
     </main>
 
     <footer class="mt-auto text-white-50">
@@ -202,196 +204,178 @@
     const BASE_URL = "http://localhost:8082"
     const API_V1_PLAYLISTS = BASE_URL + "/api/v1/playlists"
     const API_V1_USERS = BASE_URL + "/api/v1/users"
-    const PLAYLIST_RESOURCE = "spotify:playlist:"
-    const SPOTIFY = "spotify"
-    const PLAYLIST = "playlist"
-
 
     const PLAYLIST_EXISTS_TITLE = "It looks like you already created playlist. Click the button to request Spotify recommendations one more time and update your tracks."
 
-    let spinner = document.getElementById("playlist-state-transition")
-    let element = document.getElementById("playlist-view")
-    let control = document.getElementById("playlist-control")
-    let options = {
+    let embedOptions = {
         width: '100%',
         height: 352
     };
+    let embedIFrame = document.getElementById("embed-iframe")
+    let embedControlButton = document.getElementById("embed-control-button")
+    let embedStateTransitionSpinner = document.getElementById("embed-state-transition-spinner")
+    let embedState = "initial";
 
-    let state = "initial";
-
-    hide(control)
-    show(spinner)
-
-    function buildSpotifyPlaylistUri(id) {
-        return "spotify:playlist:" + id
-    }
-
-    function buildUri(owner, type, id) {
-        return owner + ":" + type + ":" + id
-    }
+    hide(embedControlButton)
+    show(embedStateTransitionSpinner)
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        console.log("Looking for existing playlist")
-        makeRequest("GET", API_V1_PLAYLISTS).then((response) => {
-            let id = JSON.parse(response).id
-            options.uri = buildUri(SPOTIFY, PLAYLIST, id)
-            console.log("Found playlist [" + options.uri + "]")
-        }).then(() => {
-            console.log("Waiting for cache to update");
-            return wait(5000).then(() => {
-                    control.innerText = "Update playlist"
-                    console.log("Embedding existing playlist [" + options.uri + "]")
-                }
-            )
-        }).catch((error) => {
-            let status = error.status
-            switch (status) {
-                case 404:
-                    console.log("Playlist not found")
-                    break
-                default:
-                    console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                    break
+        getPlaylist().then((playlist) => {
+            if (playlist !== null) {
+                embedOptions.uri = buildUri(playlist)
+                return waitCache(5000)
             }
         }).finally(() => {
-                let callback = (EmbedController) => {
+                let embedmentCallback = (EmbedController) => {
                     EmbedController.addListener("ready", () => {
-                        console.log("Embedded playlist [" + options.uri + "]");
-                        control.innerText = "Update playlist"
-                        hide(spinner)
-                        show(control)
-                        state = "embedded"
-                        console.log("State is [" + state + "]")
+                        console.log("Loaded playlist [" + embedOptions.uri + "]");
+                        embedControlButton.innerText = "Update playlist"
+                        hide(embedStateTransitionSpinner)
+                        show(embedControlButton)
+                        embedState = "loaded"
+                        console.log("Embed state is [" + embedState + "]")
                     })
-                    control.addEventListener("click", () => {
-                            hide(control)
-                            show(spinner)
-                            switch (state) {
+                    embedControlButton.addEventListener("click", () => {
+                            hide(embedControlButton)
+                            show(embedStateTransitionSpinner)
+                            switch (embedState) {
                                 case "initial":
-                                    getRegisteredUser().then(() => registerUser()).finally(() => {
-                                        console.log("Creating playlist")
-                                        makeRequest("POST", API_V1_PLAYLISTS).then((response) => {
-                                            let id = JSON.parse(response).id
-                                            options.uri = buildUri(SPOTIFY, PLAYLIST, id)
-                                            console.log("Created playlist [" + options.uri + "]")
-                                            state = "created"
-                                            console.log("State is [" + state + "]")
-                                        }).then(() => {
-                                            console.log("Waiting for cache to update");
-                                            return wait(5000).then(() => {
-                                                    control.innerText = "Update playlist"
-                                                    console.log("Embedding created playlist [" + options.uri + "]")
-                                                    EmbedController.loadUri(options.uri)
-                                                }
-                                            )
-                                        }).catch((error) => {
-                                            let status = error.status
-                                            switch (status) {
-                                                case 409:
-                                                    console.log("Playlist already exists")
-                                                    break
-                                                default:
-                                                    console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                                                    break
-                                            }
-                                        })
+                                    getUser().then((user) => {
+                                        if (user === null) return registerUser()
+                                    }).then(() => {
+                                        return createPlaylist()
+                                    }).then((playlist) => {
+                                        embedOptions.uri = buildUri(playlist)
+                                        return waitCache(5000)
+                                    }).then(() => {
+                                        console.log("Loading created playlist [" + embedOptions.uri + "]")
+                                        EmbedController.loadUri(embedOptions.uri)
                                     })
                                     break
-                                case "embedded":
-                                case "updated":
-                                    console.log("Updating playlist [" + options.uri + "]")
-                                    makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
-                                        let id = JSON.parse(response).id
-                                        options.uri = buildUri(SPOTIFY, PLAYLIST, id)
-                                        console.log("Updated playlist [" + options.uri + "]")
-                                        state = "updated"
-                                        console.log("State is [" + state + "]")
+                                case "loaded":
+                                    updatePlaylist().then((playlist) => {
+                                        embedOptions.uri = buildUri(playlist)
+                                        return waitCache(5000)
                                     }).then(() => {
-                                        console.log("Waiting for cache to update");
-                                        return wait(5000).then(() => {
-                                                control.innerText = "Update playlist"
-                                                console.log("Embedding updated playlist [" + options.uri + "]")
-                                                EmbedController.loadUri(options.uri)
-                                            }
-                                        )
-                                    }).catch((error) => {
-                                        let status = error.status
-                                        switch (status) {
-                                            case 404:
-                                                console.log("Playlist not found")
-                                                break
-                                            default:
-                                                console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                                                break
-                                        }
+                                        console.log("Loading updated playlist [" + embedOptions.uri + "]")
+                                        EmbedController.loadUri(embedOptions.uri)
                                     })
                                     break
                                 default:
-                                    console.log("State is [" + state + "] expected [initial,embedded,updated]")
+                                    console.log("Unexpected embed state [" + embedState + "] expected states are [\"initial\",\"loaded\"]")
                                     break
                             }
                         }
                     )
                 }
-
-                IFrameAPI.createController(element, options, callback);
-                console.log("Created embed controller with uri [" + options.uri + "] height [" + options.height + "] width [" + options.width + "]")
-                hide(spinner)
-                show(control)
+                IFrameAPI.createController(embedIFrame, embedOptions, embedmentCallback);
+                console.log("Created embed with options: height [" + embedOptions.height + "] and width [" + embedOptions.width + "]")
+                hide(embedStateTransitionSpinner)
+                show(embedControlButton)
             }
         )
-
-
     }
 
-    function getRegisteredUser() {
-        console.log("Getting registered user")
-        return makeRequest("GET", API_V1_USERS)
-            .then((response) => {
-                let userId = JSON.parse(response).id
-                console.log("Found user [" + userId + "]")
-            })
-            .catch(function (error) {
-                let status = error.status
-                switch (status) {
-                    case (404):
-                        console.log("User is not registered")
-                        break
-                    default:
-                        console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                        break
-                }
-            })
+    function buildUri(playlist) {
+        return "spotify:playlist:" + playlist.id
+    }
+
+
+    function getUser() {
+        console.log("Getting user")
+        return makeRequest("GET", API_V1_USERS).then((response) => {
+            if (response.status === 404) {
+                console.log("User not found")
+                return null
+            }
+            if (response.status >= 200 && response.status < 300) {
+                let user = JSON.parse(response.message)
+                console.log("Found user [" + user.id + "]")
+                return user
+            }
+            throw new Error("Unexpected HTTP status [" + response.status + "]")
+        })
+
     }
 
     function registerUser() {
         console.log("Registering user")
-        return makeRequest("POST", API_V1_USERS)
-            .then((response) => {
-                let userId = JSON.parse(response).id
-                console.log("Registered user [" + userId + "]")
-            })
-            .catch(function (error) {
-                let status = error.status
-                switch (status) {
-                    case (409):
-                        console.log("User already registered")
-                        break
-                    default:
-                        console.log("Unexpected error [" + error.statusText + "] status [" + error.status + "]")
-                        break
-                }
-            })
+        return makeRequest("POST", API_V1_USERS).then((response) => {
+            if (response.status === 409) {
+                console.log("User already registered")
+                return null
+            }
+            if (response.status >= 200 && response.status < 300) {
+                let user = JSON.parse(response.message)
+                console.log("Registered user [" + user.id + "]")
+                return user
+            }
+            throw new Error("Unexpected HTTP status [" + response.status + "]")
+        })
+    }
+
+    function getPlaylist() {
+        console.log("Getting playlist")
+        return makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
+            if (response.status === 404) {
+                console.log("Playlist doesn't exist")
+                return null
+            }
+            if (response.status >= 200 && response.status < 300) {
+                let playlist = JSON.parse(response.message)
+                console.log("Found playlist [" + playlist.id + "]")
+                return playlist
+            }
+            throw new Error("Unexpected HTTP status [" + response.status + "]")
+        })
     }
 
 
-    function wait(ms) {
+    function createPlaylist() {
+        console.log("Creating playlist")
+        return makeRequest("POST", API_V1_PLAYLISTS).then((response) => {
+            if (response.status === 409) {
+                console.log("Playlist already exist")
+                return null
+            }
+            if (response.status >= 200 && response.status < 300) {
+                let playlist = JSON.parse(response.message)
+                console.log("Created playlist [" + playlist.id + "]")
+                return playlist
+            }
+            throw new Error("Unexpected HTTP status [" + response.status + "]")
+        })
+    }
+
+    function updatePlaylist() {
+        console.log("Updating playlist")
+        return makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
+            if (response.status === 404) {
+                console.log("Playlist doesn't exist")
+                return null
+            }
+            if (response.status >= 200 && response.status < 300) {
+                let playlist = JSON.parse(response.message)
+                console.log("Updated playlist [" + playlist.id + "]")
+                return playlist
+            }
+            throw new Error("Unexpected HTTP status [" + response.status + "]")
+        })
+    }
+
+
+    function waitCache(ms) {
         return new Promise(function (resolve, reject) {
-            console.log("Waiting for [" + ms + "] ms");
-            setTimeout(() => {
-                console.log("Waiting complete");
-                resolve();
-            }, ms)
+            try {
+                console.log("Waiting for cache to update [" + ms + "] ms");
+                setTimeout(() => {
+                    console.log("Waiting complete");
+                    resolve();
+                }, ms)
+            } catch (err) {
+                console.log("Error during waiting [" + err + "]")
+                reject();
+            }
         });
     }
 
