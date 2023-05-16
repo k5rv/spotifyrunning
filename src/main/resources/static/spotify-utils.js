@@ -1,8 +1,8 @@
-export function buildUri(playlist) {
+function buildUri(playlist) {
     return "spotify:playlist:" + playlist.id
 }
 
-export function waitCache(ms) {
+function waitCache(ms) {
     return new Promise(function (resolve, reject) {
         try {
             console.log("Waiting for cache to update [" + ms + "] ms");

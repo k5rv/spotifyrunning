@@ -1,11 +1,11 @@
-import {sendRequest} from "./http-client.js";
+// import {sendRequest} from "./http-client.js";
 
 const BASE_URL = "https://suddenrun.com"
 // const BASE_URL = "http://localhost:8082"
 const API_V1_PLAYLISTS = "/api/v1/playlists"
 const API_V1_USERS = "/api/v1/users"
 
-export function getUser() {
+function getUser() {
     console.log("Getting user")
     return sendRequest("GET", BASE_URL + API_V1_USERS).then((response) => {
         if (response.status === 404) {
@@ -21,7 +21,7 @@ export function getUser() {
     })
 }
 
-export function registerUser() {
+function registerUser() {
     console.log("Registering user")
     return sendRequest("POST", BASE_URL + API_V1_USERS).then((response) => {
         if (response.status === 409) {
@@ -37,7 +37,7 @@ export function registerUser() {
     })
 }
 
-export function getPlaylist() {
+function getPlaylist() {
     console.log("Getting playlist")
     return sendRequest("GET", BASE_URL + API_V1_PLAYLISTS).then((response) => {
         if (response.status === 404) {
@@ -53,7 +53,7 @@ export function getPlaylist() {
     })
 }
 
-export function createPlaylist() {
+function createPlaylist() {
     console.log("Creating playlist")
     return sendRequest("POST", BASE_URL + API_V1_PLAYLISTS).then((response) => {
         if (response.status === 409) {
@@ -69,7 +69,7 @@ export function createPlaylist() {
     })
 }
 
-export function updatePlaylist() {
+function updatePlaylist() {
     console.log("Updating playlist")
     return sendRequest("PUT", BASE_URL + API_V1_PLAYLISTS).then((response) => {
         if (response.status === 404) {
@@ -84,3 +84,24 @@ export function updatePlaylist() {
         throw new Error("Unexpected HTTP status [" + response.status + "]")
     })
 }
+
+function sendRequest(method, url) {
+    return new Promise(function (resolve, reject) {
+        const xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.onload = function () {
+            resolve({
+                status: xhr.status,
+                message: xhr.responseText
+            });
+        };
+        xhr.onerror = function () {
+            reject({
+                status: xhr.status,
+                message: xhr.responseText
+            });
+        };
+        xhr.send();
+    });
+}
+
