@@ -183,7 +183,7 @@
         <p class="lead">Suddenrun uses Spotify Web API in order to create a playlist for your running workouts. It
             looks up for recommendations based on favorite tracks with an appropriate tempo for running.</p>
         <p class="lead">
-            <button id="embed-control-button" class="btn btn-lg btn-light fw-bold border-white bg-white">Create
+            <button id="embed-control-button" class="btn btn-lg btn-light fw-bold border-white bg-white hidden">Create
                 playlist
             </button>
         </p>
@@ -199,39 +199,37 @@
     </footer>
 </div>
 
-<script type="text/javascript">
-    // const BASE_URL = "https://suddenrun.com"
-    const BASE_URL = "http://localhost:8082"
-    const API_V1_PLAYLISTS = BASE_URL + "/api/v1/playlists"
-    const API_V1_USERS = BASE_URL + "/api/v1/users"
+<script type="module">
+    import * as client from "./suddenrun-rest-api-client.js"
+    import * as utils from "./spotify-utils.js"
 
-    const PLAYLIST_EXISTS_TITLE = "It looks like you already created playlist. Click the button to request Spotify recommendations one more time and update your tracks."
+    const embedIFrame = document.getElementById("embed-iframe")
+    const embedControlButton = document.getElementById("embed-control-button")
+    const embedStateTransitionSpinner = document.getElementById("embed-state-transition-spinner")
 
     let embedOptions = {
         width: '100%',
         height: 352
     };
-    let embedIFrame = document.getElementById("embed-iframe")
-    let embedControlButton = document.getElementById("embed-control-button")
-    let embedStateTransitionSpinner = document.getElementById("embed-state-transition-spinner")
+
     let embedState = "initial";
 
-    hide(embedControlButton)
     show(embedStateTransitionSpinner)
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        getPlaylist().then((playlist) => {
+        client.getPlaylist().then((playlist) => {
             if (playlist !== null) {
-                embedOptions.uri = buildUri(playlist)
-                return waitCache(5000)
+                embedOptions.uri = utils.buildUri(playlist)
+                embedControlButton.innerText = "Update playlist"
+                addTooltip(embedControlButton)
+                return utils.waitCache(5000)
             }
         }).finally(() => {
                 let embedmentCallback = (EmbedController) => {
                     EmbedController.addListener("ready", () => {
-                        console.log("Loaded playlist [" + embedOptions.uri + "]");
-                        embedControlButton.innerText = "Update playlist"
                         hide(embedStateTransitionSpinner)
                         show(embedControlButton)
+                        console.log("Loaded playlist [" + embedOptions.uri + "]");
                         embedState = "loaded"
                         console.log("Embed state is [" + embedState + "]")
                     })
@@ -240,25 +238,33 @@
                             show(embedStateTransitionSpinner)
                             switch (embedState) {
                                 case "initial":
-                                    getUser().then((user) => {
-                                        if (user === null) return registerUser()
+                                    client.getUser().then((user) => {
+                                        if (user === null) return client.registerUser()
                                     }).then(() => {
-                                        return createPlaylist()
+                                        return client.createPlaylist()
                                     }).then((playlist) => {
-                                        embedOptions.uri = buildUri(playlist)
-                                        return waitCache(5000)
+                                        embedOptions.uri = utils.buildUri(playlist)
+                                        return utils.waitCache(5000)
                                     }).then(() => {
+                                        embedControlButton.innerText = "Update playlist"
+                                        addTooltip(embedControlButton)
+                                        hide(embedStateTransitionSpinner)
+                                        show(embedControlButton)
                                         console.log("Loading created playlist [" + embedOptions.uri + "]")
-                                        EmbedController.loadUri(embedOptions.uri)
+                                        return EmbedController.loadUri(embedOptions.uri)
                                     })
                                     break
                                 case "loaded":
-                                    updatePlaylist().then((playlist) => {
-                                        embedOptions.uri = buildUri(playlist)
-                                        return waitCache(5000)
+                                    client.updatePlaylist().then((playlist) => {
+                                        embedOptions.uri = utils.buildUri(playlist)
+                                        return utils.waitCache(5000)
                                     }).then(() => {
+                                        embedControlButton.innerText = "Update playlist"
+                                        addTooltip(embedControlButton)
+                                        hide(embedStateTransitionSpinner)
+                                        show(embedControlButton)
                                         console.log("Loading updated playlist [" + embedOptions.uri + "]")
-                                        EmbedController.loadUri(embedOptions.uri)
+                                        return EmbedController.loadUri(embedOptions.uri)
                                     })
                                     break
                                 default:
@@ -276,109 +282,6 @@
         )
     }
 
-    function buildUri(playlist) {
-        return "spotify:playlist:" + playlist.id
-    }
-
-
-    function getUser() {
-        console.log("Getting user")
-        return makeRequest("GET", API_V1_USERS).then((response) => {
-            if (response.status === 404) {
-                console.log("User not found")
-                return null
-            }
-            if (response.status >= 200 && response.status < 300) {
-                let user = JSON.parse(response.message)
-                console.log("Found user [" + user.id + "]")
-                return user
-            }
-            throw new Error("Unexpected HTTP status [" + response.status + "]")
-        })
-
-    }
-
-    function registerUser() {
-        console.log("Registering user")
-        return makeRequest("POST", API_V1_USERS).then((response) => {
-            if (response.status === 409) {
-                console.log("User already registered")
-                return null
-            }
-            if (response.status >= 200 && response.status < 300) {
-                let user = JSON.parse(response.message)
-                console.log("Registered user [" + user.id + "]")
-                return user
-            }
-            throw new Error("Unexpected HTTP status [" + response.status + "]")
-        })
-    }
-
-    function getPlaylist() {
-        console.log("Getting playlist")
-        return makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
-            if (response.status === 404) {
-                console.log("Playlist doesn't exist")
-                return null
-            }
-            if (response.status >= 200 && response.status < 300) {
-                let playlist = JSON.parse(response.message)
-                console.log("Found playlist [" + playlist.id + "]")
-                return playlist
-            }
-            throw new Error("Unexpected HTTP status [" + response.status + "]")
-        })
-    }
-
-
-    function createPlaylist() {
-        console.log("Creating playlist")
-        return makeRequest("POST", API_V1_PLAYLISTS).then((response) => {
-            if (response.status === 409) {
-                console.log("Playlist already exist")
-                return null
-            }
-            if (response.status >= 200 && response.status < 300) {
-                let playlist = JSON.parse(response.message)
-                console.log("Created playlist [" + playlist.id + "]")
-                return playlist
-            }
-            throw new Error("Unexpected HTTP status [" + response.status + "]")
-        })
-    }
-
-    function updatePlaylist() {
-        console.log("Updating playlist")
-        return makeRequest("PUT", API_V1_PLAYLISTS).then((response) => {
-            if (response.status === 404) {
-                console.log("Playlist doesn't exist")
-                return null
-            }
-            if (response.status >= 200 && response.status < 300) {
-                let playlist = JSON.parse(response.message)
-                console.log("Updated playlist [" + playlist.id + "]")
-                return playlist
-            }
-            throw new Error("Unexpected HTTP status [" + response.status + "]")
-        })
-    }
-
-
-    function waitCache(ms) {
-        return new Promise(function (resolve, reject) {
-            try {
-                console.log("Waiting for cache to update [" + ms + "] ms");
-                setTimeout(() => {
-                    console.log("Waiting complete");
-                    resolve();
-                }, ms)
-            } catch (err) {
-                console.log("Error during waiting [" + err + "]")
-                reject();
-            }
-        });
-    }
-
     function show(element) {
         element.classList.remove("hidden")
     }
@@ -387,18 +290,20 @@
         element.classList.add("hidden")
     }
 
-    function addTooltip(element, title) {
+    function addTooltip(element) {
         let attributes = {
             "data-toggle": "tooltip",
             "data-placement": "auto",
-            "title": title
+            "title": "It looks like you already have playlist. " +
+                "Click the button in order to request Spotify recommendations one more time and update your tracks."
         }
         Object.keys(attributes).forEach((key) => {
             element.setAttribute(key, attributes[key]);
         });
     }
+
+
 </script>
-<script src="http-client.js"></script>
 <script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"

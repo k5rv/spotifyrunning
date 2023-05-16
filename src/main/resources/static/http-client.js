@@ -1,4 +1,4 @@
-function makeRequest(method, url) {
+export function sendRequest(method, url) {
     return new Promise(function (resolve, reject) {
         const xhr = new XMLHttpRequest();
         xhr.open(method, url);
@@ -17,4 +17,3 @@ function makeRequest(method, url) {
         xhr.send();
     });
 }
-
