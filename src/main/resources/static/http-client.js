@@ -3,19 +3,15 @@ function makeRequest(method, url) {
         const xhr = new XMLHttpRequest();
         xhr.open(method, url);
         xhr.onload = function () {
-            // if (xhr.status >= 200 && xhr.status < 300) {
-                resolve(xhr.response);
-            // } else {
-            //     reject({
-            //         status: xhr.status,
-            //         statusText: xhr.statusText
-            //     });
-            // }
+            resolve({
+                status: xhr.status,
+                message: xhr.responseText
+            });
         };
         xhr.onerror = function () {
             reject({
                 status: xhr.status,
-                statusText: xhr.statusText
+                message: xhr.responseText
             });
         };
         xhr.send();
