@@ -198,71 +198,67 @@
                 href="https://twitter.com/mdo" class="text-white">@mdo</a>.</p>
     </footer>
 </div>
-
-<script type="module">
-    import * as client from "./suddenrun-rest-api-client.js"
-    import * as utils from "./spotify-utils.js"
-
-    const embedIFrame = document.getElementById("embed-iframe")
-    const embedControlButton = document.getElementById("embed-control-button")
-    const embedStateTransitionSpinner = document.getElementById("embed-state-transition-spinner")
-
+<script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async></script>
+<script type="text/javascript">
+    let iframe = document.getElementById("embed-iframe")
+    let button = document.getElementById("embed-control-button")
+    let spinner = document.getElementById("embed-state-transition-spinner")
     let embedOptions = {
         width: '100%',
         height: 352
     };
-
     let embedState = "initial";
 
-    show(embedStateTransitionSpinner)
+    show(spinner)
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        client.getPlaylist().then((playlist) => {
+        console.log("Spotify IFrameAPI is ready")
+        getPlaylist().then((playlist) => {
             if (playlist !== null) {
-                embedOptions.uri = utils.buildUri(playlist)
-                embedControlButton.innerText = "Update playlist"
-                addTooltip(embedControlButton)
-                return utils.waitCache(5000)
+                embedOptions.uri = buildUri(playlist)
+                button.innerText = "Update playlist"
+                addTooltip(button)
+                return waitCache(5000)
             }
-        }).finally(() => {
-                let embedmentCallback = (EmbedController) => {
+        }).then(() => {
+                let callback = (EmbedController) => {
                     EmbedController.addListener("ready", () => {
-                        hide(embedStateTransitionSpinner)
-                        show(embedControlButton)
+                        hide(spinner)
+                        show(button)
                         console.log("Loaded playlist [" + embedOptions.uri + "]");
                         embedState = "loaded"
                         console.log("Embed state is [" + embedState + "]")
                     })
-                    embedControlButton.addEventListener("click", () => {
-                            hide(embedControlButton)
-                            show(embedStateTransitionSpinner)
+                    button.addEventListener("click", () => {
+                            hide(button)
+                            show(spinner)
                             switch (embedState) {
                                 case "initial":
-                                    client.getUser().then((user) => {
-                                        if (user === null) return client.registerUser()
+                                    getUser().then((user) => {
+                                        if (user === null) return registerUser()
                                     }).then(() => {
-                                        return client.createPlaylist()
+                                        return createPlaylist()
                                     }).then((playlist) => {
-                                        embedOptions.uri = utils.buildUri(playlist)
-                                        return utils.waitCache(5000)
+                                        embedOptions.uri = buildUri(playlist)
+                                        return waitCache(5000)
                                     }).then(() => {
-                                        embedControlButton.innerText = "Update playlist"
-                                        addTooltip(embedControlButton)
-                                        hide(embedStateTransitionSpinner)
-                                        show(embedControlButton)
+                                        button.innerText = "Update playlist"
+                                        addTooltip(button)
+                                        hide(spinner)
+                                        show(button)
                                         console.log("Loading created playlist [" + embedOptions.uri + "]")
                                         return EmbedController.loadUri(embedOptions.uri)
                                     })
                                     break
                                 case "loaded":
-                                    client.updatePlaylist().then((playlist) => {
-                                        embedOptions.uri = utils.buildUri(playlist)
-                                        return utils.waitCache(5000)
+                                    updatePlaylist().then((playlist) => {
+                                        embedOptions.uri = buildUri(playlist)
+                                        return waitCache(5000)
                                     }).then(() => {
-                                        embedControlButton.innerText = "Update playlist"
-                                        addTooltip(embedControlButton)
-                                        hide(embedStateTransitionSpinner)
-                                        show(embedControlButton)
+                                        button.innerText = "Update playlist"
+                                        addTooltip(button)
+                                        hide(spinner)
+                                        show(button)
                                         console.log("Loading updated playlist [" + embedOptions.uri + "]")
                                         return EmbedController.loadUri(embedOptions.uri)
                                     })
@@ -274,10 +270,10 @@
                         }
                     )
                 }
-                IFrameAPI.createController(embedIFrame, embedOptions, embedmentCallback);
-                console.log("Created embed with options: height [" + embedOptions.height + "] and width [" + embedOptions.width + "]")
-                hide(embedStateTransitionSpinner)
-                show(embedControlButton)
+                IFrameAPI.createController(iframe, embedOptions, callback);
+                console.log("Created embed with options height [" + embedOptions.height + "] and width [" + embedOptions.width + "]")
+                hide(spinner)
+                show(button)
             }
         )
     }
@@ -301,10 +297,9 @@
             element.setAttribute(key, attributes[key]);
         });
     }
-
-
 </script>
-<script src="https://open.spotify.com/embed-podcast/iframe-api/v1" async></script>
+<script type="text/javascript" src="suddenrun-rest-api-client.js"></script>
+<script type="text/javascript" src="spotify-utils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>

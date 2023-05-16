@@ -1,9 +1,27 @@
-// import {sendRequest} from "./http-client.js";
-
 const BASE_URL = "https://suddenrun.com"
 // const BASE_URL = "http://localhost:8082"
 const API_V1_PLAYLISTS = "/api/v1/playlists"
 const API_V1_USERS = "/api/v1/users"
+
+function sendRequest(method, url) {
+    return new Promise(function (resolve, reject) {
+        const xhr = new XMLHttpRequest();
+        xhr.open(method, url);
+        xhr.onload = function () {
+            resolve({
+                status: xhr.status,
+                message: xhr.responseText
+            });
+        };
+        xhr.onerror = function () {
+            reject({
+                status: xhr.status,
+                message: xhr.responseText
+            });
+        };
+        xhr.send();
+    });
+}
 
 function getUser() {
     console.log("Getting user")
@@ -83,25 +101,5 @@ function updatePlaylist() {
         }
         throw new Error("Unexpected HTTP status [" + response.status + "]")
     })
-}
-
-function sendRequest(method, url) {
-    return new Promise(function (resolve, reject) {
-        const xhr = new XMLHttpRequest();
-        xhr.open(method, url);
-        xhr.onload = function () {
-            resolve({
-                status: xhr.status,
-                message: xhr.responseText
-            });
-        };
-        xhr.onerror = function () {
-            reject({
-                status: xhr.status,
-                message: xhr.responseText
-            });
-        };
-        xhr.send();
-    });
 }
 
