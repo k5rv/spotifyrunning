@@ -1,3 +1,4 @@
+# data in [] should be updated with real values, square brackets must be removed
 server:
   port: 8081
   error:
@@ -8,14 +9,38 @@ server:
 spring:
   application:
     name: suddenrun
+  datasource:
+    url: [url]
+    username: [username]
+    password: [password]
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: false
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          spotify:
+            url: https://api.spotify.com/v1
+            logger-level: basic
+      oauth2:
+        enabled: true
+        clientRegistrationId: spotify
   security:
     oauth2:
       client:
         registration:
           spotify:
             client-name: spotify
-            client-id: client-id-value
-            client-secret: client-secret-value
+            client-id: [id]
+            client-secret: [secret]
             provider: spotify
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code
@@ -27,16 +52,6 @@ spring:
             token-uri: https://accounts.spotify.com/api/token
             user-info-uri: https://api.spotify.com/v1/me
             user-name-attribute: display_name
-  cloud:
-    openfeign:
-      client:
-        config:
-          spotify:
-            url: https://api.spotify.com/v1
-            logger-level: none
-      oauth2:
-        enabled: true
-        clientRegistrationId: spotify
 
 suddenrun:
   playlist:
@@ -63,4 +78,8 @@ suddenrun:
 
 logging:
   level:
-    com.ksaraev.suddenrun: ERROR
+    com.suddenrun.app: INFO
+    com.suddenrun.client.SpotifyClient: ERROR
+    org.springframework.security: ERROR
+    org.springframework.web: ERROR
+    org.hibernate: ERROR
