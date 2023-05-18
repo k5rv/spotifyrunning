@@ -17,7 +17,8 @@ import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -74,12 +75,12 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldCreatePlaylist() {
     // Given
-    SpotifyPlaylistDetailsDto playlistItemDetails = SpotifyHelper.getPlaylistItemDetails();
-    SpotifyPlaylistDto playlistItem = SpotifyHelper.getPlaylistItem();
+    SpotifyPlaylistDetailsDto playlistItemDetails = SpotifyClientHelper.getPlaylistDetailsDto();
+    SpotifyPlaylistDto playlistItem = SpotifyClientHelper.getPlaylistDto();
 
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
-    SpotifyPlaylistDetails playlistDetails = (SpotifyPlaylistDetails) SpotifyHelper.getPlaylistDetails();
-    SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyHelper.getPlaylist();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
+    SpotifyPlaylistDetails playlistDetails = (SpotifyPlaylistDetails) SpotifyServiceHelper.getPlaylistDetails();
+    SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyServiceHelper.getPlaylist();
 
     given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistItemDetails.class)))
         .willReturn(playlistItemDetails);
@@ -118,8 +119,8 @@ class SpotifyPlaylistServiceTest {
       itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistItemDetailsThrowsRuntimeException() {
     // Given
     String message = "message";
-    SpotifyUserProfileItem spotifyUser = SpotifyHelper.getUserProfile();
-    SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyHelper.getPlaylistDetails();
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile();
+    SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
     given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistItemDetails.class)))
         .willThrow(new RuntimeException(message));
 
@@ -133,10 +134,10 @@ class SpotifyPlaylistServiceTest {
   void itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() {
     // Given
     String message = "message";
-    SpotifyPlaylistDto playlistItem = SpotifyHelper.getPlaylistItem();
-    SpotifyPlaylistDetailsDto playlistItemDetails = SpotifyHelper.getPlaylistItemDetails();
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
-    SpotifyPlaylistDetails playlistDetails = (SpotifyPlaylistDetails) SpotifyHelper.getPlaylistDetails();
+    SpotifyPlaylistDto playlistItem = SpotifyClientHelper.getPlaylistDto();
+    SpotifyPlaylistDetailsDto playlistItemDetails = SpotifyClientHelper.getPlaylistDetailsDto();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
+    SpotifyPlaylistDetails playlistDetails = (SpotifyPlaylistDetails) SpotifyServiceHelper.getPlaylistDetails();
     given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistItemDetails.class)))
         .willReturn(playlistItemDetails);
     given(spotifyClient.createPlaylist(any(), any())).willReturn(playlistItem);
@@ -152,8 +153,8 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldGetPlaylist() {
     // Given
-    SpotifyPlaylistDto playlistItem = SpotifyHelper.getPlaylistItem();
-    SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyHelper.getPlaylist();
+    SpotifyPlaylistDto playlistItem = SpotifyClientHelper.getPlaylistDto();
+    SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyServiceHelper.getPlaylist();
     given(spotifyClient.getPlaylist(any())).willReturn(playlistItem);
     given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistDto.class))).willReturn(playlist);
 
@@ -189,7 +190,7 @@ class SpotifyPlaylistServiceTest {
       getPlaylistShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() {
     // Given
     String message = "message";
-    SpotifyPlaylistDto playlistItem = SpotifyHelper.getPlaylistItem();
+    SpotifyPlaylistDto playlistItem = SpotifyClientHelper.getPlaylistDto();
     String playlistId = playlistItem.id();
 
     given(spotifyClient.getPlaylist(any())).willReturn(playlistItem);
@@ -230,8 +231,8 @@ class SpotifyPlaylistServiceTest {
   void addTracksShouldThrowAddTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
-    SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(2);
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(2);
     given(spotifyClient.addPlaylistItems(any(), any())).willThrow(new RuntimeException(message));
 
     // Then
@@ -243,9 +244,9 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksCascadeConstraintViolationWhenSpotifyPlaylistIsNotValid() {
     // Given
-    SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     playlist.setId(null);
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(2);
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(2);
     Object[] parameterValues = {playlist, tracks};
 
     // When
@@ -261,7 +262,7 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksConstraintViolationWhenSpotifyPlaylistIsNull() {
     // Given
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(2);
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(2);
     Object[] parameterValues = {null, tracks};
 
     // When
@@ -277,7 +278,7 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksConstraintViolationWhenTrackListIsEmpty() {
     // Given
-    SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     List<SpotifyTrackItem> tracks = List.of();
     Object[] parameterValues = {playlist, tracks};
 
@@ -294,8 +295,8 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksConstraintViolationWhenTrackListSizeMoreThan100() {
     // Given
-    SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(101);
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(101);
     Object[] parameterValues = {playlist, tracks};
 
     // When
@@ -311,11 +312,11 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectAddTracksCascadeConstraintViolationWhenTrackListContainsNotValidElements() {
     // Given
-    SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
 
-    SpotifyTrackItem track = SpotifyHelper.getTrack();
+    SpotifyTrackItem track = SpotifyServiceHelper.getTrack();
     track.setId(null);
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(1);
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(1);
     tracks.add(1, track);
 
     Object[] parameterValues = {playlist, tracks};
@@ -333,7 +334,7 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectCreatePlaylistConstraintViolationsWhenSpotifyUserIsNull() {
     // Given
-    SpotifyPlaylistItemDetails playlistDetails = SpotifyHelper.getPlaylistDetails();
+    SpotifyPlaylistItemDetails playlistDetails = SpotifyServiceHelper.getPlaylistDetails();
     Object[] parameterValues = {null, playlistDetails};
 
     // When
@@ -349,7 +350,7 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectCreatePlaylistConstraintViolationsWhenSpotifyPlaylistDetailsIsNull() {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
 
     Object[] parameterValues = {user, null};
 
@@ -366,10 +367,10 @@ class SpotifyPlaylistServiceTest {
   @Test
   void itShouldDetectCreatePlaylistCascadeConstraintViolationsWhenSpotifyUserIsNotValid() {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
     user.setId(null);
 
-    SpotifyPlaylistItemDetails playlistDetails = SpotifyHelper.getPlaylistDetails();
+    SpotifyPlaylistItemDetails playlistDetails = SpotifyServiceHelper.getPlaylistDetails();
 
     Object[] parameterValues = {user, playlistDetails};
 
@@ -387,9 +388,9 @@ class SpotifyPlaylistServiceTest {
   void
       itShouldDetectCreatePlaylistCascadeConstraintViolationsWhenSpotifyPlaylistDetailsIsNotValid() {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
 
-    SpotifyPlaylistItemDetails playlistDetails = SpotifyHelper.getPlaylistDetails();
+    SpotifyPlaylistItemDetails playlistDetails = SpotifyServiceHelper.getPlaylistDetails();
     playlistDetails.setName(null);
 
     Object[] parameterValues = {user, playlistDetails};

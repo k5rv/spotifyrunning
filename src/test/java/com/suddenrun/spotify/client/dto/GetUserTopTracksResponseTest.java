@@ -2,7 +2,7 @@ package com.suddenrun.spotify.client.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -38,7 +38,8 @@ class GetUserTopTracksResponseTest {
   void itShouldDetectGetUserTopTracksResponseConstraintViolations(
       String id, String name, URI uri, Integer popularity, Boolean hasArtists, String message) {
     // Given
-    List<SpotifyArtistDto> artistItems = hasArtists ? SpotifyHelper.getArtistItems(1) : List.of();
+    List<SpotifyArtistDto> artistDtos =
+        hasArtists ? SpotifyClientHelper.getArtistDtos(1) : List.of();
 
     SpotifyTrackDto trackItem =
         SpotifyTrackDto.builder()
@@ -46,7 +47,7 @@ class GetUserTopTracksResponseTest {
             .name(name)
             .uri(uri)
             .popularity(popularity)
-            .artistItems(artistItems)
+            .artistItems(artistDtos)
             .build();
 
     List<SpotifyTrackDto> trackItems = List.of(trackItem);

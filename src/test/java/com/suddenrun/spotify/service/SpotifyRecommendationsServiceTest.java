@@ -18,7 +18,8 @@ import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
 import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackFeatures;
 import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
 import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -60,13 +61,13 @@ class SpotifyRecommendationsServiceTest {
   @Test
   void itShouldGetRecommendations() {
     // Given
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    List<SpotifyTrackItem> recommendationTracks = SpotifyHelper.getTracks(10);
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
-    List<SpotifyTrackDto> recommendationTrackItems = SpotifyHelper.getTrackItems(10);
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    List<SpotifyTrackItem> recommendationTracks = SpotifyServiceHelper.getTracks(10);
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    List<SpotifyTrackDto> recommendationTrackItems = SpotifyClientHelper.getTrackDtos(10);
     List<String> seedTrackIds = seedTracks.stream().map(SpotifyTrackItem::getId).toList();
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        SpotifyHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsRequest getRecommendationsRequest =
@@ -113,13 +114,13 @@ class SpotifyRecommendationsServiceTest {
   @Test
   void itShouldGetRecommendationsWithoutFeaturesIncluded() {
     // Given
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    List<SpotifyTrackItem> recommendationTracks = SpotifyHelper.getTracks(10);
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    List<SpotifyTrackItem> recommendationTracks = SpotifyServiceHelper.getTracks(10);
     SpotifyTrackItemFeatures trackFeatures = SpotifyTrackFeatures.builder().build();
-    List<SpotifyTrackDto> recommendationTrackItems = SpotifyHelper.getTrackItems(5);
+    List<SpotifyTrackDto> recommendationTrackItems = SpotifyClientHelper.getTrackDtos(5);
     List<String> seedTrackIds = seedTracks.stream().map(SpotifyItem::getId).toList();
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        SpotifyHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsRequest getRecommendationsRequest =
@@ -163,7 +164,7 @@ class SpotifyRecommendationsServiceTest {
       Integer tracksNumber) throws Exception {
     // Given
 
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(tracksNumber);
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(tracksNumber);
     SpotifyTrackFeatures trackFeatures = SpotifyTrackFeatures.builder().build();
 
     Method getRecommendations =
@@ -186,7 +187,7 @@ class SpotifyRecommendationsServiceTest {
   void itShouldDetectGetRecommendationsConstraintViolationWhenSeedTracksContainsNullElements()
       throws Exception {
     // Given
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(1);
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(1);
     tracks.add(null);
 
     SpotifyTrackFeatures trackFeatures = SpotifyTrackFeatures.builder().build();
@@ -234,7 +235,7 @@ class SpotifyRecommendationsServiceTest {
     // Given
     String message = ".seedTracks[0].id: must not be null";
 
-    SpotifyTrackItem track = SpotifyHelper.getTrack();
+    SpotifyTrackItem track = SpotifyServiceHelper.getTrack();
     track.setId(null);
     List<SpotifyTrackItem> tracks = List.of(track);
 
@@ -259,7 +260,7 @@ class SpotifyRecommendationsServiceTest {
   @Test
   void itShouldDetectGetRecommendationsConstraintViolationWhenTrackFeaturesIsNull()
       throws Exception {
-    List<SpotifyTrackItem> tracks = SpotifyHelper.getTracks(2);
+    List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(2);
 
     Method getRecommendations =
         SpotifyRecommendationsService.class.getMethod(
@@ -282,10 +283,10 @@ class SpotifyRecommendationsServiceTest {
     // Given
     String message = "message";
 
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        SpotifyHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     given(trackFeaturesMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
@@ -304,8 +305,8 @@ class SpotifyRecommendationsServiceTest {
   void itShouldThrowRecommendationExceptionWhenMapToRequestFeaturesThrowsRuntimeException() {
     // Given
     String message = "message";
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
 
     given(trackFeaturesMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
         .willThrow(new RuntimeException(message));
@@ -321,11 +322,11 @@ class SpotifyRecommendationsServiceTest {
     // Given
     String message = "message";
 
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
-    List<SpotifyTrackDto> recommendationTrackItems = SpotifyHelper.getTrackItems(2);
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    List<SpotifyTrackDto> recommendationTrackItems = SpotifyClientHelper.getTrackDtos(2);
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        SpotifyHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsResponse getRecommendationsResponse =
@@ -350,11 +351,11 @@ class SpotifyRecommendationsServiceTest {
   @Test
   void itShouldReturnEmptyListWhenSpotifyTrackItemsListIsEmpty() {
     // Given
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
     List<SpotifyTrackDto> recommendationTrackItems = List.of();
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        SpotifyHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
     GetRecommendationsResponse getRecommendationsResponse =
         GetRecommendationsResponse.builder().trackItems(recommendationTrackItems).build();
@@ -375,13 +376,13 @@ class SpotifyRecommendationsServiceTest {
   @Test
   void itShouldReturnEmptyListWhenSpotifyTrackItemsListElementsAreNull() {
     // Given
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
     List<SpotifyTrackDto> recommendationTrackItems = new ArrayList<>();
     recommendationTrackItems.add(null);
     recommendationTrackItems.add(null);
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        SpotifyHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsResponse getRecommendationsResponse =
@@ -406,9 +407,9 @@ class SpotifyRecommendationsServiceTest {
   @Test
   void itShouldReturnNonNullElementsWhenSpotifyTrackItemsListContainsNullElements() {
     // Given
-    List<SpotifyTrackItem> seedTracks = SpotifyHelper.getTracks(2);
-    SpotifyTrackDto trackItem = SpotifyHelper.getTrackItem();
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
+    List<SpotifyTrackItem> seedTracks = SpotifyServiceHelper.getTracks(2);
+    SpotifyTrackDto trackItem = SpotifyClientHelper.getTrackDto();
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
 
     List<SpotifyTrackDto> recommendationTrackItems = new ArrayList<>();
     recommendationTrackItems.add(null);
@@ -416,7 +417,7 @@ class SpotifyRecommendationsServiceTest {
     recommendationTrackItems.add(null);
 
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-        SpotifyHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     GetRecommendationsResponse getRecommendationsResponse =

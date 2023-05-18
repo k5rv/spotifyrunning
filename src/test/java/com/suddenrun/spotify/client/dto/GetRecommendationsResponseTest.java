@@ -2,7 +2,7 @@ package com.suddenrun.spotify.client.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -24,7 +24,7 @@ class GetRecommendationsResponseTest {
   @Test
   void itShouldDetectGetRecommendationsResponseConstraintViolations() {
     // Given
-    List<SpotifyArtistDto> artistItems = SpotifyHelper.getArtistItems(2);
+    List<SpotifyArtistDto> artistItems = SpotifyClientHelper.getArtistDtos(2);
 
     SpotifyTrackDto trackItem =
         SpotifyTrackDto.builder()

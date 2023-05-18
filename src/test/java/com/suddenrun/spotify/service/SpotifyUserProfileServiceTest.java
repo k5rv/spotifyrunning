@@ -16,7 +16,8 @@ import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfile;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileMapper;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -39,8 +40,8 @@ class SpotifyUserProfileServiceTest {
   @Test
   void itShouldGetCurrentUserProfile() {
     // Given
-    SpotifyUserProfileItem userProfile = SpotifyHelper.getUserProfile();
-    SpotifyUserProfileDto userProfileDto = SpotifyHelper.getUserProfileDto();
+    SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
+    SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
     given(client.getCurrentUserProfile()).willReturn(userProfileDto);
     given(mapper.mapToModel(userProfileDto)).willReturn((SpotifyUserProfile) userProfile);
     // When

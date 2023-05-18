@@ -18,7 +18,7 @@ import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfile;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.suddenrun.spotify.service.*;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -64,19 +64,19 @@ class PlaylistControllerTest {
   @Test
   void itShouldCreatePlaylist() {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
 
-    SpotifyTrackItem topTrackA = SpotifyHelper.getTrack();
-    SpotifyTrackItem topTrackB = SpotifyHelper.getTrack();
+    SpotifyTrackItem topTrackA = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem topTrackB = SpotifyServiceHelper.getTrack();
     List<SpotifyTrackItem> userTopTracks = List.of(topTrackA, topTrackB);
 
-    SpotifyTrackItem musicRecommendation = SpotifyHelper.getTrack();
+    SpotifyTrackItem musicRecommendation = SpotifyServiceHelper.getTrack();
     List<SpotifyTrackItem> musicRecommendations = List.of(musicRecommendation);
 
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
 
-    SpotifyPlaylistItemDetails playlistDetails = SpotifyHelper.getPlaylistDetails();
-    SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
+    SpotifyPlaylistItemDetails playlistDetails = SpotifyServiceHelper.getPlaylistDetails();
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     playlist.setTracks(musicRecommendations);
 
     given(userService.getCurrentUserProfile()).willReturn(user);
@@ -141,21 +141,21 @@ class PlaylistControllerTest {
       Boolean hasAllTracks,
       Integer playlistConfigSize) {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
 
-    SpotifyTrackItem topTrackA = SpotifyHelper.getTrack();
-    SpotifyTrackItem topTrackB = SpotifyHelper.getTrack();
-    SpotifyTrackItem topTrackC = SpotifyHelper.getTrack();
+    SpotifyTrackItem topTrackA = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem topTrackB = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem topTrackC = SpotifyServiceHelper.getTrack();
 
     List<SpotifyTrackItem> userTopTracks = List.of(topTrackA, topTrackB, topTrackC);
 
-    List<SpotifyTrackItem> musicRecommendationsA = SpotifyHelper.getTracks(aTracksNumber);
-    List<SpotifyTrackItem> musicRecommendationsB = SpotifyHelper.getTracks(bTracksNumber);
-    List<SpotifyTrackItem> musicRecommendationsC = SpotifyHelper.getTracks(cTracksNumber);
+    List<SpotifyTrackItem> musicRecommendationsA = SpotifyServiceHelper.getTracks(aTracksNumber);
+    List<SpotifyTrackItem> musicRecommendationsB = SpotifyServiceHelper.getTracks(bTracksNumber);
+    List<SpotifyTrackItem> musicRecommendationsC = SpotifyServiceHelper.getTracks(cTracksNumber);
 
-    SpotifyTrackItemFeatures trackFeatures = SpotifyHelper.getSpotifyTrackFeatures();
-    SpotifyPlaylistItemDetails playlistDetails = SpotifyHelper.getPlaylistDetails();
-    SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
+    SpotifyTrackItemFeatures trackFeatures = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    SpotifyPlaylistItemDetails playlistDetails = SpotifyServiceHelper.getPlaylistDetails();
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
 
     List<SpotifyTrackItem> playlistTracks = new ArrayList<>(musicRecommendationsA);
 

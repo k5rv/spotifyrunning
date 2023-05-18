@@ -4,7 +4,7 @@ import static com.suddenrun.spotify.model.MappingSourceIsNullException.MAPPING_S
 
 import com.suddenrun.spotify.client.dto.SpotifyArtistDto;
 import com.suddenrun.spotify.model.MappingSourceIsNullException;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ class SpotifyArtistMapperTest {
   @Test
   void itShouldMapSpotifyArtistItemToArtist() {
     // Given
-    SpotifyArtistDto artistItem = SpotifyHelper.getArtistItem();
+    SpotifyArtistDto artistItem = SpotifyClientHelper.getArtistDto();
 
     SpotifyArtistItem artist =
         SpotifyArtist.builder()

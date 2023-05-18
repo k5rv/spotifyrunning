@@ -3,8 +3,8 @@ package com.suddenrun.spotify.client.dto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.suddenrun.spotify.client.SpotifyClient;
+import com.suddenrun.utils.SpotifyClientHelper;
 import com.suddenrun.utils.SpotifyClientStub;
-import com.suddenrun.utils.SpotifyHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -62,14 +62,14 @@ class GetPlaylistTest {
     // Given
     String message = ".<return value>.id: must not be null";
 
-    SpotifyUserProfileDto userProfileItem = SpotifyHelper.getUserProfileDto();
+    SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
 
     SpotifyPlaylistDto playlistItem =
         SpotifyPlaylistDto.builder()
             .id(null)
             .name("playlist name")
             .uri(URI.create("spotify:playlist:0moWPCTPTShumonjlsDgLe"))
-            .userProfileItem(userProfileItem)
+            .userProfileItem(userProfileDto)
             .snapshotId("MywyM2Y2Zjg5YTdlNGQ3MmI2OGFiN2NiZmQ4NTNlZDdlMjE2OTFjODM4")
             .build();
     // When

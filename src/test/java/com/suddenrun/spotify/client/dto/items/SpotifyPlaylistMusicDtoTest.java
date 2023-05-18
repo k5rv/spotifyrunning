@@ -6,7 +6,7 @@ import com.suddenrun.spotify.client.dto.SpotifyPlaylistMusicDto;
 import com.suddenrun.spotify.client.dto.SpotifyPlaylistTrackDto;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -41,14 +41,9 @@ class SpotifyPlaylistMusicDtoTest {
     // Given
 
     SpotifyUserProfileDto userProfileItem =
-        isAddedByNull
-            ? null
-            : SpotifyHelper.getUserProfileDto();
+        isAddedByNull ? null : SpotifyClientHelper.getUserProfileDto();
 
-    SpotifyTrackDto trackItem =
-        isTrackItemNull
-            ? null
-            : SpotifyHelper.getTrackItem();
+    SpotifyTrackDto trackItem = isTrackItemNull ? null : SpotifyClientHelper.getTrackDto();
 
     String addedAt = isAddedAtNull ? null : "2020-12-04T14:14:36Z";
 
@@ -73,13 +68,12 @@ class SpotifyPlaylistMusicDtoTest {
     // Given
     String message = "playlistItemTracks[0].trackItem: must not be null";
 
-    SpotifyUserProfileDto userProfileItem =
-       SpotifyHelper.getUserProfileDto();
+    SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
 
     SpotifyPlaylistTrackDto playlistItemTrack =
         SpotifyPlaylistTrackDto.builder()
             .trackItem(null)
-            .addedBy(userProfileItem)
+            .addedBy(userProfileDto)
             .addedAt("2020-12-04T14:14:36Z")
             .build();
 

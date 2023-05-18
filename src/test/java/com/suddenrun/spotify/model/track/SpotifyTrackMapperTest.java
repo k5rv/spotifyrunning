@@ -4,7 +4,7 @@ import com.suddenrun.spotify.client.dto.*;
 import com.suddenrun.spotify.model.artist.SpotifyArtist;
 import com.suddenrun.spotify.model.artist.SpotifyArtistItem;
 import com.suddenrun.spotify.model.artist.SpotifyArtistMapperImpl;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -25,11 +25,11 @@ class SpotifyTrackMapperTest {
   @Test
   void itShouldMapSpotifyTrackItemToTrack() throws Exception {
     // Given
-    SpotifyArtistItem artist = SpotifyHelper.getArtist();
+    SpotifyArtistItem artist = SpotifyServiceHelper.getArtist();
 
     List<SpotifyArtistItem> artists = List.of(artist);
 
-    SpotifyTrackItem track = SpotifyHelper.getTrack();
+    SpotifyTrackItem track = SpotifyServiceHelper.getTrack();
     track.setArtists(artists);
 
     SpotifyArtistDto artistItem =

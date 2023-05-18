@@ -15,7 +15,8 @@ import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
 import com.suddenrun.spotify.client.dto.UpdateUpdateItemsResponse;
 import com.suddenrun.utils.JsonHelper;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyClientHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,42 +43,42 @@ class PlaylistControllerIntegrationTest {
   @Test
   void itShouldCreatePlaylistSuccessfully() throws Exception {
     // Given
-    SpotifyUserProfileDto userProfileItem = SpotifyHelper.getUserProfileDto();
+    SpotifyUserProfileDto userProfileItem = SpotifyClientHelper.getUserProfileDto();
     String userId = userProfileItem.id();
 
     stubFor(get(urlEqualTo("/v1/me")).willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(userProfileItem), 200)));
 
-    List<SpotifyTrackDto> topTrackItems = SpotifyHelper.getTrackItems(60);
+    List<SpotifyTrackDto> topTrackItems = SpotifyClientHelper.getTrackDtos(60);
     GetUserTopTracksResponse getUserTopTracksResponse =
-        SpotifyHelper.createGetUserTopTracksResponse(topTrackItems);
+        SpotifyClientHelper.createGetUserTopTracksResponse(topTrackItems);
 
     stubFor(
         get(urlPathEqualTo("/v1/me/top/tracks"))
             .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(getUserTopTracksResponse), 200)));
 
-    List<SpotifyTrackDto> musicRecommendations = SpotifyHelper.getTrackItems(60);
+    List<SpotifyTrackDto> musicRecommendations = SpotifyClientHelper.getTrackDtos(60);
     GetRecommendationsResponse getRecommendationsResponse =
-        SpotifyHelper.createGetRecommendationsResponse(musicRecommendations);
+        SpotifyClientHelper.createGetRecommendationsResponse(musicRecommendations);
 
     stubFor(
         get(urlPathEqualTo("/v1/recommendations"))
             .inScenario("recommendations")
             .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(getRecommendationsResponse), 200)));
 
-    SpotifyPlaylistDto emptyPlaylist = SpotifyHelper.getPlaylistItem(userId);
+    SpotifyPlaylistDto emptyPlaylist = SpotifyClientHelper.getPlaylistDto(userId);
     String playlistId = emptyPlaylist.id();
 
     stubFor(
         post(urlEqualTo("/v1/users/" + userId + "/playlists"))
             .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(emptyPlaylist), 200)));
 
-    UpdateUpdateItemsResponse updateUpdateItemsResponse = SpotifyHelper.createAddItemsResponse();
+    UpdateUpdateItemsResponse updateUpdateItemsResponse = SpotifyClientHelper.createAddItemsResponse();
 
     stubFor(
         post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
             .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(updateUpdateItemsResponse), 200)));
 
-    SpotifyPlaylistDto playlist = SpotifyHelper.updatePlaylist(emptyPlaylist, musicRecommendations);
+    SpotifyPlaylistDto playlist = SpotifyClientHelper.updatePlaylistDto(emptyPlaylist, musicRecommendations);
 
     stubFor(
         get(urlEqualTo("/v1/playlists/" + playlistId))

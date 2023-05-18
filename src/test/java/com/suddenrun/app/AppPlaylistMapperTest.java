@@ -11,7 +11,7 @@ import com.suddenrun.app.user.AppUserMapperImpl;
 import com.suddenrun.app.user.Runner;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class AppPlaylistMapperTest {
   @Test
   void itShouldMapDtoToEntity() {
     // Given
-    SpotifyPlaylistItem playlistItem = SpotifyHelper.getPlaylist();
+    SpotifyPlaylistItem playlistItem = SpotifyServiceHelper.getPlaylist();
     AppPlaylist appPlaylist = underTest.mapToEntity(playlistItem);
     SpotifyUserProfileItem userProfileItem = playlistItem.getOwner();
     AppUser appUser = appUserMapper.mapToEntity(userProfileItem);

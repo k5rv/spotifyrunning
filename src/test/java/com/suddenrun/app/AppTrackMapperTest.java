@@ -6,7 +6,7 @@ import com.suddenrun.app.track.AppTrackMapperImpl;
 import com.suddenrun.app.track.Track;
 import com.suddenrun.spotify.model.SpotifyItemType;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import java.net.URI;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class AppTrackMapperTest {
   @Test
   void itShouldMapDtoToEntity() {
     // Given
-    SpotifyTrackItem trackItem = SpotifyHelper.getTrack();
+    SpotifyTrackItem trackItem = SpotifyServiceHelper.getTrack();
     AppTrack appTrack = underTest.mapToEntity(trackItem);
     // Then
     Assertions.assertThat(appTrack.getId()).isEqualTo(trackItem.getId());

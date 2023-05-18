@@ -1,7 +1,7 @@
 package com.suddenrun.spotify.model.userprofile;
 
 import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.utils.SpotifyHelper;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +21,7 @@ class SpotifyUserProfileMapperTest {
   @Test
   void itShouldMapSpotifyUserProfileItemToUser() throws Exception {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
 
     SpotifyUserProfileDto userProfileItem =
         SpotifyUserProfileDto.builder()

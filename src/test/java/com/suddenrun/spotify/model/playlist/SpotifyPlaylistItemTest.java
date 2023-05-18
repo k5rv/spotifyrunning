@@ -1,9 +1,9 @@
 package com.suddenrun.spotify.model.playlist;
 
-import static com.suddenrun.utils.SpotifyHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.suddenrun.utils.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -33,7 +33,7 @@ class SpotifyPlaylistItemTest {
     // Given
     SpotifyUserProfileItem user = null;
 
-    if (hasOwner) user = getUserProfile();
+    if (hasOwner) user = SpotifyServiceHelper.getUserProfile();
 
     SpotifyPlaylistItem playlist =
         SpotifyPlaylist.builder()
@@ -56,10 +56,10 @@ class SpotifyPlaylistItemTest {
   @Test
   void itShouldDetectSpotifyPlaylistCascadeConstraintViolations() {
     // Given
-    SpotifyUserProfileItem user = getUserProfile();
+    SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
     user.setId(null);
 
-    SpotifyPlaylistItem playlist = getPlaylist();
+    SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     playlist.setOwner(user);
 
     // When
