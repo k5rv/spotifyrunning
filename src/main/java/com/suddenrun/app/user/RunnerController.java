@@ -26,7 +26,7 @@ public class RunnerController {
   @GetMapping
   public AppUser getUser() {
     try {
-      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       return userService
           .getUser(userId)
@@ -39,7 +39,7 @@ public class RunnerController {
   @PostMapping
   public AppUser registerUser() {
     try {
-      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       String userName = userProfileItem.getName();
       boolean isUserRegistered = userService.isUserRegistered(userId);

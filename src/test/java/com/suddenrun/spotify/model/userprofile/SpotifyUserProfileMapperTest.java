@@ -21,7 +21,7 @@ class SpotifyUserProfileMapperTest {
   @Test
   void itShouldMapSpotifyUserProfileItemToUser() throws Exception {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUser();
+    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
 
     SpotifyUserProfileDto userProfileItem =
         SpotifyUserProfileDto.builder()

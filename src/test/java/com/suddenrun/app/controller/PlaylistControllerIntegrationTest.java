@@ -42,7 +42,7 @@ class PlaylistControllerIntegrationTest {
   @Test
   void itShouldCreatePlaylistSuccessfully() throws Exception {
     // Given
-    SpotifyUserProfileDto userProfileItem = SpotifyHelper.getUserProfileItem();
+    SpotifyUserProfileDto userProfileItem = SpotifyHelper.getUserProfileDto();
     String userId = userProfileItem.id();
 
     stubFor(get(urlEqualTo("/v1/me")).willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(userProfileItem), 200)));

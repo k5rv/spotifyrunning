@@ -6,7 +6,7 @@ import com.suddenrun.spotify.client.dto.GetUserTopTracksResponse;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.GetSpotifyUserTopItemsRequestConfig;
-import com.suddenrun.spotify.exception.SpotifyServiceAuthenticationException;
+import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.exception.SpotifyUserTopTracksServiceException;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
@@ -48,7 +48,7 @@ public class SpotifyUserTopTracksService implements SpotifyUserTopTrackItemsServ
 
       return trackItems.isEmpty() ? List.of() : trackMapper.mapItemsToTracks(trackItems);
     } catch (SpotifyUnauthorizedException e) {
-      throw new SpotifyServiceAuthenticationException(e);
+      throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
       throw new SpotifyUserTopTracksServiceException(e);
     }

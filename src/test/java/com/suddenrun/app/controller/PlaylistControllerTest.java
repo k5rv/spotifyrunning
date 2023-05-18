@@ -64,7 +64,7 @@ class PlaylistControllerTest {
   @Test
   void itShouldCreatePlaylist() {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUser();
+    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
 
     SpotifyTrackItem topTrackA = SpotifyHelper.getTrack();
     SpotifyTrackItem topTrackB = SpotifyHelper.getTrack();
@@ -79,7 +79,7 @@ class PlaylistControllerTest {
     SpotifyPlaylistItem playlist = SpotifyHelper.getPlaylist();
     playlist.setTracks(musicRecommendations);
 
-    given(userService.getCurrentUser()).willReturn(user);
+    given(userService.getCurrentUserProfile()).willReturn(user);
     given(topTracksService.getUserTopTracks()).willReturn(userTopTracks);
     given(playlistConfig.getSize()).willReturn(2);
     given(playlistConfig.getMusicFeatures()).willReturn(trackFeatures);
@@ -141,7 +141,7 @@ class PlaylistControllerTest {
       Boolean hasAllTracks,
       Integer playlistConfigSize) {
     // Given
-    SpotifyUserProfileItem user = SpotifyHelper.getUser();
+    SpotifyUserProfileItem user = SpotifyHelper.getUserProfile();
 
     SpotifyTrackItem topTrackA = SpotifyHelper.getTrack();
     SpotifyTrackItem topTrackB = SpotifyHelper.getTrack();
@@ -168,7 +168,7 @@ class PlaylistControllerTest {
       playlistTracks.addAll(musicRecommendationsC);
     }
 
-    given(userService.getCurrentUser()).willReturn(user);
+    given(userService.getCurrentUserProfile()).willReturn(user);
     given(topTracksService.getUserTopTracks()).willReturn(userTopTracks);
     given(playlistConfig.getSize()).willReturn(playlistConfigSize);
     given(playlistConfig.getMusicFeatures()).willReturn(trackFeatures);
@@ -220,7 +220,7 @@ class PlaylistControllerTest {
   @Test
   void itShouldThrowUserTopTracksNotFoundExceptionWhenUserTopTracksIsEmpty() {
     // Given
-    given(userService.getCurrentUser()).willReturn(SpotifyUserProfile.builder().build());
+    given(userService.getCurrentUserProfile()).willReturn(SpotifyUserProfile.builder().build());
     given(topTracksService.getUserTopTracks()).willReturn(List.of());
     // Then
 //    Assertions.assertThatThrownBy(() -> underTest.createPlaylist())
@@ -231,7 +231,7 @@ class PlaylistControllerTest {
   @Test
   void itShouldThrowRecommendationsNotFoundExceptionWhenMusicRecommendationsIsEmpty() {
     // Given
-    given(userService.getCurrentUser()).willReturn(SpotifyUserProfile.builder().build());
+    given(userService.getCurrentUserProfile()).willReturn(SpotifyUserProfile.builder().build());
     given(topTracksService.getUserTopTracks()).willReturn(List.of(SpotifyTrack.builder().build()));
     given(recommendationsService.getRecommendations(anyList(), any())).willReturn(List.of());
     // Then

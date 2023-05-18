@@ -62,7 +62,7 @@ class GetPlaylistTest {
     // Given
     String message = ".<return value>.id: must not be null";
 
-    SpotifyUserProfileDto userProfileItem = SpotifyHelper.getUserProfileItem();
+    SpotifyUserProfileDto userProfileItem = SpotifyHelper.getUserProfileDto();
 
     SpotifyPlaylistDto playlistItem =
         SpotifyPlaylistDto.builder()

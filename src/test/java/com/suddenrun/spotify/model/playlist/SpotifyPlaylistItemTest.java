@@ -33,7 +33,7 @@ class SpotifyPlaylistItemTest {
     // Given
     SpotifyUserProfileItem user = null;
 
-    if (hasOwner) user = getUser();
+    if (hasOwner) user = getUserProfile();
 
     SpotifyPlaylistItem playlist =
         SpotifyPlaylist.builder()
@@ -56,7 +56,7 @@ class SpotifyPlaylistItemTest {
   @Test
   void itShouldDetectSpotifyPlaylistCascadeConstraintViolations() {
     // Given
-    SpotifyUserProfileItem user = getUser();
+    SpotifyUserProfileItem user = getUserProfile();
     user.setId(null);
 
     SpotifyPlaylistItem playlist = getPlaylist();

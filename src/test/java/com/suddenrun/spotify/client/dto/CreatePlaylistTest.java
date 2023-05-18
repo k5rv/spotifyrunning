@@ -87,7 +87,7 @@ class CreatePlaylistTest {
     String message = ".<return value>.id: must not be null";
 
     SpotifyUserProfileDto userProfileItem =
-        SpotifyHelper.getUserProfileItem();
+        SpotifyHelper.getUserProfileDto();
 
     SpotifyPlaylistDto playlistItem =
         SpotifyPlaylistDto.builder()

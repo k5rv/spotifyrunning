@@ -33,7 +33,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 public class SpotifyHelper {
 
-  public static SpotifyUserProfileItem getUser() {
+  public static SpotifyUserProfileItem getUserProfile() {
     String id = getRandomId();
     String name = getRandomName();
     URI uri = USER.getUri(id);
@@ -82,7 +82,7 @@ public class SpotifyHelper {
     String name = getRandomName();
     String description = getRandomDescription();
     URI uri = PLAYLIST.getUri(id);
-    SpotifyUserProfileItem user = getUser();
+    SpotifyUserProfileItem user = getUserProfile();
     String snapshotId = getRandomSnapshotId();
     Boolean isPublic = true;
     Boolean isCollaborative = false;
@@ -109,7 +109,7 @@ public class SpotifyHelper {
         .build();
   }
 
-  public static SpotifyUserProfileDto getUserProfileItem() {
+  public static SpotifyUserProfileDto getUserProfileDto() {
     String id = getRandomId();
     String displayName = getRandomName();
     URI uri = USER.getUri(id);
@@ -264,7 +264,7 @@ public class SpotifyHelper {
   public static SpotifyPlaylistDto getPlaylistItem(String id) {
     String name = getRandomName();
     URI uri = PLAYLIST.getUri(id);
-    SpotifyUserProfileDto userProfileItem = getUserProfileItem();
+    SpotifyUserProfileDto userProfileItem = getUserProfileDto();
     String snapshotId = getRandomSnapshotId();
     String description = getRandomDescription();
     String type = PLAYLIST.getType();
@@ -295,7 +295,7 @@ public class SpotifyHelper {
 
   public static SpotifyPlaylistTrackDto getSpotifyPlaylistItemTrack() {
     SpotifyTrackDto trackItem = getTrackItem();
-    SpotifyUserProfileDto addedBy = getUserProfileItem();
+    SpotifyUserProfileDto addedBy = getUserProfileDto();
     return getSpotifyPlaylistItemTrack(addedBy, trackItem);
   }
 
@@ -478,7 +478,7 @@ public class SpotifyHelper {
   }
 
   private static <T extends SpotifyItem> T getSpotifyItem(Class<T> type) {
-    if (type.isAssignableFrom(SpotifyUserProfileItem.class)) return type.cast(getUser());
+    if (type.isAssignableFrom(SpotifyUserProfileItem.class)) return type.cast(getUserProfile());
     if (type.isAssignableFrom(SpotifyTrackItem.class)) return type.cast(getTrack());
     if (type.isAssignableFrom(SpotifyArtistItem.class)) return type.cast(getArtist());
     if (type.isAssignableFrom(SpotifyPlaylistItemDetails.class)) return type.cast(getPlaylistDetails());
@@ -507,7 +507,7 @@ public class SpotifyHelper {
   }
 
   private static <T> T getSpotifyClientItem(Class<T> type) {
-    if (type.isAssignableFrom(SpotifyUserProfileDto.class)) return type.cast(getUserProfileItem());
+    if (type.isAssignableFrom(SpotifyUserProfileDto.class)) return type.cast(getUserProfileDto());
     if (type.isAssignableFrom(SpotifyAlbumDto.class)) return type.cast(getAlbumItem());
     if (type.isAssignableFrom(SpotifyArtistDto.class)) return type.cast(getArtistItem());
     if (type.isAssignableFrom(SpotifyTrackDto.class)) return type.cast(getTrackItem());

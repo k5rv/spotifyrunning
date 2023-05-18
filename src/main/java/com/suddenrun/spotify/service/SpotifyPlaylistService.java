@@ -50,7 +50,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
               .toList();
 
     } catch (SpotifyUnauthorizedException e) {
-      throw new SpotifyServiceAuthenticationException(e);
+      throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
       throw new SpotifyPlaylistServiceGetUserPlaylistsException(userId, e);
     }
@@ -62,7 +62,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
       SpotifyPlaylistDto playlistItem = spotifyClient.getPlaylist(playlistId);
       return playlistMapper.mapToPlaylist(playlistItem);
     } catch (SpotifyUnauthorizedException e) {
-      throw new SpotifyServiceAuthenticationException(e);
+      throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
       throw new SpotifyPlaylistServiceGetPlaylistException(playlistId, e);
     }
@@ -79,7 +79,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
       SpotifyPlaylistDto playlistItem = spotifyClient.createPlaylist(userId, playlistItemDetails);
       return playlistMapper.mapToPlaylist(playlistItem);
     } catch (SpotifyUnauthorizedException e) {
-      throw new SpotifyServiceAuthenticationException(e);
+      throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
       throw new SpotifyPlaylistServiceCreatePlaylistException(userId, e);
     }
@@ -97,7 +97,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
       UpdateUpdateItemsResponse response = spotifyClient.addPlaylistItems(playlistId, request);
       return response.snapshotId();
     } catch (SpotifyUnauthorizedException e) {
-      throw new SpotifyServiceAuthenticationException(e);
+      throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
       throw new SpotifyPlaylistServiceAddTracksException(playlistId, e);
     }
@@ -112,7 +112,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
       RemovePlaylistItemsResponse response = spotifyClient.removePlaylistItems(playlistId, request);
       return response.snapshotId();
     } catch (SpotifyUnauthorizedException e) {
-      throw new SpotifyServiceAuthenticationException(e);
+      throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
       throw new SpotifyPlaylistServiceRemoveTracksException(playlistId, e);
     }

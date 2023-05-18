@@ -43,7 +43,7 @@ class SpotifyPlaylistMusicDtoTest {
     SpotifyUserProfileDto userProfileItem =
         isAddedByNull
             ? null
-            : SpotifyHelper.getUserProfileItem();
+            : SpotifyHelper.getUserProfileDto();
 
     SpotifyTrackDto trackItem =
         isTrackItemNull
@@ -74,7 +74,7 @@ class SpotifyPlaylistMusicDtoTest {
     String message = "playlistItemTracks[0].trackItem: must not be null";
 
     SpotifyUserProfileDto userProfileItem =
-       SpotifyHelper.getUserProfileItem();
+       SpotifyHelper.getUserProfileDto();
 
     SpotifyPlaylistTrackDto playlistItemTrack =
         SpotifyPlaylistTrackDto.builder()

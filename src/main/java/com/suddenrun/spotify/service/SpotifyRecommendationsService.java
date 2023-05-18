@@ -7,7 +7,7 @@ import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
 import com.suddenrun.spotify.exception.SpotifyRecommendationsServiceException;
-import com.suddenrun.spotify.exception.SpotifyServiceAuthenticationException;
+import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
 import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
@@ -57,7 +57,7 @@ public class SpotifyRecommendationsService implements SpotifyRecommendationItems
 
       return trackItems.isEmpty() ? List.of() : trackMapper.mapItemsToTracks(trackItems);
     } catch (SpotifyUnauthorizedException e) {
-      throw new SpotifyServiceAuthenticationException(e);
+      throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
       throw new SpotifyRecommendationsServiceException(e);
     }

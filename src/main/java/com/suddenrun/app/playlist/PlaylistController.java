@@ -33,7 +33,7 @@ public class PlaylistController {
   @PostMapping
   public AppPlaylist createPlaylist() {
     try {
-      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       AppUser appUser =
           userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
@@ -59,7 +59,7 @@ public class PlaylistController {
 
   @PutMapping
   public AppPlaylist updatePlaylist() {
-    SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+    SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
     String userId = userProfileItem.getId();
     AppUser appUser =
         userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
@@ -74,7 +74,7 @@ public class PlaylistController {
   @GetMapping
   public AppPlaylist getPlaylist() {
     try {
-      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUser();
+      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       AppUser appUser =
           userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));

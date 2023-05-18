@@ -7,7 +7,7 @@ import com.suddenrun.app.track.AppTrackMapper;
 import com.suddenrun.app.user.AppUser;
 import com.suddenrun.app.user.AppUserMapper;
 import com.suddenrun.spotify.exception.SpotifyPlaylistServiceException;
-import com.suddenrun.spotify.exception.SpotifyServiceAuthenticationException;
+import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
 import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
@@ -75,7 +75,7 @@ public class PlaylistService implements AppPlaylistService {
       log.info(
           "Created playlist with id [" + appPlaylistId + "] for user with id [" + appUserId + "]");
       return appPlaylist;
-    } catch (SpotifyServiceAuthenticationException e) {
+    } catch (SpotifyAccessTokenException e) {
       throw new AppAuthorizationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
@@ -159,7 +159,7 @@ public class PlaylistService implements AppPlaylistService {
               + appPlaylistSnapshotId
               + "] from Spotify. Returning playlist.");
       return Optional.of(appPlaylist);
-    } catch (SpotifyServiceAuthenticationException e) {
+    } catch (SpotifyAccessTokenException e) {
       throw new AppAuthorizationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
@@ -337,7 +337,7 @@ public class PlaylistService implements AppPlaylistService {
               + appPlaylist.getSnapshotId()
               + "]. Saved in app.");
       return appPlaylist;
-    } catch (SpotifyServiceAuthenticationException e) {
+    } catch (SpotifyAccessTokenException e) {
       throw new AppAuthorizationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
