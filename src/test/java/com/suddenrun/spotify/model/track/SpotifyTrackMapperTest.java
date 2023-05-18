@@ -47,8 +47,8 @@ class SpotifyTrackMapperTest {
             .id(track.getId())
             .name(track.getName())
             .uri(track.getUri())
-            .artistItems(artistItems)
-            .albumItem(SpotifyAlbumDto.builder().build())
+            .artistDtos(artistItems)
+            .albumDto(SpotifyAlbumDto.builder().build())
             .popularity(track.getPopularity())
             .href(new URL("https://api.spotify.com/v1/track/2222030405AaBbCcDdEeFf"))
             .track(true)
@@ -59,7 +59,7 @@ class SpotifyTrackMapperTest {
             .durationMs(20000)
             .trackNumber(1)
             .discNumber(1)
-            .sourceAlbumItem(SpotifyAlbumDto.builder().build())
+            .sourceAlbumDto(SpotifyAlbumDto.builder().build())
             .availableMarkets(List.of("US"))
             .externalUrls(
                 Map.of("spotify", "https://open.spotify.com/track/2222030405AaBbCcDdEeFf"))
@@ -69,7 +69,7 @@ class SpotifyTrackMapperTest {
             .build();
 
     // Then
-    Assertions.assertThat(underTest.mapToTrack(trackItem))
+    Assertions.assertThat(underTest.mapToModel(trackItem))
         .isEqualTo(track)
         .hasOnlyFields("id", "name", "uri", "popularity", "artists");
   }
@@ -131,7 +131,7 @@ class SpotifyTrackMapperTest {
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .popularity(trackOnePopularity)
             .build();
 
@@ -141,7 +141,7 @@ class SpotifyTrackMapperTest {
             .name(trackTwoName)
             .uri(trackTwoUri)
             .popularity(trackTwoPopularity)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     String addedAt = "2020-12-04T14:14:36Z";
@@ -164,7 +164,7 @@ class SpotifyTrackMapperTest {
         List.of(playlistItemTrackOne, playlistItemTrackTwo);
 
     // Then
-    Assertions.assertThat(underTest.mapPlaylistItemsToTracks(playlistItemTracks))
+    Assertions.assertThat(underTest.mapPlaylistTrackDtosToModels(playlistItemTracks))
         .containsExactly(trackOne, trackTwo);
   }
 
@@ -217,7 +217,7 @@ class SpotifyTrackMapperTest {
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .popularity(trackOnePopularity)
             .build();
 
@@ -227,16 +227,16 @@ class SpotifyTrackMapperTest {
             .name(trackTwoName)
             .uri(trackTwoUri)
             .popularity(trackTwoPopularity)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     // Then
-    Assertions.assertThat(underTest.mapItemsToTracks(List.of(trackItemOne, trackItemTwo)))
+    Assertions.assertThat(underTest.mapDtosToModels(List.of(trackItemOne, trackItemTwo)))
         .containsExactly(trackOne, trackTwo);
   }
 
   @Test
   void itShouldReturnEmptyListWhenSourceIsNull() {
-    Assertions.assertThat(underTest.mapItemsToTracks(null)).isEmpty();
+    Assertions.assertThat(underTest.mapDtosToModels(null)).isEmpty();
   }
 }

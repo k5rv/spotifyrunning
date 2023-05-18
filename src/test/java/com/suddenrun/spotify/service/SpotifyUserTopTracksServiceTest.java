@@ -55,13 +55,13 @@ class SpotifyUserTopTracksServiceTest {
     given(config.getOffset()).willReturn(request.offset());
     given(config.getTimeRange()).willReturn(request.timeRange().name());
     given(client.getUserTopTracks(any(GetUserTopTracksRequest.class))).willReturn(response);
-    given(mapper.mapItemsToTracks(anyList())).willReturn(trackItems);
+    given(mapper.mapDtosToModels(anyList())).willReturn(trackItems);
     // When
     underTest.getUserTopTracks();
     // Then
     then(client).should().getUserTopTracks(requestArgumentCaptor.capture());
     assertThat(requestArgumentCaptor.getValue()).isNotNull().isEqualTo(request);
-    then(mapper).should().mapItemsToTracks(dtosArgumentCaptor.capture());
+    then(mapper).should().mapDtosToModels(dtosArgumentCaptor.capture());
     assertThat(dtosArgumentCaptor.getAllValues()).isNotEmpty().containsExactly(trackDtos);
   }
 
@@ -103,7 +103,7 @@ class SpotifyUserTopTracksServiceTest {
     GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackDtos);
     given(config.getTimeRange()).willReturn(timeRangeName);
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
-    given(mapper.mapItemsToTracks(trackDtos)).willThrow(new RuntimeException(message));
+    given(mapper.mapDtosToModels(trackDtos)).willThrow(new RuntimeException(message));
     // Then
     assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isExactlyInstanceOf(GetSpotifyUserTopTracksException.class)
@@ -120,7 +120,7 @@ class SpotifyUserTopTracksServiceTest {
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
     // Then
     assertThat(underTest.getUserTopTracks()).isEmpty();
-    then(mapper).should(never()).mapItemsToTracks(dtosArgumentCaptor.capture());
+    then(mapper).should(never()).mapDtosToModels(dtosArgumentCaptor.capture());
   }
 
   @Test
@@ -135,7 +135,7 @@ class SpotifyUserTopTracksServiceTest {
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
     // Then
     assertThat(underTest.getUserTopTracks()).isEmpty();
-    then(mapper).should(never()).mapItemsToTracks(dtosArgumentCaptor.capture());
+    then(mapper).should(never()).mapDtosToModels(dtosArgumentCaptor.capture());
   }
 
   @Test
@@ -154,7 +154,7 @@ class SpotifyUserTopTracksServiceTest {
     // When
     underTest.getUserTopTracks();
     // Then
-    then(mapper).should().mapItemsToTracks(dtosArgumentCaptor.capture());
+    then(mapper).should().mapDtosToModels(dtosArgumentCaptor.capture());
     assertThat(dtosArgumentCaptor.getAllValues())
         .containsExactly(Collections.singletonList(trackDto));
   }

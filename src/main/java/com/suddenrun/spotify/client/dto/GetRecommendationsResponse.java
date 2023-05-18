@@ -8,5 +8,5 @@ import lombok.Builder;
 
 @Builder
 public record GetRecommendationsResponse(
-    @JsonProperty("tracks") @Valid List<SpotifyTrackDto> trackItems,
+    @JsonProperty("tracks") @Valid List<SpotifyTrackDto> trackDtos,
     List<Map<String, Object>> seeds) {}

@@ -17,7 +17,7 @@ public record SpotifyAlbumDto(
     @JsonProperty("release_date") String releaseDate,
     @JsonProperty("release_date_precision") String releaseDatePrecision,
     @JsonProperty("available_markets") List<String> availableMarkets,
-    @JsonProperty("artists") List<SpotifyArtistDto> artistItems,
+    @JsonProperty("artists") List<SpotifyArtistDto> artistDtos,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,
     @NotNull String id,
     @NotEmpty String name,

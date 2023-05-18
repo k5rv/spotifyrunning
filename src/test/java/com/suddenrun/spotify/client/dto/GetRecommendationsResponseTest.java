@@ -32,19 +32,19 @@ class GetRecommendationsResponseTest {
             .name("track name")
             .uri(URI.create("spotify:artist:1234567890AaBbCcDdEeFfG"))
             .popularity(51)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     List<SpotifyTrackDto> trackItems = List.of(trackItem);
 
     GetRecommendationsResponse getRecommendationsResponse =
-        GetRecommendationsResponse.builder().trackItems(trackItems).build();
+        GetRecommendationsResponse.builder().trackDtos(trackItems).build();
     // When
     Set<ConstraintViolation<GetRecommendationsResponse>> constraintViolations =
         validator.validate(getRecommendationsResponse);
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage("trackItems[0].id: must not be null");
+        .hasMessage("trackDtos[0].id: must not be null");
   }
 }

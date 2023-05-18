@@ -47,13 +47,13 @@ class GetUserTopTracksResponseTest {
             .name(name)
             .uri(uri)
             .popularity(popularity)
-            .artistItems(artistDtos)
+            .artistDtos(artistDtos)
             .build();
 
     List<SpotifyTrackDto> trackItems = List.of(trackItem);
 
     GetUserTopTracksResponse getUserTopTracksResponse =
-        GetUserTopTracksResponse.builder().trackItems(trackItems).build();
+        GetUserTopTracksResponse.builder().trackDtos(trackItems).build();
     // When
     Set<ConstraintViolation<GetUserTopTracksResponse>> constraintViolations =
         validator.validate(getUserTopTracksResponse);

@@ -47,10 +47,10 @@ public class SpotifyClientHelper {
     String id = getRandomId();
     String name = getRandomName();
     URI uri = TRACK.getUri(id);
-    SpotifyAlbumDto albumItem = getAlbumDto();
-    SpotifyAlbumDto sourceAlbumItem = getAlbumDto();
+    SpotifyAlbumDto albumDto = getAlbumDto();
+    SpotifyAlbumDto sourceAlbumDto = getAlbumDto();
     URL previewURL = getHref(TRACK, id);
-    List<SpotifyArtistDto> artistItems = getArtistDtos(1);
+    List<SpotifyArtistDto> artistDtos = getArtistDtos(1);
     Integer popularity = getRandomPopularity();
     String type = ARTIST.getType();
     URL href = getHref(ARTIST, id);
@@ -69,10 +69,10 @@ public class SpotifyClientHelper {
         .id(id)
         .name(name)
         .uri(uri)
-        .albumItem(albumItem)
-        .sourceAlbumItem(sourceAlbumItem)
+        .albumDto(albumDto)
+        .sourceAlbumDto(sourceAlbumDto)
         .previewUrl(previewURL)
-        .artistItems(artistItems)
+        .artistDtos(artistDtos)
         .popularity(popularity)
         .type(type)
         .href(href)
@@ -115,7 +115,7 @@ public class SpotifyClientHelper {
     String releaseDate = getReleaseDate();
     String precisionDate = getPrecisionDate();
     List<String> availableMarkets = getAvailableMarkets();
-    List<SpotifyArtistDto> artistItems = getArtistDtos(1);
+    List<SpotifyArtistDto> artistDtos = getArtistDtos(1);
     List<Map<String, Object>> restrictions = getRestrictions();
     Map<String, Object> externalUrls = getExternalUrls(ARTIST, id);
     List<Map<String, Object>> images = getImages();
@@ -131,7 +131,7 @@ public class SpotifyClientHelper {
         .releaseDate(releaseDate)
         .releaseDatePrecision(precisionDate)
         .availableMarkets(availableMarkets)
-        .artistItems(artistItems)
+        .artistDtos(artistDtos)
         .restrictions(restrictions)
         .externalUrls(externalUrls)
         .images(images)
@@ -330,18 +330,8 @@ public class SpotifyClientHelper {
         .build();
   }
 
-  /*
-     URL href,
-   @JsonProperty("items") @Valid List<SpotifyPlaylistDto> playlistItems,
-   Integer limit,
-   Integer offset,
-   Integer total,
-   String next,
-   String previous) {}
-  */
-
   public static GetUserTopTracksResponse createGetUserTopTracksResponse(
-      List<SpotifyTrackDto> trackItems) {
+      List<SpotifyTrackDto> trackDtos) {
     URL href = null;
     try {
       href =
@@ -355,7 +345,7 @@ public class SpotifyClientHelper {
     Integer limit = 50;
     return GetUserTopTracksResponse.builder()
         .href(href)
-        .trackItems(trackItems)
+        .trackDtos(trackDtos)
         .limit(limit)
         .offset(offset)
         .total(1)
@@ -366,7 +356,7 @@ public class SpotifyClientHelper {
   }
 
   public static GetRecommendationsResponse createGetRecommendationsResponse(
-      List<SpotifyTrackDto> trackItems) {
+      List<SpotifyTrackDto> trackDtos) {
     List<Map<String, Object>> seeds =
         List.of(
             Map.of(
@@ -408,7 +398,7 @@ public class SpotifyClientHelper {
                 "GENRE",
                 "href",
                 ""));
-    return GetRecommendationsResponse.builder().trackItems(trackItems).seeds(seeds).build();
+    return GetRecommendationsResponse.builder().trackDtos(trackDtos).seeds(seeds).build();
   }
 
   public static UpdateItemsResponse createUpdateItemsResponse() {
@@ -430,9 +420,9 @@ public class SpotifyClientHelper {
   }
 
   private static <T> List<T> getSpotifyClientDtos(Integer size, Class<T> type) {
-    List<T> items = new ArrayList<>();
-    IntStream.range(0, size).forEach(index -> items.add(index, getSpotifyClientDto(type)));
-    return items;
+    List<T> dtos = new ArrayList<>();
+    IntStream.range(0, size).forEach(index -> dtos.add(index, getSpotifyClientDto(type)));
+    return dtos;
   }
 
   private static <T> T getSpotifyClientDto(Class<T> type) {

@@ -70,13 +70,13 @@ class GetRecommendationsTest {
             .name("track name")
             .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
             .popularity(51)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     List<SpotifyTrackDto> trackItems = List.of(trackItem);
 
     GetRecommendationsResponse getRecommendationsResponse =
-        GetRecommendationsResponse.builder().trackItems(trackItems).build();
+        GetRecommendationsResponse.builder().trackDtos(trackItems).build();
 
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
@@ -84,6 +84,6 @@ class GetRecommendationsTest {
 
     // Then
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_RECOMMENDATIONS + ".<return value>.trackItems[0].id: must not be null");
+        .hasMessage(GET_RECOMMENDATIONS + ".<return value>.trackDtos[0].id: must not be null");
   }
 }

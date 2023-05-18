@@ -36,7 +36,7 @@ class SpotifyTrackDtoTest {
            1234567890AaBbCcDdEeFfG|track name|null                                 |51 |TRUE |uri: must not be null
            1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|-1 |TRUE |popularity: must be greater than or equal to 0
            1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|101|TRUE |popularity: must be less than or equal to 100
-           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |FALSE|artistItems: must not be empty
+           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |FALSE|artistDtos: must not be empty
            """)
   void itShouldDetectSpotifyTrackItemConstraintViolations(
       String id, String name, URI uri, Integer popularity, Boolean hasArtists, String message) {
@@ -56,7 +56,7 @@ class SpotifyTrackDtoTest {
             .name(name)
             .uri(uri)
             .popularity(popularity)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     // When
@@ -85,7 +85,7 @@ class SpotifyTrackDtoTest {
             .name("track name")
             .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
             .popularity(51)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     // When
@@ -94,6 +94,6 @@ class SpotifyTrackDtoTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage("artistItems[0].id: must not be null");
+        .hasMessage("artistDtos[0].id: must not be null");
   }
 }

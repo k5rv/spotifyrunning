@@ -14,15 +14,15 @@ import lombok.Builder;
 
 @Builder
 public record SpotifyTrackDto(
-    @JsonProperty("album") SpotifyAlbumDto albumItem,
+    @JsonProperty("album") SpotifyAlbumDto albumDto,
     @JsonProperty("preview_url") URL previewUrl,
     @JsonProperty("is_local") Boolean isLocal,
     @JsonProperty("is_playable") Boolean isPlayable,
     @JsonProperty("duration_ms") Integer durationMs,
     @JsonProperty("track_number") Integer trackNumber,
     @JsonProperty("disc_number") Integer discNumber,
-    @JsonProperty("linked_from") SpotifyAlbumDto sourceAlbumItem,
-    @JsonProperty("artists") @Valid @NotEmpty List<SpotifyArtistDto> artistItems,
+    @JsonProperty("linked_from") SpotifyAlbumDto sourceAlbumDto,
+    @JsonProperty("artists") @Valid @NotEmpty List<SpotifyArtistDto> artistDtos,
     @JsonProperty("available_markets") List<String> availableMarkets,
     @JsonProperty("external_ids") Map<String, Object> externalIds,
     @JsonProperty("external_urls") Map<String, Object> externalUrls,

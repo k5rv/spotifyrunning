@@ -126,7 +126,7 @@ class SpotifyPlaylistItemMapperTest {
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .popularity(trackOnePopularity)
             .build();
 
@@ -136,7 +136,7 @@ class SpotifyPlaylistItemMapperTest {
             .name(trackTwoName)
             .uri(trackTwoUri)
             .popularity(trackTwoPopularity)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     String addedAt = "2020-12-04T14:14:36Z";

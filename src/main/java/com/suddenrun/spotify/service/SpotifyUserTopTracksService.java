@@ -41,12 +41,12 @@ public class SpotifyUserTopTracksService implements SpotifyUserTopTrackItemsServ
       GetUserTopTracksResponse response = client.getUserTopTracks(request);
 
       List<SpotifyTrackDto> trackDtos =
-          response.trackItems().stream()
+          response.trackDtos().stream()
               .flatMap(Stream::ofNullable)
               .filter(Objects::nonNull)
               .toList();
 
-      return trackDtos.isEmpty() ? List.of() : mapper.mapItemsToTracks(trackDtos);
+      return trackDtos.isEmpty() ? List.of() : mapper.mapDtosToModels(trackDtos);
     } catch (SpotifyUnauthorizedException e) {
       throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {

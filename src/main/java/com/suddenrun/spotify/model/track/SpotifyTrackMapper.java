@@ -15,25 +15,25 @@ import org.mapstruct.MappingConstants;
     uses = {SpotifyArtistMapper.class})
 public interface SpotifyTrackMapper extends SpotifyMapper {
 
-  @Mapping(target = "artists", source = "artistItems")
-  SpotifyTrack mapToTrack(SpotifyTrackDto spotifyTrackDto);
+  @Mapping(target = "artists", source = "artistDtos")
+  SpotifyTrack mapToModel(SpotifyTrackDto spotifyTrackDto);
 
-  default List<SpotifyTrackItem> mapItemsToTracks(List<SpotifyTrackDto> trackItems) {
-    if (trackItems == null) return List.of();
-    return trackItems.stream()
+  default List<SpotifyTrackItem> mapDtosToModels(List<SpotifyTrackDto> trackDtos) {
+    if (trackDtos == null) return List.of();
+    return trackDtos.stream()
         .filter(Objects::nonNull)
-        .map(this::mapToTrack)
+        .map(this::mapToModel)
         .map(SpotifyTrackItem.class::cast)
         .toList();
   }
 
-  default List<SpotifyTrackItem> mapPlaylistItemsToTracks(
-      List<SpotifyPlaylistTrackDto> playlistItemTracks) {
-    if (playlistItemTracks == null) return List.of();
-    return playlistItemTracks.stream()
+  default List<SpotifyTrackItem> mapPlaylistTrackDtosToModels(
+      List<SpotifyPlaylistTrackDto> playlistTrackDtos) {
+    if (playlistTrackDtos == null) return List.of();
+    return playlistTrackDtos.stream()
         .filter(Objects::nonNull)
         .map(SpotifyPlaylistTrackDto::trackItem)
-        .map(this::mapToTrack)
+        .map(this::mapToModel)
         .map(SpotifyTrackItem.class::cast)
         .toList();
   }

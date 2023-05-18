@@ -85,13 +85,13 @@ class GetUserTopTracksTest {
             .name("track name")
             .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
             .popularity(51)
-            .artistItems(artistDtos)
+            .artistDtos(artistDtos)
             .build();
 
     List<SpotifyTrackDto> trackItems = List.of(trackItem);
 
     GetUserTopTracksResponse getUserTopTracksResponse =
-        GetUserTopTracksResponse.builder().trackItems(trackItems).build();
+        GetUserTopTracksResponse.builder().trackDtos(trackItems).build();
 
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
@@ -99,6 +99,6 @@ class GetUserTopTracksTest {
 
     // Then
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_USER_TOP_TRACKS + ".<return value>.trackItems[0].id: must not be null");
+        .hasMessage(GET_USER_TOP_TRACKS + ".<return value>.trackDtos[0].id: must not be null");
   }
 }

@@ -67,7 +67,7 @@ class SpotifyPlaylistTrackDtoTest {
                 .name("playlist name")
                 .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
                 .popularity(51)
-                .artistItems(artistItems)
+                .artistDtos(artistItems)
                 .build();
 
     String addedAt = isAddedAtNull ? null : "2020-12-04T14:14:36Z";
@@ -116,7 +116,7 @@ class SpotifyPlaylistTrackDtoTest {
             .name("playlist name")
             .uri(URI.create("spotify:track:1234567890AaBbCcDdEeFfG"))
             .popularity(51)
-            .artistItems(artistItems)
+            .artistDtos(artistItems)
             .build();
 
     SpotifyPlaylistTrackDto playlistItemTrack =

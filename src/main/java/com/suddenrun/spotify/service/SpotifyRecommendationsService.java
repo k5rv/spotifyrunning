@@ -6,7 +6,7 @@ import com.suddenrun.spotify.client.dto.GetRecommendationsResponse;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
-import com.suddenrun.spotify.exception.SpotifyRecommendationsServiceException;
+import com.suddenrun.spotify.exception.GetSpotifyRecommendationsException;
 import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -26,40 +27,40 @@ import org.springframework.validation.annotation.Validated;
 @RequiredArgsConstructor
 public class SpotifyRecommendationsService implements SpotifyRecommendationItemsService {
 
-  private final SpotifyClient spotifyClient;
+  private final SpotifyClient client;
 
-  private final GetSpotifyRecommendationItemsRequestConfig getRecommendationsRequestConfig;
+  private final GetSpotifyRecommendationItemsRequestConfig requestConfig;
 
   private final SpotifyTrackMapper trackMapper;
 
-  private final SpotifyTrackFeaturesMapper trackFeaturesMapper;
+  private final SpotifyTrackFeaturesMapper featuresMapper;
 
   @Override
   public List<SpotifyTrackItem> getRecommendations(
-      List<SpotifyTrackItem> seedTracks, SpotifyTrackItemFeatures trackFeatures) {
+      @NotNull List<SpotifyTrackItem> seedTracks, @NotNull SpotifyTrackItemFeatures trackFeatures) {
     try {
       List<String> seedTrackIds = seedTracks.stream().map(SpotifyTrackItem::getId).toList();
 
       GetRecommendationsRequest request =
           GetRecommendationsRequest.builder()
               .seedTrackIds(seedTrackIds)
-              .trackFeatures(trackFeaturesMapper.mapToRequestFeatures(trackFeatures))
-              .limit(getRecommendationsRequestConfig.getLimit())
+              .trackFeatures(featuresMapper.mapToRequestFeatures(trackFeatures))
+              .limit(requestConfig.getLimit())
               .build();
 
-      GetRecommendationsResponse response = spotifyClient.getRecommendations(request);
+      GetRecommendationsResponse response = client.getRecommendations(request);
 
-      List<SpotifyTrackDto> trackItems =
-          response.trackItems().stream()
+      List<SpotifyTrackDto> trackDtos =
+          response.trackDtos().stream()
               .flatMap(Stream::ofNullable)
               .filter(Objects::nonNull)
               .toList();
 
-      return trackItems.isEmpty() ? List.of() : trackMapper.mapItemsToTracks(trackItems);
+      return trackDtos.isEmpty() ? List.of() : trackMapper.mapDtosToModels(trackDtos);
     } catch (SpotifyUnauthorizedException e) {
       throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
-      throw new SpotifyRecommendationsServiceException(e);
+      throw new GetSpotifyRecommendationsException(e);
     }
   }
 }

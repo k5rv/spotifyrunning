@@ -9,7 +9,7 @@ import lombok.Builder;
 @Builder
 public record GetUserTopTracksResponse(
     URL href,
-    @JsonProperty("items") @Valid List<SpotifyTrackDto> trackItems,
+    @JsonProperty("items") @Valid List<SpotifyTrackDto> trackDtos,
     Integer limit,
     Integer offset,
     Integer total,
