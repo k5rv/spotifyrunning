@@ -28,12 +28,12 @@ class GetUserTopTracksResponseTest {
       nullValues = "null",
       textBlock =
           """
-           null                   |track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |TRUE |trackItems[0].id: must not be null
-           1234567890AaBbCcDdEeFfG|null      |spotify:track:1234567890AaBbCcDdEeFfG|51 |TRUE |trackItems[0].name: must not be empty
-           1234567890AaBbCcDdEeFfG|track name|null                                 |51 |TRUE |trackItems[0].uri: must not be null
-           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|-1 |TRUE |trackItems[0].popularity: must be greater than or equal to 0
-           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|101|TRUE |trackItems[0].popularity: must be less than or equal to 100
-           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |FALSE|trackItems[0].artistItems: must not be empty
+           null                   |track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |TRUE |trackDtos[0].id: must not be null
+           1234567890AaBbCcDdEeFfG|null      |spotify:track:1234567890AaBbCcDdEeFfG|51 |TRUE |trackDtos[0].name: must not be empty
+           1234567890AaBbCcDdEeFfG|track name|null                                 |51 |TRUE |trackDtos[0].uri: must not be null
+           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|-1 |TRUE |trackDtos[0].popularity: must be greater than or equal to 0
+           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|101|TRUE |trackDtos[0].popularity: must be less than or equal to 100
+           1234567890AaBbCcDdEeFfG|track name|spotify:track:1234567890AaBbCcDdEeFfG|51 |FALSE|trackDtos[0].artistDtos: must not be empty
            """)
   void itShouldDetectGetUserTopTracksResponseConstraintViolations(
       String id, String name, URI uri, Integer popularity, Boolean hasArtists, String message) {

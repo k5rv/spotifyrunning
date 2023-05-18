@@ -9,5 +9,5 @@ import lombok.Builder;
 
 @Builder
 public record UpdatePlaylistItemsRequest(
-    @JsonProperty("uris") @Size(min = 1, max = 100) List<@NotNull URI> itemUris,
+    @JsonProperty("uris") @Size(min = 1, max = 100) List<@NotNull URI> uris,
     Integer position) {}

@@ -32,7 +32,7 @@ class SpotifyPlaylistTrackDtoTest {
       delimiter = '|',
       textBlock =
           """
-           TRUE |FALSE|FALSE|trackItem: must not be null
+           TRUE |FALSE|FALSE|trackDto: must not be null
            FALSE|TRUE |FALSE|addedBy: must not be null
            FALSE|FALSE|TRUE |addedAt: must not be null
            """)

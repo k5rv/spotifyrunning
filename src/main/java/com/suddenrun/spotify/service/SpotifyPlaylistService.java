@@ -93,7 +93,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
       List<URI> trackItemUris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
       UpdatePlaylistItemsRequest request =
           UpdatePlaylistItemsRequest.builder()
-              .itemUris(trackItemUris)
+              .uris(trackItemUris)
               .position(requestConfig.getPosition())
               .build();
       UpdatePlaylistItemsResponse response = client.addPlaylistItems(playlistId, request);

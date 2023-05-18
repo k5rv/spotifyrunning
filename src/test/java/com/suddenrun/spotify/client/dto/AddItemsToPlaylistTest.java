@@ -38,7 +38,7 @@ class AddItemsToPlaylistTest {
     URI trackUri = URI.create("spotify:track:1234567890AaBbCcDdEeFfG");
     List<URI> uris = List.of(trackUri);
     UpdatePlaylistItemsRequest updateItemsRequest =
-        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
+        UpdatePlaylistItemsRequest.builder().uris(uris).build();
     // When
     Object[] parameterValues = {null, updateItemsRequest};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
@@ -72,7 +72,7 @@ class AddItemsToPlaylistTest {
     String playlistId = "0moWPCTPTShumonjlsDgLe";
     List<URI> uris = List.of();
     UpdatePlaylistItemsRequest updateItemsRequest =
-        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
+        UpdatePlaylistItemsRequest.builder().uris(uris).build();
     // When
     Object[] parameterValues = {playlistId, updateItemsRequest};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =

@@ -121,7 +121,7 @@ class SpotifyRecommendationsServiceTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_RECOMMENDATIONS + ".seedTracks: size must be between 1 and 5");
+        .hasMessage(GET_RECOMMENDATIONS + ".seedTrackItems: size must be between 1 and 5");
   }
 
   @Test
@@ -146,7 +146,7 @@ class SpotifyRecommendationsServiceTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_RECOMMENDATIONS + ".seedTracks[1].<list element>: must not be null");
+        .hasMessage(GET_RECOMMENDATIONS + ".seedTrackItems[1].<list element>: must not be null");
   }
 
   @Test
@@ -166,14 +166,14 @@ class SpotifyRecommendationsServiceTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_RECOMMENDATIONS + ".seedTracks: must not be null");
+        .hasMessage(GET_RECOMMENDATIONS + ".seedTrackItems: must not be null");
   }
 
   @Test
   void itShouldDetectGetRecommendationsCascadeConstraintViolationsWhenSeedTrackItemIsNotValid()
       throws Exception {
     // Given
-    String message = ".seedTracks[0].id: must not be null";
+    String message = ".seedTrackItems[0].id: must not be null";
     SpotifyTrackItem trackItem = SpotifyServiceHelper.getTrack();
     trackItem.setId(null);
     List<SpotifyTrackItem> trackItems = List.of(trackItem);
@@ -209,7 +209,7 @@ class SpotifyRecommendationsServiceTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(GET_RECOMMENDATIONS + ".trackFeatures: must not be null");
+        .hasMessage(GET_RECOMMENDATIONS + ".trackItemFeatures: must not be null");
   }
 
   @Test

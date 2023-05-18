@@ -66,7 +66,7 @@ class SpotifyPlaylistServiceAddTracksTest {
     List<URI> uris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
     Integer position = 10;
     UpdatePlaylistItemsRequest request =
-        UpdatePlaylistItemsRequest.builder().itemUris(uris).position(position).build();
+        UpdatePlaylistItemsRequest.builder().uris(uris).position(position).build();
     UpdatePlaylistItemsResponse response = SpotifyClientHelper.createUpdatePlaylistItemsResponse();
     given(requestConfig.getPosition()).willReturn(position);
     given(client.addPlaylistItems(any(), any())).willReturn(response);

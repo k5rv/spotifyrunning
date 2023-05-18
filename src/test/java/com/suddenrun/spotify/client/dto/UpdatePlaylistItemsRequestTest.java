@@ -28,7 +28,7 @@ class UpdatePlaylistItemsRequestTest {
     // Given
     List<URI> uris = List.of();
     UpdatePlaylistItemsRequest updateItemsRequest =
-        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
+        UpdatePlaylistItemsRequest.builder().uris(uris).build();
     // When
     Set<ConstraintViolation<UpdatePlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
@@ -45,7 +45,7 @@ class UpdatePlaylistItemsRequestTest {
     List<URI> uris = new ArrayList<>();
     IntStream.rangeClosed(0,100).forEach(index -> uris.add(index, uri));
     UpdatePlaylistItemsRequest updateItemsRequest =
-        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
+        UpdatePlaylistItemsRequest.builder().uris(uris).build();
     // When
     Set<ConstraintViolation<UpdatePlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
@@ -65,7 +65,7 @@ class UpdatePlaylistItemsRequestTest {
     uris.add(null);
     uris.add(uriC);
     UpdatePlaylistItemsRequest updateItemsRequest =
-        UpdatePlaylistItemsRequest.builder().itemUris(uris).build();
+        UpdatePlaylistItemsRequest.builder().uris(uris).build();
     // When
     Set<ConstraintViolation<UpdatePlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
