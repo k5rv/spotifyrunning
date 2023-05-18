@@ -8,18 +8,18 @@ server:
 spring:
   application:
     name: suddenrun
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/spotifyrun
-#    username: user
-#    password: password
-#  jpa:
-#    hibernate:
-#      ddl-auto: create-drop
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.PostgreSQLDialect
-#        format_sql: false
-#    show-sql: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/spotifyrun
+    username: user
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+    show-sql: true
   cloud:
     openfeign:
       client:
