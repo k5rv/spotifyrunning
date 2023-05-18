@@ -3,7 +3,7 @@ package com.suddenrun.app.user;
 import com.suddenrun.app.exception.AppAuthorizationException;
 import com.suddenrun.app.exception.AppUserAlreadyRegisteredException;
 import com.suddenrun.app.exception.AppUserNotRegisteredException;
-import com.suddenrun.client.feign.exception.SpotifyUnauthorizedException;
+import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.suddenrun.spotify.service.SpotifyUserProfileService;
 import lombok.AllArgsConstructor;

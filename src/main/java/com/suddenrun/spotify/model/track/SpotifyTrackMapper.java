@@ -1,12 +1,11 @@
 package com.suddenrun.spotify.model.track;
 
-import com.suddenrun.client.dto.SpotifyPlaylistTrackDto;
-import com.suddenrun.client.dto.SpotifyTrackDto;
+import com.suddenrun.spotify.client.dto.SpotifyPlaylistTrackDto;
+import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.model.SpotifyMapper;
 import com.suddenrun.spotify.model.artist.SpotifyArtistMapper;
 import java.util.List;
 import java.util.Objects;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

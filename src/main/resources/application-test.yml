@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8082
   error:
     include-message: always
     include-binding-errors: always
@@ -8,18 +8,18 @@ server:
 spring:
   application:
     name: suddenrun
-  datasource:
-    url: jdbc:postgresql://localhost:5432/suddenrun
-    username: suddenrun
-    password: suddenrun
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-    show-sql: true
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/spotifyrun
+#    username: user
+#    password: password
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: false
+#    show-sql: true
   cloud:
     openfeign:
       client:
@@ -47,11 +47,14 @@ suddenrun:
         offset: 0
         time-range: LONG_TERM
       get-recommendations:
-        limit: 100
+        limit: 20
       update-playlist-items-request:
         position: 0
 
 logging:
   level:
-    com.ksaraev.suddenrun: INFO
-    org.springframework.web: INFO
+    com.ksaraev.suddenrun.app: INFO
+    com.ksaraev.suddenrun.spotify.SpotifyClient: INFO
+    org.springframework.security: TRACE
+    org.springframework.web: TRACE
+    org.hibernate: INFO

@@ -1,7 +1,7 @@
 package com.suddenrun.spotify.model.playlist;
 
-import com.suddenrun.client.dto.SpotifyPlaylistDetailsDto;
-import com.suddenrun.client.dto.SpotifyPlaylistDto;
+import com.suddenrun.spotify.client.dto.SpotifyPlaylistDetailsDto;
+import com.suddenrun.spotify.client.dto.SpotifyPlaylistDto;
 import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileMapper;

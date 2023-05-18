@@ -2,7 +2,7 @@ package com.suddenrun.spotify.model.userprofile;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import com.suddenrun.client.dto.SpotifyUserProfileDto;
+import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
 import com.suddenrun.spotify.model.SpotifyMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

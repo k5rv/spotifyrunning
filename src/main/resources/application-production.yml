@@ -79,7 +79,7 @@ suddenrun:
 logging:
   level:
     com.suddenrun.app: INFO
-    com.suddenrun.client.SpotifyClient: ERROR
+    com.suddenrun.spotify.client.SpotifyClient: ERROR
     org.springframework.security: ERROR
     org.springframework.web: ERROR
     org.hibernate: ERROR

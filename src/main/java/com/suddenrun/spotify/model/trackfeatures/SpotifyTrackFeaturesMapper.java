@@ -1,6 +1,6 @@
 package com.suddenrun.spotify.model.trackfeatures;
 
-import com.suddenrun.client.dto.GetRecommendationsRequest;
+import com.suddenrun.spotify.client.dto.GetRecommendationsRequest;
 import com.suddenrun.spotify.model.SpotifyMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

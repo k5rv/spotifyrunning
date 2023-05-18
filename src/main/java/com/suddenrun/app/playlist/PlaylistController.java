@@ -1,18 +1,17 @@
 package com.suddenrun.app.playlist;
 
-import com.suddenrun.app.track.AppTrack;
-import com.suddenrun.app.track.AppTrackService;
-import com.suddenrun.app.user.AppUser;
-import com.suddenrun.app.user.AppUserService;
-import com.suddenrun.client.feign.exception.SpotifyUnauthorizedException;
-import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.spotify.service.SpotifyUserProfileService;
-import java.util.List;
-
 import com.suddenrun.app.exception.AppAuthorizationException;
 import com.suddenrun.app.exception.AppPlaylistAlreadyExistException;
 import com.suddenrun.app.exception.AppPlaylistNotFoundException;
 import com.suddenrun.app.exception.AppUserNotRegisteredException;
+import com.suddenrun.app.track.AppTrack;
+import com.suddenrun.app.track.AppTrackService;
+import com.suddenrun.app.user.AppUser;
+import com.suddenrun.app.user.AppUserService;
+import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
+import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.suddenrun.spotify.service.SpotifyUserProfileService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

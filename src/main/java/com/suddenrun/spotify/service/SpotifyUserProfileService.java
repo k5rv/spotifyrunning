@@ -1,8 +1,8 @@
 package com.suddenrun.spotify.service;
 
-import com.suddenrun.client.SpotifyClient;
-import com.suddenrun.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.client.feign.exception.SpotifyUnauthorizedException;
+import com.suddenrun.spotify.client.SpotifyClient;
+import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
+import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.exception.GetSpotifyUserProfileException;
 import com.suddenrun.spotify.exception.SpotifyServiceAuthenticationException;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;

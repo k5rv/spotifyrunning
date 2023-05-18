@@ -1,8 +1,10 @@
 package com.suddenrun.spotify.service;
 
-import com.suddenrun.client.SpotifyClient;
-import com.suddenrun.client.feign.exception.SpotifyUnauthorizedException;
+import com.suddenrun.spotify.client.SpotifyClient;
+import com.suddenrun.spotify.client.dto.*;
+import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.AddSpotifyPlaylistItemsRequestConfig;
+import com.suddenrun.spotify.exception.*;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistMapper;
 import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
@@ -12,9 +14,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import com.suddenrun.client.dto.*;
-import com.suddenrun.spotify.exception.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

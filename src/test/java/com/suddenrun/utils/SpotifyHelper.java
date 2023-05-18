@@ -3,7 +3,7 @@ package com.suddenrun.utils;
 import static com.suddenrun.utils.SpotifyHelper.SpotifyItemType.*;
 import static java.util.concurrent.ThreadLocalRandom.*;
 
-import com.suddenrun.client.dto.*;
+import com.suddenrun.spotify.client.dto.*;
 import com.suddenrun.spotify.model.SpotifyItem;
 import com.suddenrun.spotify.model.artist.SpotifyArtist;
 import com.suddenrun.spotify.model.artist.SpotifyArtistItem;

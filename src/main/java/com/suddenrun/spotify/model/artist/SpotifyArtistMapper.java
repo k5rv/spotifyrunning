@@ -1,6 +1,6 @@
 package com.suddenrun.spotify.model.artist;
 
-import com.suddenrun.client.dto.SpotifyArtistDto;
+import com.suddenrun.spotify.client.dto.SpotifyArtistDto;
 import com.suddenrun.spotify.model.SpotifyMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;

@@ -1,10 +1,10 @@
 package com.suddenrun.spotify.service;
 
-import com.suddenrun.client.SpotifyClient;
-import com.suddenrun.client.dto.GetRecommendationsRequest;
-import com.suddenrun.client.dto.GetRecommendationsResponse;
-import com.suddenrun.client.dto.SpotifyTrackDto;
-import com.suddenrun.client.feign.exception.SpotifyUnauthorizedException;
+import com.suddenrun.spotify.client.SpotifyClient;
+import com.suddenrun.spotify.client.dto.GetRecommendationsRequest;
+import com.suddenrun.spotify.client.dto.GetRecommendationsResponse;
+import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
+import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
 import com.suddenrun.spotify.exception.SpotifyRecommendationsServiceException;
 import com.suddenrun.spotify.exception.SpotifyServiceAuthenticationException;
@@ -15,7 +15,6 @@ import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
