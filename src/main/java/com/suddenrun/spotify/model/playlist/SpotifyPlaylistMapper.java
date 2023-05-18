@@ -14,9 +14,9 @@ import org.mapstruct.MappingConstants;
     uses = {SpotifyUserProfileMapper.class, SpotifyTrackMapper.class})
 public interface SpotifyPlaylistMapper {
 
-  @Mapping(target = "owner", source = "userProfileItem")
-  @Mapping(target = "tracks", source = "playlistItemMusic.playlistItemTracks")
-  SpotifyPlaylist mapToPlaylist(SpotifyPlaylistDto playlistItem);
+  @Mapping(target = "owner", source = "userProfileDto")
+  @Mapping(target = "tracks", source = "playlistMusicDto.playlistTrackDtos")
+  SpotifyPlaylist mapToModel(SpotifyPlaylistDto playlistDto);
 
-  SpotifyPlaylistDetailsDto mapToPlaylistItemDetails(SpotifyPlaylistItemDetails playlistDetails);
+  SpotifyPlaylistDetailsDto mapToPlaylistDetailsDto(SpotifyPlaylistItemDetails playlistDetails);
 }

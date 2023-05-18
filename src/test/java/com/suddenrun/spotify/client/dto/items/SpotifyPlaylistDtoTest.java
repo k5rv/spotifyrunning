@@ -34,15 +34,15 @@ class SpotifyPlaylistDtoTest {
             0moWPCTPTShumonjlsDgLe|null         |spotify:playlist:0moWPCTPTShumonjlsDgLe|MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1|TRUE |name: must not be empty
             0moWPCTPTShumonjlsDgLe|playlist name|null                                   |MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1|TRUE |uri: must not be null
             0moWPCTPTShumonjlsDgLe|playlist name|spotify:playlist:0moWPCTPTShumonjlsDgLe|null                                                    |TRUE |snapshotId: must not be null
-            0moWPCTPTShumonjlsDgLe|playlist name|spotify:playlist:0moWPCTPTShumonjlsDgLe|MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1|FALSE|userProfileItem: must not be null
+            0moWPCTPTShumonjlsDgLe|playlist name|spotify:playlist:0moWPCTPTShumonjlsDgLe|MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1|FALSE|userProfileDto: must not be null
             """)
   void itShouldDetectSpotifyPlaylistItemConstraintViolations(
       String id, String name, URI uri, String snapshotId, Boolean hasOwner, String message) {
     // Given
-    SpotifyUserProfileDto userProfileItem = null;
+    SpotifyUserProfileDto userProfileDto = null;
 
     if (hasOwner) {
-      userProfileItem =
+      userProfileDto =
           SpotifyUserProfileDto.builder()
               .id("12122604372")
               .displayName("name")
@@ -57,7 +57,7 @@ class SpotifyPlaylistDtoTest {
             .name(name)
             .uri(uri)
             .snapshotId(snapshotId)
-            .userProfileItem(userProfileItem)
+            .userProfileDto(userProfileDto)
             .build();
 
     // When
@@ -72,7 +72,7 @@ class SpotifyPlaylistDtoTest {
   @Test
   void itShouldDetectSpotifyPlaylistItemCascadeConstraintViolations() {
     // Given
-    SpotifyUserProfileDto userProfileItem =
+    SpotifyUserProfileDto userProfileDto =
         SpotifyUserProfileDto.builder()
             .id(null)
             .displayName("name")
@@ -86,7 +86,7 @@ class SpotifyPlaylistDtoTest {
             .name("playlist name")
             .uri(URI.create("spotify:playlist:0moWPCTPTShumonjlsDgLe"))
             .snapshotId("MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1")
-            .userProfileItem(userProfileItem)
+            .userProfileDto(userProfileDto)
             .build();
 
     // When
@@ -96,6 +96,6 @@ class SpotifyPlaylistDtoTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage("userProfileItem.id: must not be null");
+        .hasMessage("userProfileDto.id: must not be null");
   }
 }

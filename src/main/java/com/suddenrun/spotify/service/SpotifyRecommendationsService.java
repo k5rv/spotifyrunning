@@ -37,14 +37,14 @@ public class SpotifyRecommendationsService implements SpotifyRecommendationItems
 
   @Override
   public List<SpotifyTrackItem> getRecommendations(
-      @NotNull List<SpotifyTrackItem> seedTracks, @NotNull SpotifyTrackItemFeatures trackFeatures) {
+      @NotNull List<SpotifyTrackItem> seedTrackItems, @NotNull SpotifyTrackItemFeatures trackItemFeatures) {
     try {
-      List<String> seedTrackIds = seedTracks.stream().map(SpotifyTrackItem::getId).toList();
+      List<String> seedTrackIds = seedTrackItems.stream().map(SpotifyTrackItem::getId).toList();
 
       GetRecommendationsRequest request =
           GetRecommendationsRequest.builder()
               .seedTrackIds(seedTrackIds)
-              .trackFeatures(featuresMapper.mapToRequestFeatures(trackFeatures))
+              .trackFeatures(featuresMapper.mapToRequestFeatures(trackItemFeatures))
               .limit(requestConfig.getLimit())
               .build();
 

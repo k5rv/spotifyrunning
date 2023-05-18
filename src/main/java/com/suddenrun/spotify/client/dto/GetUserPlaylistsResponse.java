@@ -9,7 +9,7 @@ import lombok.Builder;
 @Builder
 public record GetUserPlaylistsResponse(
     URL href,
-    @JsonProperty("items") @Valid List<SpotifyPlaylistDto> playlistItems,
+    @JsonProperty("items") @Valid List<SpotifyPlaylistDto> playlistDtos,
     Integer limit,
     Integer offset,
     Integer total,

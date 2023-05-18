@@ -171,7 +171,7 @@ public class SpotifyClientHelper {
   public static SpotifyPlaylistDto getPlaylistDto(String id) {
     String name = getRandomName();
     URI uri = PLAYLIST.getUri(id);
-    SpotifyUserProfileDto userProfileItem = getUserProfileDto();
+    SpotifyUserProfileDto userProfileDto = getUserProfileDto();
     String snapshotId = getRandomSnapshotId();
     String description = getRandomDescription();
     String type = PLAYLIST.getType();
@@ -186,7 +186,7 @@ public class SpotifyClientHelper {
         .id(id)
         .name(name)
         .uri(uri)
-        .userProfileItem(userProfileItem)
+        .userProfileDto(userProfileDto)
         .snapshotId(snapshotId)
         .description(description)
         .type(type)
@@ -207,13 +207,13 @@ public class SpotifyClientHelper {
   }
 
   public static SpotifyPlaylistTrackDto getSpotifyPlaylistTrackDto(
-      SpotifyUserProfileDto addedBy, SpotifyTrackDto trackItem) {
+      SpotifyUserProfileDto addedBy, SpotifyTrackDto trackDto) {
     String addedAt = ZonedDateTime.now().toString();
     Boolean isLocal = false;
     String primaryColor = getPrimaryColor();
-    Map<String, Object> videoThumbnail = getVideoThumbNail(trackItem.id());
+    Map<String, Object> videoThumbnail = getVideoThumbNail(trackDto.id());
     return SpotifyPlaylistTrackDto.builder()
-        .trackItem(trackItem)
+        .trackDto(trackDto)
         .addedBy(addedBy)
         .addedAt(addedAt)
         .isLocal(isLocal)
@@ -232,10 +232,10 @@ public class SpotifyClientHelper {
 
   public static SpotifyPlaylistMusicDto getSpotifyPlaylistMusicDto(
       SpotifyUserProfileDto userProfileItem, List<SpotifyTrackDto> trackItems) {
-    List<SpotifyPlaylistTrackDto> playlistItemTracks =
+    List<SpotifyPlaylistTrackDto> playlistTrackDtos =
         getSpotifyPlaylistTrackDtos(userProfileItem, trackItems);
     return SpotifyPlaylistMusicDto.builder()
-        .playlistItemTracks(playlistItemTracks)
+        .playlistTrackDtos(playlistTrackDtos)
         .next(null)
         .previous(null)
         .href(null)
@@ -250,7 +250,7 @@ public class SpotifyClientHelper {
     String id = playlistItem.id();
     String name = playlistItem.name();
     URI uri = playlistItem.uri();
-    SpotifyUserProfileDto userProfileItem = playlistItem.userProfileItem();
+    SpotifyUserProfileDto userProfileDto = playlistItem.userProfileDto();
     String snapshotId = getRandomSnapshotId();
     String description = playlistItem.description();
     String type = PLAYLIST.getType();
@@ -261,14 +261,14 @@ public class SpotifyClientHelper {
     Map<String, Object> externalUrls = getExternalUrls(PLAYLIST, playlistItem.id());
     List<Map<String, Object>> images = getImages();
     URL href = getHref(PLAYLIST, playlistItem.id());
-    SpotifyPlaylistMusicDto playlistItemMusic =
-        getSpotifyPlaylistMusicDto(playlistItem.userProfileItem(), trackItems);
+    SpotifyPlaylistMusicDto playlistMusicDto =
+        getSpotifyPlaylistMusicDto(playlistItem.userProfileDto(), trackItems);
     return SpotifyPlaylistDto.builder()
         .id(id)
         .name(name)
         .uri(uri)
-        .userProfileItem(userProfileItem)
-        .playlistItemMusic(playlistItemMusic)
+        .userProfileDto(userProfileDto)
+        .playlistMusicDto(playlistMusicDto)
         .snapshotId(snapshotId)
         .description(description)
         .type(type)
@@ -320,7 +320,7 @@ public class SpotifyClientHelper {
     Integer limit = 50;
     return GetUserPlaylistsResponse.builder()
         .href(href)
-        .playlistItems(playlistDtos)
+        .playlistDtos(playlistDtos)
         .limit(limit)
         .offset(offset)
         .total(1)

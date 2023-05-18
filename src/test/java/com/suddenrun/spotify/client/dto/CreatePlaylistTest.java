@@ -93,7 +93,7 @@ class CreatePlaylistTest {
             .id(null)
             .name("playlist name")
             .uri(URI.create("spotify:playlist:0moWPCTPTShumonjlsDgLe"))
-            .userProfileItem(userProfileDto)
+            .userProfileDto(userProfileDto)
             .snapshotId("MywyM2Y2Zjg5YTdlNGQ3MmI2OGFiN2NiZmQ4NTNlZDdlMjE2OTFjODM4")
             .build();
     // When

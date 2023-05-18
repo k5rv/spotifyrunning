@@ -3,12 +3,12 @@ package com.suddenrun.spotify.exception;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class SpotifyPlaylistServiceRemoveTracksException extends SpotifyPlaylistServiceException {
+public class RemoveSpotifyPlaylistTracksException extends SpotifyPlaylistServiceException {
 
   private static final String ERROR_WHILE_REMOVING_SPOTIFY_PLAYLIST_TRACKS =
-      "Error while removing spotify playlist tracks";
+      "Error while removing Spotify playlist tracks";
 
-  public SpotifyPlaylistServiceRemoveTracksException(String spotifyPlaylistId, Throwable cause) {
+  public RemoveSpotifyPlaylistTracksException(String spotifyPlaylistId, Throwable cause) {
     super(
         ERROR_WHILE_REMOVING_SPOTIFY_PLAYLIST_TRACKS
             + " from playlist with id ["

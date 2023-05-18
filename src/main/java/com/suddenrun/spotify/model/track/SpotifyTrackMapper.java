@@ -32,7 +32,7 @@ public interface SpotifyTrackMapper extends SpotifyMapper {
     if (playlistTrackDtos == null) return List.of();
     return playlistTrackDtos.stream()
         .filter(Objects::nonNull)
-        .map(SpotifyPlaylistTrackDto::trackItem)
+        .map(SpotifyPlaylistTrackDto::trackDto)
         .map(this::mapToModel)
         .map(SpotifyTrackItem.class::cast)
         .toList();

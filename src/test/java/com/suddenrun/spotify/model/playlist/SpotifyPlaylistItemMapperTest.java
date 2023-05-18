@@ -108,7 +108,7 @@ class SpotifyPlaylistItemMapperTest {
             .tracks(List.of(trackOne, trackTwo))
             .build();
 
-    SpotifyUserProfileDto userProfileItem =
+    SpotifyUserProfileDto userProfileDto =
         SpotifyUserProfileDto.builder()
             .id(userId)
             .displayName(userName)
@@ -116,50 +116,50 @@ class SpotifyPlaylistItemMapperTest {
             .email(email)
             .build();
 
-    SpotifyArtistDto artistItem =
+    SpotifyArtistDto artistDto =
         SpotifyArtistDto.builder().id(artistID).name(artistName).uri(artistUri).build();
 
-    List<SpotifyArtistDto> artistItems = List.of(artistItem);
+    List<SpotifyArtistDto> artistDtos = List.of(artistDto);
 
-    SpotifyTrackDto trackItemOne =
+    SpotifyTrackDto trackDtoOne =
         SpotifyTrackDto.builder()
             .id(trackOneId)
             .name(trackOneName)
             .uri(trackOneUri)
-            .artistDtos(artistItems)
+            .artistDtos(artistDtos)
             .popularity(trackOnePopularity)
             .build();
 
-    SpotifyTrackDto trackItemTwo =
+    SpotifyTrackDto trackDtoTwo =
         SpotifyTrackDto.builder()
             .id(trackTwoId)
             .name(trackTwoName)
             .uri(trackTwoUri)
             .popularity(trackTwoPopularity)
-            .artistDtos(artistItems)
+            .artistDtos(artistDtos)
             .build();
 
     String addedAt = "2020-12-04T14:14:36Z";
 
     SpotifyPlaylistTrackDto playlistItemTrackOne =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(trackItemOne)
-            .addedBy(userProfileItem)
+            .trackDto(trackDtoOne)
+            .addedBy(userProfileDto)
             .addedAt(addedAt)
             .build();
 
     SpotifyPlaylistTrackDto playlistItemTrackTwo =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(trackItemTwo)
-            .addedBy(userProfileItem)
+            .trackDto(trackDtoTwo)
+            .addedBy(userProfileDto)
             .addedAt(addedAt)
             .build();
 
-    List<SpotifyPlaylistTrackDto> playlistItemTracks =
+    List<SpotifyPlaylistTrackDto> playlistTrackDtos =
         List.of(playlistItemTrackOne, playlistItemTrackTwo);
 
     SpotifyPlaylistMusicDto playlistItemMusic =
-        SpotifyPlaylistMusicDto.builder().playlistItemTracks(playlistItemTracks).build();
+        SpotifyPlaylistMusicDto.builder().playlistTrackDtos(playlistTrackDtos).build();
 
     SpotifyPlaylistDto playlistItem =
         SpotifyPlaylistDto.builder()
@@ -167,11 +167,11 @@ class SpotifyPlaylistItemMapperTest {
             .name(playlistName)
             .uri(playlistUri)
             .snapshotId(playlistSnapshotId)
-            .userProfileItem(userProfileItem)
+            .userProfileDto(userProfileDto)
             .description(playlistDescription)
             .isPublic(isPublic)
             .isCollaborative(isCollaborative)
-            .playlistItemMusic(playlistItemMusic)
+            .playlistMusicDto(playlistItemMusic)
             .primaryColor("any")
             .followers(Map.of("href", "", "total", 100000))
             .externalUrls(
@@ -188,7 +188,7 @@ class SpotifyPlaylistItemMapperTest {
                         "height", 160, "width", 160, "url", new URL("https://i.scdn.co/image/3"))))
             .build();
     // Then
-    Assertions.assertThat(underTest.mapToPlaylist(playlistItem))
+    Assertions.assertThat(underTest.mapToModel(playlistItem))
         .isEqualTo(playlist)
         .hasOnlyFields(
             "id",
@@ -227,7 +227,7 @@ class SpotifyPlaylistItemMapperTest {
             .build();
 
     // Then
-    Assertions.assertThat(underTest.mapToPlaylistItemDetails(spotifyPlaylistDetails))
+    Assertions.assertThat(underTest.mapToPlaylistDetailsDto(spotifyPlaylistDetails))
         .isNotNull()
         .hasOnlyFields("name", "description", "isCollaborative", "isPublic")
         .usingRecursiveComparison()
@@ -237,7 +237,7 @@ class SpotifyPlaylistItemMapperTest {
   @Test
   void mapToPlaylistShouldThrowWhenSpotifyPlaylistItemIsNull() {
     // Then
-    Assertions.assertThatThrownBy(() -> underTest.mapToPlaylist(null))
+    Assertions.assertThatThrownBy(() -> underTest.mapToModel(null))
         .isExactlyInstanceOf(MappingSourceIsNullException.class)
         .hasMessage(MAPPING_SOURCE_IS_NULL);
   }
@@ -245,7 +245,7 @@ class SpotifyPlaylistItemMapperTest {
   @Test
   void mapToPlaylistItemDetailsShouldThrowWhenSpotifyPlaylistItemIsNull() {
     // Then
-    Assertions.assertThatThrownBy(() -> underTest.mapToPlaylistItemDetails(null))
+    Assertions.assertThatThrownBy(() -> underTest.mapToPlaylistDetailsDto(null))
         .isExactlyInstanceOf(MappingSourceIsNullException.class)
         .hasMessage(MAPPING_SOURCE_IS_NULL);
   }

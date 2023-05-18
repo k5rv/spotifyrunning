@@ -1,4 +1,4 @@
-package com.suddenrun.spotify.service;
+package com.suddenrun.spotify.service.playlist;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +17,8 @@ import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
+import com.suddenrun.spotify.service.SpotifyPlaylistItemService;
+import com.suddenrun.spotify.service.SpotifyPlaylistService;
 import com.suddenrun.utils.helpers.SpotifyClientHelper;
 import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
@@ -66,10 +68,10 @@ class SpotifyPlaylistServiceTest {
             CREATE_PLAYLIST, SpotifyUserProfileItem.class, SpotifyPlaylistItemDetails.class);
 
     addTracksMethod =
-        SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+        SpotifyPlaylistService.class.getMethod(ADD_TRACKS, String.class, List.class);
 
     MockitoAnnotations.openMocks(this);
-    underTest = new SpotifyPlaylistService(spotifyClient, playlistMapper, updatePlaylistItemsRequestConfig);
+    underTest = new SpotifyPlaylistService(spotifyClient, updatePlaylistItemsRequestConfig, playlistMapper);
   }
 
   @Test
@@ -82,16 +84,16 @@ class SpotifyPlaylistServiceTest {
     SpotifyPlaylistDetails playlistDetails = (SpotifyPlaylistDetails) SpotifyServiceHelper.getPlaylistDetails();
     SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyServiceHelper.getPlaylist();
 
-    given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistItemDetails.class)))
+    given(playlistMapper.mapToPlaylistDetailsDto(any(SpotifyPlaylistItemDetails.class)))
         .willReturn(playlistItemDetails);
     given(spotifyClient.createPlaylist(any(), any())).willReturn(playlistItem);
-    given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistDto.class))).willReturn(playlist);
+    given(playlistMapper.mapToModel(any(SpotifyPlaylistDto.class))).willReturn(playlist);
 
     // When
     underTest.createPlaylist(user, playlistDetails);
 
     // Then
-    then(playlistMapper).should().mapToPlaylistItemDetails(playlistDetailsArgumentCaptor.capture());
+    then(playlistMapper).should().mapToPlaylistDetailsDto(playlistDetailsArgumentCaptor.capture());
     assertThat(playlistDetailsArgumentCaptor.getValue())
         .isNotNull()
         .usingRecursiveComparison()
@@ -107,7 +109,7 @@ class SpotifyPlaylistServiceTest {
         .usingRecursiveComparison()
         .isEqualTo(playlistItemDetails);
 
-    then(playlistMapper).should().mapToPlaylist(playlistItemArgumentCaptor.capture());
+    then(playlistMapper).should().mapToModel(playlistItemArgumentCaptor.capture());
     assertThat(playlistItemArgumentCaptor.getValue())
         .isNotNull()
         .usingRecursiveComparison()
@@ -121,7 +123,7 @@ class SpotifyPlaylistServiceTest {
     String message = "message";
     SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile();
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
-    given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistItemDetails.class)))
+    given(playlistMapper.mapToPlaylistDetailsDto(any(SpotifyPlaylistItemDetails.class)))
         .willThrow(new RuntimeException(message));
 
     // Then
@@ -138,10 +140,10 @@ class SpotifyPlaylistServiceTest {
     SpotifyPlaylistDetailsDto playlistItemDetails = SpotifyClientHelper.getPlaylistDetailsDto();
     SpotifyUserProfileItem user = SpotifyServiceHelper.getUserProfile();
     SpotifyPlaylistDetails playlistDetails = (SpotifyPlaylistDetails) SpotifyServiceHelper.getPlaylistDetails();
-    given(playlistMapper.mapToPlaylistItemDetails(any(SpotifyPlaylistItemDetails.class)))
+    given(playlistMapper.mapToPlaylistDetailsDto(any(SpotifyPlaylistItemDetails.class)))
         .willReturn(playlistItemDetails);
     given(spotifyClient.createPlaylist(any(), any())).willReturn(playlistItem);
-    given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistDto.class)))
+    given(playlistMapper.mapToModel(any(SpotifyPlaylistDto.class)))
         .willThrow(new RuntimeException(message));
 
     // Then
@@ -150,58 +152,6 @@ class SpotifyPlaylistServiceTest {
     //        .hasMessage(UNABLE_TO_CREATE_PLAYLIST + message);
   }
 
-  @Test
-  void itShouldGetPlaylist() {
-    // Given
-    SpotifyPlaylistDto playlistItem = SpotifyClientHelper.getPlaylistDto();
-    SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyServiceHelper.getPlaylist();
-    given(spotifyClient.getPlaylist(any())).willReturn(playlistItem);
-    given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistDto.class))).willReturn(playlist);
-
-    // When
-    underTest.getPlaylist(playlist.getId());
-
-    // Then
-    then(spotifyClient).should().getPlaylist(playlistIdArgumentCaptor.capture());
-    assertThat(playlistIdArgumentCaptor.getValue()).isNotNull().isEqualTo(playlist.getId());
-
-    then(playlistMapper).should().mapToPlaylist(playlistItemArgumentCaptor.capture());
-    assertThat(playlistItemArgumentCaptor.getValue())
-        .isNotNull()
-        .usingRecursiveComparison()
-        .isEqualTo(playlistItem);
-  }
-
-  @Test
-  void getPlaylistShouldThrowGetPlaylistExceptionWhenSpotifyClientThrowsRuntimeException() {
-    // Given
-    String message = "message";
-    String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    given(spotifyClient.getPlaylist(playlistId)).willThrow(new RuntimeException(message));
-
-    // Then
-    //    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-    //        .isExactlyInstanceOf(GetPlaylistException.class)
-    //        .hasMessage(UNABLE_TO_GET_PLAYLIST + message);
-  }
-
-  @Test
-  void
-      getPlaylistShouldThrowCreatePlaylistExceptionWhenPlaylistMapperMapToPlaylistThrowsRuntimeException() {
-    // Given
-    String message = "message";
-    SpotifyPlaylistDto playlistItem = SpotifyClientHelper.getPlaylistDto();
-    String playlistId = playlistItem.id();
-
-    given(spotifyClient.getPlaylist(any())).willReturn(playlistItem);
-    given(playlistMapper.mapToPlaylist(any(SpotifyPlaylistDto.class)))
-        .willThrow(new RuntimeException(message));
-
-    // Then
-    //    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
-    //        .isExactlyInstanceOf(GetPlaylistException.class)
-    //        .hasMessage(UNABLE_TO_GET_PLAYLIST + message);
-  }
 
   @Test
   void itShouldAddTracks() {

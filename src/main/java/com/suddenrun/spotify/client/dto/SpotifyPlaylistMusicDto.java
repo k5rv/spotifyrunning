@@ -8,7 +8,7 @@ import lombok.Builder;
 
 @Builder
 public record SpotifyPlaylistMusicDto(
-    @JsonProperty("items") @Valid List<SpotifyPlaylistTrackDto> playlistItemTracks,
+    @JsonProperty("items") @Valid List<SpotifyPlaylistTrackDto> playlistTrackDtos,
     URL href,
     Integer limit,
     Integer offset,

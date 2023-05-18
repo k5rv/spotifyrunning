@@ -3,12 +3,12 @@ package com.suddenrun.spotify.exception;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class SpotifyPlaylistServiceCreatePlaylistException extends SpotifyPlaylistServiceException {
+public class CreateSpotifyPlaylistException extends RuntimeException {
 
   private static final String ERROR_WHILE_CREATING_SPOTIFY_PLAYLIST =
-      "Error while creating spotify playlist";
+      "Error while creating Spotify playlist";
 
-  public SpotifyPlaylistServiceCreatePlaylistException(String spotifyUserId, Throwable cause) {
+  public CreateSpotifyPlaylistException(String spotifyUserId, Throwable cause) {
     super(
         ERROR_WHILE_CREATING_SPOTIFY_PLAYLIST
             + " for user with id ["

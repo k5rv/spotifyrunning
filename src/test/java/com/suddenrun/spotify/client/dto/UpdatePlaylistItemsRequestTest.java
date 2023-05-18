@@ -35,7 +35,7 @@ class UpdatePlaylistItemsRequestTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage("itemUris: size must be between 1 and 100");
+        .hasMessage("uris: size must be between 1 and 100");
   }
 
   @Test
@@ -52,7 +52,7 @@ class UpdatePlaylistItemsRequestTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-            .hasMessage("itemUris: size must be between 1 and 100");
+            .hasMessage("uris: size must be between 1 and 100");
   }
 
   @Test
@@ -72,7 +72,7 @@ class UpdatePlaylistItemsRequestTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage("itemUris[1].<list element>: must not be null");
+        .hasMessage("uris[1].<list element>: must not be null");
   }
 
 

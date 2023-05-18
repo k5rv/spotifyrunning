@@ -126,7 +126,7 @@ class SpotifyTrackMapperTest {
 
     List<SpotifyArtistDto> artistItems = List.of(artistItem);
 
-    SpotifyTrackDto trackItemOne =
+    SpotifyTrackDto trackDtoOne =
         SpotifyTrackDto.builder()
             .id(trackOneId)
             .name(trackOneName)
@@ -135,7 +135,7 @@ class SpotifyTrackMapperTest {
             .popularity(trackOnePopularity)
             .build();
 
-    SpotifyTrackDto trackItemTwo =
+    SpotifyTrackDto trackDtoTwo =
         SpotifyTrackDto.builder()
             .id(trackTwoId)
             .name(trackTwoName)
@@ -148,14 +148,14 @@ class SpotifyTrackMapperTest {
 
     SpotifyPlaylistTrackDto playlistItemTrackOne =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(trackItemOne)
+            .trackDto(trackDtoOne)
             .addedBy(userProfileItem)
             .addedAt(addedAt)
             .build();
 
     SpotifyPlaylistTrackDto playlistItemTrackTwo =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(trackItemTwo)
+            .trackDto(trackDtoTwo)
             .addedBy(userProfileItem)
             .addedAt(addedAt)
             .build();

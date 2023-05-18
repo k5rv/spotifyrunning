@@ -32,7 +32,7 @@ class SpotifyPlaylistMusicDtoTest {
       delimiter = '|',
       textBlock =
           """
-           TRUE |FALSE|FALSE|trackItem: must not be null
+           TRUE |FALSE|FALSE|trackDto: must not be null
            FALSE|TRUE |FALSE|addedBy: must not be null
            FALSE|FALSE|TRUE |addedAt: must not be null
            """)
@@ -43,13 +43,13 @@ class SpotifyPlaylistMusicDtoTest {
     SpotifyUserProfileDto userProfileItem =
         isAddedByNull ? null : SpotifyClientHelper.getUserProfileDto();
 
-    SpotifyTrackDto trackItem = isTrackItemNull ? null : SpotifyClientHelper.getTrackDto();
+    SpotifyTrackDto trackDto = isTrackItemNull ? null : SpotifyClientHelper.getTrackDto();
 
     String addedAt = isAddedAtNull ? null : "2020-12-04T14:14:36Z";
 
     SpotifyPlaylistTrackDto playlistItemTrack =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(trackItem)
+            .trackDto(trackDto)
             .addedBy(userProfileItem)
             .addedAt(addedAt)
             .build();
@@ -66,25 +66,25 @@ class SpotifyPlaylistMusicDtoTest {
   @Test
   void itShouldDetectSpotifyPlaylistItemMusicTestCascadeConstraintViolations() {
     // Given
-    String message = "playlistItemTracks[0].trackItem: must not be null";
+    String message = "playlistTrackDtos[0].trackDto: must not be null";
 
     SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
 
     SpotifyPlaylistTrackDto playlistItemTrack =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(null)
+            .trackDto(null)
             .addedBy(userProfileDto)
             .addedAt("2020-12-04T14:14:36Z")
             .build();
 
     List<SpotifyPlaylistTrackDto> playlistItemTracks = List.of(playlistItemTrack);
 
-    SpotifyPlaylistMusicDto playlistItemMusic =
-        SpotifyPlaylistMusicDto.builder().playlistItemTracks(playlistItemTracks).build();
+    SpotifyPlaylistMusicDto playlistMusicDto =
+        SpotifyPlaylistMusicDto.builder().playlistTrackDtos(playlistItemTracks).build();
 
     // When
     Set<ConstraintViolation<SpotifyPlaylistMusicDto>> constraintViolations =
-        validator.validate(playlistItemMusic);
+        validator.validate(playlistMusicDto);
 
     // Then
     assertThat(constraintViolations).hasSize(1);

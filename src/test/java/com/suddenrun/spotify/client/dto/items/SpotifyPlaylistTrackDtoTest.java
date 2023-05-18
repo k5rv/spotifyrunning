@@ -40,7 +40,7 @@ class SpotifyPlaylistTrackDtoTest {
       Boolean isTrackItemNull, Boolean isAddedByNull, Boolean isAddedAtNull, String message) {
     // Given
 
-    SpotifyUserProfileDto userProfileItem =
+    SpotifyUserProfileDto userProfileDto =
         isAddedByNull
             ? null
             : SpotifyUserProfileDto.builder()
@@ -59,7 +59,7 @@ class SpotifyPlaylistTrackDtoTest {
 
     List<SpotifyArtistDto> artistItems = List.of(artistItem);
 
-    SpotifyTrackDto trackItem =
+    SpotifyTrackDto trackDto =
         isTrackItemNull
             ? null
             : SpotifyTrackDto.builder()
@@ -74,8 +74,8 @@ class SpotifyPlaylistTrackDtoTest {
 
     SpotifyPlaylistTrackDto playlistItemTrack =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(trackItem)
-            .addedBy(userProfileItem)
+            .trackDto(trackDto)
+            .addedBy(userProfileDto)
             .addedAt(addedAt)
             .build();
 
@@ -110,7 +110,7 @@ class SpotifyPlaylistTrackDtoTest {
 
     List<SpotifyArtistDto> artistItems = List.of(artistItem);
 
-    SpotifyTrackDto trackItem =
+    SpotifyTrackDto trackDto =
         SpotifyTrackDto.builder()
             .id("1234567890AaBbCcDdEeFfG")
             .name("playlist name")
@@ -119,16 +119,16 @@ class SpotifyPlaylistTrackDtoTest {
             .artistDtos(artistItems)
             .build();
 
-    SpotifyPlaylistTrackDto playlistItemTrack =
+    SpotifyPlaylistTrackDto playlistTrackDto =
         SpotifyPlaylistTrackDto.builder()
-            .trackItem(trackItem)
+            .trackDto(trackDto)
             .addedBy(userProfileItem)
             .addedAt("2020-12-04T14:14:36Z")
             .build();
 
     // When
     Set<ConstraintViolation<SpotifyPlaylistTrackDto>> constraintViolations =
-        validator.validate(playlistItemTrack);
+        validator.validate(playlistTrackDto);
 
     // Then
     assertThat(constraintViolations).hasSize(1);

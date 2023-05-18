@@ -12,8 +12,8 @@ import lombok.Builder;
 
 @Builder
 public record SpotifyPlaylistDto(
-    @JsonProperty("owner") @Valid @NotNull SpotifyUserProfileDto userProfileItem,
-    @JsonProperty("tracks") SpotifyPlaylistMusicDto playlistItemMusic,
+    @JsonProperty("owner") @Valid @NotNull SpotifyUserProfileDto userProfileDto,
+    @JsonProperty("tracks") SpotifyPlaylistMusicDto playlistMusicDto,
     @JsonProperty("public") Boolean isPublic,
     @JsonProperty("snapshot_id") @NotNull String snapshotId,
     @JsonProperty("collaborative") Boolean isCollaborative,

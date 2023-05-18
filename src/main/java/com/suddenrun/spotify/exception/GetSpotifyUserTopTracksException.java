@@ -6,7 +6,7 @@ import lombok.experimental.StandardException;
 public class GetSpotifyUserTopTracksException extends RuntimeException {
 
   private static final String ERROR_WHILE_GETTING_SPOTIFY_USER_TOP_TRACKS =
-      "Error while getting spotify user top tracks";
+      "Error while getting Spotify user top tracks";
 
   public GetSpotifyUserTopTracksException(Throwable cause) {
     super(ERROR_WHILE_GETTING_SPOTIFY_USER_TOP_TRACKS + ": " + cause.getMessage(), cause);
