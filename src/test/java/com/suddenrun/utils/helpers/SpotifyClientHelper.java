@@ -401,12 +401,12 @@ public class SpotifyClientHelper {
     return GetRecommendationsResponse.builder().trackDtos(trackDtos).seeds(seeds).build();
   }
 
-  public static UpdateItemsResponse createUpdateItemsResponse() {
+  public static UpdatePlaylistItemsResponse createUpdatePlaylistItemsResponse() {
     String snapshotId = getRandomSnapshotId();
-    return UpdateItemsResponse.builder().snapshotId(snapshotId).build();
+    return UpdatePlaylistItemsResponse.builder().snapshotId(snapshotId).build();
   }
 
-  public static RemovePlaylistItemsResponse createRemoveItemsResponse() {
+  public static RemovePlaylistItemsResponse createRemovePlaylistItemsResponse() {
     String snapshotId = getRandomSnapshotId();
     return RemovePlaylistItemsResponse.builder().snapshotId(snapshotId).build();
   }

@@ -15,7 +15,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 @Getter
 @AllArgsConstructor
-enum SpotifyResourceHelper {
+public enum SpotifyResourceHelper {
   USER("user"),
   ARTIST("artist"),
 

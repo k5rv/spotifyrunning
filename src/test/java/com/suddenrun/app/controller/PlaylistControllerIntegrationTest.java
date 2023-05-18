@@ -13,7 +13,7 @@ import com.suddenrun.spotify.client.dto.GetUserTopTracksResponse;
 import com.suddenrun.spotify.client.dto.SpotifyPlaylistDto;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.spotify.client.dto.UpdateItemsResponse;
+import com.suddenrun.spotify.client.dto.UpdatePlaylistItemsResponse;
 import com.suddenrun.utils.helpers.JsonHelper;
 import com.suddenrun.utils.helpers.SpotifyClientHelper;
 import java.util.List;
@@ -71,11 +71,11 @@ class PlaylistControllerIntegrationTest {
         post(urlEqualTo("/v1/users/" + userId + "/playlists"))
             .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(emptyPlaylist), 200)));
 
-    UpdateItemsResponse updateItemsResponse = SpotifyClientHelper.createUpdateItemsResponse();
+    UpdatePlaylistItemsResponse updatePlaylistItemsResponse = SpotifyClientHelper.createUpdatePlaylistItemsResponse();
 
     stubFor(
         post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(updateItemsResponse), 200)));
+            .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(updatePlaylistItemsResponse), 200)));
 
     SpotifyPlaylistDto playlist = SpotifyClientHelper.updatePlaylistDto(emptyPlaylist, musicRecommendations);
 

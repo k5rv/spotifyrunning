@@ -88,11 +88,11 @@ class AddItemsToPlaylistTest {
       itShouldDetectAddItemsToPlaylistMethodCascadeConstraintViolationWhenReturnValueAddItemsToPlaylistResponseIsNotValid() {
     // Given
     String message = ".<return value>.snapshotId: must not be empty";
-    UpdateItemsResponse updateItemsResponse =
-        UpdateItemsResponse.builder().snapshotId(null).build();
+    UpdatePlaylistItemsResponse updatePlaylistItemsResponse =
+        UpdatePlaylistItemsResponse.builder().snapshotId(null).build();
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
-        executableValidator.validateReturnValue(object, method, updateItemsResponse);
+        executableValidator.validateReturnValue(object, method, updatePlaylistItemsResponse);
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

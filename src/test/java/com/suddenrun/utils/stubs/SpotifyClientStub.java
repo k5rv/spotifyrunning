@@ -54,15 +54,15 @@ public class SpotifyClientStub implements SpotifyClient {
 
   @NotNull
   @Override
-  public UpdateItemsResponse addPlaylistItems(
+  public UpdatePlaylistItemsResponse addPlaylistItems(
       @NotNull String playlistId, @NotNull UpdatePlaylistItemsRequest request) {
-    return SpotifyClientHelper.createUpdateItemsResponse();
+    return SpotifyClientHelper.createUpdatePlaylistItemsResponse();
   }
 
   @NotNull
   @Override
   public RemovePlaylistItemsResponse removePlaylistItems(
       @NotNull String playlistId, @NotNull RemovePlaylistItemsRequest request) {
-    return SpotifyClientHelper.createRemoveItemsResponse();
+    return SpotifyClientHelper.createRemovePlaylistItemsResponse();
   }
 }
