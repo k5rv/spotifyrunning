@@ -9,8 +9,10 @@ import static org.mockito.BDDMockito.then;
 import com.suddenrun.spotify.client.SpotifyClient;
 import com.suddenrun.spotify.client.dto.SpotifyPlaylistDetailsDto;
 import com.suddenrun.spotify.client.dto.SpotifyPlaylistDto;
+import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.AddSpotifyPlaylistItemsRequestConfig;
 import com.suddenrun.spotify.exception.CreateSpotifyPlaylistException;
+import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylist;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistMapper;
 import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistDetails;
@@ -112,6 +114,19 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
         .isExactlyInstanceOf(CreateSpotifyPlaylistException.class)
         .hasMessageContaining(userId)
         .hasMessageContaining(message);
+  }
+
+  @Test
+  void
+      itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+    // Given
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile();
+    String userId = spotifyUser.getId();
+    SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
+    given(client.createPlaylist(any(), any())).willThrow(new SpotifyUnauthorizedException());
+    // Then
+    assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
+        .isExactlyInstanceOf(SpotifyAccessTokenException.class);
   }
 
   @Test
