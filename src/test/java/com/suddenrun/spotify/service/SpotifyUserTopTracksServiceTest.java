@@ -1,6 +1,8 @@
 package com.suddenrun.spotify.service;
 
+import static com.suddenrun.utils.helpers.SpotifyClientHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
@@ -12,9 +14,9 @@ import com.suddenrun.spotify.client.dto.GetUserTopTracksRequest;
 import com.suddenrun.spotify.client.dto.GetUserTopTracksResponse;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.config.GetSpotifyUserTopItemsRequestConfig;
+import com.suddenrun.spotify.exception.GetSpotifyUserTopTracksException;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
-import com.suddenrun.utils.helpers.SpotifyClientHelper;
 import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,36 +45,23 @@ class SpotifyUserTopTracksServiceTest {
   }
 
   @Test
-  void itShouldGetUserTopTracks() throws Exception {
+  void itShouldGetUserTopTracks() {
     // Given
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
-    List<SpotifyTrackDto> trackDtos = SpotifyClientHelper.getTrackDtos(2);
-
-    GetUserTopTracksRequest getUserTopTracksRequest =
-        SpotifyClientHelper.createGetUserTopTracksRequest();
-
-    GetUserTopTracksResponse getUserTopTracksResponse =
-        SpotifyClientHelper.createGetUserTopTracksResponse(trackDtos);
-
-    given(config.getLimit()).willReturn(getUserTopTracksRequest.limit());
-    given(config.getOffset()).willReturn(getUserTopTracksRequest.offset());
-    given(config.getTimeRange()).willReturn(getUserTopTracksRequest.timeRange().name());
-
-    given(client.getUserTopTracks(any(GetUserTopTracksRequest.class)))
-        .willReturn(getUserTopTracksResponse);
-
+    List<SpotifyTrackDto> trackDtos = getTrackDtos(2);
+    GetUserTopTracksRequest request = createGetUserTopTracksRequest();
+    GetUserTopTracksResponse response = createGetUserTopTracksResponse(trackDtos);
+    given(config.getLimit()).willReturn(request.limit());
+    given(config.getOffset()).willReturn(request.offset());
+    given(config.getTimeRange()).willReturn(request.timeRange().name());
+    given(client.getUserTopTracks(any(GetUserTopTracksRequest.class))).willReturn(response);
     given(mapper.mapItemsToTracks(anyList())).willReturn(trackItems);
-
     // When
     underTest.getUserTopTracks();
-
     // Then
     then(client).should().getUserTopTracks(requestArgumentCaptor.capture());
-
-    assertThat(requestArgumentCaptor.getValue()).isNotNull().isEqualTo(getUserTopTracksRequest);
-
+    assertThat(requestArgumentCaptor.getValue()).isNotNull().isEqualTo(request);
     then(mapper).should().mapItemsToTracks(dtosArgumentCaptor.capture());
-
     assertThat(dtosArgumentCaptor.getAllValues()).isNotEmpty().containsExactly(trackDtos);
   }
 
@@ -80,58 +69,53 @@ class SpotifyUserTopTracksServiceTest {
   @CsvSource(
       delimiter = '|',
       nullValues = "null",
-      textBlock =
-          """
-                       |null
-           UNKNOWN_TERM|UNKNOWN_TERM
+      textBlock = """
+           null
+           UNKNOWN_TERM
            """)
-  void itShouldThrowGetUserTopTracksExceptionWhenGetUserTopTracksRequestTimeRangeIsNotValid(
-      String timeRange, String message) {
+  void itShouldThrowGetSpotifyUserTopTracksExceptionWhenGetUserTopTracksRequestTimeRangeIsNotValid(
+      String timeRange) {
     // Given
     given(config.getTimeRange()).willReturn(timeRange);
     // Then
-    //    assertThatThrownBy(() -> underTest.getUserTopTracks())
-    //        .isExactlyInstanceOf(GetUserTopTracksException.class)
-    //        .hasMessage(UNABLE_TO_GET_USER_TOP_TRACKS + ILLEGAL_TIME_RANGE + message);
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
+        .isExactlyInstanceOf(GetSpotifyUserTopTracksException.class);
   }
 
   @Test
-  void itShouldThrowGetUserTopTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
+  void itShouldThrowGetSpotifyUserTopTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
     given(config.getTimeRange()).willReturn("MEDIUM_TERM");
     given(client.getUserTopTracks(any())).willThrow(new RuntimeException(message));
     // Then
-    //    assertThatThrownBy(() -> underTest.getUserTopTracks())
-    //        .isExactlyInstanceOf(GetUserTopTracksException.class)
-    //        .hasMessage(UNABLE_TO_GET_USER_TOP_TRACKS + message);
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
+        .isExactlyInstanceOf(GetSpotifyUserTopTracksException.class)
+        .hasMessageContaining(message);
   }
 
   @Test
-  void itShouldThrowGetUserTopTracksExceptionWhenTrackMapperThrowsRuntimeException()
-      throws Exception {
+  void itShouldThrowGetSpotifyUserTopTracksExceptionWhenSpotifyTrackMapperThrowsRuntimeException() {
     // Given
     String message = "message";
-    List<SpotifyTrackDto> trackDtos = SpotifyClientHelper.getTrackDtos(1);
+    List<SpotifyTrackDto> trackDtos = getTrackDtos(1);
     String timeRangeName = GetUserTopTracksRequest.TimeRange.SHORT_TERM.name();
-    GetUserTopTracksResponse getUserTopTracksResponse =
-        SpotifyClientHelper.createGetUserTopTracksResponse(trackDtos);
+    GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackDtos);
     given(config.getTimeRange()).willReturn(timeRangeName);
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
     given(mapper.mapItemsToTracks(trackDtos)).willThrow(new RuntimeException(message));
     // Then
-    //    assertThatThrownBy(() -> underTest.getUserTopTracks())
-    //        .isExactlyInstanceOf(GetUserTopTracksException.class)
-    //        .hasMessage(UNABLE_TO_GET_USER_TOP_TRACKS + message);
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
+        .isExactlyInstanceOf(GetSpotifyUserTopTracksException.class)
+        .hasMessageContaining(message);
   }
 
   @Test
-  void itShouldReturnEmptyListWhenGetUserTopTracksResponseTrackItemsListIsEmpty() throws Exception {
+  void itShouldReturnEmptyListWhenGetUserTopTracksResponseTrackDtosListIsEmpty() {
     // Given
-    List<SpotifyTrackDto> trackItems = Collections.emptyList();
+    List<SpotifyTrackDto> trackDtos = Collections.emptyList();
     String timeRangeName = GetUserTopTracksRequest.TimeRange.SHORT_TERM.name();
-    GetUserTopTracksResponse getUserTopTracksResponse =
-        SpotifyClientHelper.createGetUserTopTracksResponse(trackItems);
+    GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackDtos);
     given(config.getTimeRange()).willReturn(timeRangeName);
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
     // Then
@@ -140,15 +124,13 @@ class SpotifyUserTopTracksServiceTest {
   }
 
   @Test
-  void itShouldReturnEmptyListWhenGetUserTopTracksResponseTrackItemsListElementsAreNull()
-      throws Exception {
+  void itShouldReturnEmptyListWhenGetUserTopTracksResponseTrackItemsListElementsAreNull() {
     // Given
     List<SpotifyTrackDto> trackItems = new ArrayList<>();
     trackItems.add(null);
     trackItems.add(null);
     String timeRangeName = GetUserTopTracksRequest.TimeRange.SHORT_TERM.name();
-    GetUserTopTracksResponse getUserTopTracksResponse =
-        SpotifyClientHelper.createGetUserTopTracksResponse(trackItems);
+    GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackItems);
     given(config.getTimeRange()).willReturn(timeRangeName);
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
     // Then
@@ -158,17 +140,15 @@ class SpotifyUserTopTracksServiceTest {
 
   @Test
   void
-      itShouldReturnUserTopTracksNonNullElementsWhenGetUserTopTracksResponseTrackItemsListHasNullElements()
-          throws Exception {
+      itShouldReturnUserTopTracksNonNullElementsWhenGetUserTopTracksResponseTrackDtoListHasNullElements() {
     // Given
-    SpotifyTrackDto trackItem = SpotifyTrackDto.builder().build();
-    List<SpotifyTrackDto> trackItems = new ArrayList<>();
-    trackItems.add(null);
-    trackItems.add(trackItem);
-    trackItems.add(null);
+    SpotifyTrackDto trackDto = SpotifyTrackDto.builder().build();
+    List<SpotifyTrackDto> trackDtos = new ArrayList<>();
+    trackDtos.add(null);
+    trackDtos.add(trackDto);
+    trackDtos.add(null);
     String timeRangeName = GetUserTopTracksRequest.TimeRange.SHORT_TERM.name();
-    GetUserTopTracksResponse getUserTopTracksResponse =
-        SpotifyClientHelper.createGetUserTopTracksResponse(trackItems);
+    GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackDtos);
     given(config.getTimeRange()).willReturn(timeRangeName);
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
     // When
@@ -176,6 +156,6 @@ class SpotifyUserTopTracksServiceTest {
     // Then
     then(mapper).should().mapItemsToTracks(dtosArgumentCaptor.capture());
     assertThat(dtosArgumentCaptor.getAllValues())
-        .containsExactly(Collections.singletonList(trackItem));
+        .containsExactly(Collections.singletonList(trackDto));
   }
 }

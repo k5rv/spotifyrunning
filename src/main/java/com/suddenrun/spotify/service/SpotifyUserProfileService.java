@@ -15,14 +15,16 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class SpotifyUserProfileService implements SpotifyUserProfileItemService {
-  private final SpotifyClient spotifyClient;
-  private final SpotifyUserProfileMapper userProfileMapper;
+
+  private final SpotifyClient client;
+
+  private final SpotifyUserProfileMapper mapper;
 
   @Override
   public SpotifyUserProfileItem getCurrentUserProfile() {
     try {
-      SpotifyUserProfileDto userProfileDto = spotifyClient.getCurrentUserProfile();
-      return userProfileMapper.mapToModel(userProfileDto);
+      SpotifyUserProfileDto userProfileDto = client.getCurrentUserProfile();
+      return mapper.mapToModel(userProfileDto);
     } catch (SpotifyUnauthorizedException e) {
       throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {

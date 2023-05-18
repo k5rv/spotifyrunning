@@ -7,7 +7,7 @@ import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.GetSpotifyUserTopItemsRequestConfig;
 import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
-import com.suddenrun.spotify.exception.SpotifyUserTopTracksServiceException;
+import com.suddenrun.spotify.exception.GetSpotifyUserTopTracksException;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
 import java.util.List;
@@ -22,35 +22,35 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SpotifyUserTopTracksService implements SpotifyUserTopTrackItemsService {
 
-  private final SpotifyClient spotifyClient;
+  private final SpotifyClient client;
 
-  private final GetSpotifyUserTopItemsRequestConfig getUserTopTracksRequestConfig;
+  private final GetSpotifyUserTopItemsRequestConfig requestConfig;
 
-  private final SpotifyTrackMapper trackMapper;
+  private final SpotifyTrackMapper mapper;
 
   @Override
   public List<SpotifyTrackItem> getUserTopTracks() {
     try {
       GetUserTopTracksRequest request =
           GetUserTopTracksRequest.builder()
-              .timeRange(GetUserTopTracksRequest.TimeRange.valueOf(getUserTopTracksRequestConfig.getTimeRange()))
-              .limit(getUserTopTracksRequestConfig.getLimit())
-              .offset(getUserTopTracksRequestConfig.getOffset())
+              .timeRange(GetUserTopTracksRequest.TimeRange.valueOf(requestConfig.getTimeRange()))
+              .limit(requestConfig.getLimit())
+              .offset(requestConfig.getOffset())
               .build();
 
-      GetUserTopTracksResponse response = spotifyClient.getUserTopTracks(request);
+      GetUserTopTracksResponse response = client.getUserTopTracks(request);
 
-      List<SpotifyTrackDto> trackItems =
+      List<SpotifyTrackDto> trackDtos =
           response.trackItems().stream()
               .flatMap(Stream::ofNullable)
               .filter(Objects::nonNull)
               .toList();
 
-      return trackItems.isEmpty() ? List.of() : trackMapper.mapItemsToTracks(trackItems);
+      return trackDtos.isEmpty() ? List.of() : mapper.mapItemsToTracks(trackDtos);
     } catch (SpotifyUnauthorizedException e) {
       throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
-      throw new SpotifyUserTopTracksServiceException(e);
+      throw new GetSpotifyUserTopTracksException(e);
     }
   }
 }

@@ -1,5 +1,7 @@
 package com.suddenrun.spotify.service;
 
+import static com.suddenrun.utils.helpers.SpotifyClientHelper.*;
+import static com.suddenrun.utils.helpers.SpotifyServiceHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,8 +18,6 @@ import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfile;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileMapper;
-import com.suddenrun.utils.helpers.SpotifyClientHelper;
-import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -40,8 +40,8 @@ class SpotifyUserProfileServiceTest {
   @Test
   void itShouldGetCurrentUserProfile() {
     // Given
-    SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
-    SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
+    SpotifyUserProfileItem userProfile = getUserProfile();
+    SpotifyUserProfileDto userProfileDto = getUserProfileDto();
     given(client.getCurrentUserProfile()).willReturn(userProfileDto);
     given(mapper.mapToModel(userProfileDto)).willReturn((SpotifyUserProfile) userProfile);
     // When
@@ -59,28 +59,30 @@ class SpotifyUserProfileServiceTest {
     given(client.getCurrentUserProfile()).willThrow(new RuntimeException(message));
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
-        .isExactlyInstanceOf(GetSpotifyUserProfileException.class).hasMessageContaining(message);
+        .isExactlyInstanceOf(GetSpotifyUserProfileException.class)
+        .hasMessageContaining(message);
   }
 
   @Test
-  void itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+  void
+      itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
     String message = "message";
     given(client.getCurrentUserProfile()).willThrow(new SpotifyUnauthorizedException(message));
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
-            .isExactlyInstanceOf(SpotifyAccessTokenException.class).hasMessageContaining(message);
+        .isExactlyInstanceOf(SpotifyAccessTokenException.class)
+        .hasMessageContaining(message);
   }
 
   @Test
-  void itShouldThrowGetSpotifyUserProfileExceptionWhenUserProfileMapperThrowsRuntimeException() {
+  void itShouldThrowGetSpotifyUserProfileExceptionWhenSpotifyUserProfileMapperThrowsRuntimeException() {
     // Given
     String message = "message";
     given(mapper.mapToModel(any())).willThrow(new RuntimeException(message));
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
-            .isExactlyInstanceOf(GetSpotifyUserProfileException.class).hasMessageContaining(message);
+        .isExactlyInstanceOf(GetSpotifyUserProfileException.class)
+        .hasMessageContaining(message);
   }
-
-
 }

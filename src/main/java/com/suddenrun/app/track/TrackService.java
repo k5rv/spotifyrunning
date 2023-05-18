@@ -5,7 +5,7 @@ import com.suddenrun.app.exception.AppSpotifyServiceInteractionException;
 import com.suddenrun.app.playlist.AppPlaylistConfig;
 import com.suddenrun.spotify.exception.SpotifyRecommendationsServiceException;
 import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
-import com.suddenrun.spotify.exception.SpotifyUserTopTracksServiceException;
+import com.suddenrun.spotify.exception.GetSpotifyUserTopTracksException;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.service.SpotifyRecommendationItemsService;
 import com.suddenrun.spotify.service.SpotifyUserTopTrackItemsService;
@@ -64,7 +64,7 @@ public class TrackService implements AppTrackService {
           .toList();
     } catch (SpotifyAccessTokenException e) {
       throw new AppAuthorizationException(e);
-    } catch (SpotifyUserTopTracksServiceException | SpotifyRecommendationsServiceException e) {
+    } catch (GetSpotifyUserTopTracksException | SpotifyRecommendationsServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {
       throw new AppTrackServiceGetTracksException(e);
