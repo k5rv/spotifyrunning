@@ -2,7 +2,7 @@ package com.suddenrun.spotify.client.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.suddenrun.utils.SpotifyClientHelper;
+import com.suddenrun.utils.helpers.SpotifyClientHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

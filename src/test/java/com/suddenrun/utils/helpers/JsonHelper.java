@@ -1,4 +1,4 @@
-package com.suddenrun.utils;
+package com.suddenrun.utils.helpers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

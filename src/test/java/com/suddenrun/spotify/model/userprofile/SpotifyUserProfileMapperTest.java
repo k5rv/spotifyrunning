@@ -1,7 +1,7 @@
 package com.suddenrun.spotify.model.userprofile;
 
 import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.utils.SpotifyServiceHelper;
+import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;

@@ -94,7 +94,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
               .itemUris(trackUris)
               .position(updatePlaylistItemsRequestConfig.getPosition())
               .build();
-      UpdateUpdateItemsResponse response = spotifyClient.addPlaylistItems(playlistId, request);
+      UpdateItemsResponse response = spotifyClient.addPlaylistItems(playlistId, request);
       return response.snapshotId();
     } catch (SpotifyUnauthorizedException e) {
       throw new SpotifyAccessTokenException(e);

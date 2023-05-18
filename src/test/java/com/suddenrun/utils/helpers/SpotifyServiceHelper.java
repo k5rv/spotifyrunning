@@ -1,6 +1,6 @@
-package com.suddenrun.utils;
+package com.suddenrun.utils.helpers;
 
-import static com.suddenrun.utils.SpotifyResourceHelper.*;
+import static com.suddenrun.utils.helpers.SpotifyResourceHelper.*;
 
 import com.suddenrun.spotify.model.SpotifyItem;
 import com.suddenrun.spotify.model.artist.SpotifyArtist;

@@ -4,7 +4,7 @@ import com.suddenrun.spotify.client.dto.*;
 import com.suddenrun.spotify.model.artist.SpotifyArtist;
 import com.suddenrun.spotify.model.artist.SpotifyArtistItem;
 import com.suddenrun.spotify.model.artist.SpotifyArtistMapperImpl;
-import com.suddenrun.utils.SpotifyServiceHelper;
+import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;

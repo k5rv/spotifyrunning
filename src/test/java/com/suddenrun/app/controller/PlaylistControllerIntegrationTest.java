@@ -13,9 +13,9 @@ import com.suddenrun.spotify.client.dto.GetUserTopTracksResponse;
 import com.suddenrun.spotify.client.dto.SpotifyPlaylistDto;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.spotify.client.dto.UpdateUpdateItemsResponse;
-import com.suddenrun.utils.JsonHelper;
-import com.suddenrun.utils.SpotifyClientHelper;
+import com.suddenrun.spotify.client.dto.UpdateItemsResponse;
+import com.suddenrun.utils.helpers.JsonHelper;
+import com.suddenrun.utils.helpers.SpotifyClientHelper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,11 +71,11 @@ class PlaylistControllerIntegrationTest {
         post(urlEqualTo("/v1/users/" + userId + "/playlists"))
             .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(emptyPlaylist), 200)));
 
-    UpdateUpdateItemsResponse updateUpdateItemsResponse = SpotifyClientHelper.createAddItemsResponse();
+    UpdateItemsResponse updateItemsResponse = SpotifyClientHelper.createUpdateItemsResponse();
 
     stubFor(
         post(urlEqualTo("/v1/playlists/" + playlistId + "/tracks"))
-            .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(updateUpdateItemsResponse), 200)));
+            .willReturn(WireMock.jsonResponse(JsonHelper.objectToJson(updateItemsResponse), 200)));
 
     SpotifyPlaylistDto playlist = SpotifyClientHelper.updatePlaylistDto(emptyPlaylist, musicRecommendations);
 

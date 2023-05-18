@@ -1,6 +1,6 @@
 package com.suddenrun.spotify.model.track;
 
-import static com.suddenrun.utils.SpotifyServiceHelper.*;
+import static com.suddenrun.utils.helpers.SpotifyServiceHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.suddenrun.spotify.model.artist.SpotifyArtistItem;

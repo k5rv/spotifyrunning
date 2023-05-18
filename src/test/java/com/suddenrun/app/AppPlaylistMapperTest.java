@@ -11,7 +11,7 @@ import com.suddenrun.app.user.AppUserMapperImpl;
 import com.suddenrun.app.user.Runner;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.utils.SpotifyServiceHelper;
+import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

@@ -1,9 +1,10 @@
-package com.suddenrun.utils;
+package com.suddenrun.utils.helpers;
 
-import static com.suddenrun.utils.SpotifyResourceHelper.*;
+import static com.suddenrun.utils.helpers.SpotifyResourceHelper.*;
 
 import com.suddenrun.spotify.client.dto.*;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.time.ZonedDateTime;
@@ -303,10 +304,52 @@ public class SpotifyClientHelper {
         .build();
   }
 
+  public static GetUserPlaylistsResponse createUserPlaylistResponse(
+      List<SpotifyPlaylistDto> playlistDtos) {
+    URL href = null;
+    try {
+      href =
+          new URL(
+              "https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0&time_range=short_term");
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
+
+    Integer offset = 0;
+    Integer total = 50;
+    Integer limit = 50;
+    return GetUserPlaylistsResponse.builder()
+        .href(href)
+        .playlistItems(playlistDtos)
+        .limit(limit)
+        .offset(offset)
+        .total(1)
+        .next(null)
+        .previous(null)
+        .total(total)
+        .build();
+  }
+
+  /*
+     URL href,
+   @JsonProperty("items") @Valid List<SpotifyPlaylistDto> playlistItems,
+   Integer limit,
+   Integer offset,
+   Integer total,
+   String next,
+   String previous) {}
+  */
+
   public static GetUserTopTracksResponse createGetUserTopTracksResponse(
-      List<SpotifyTrackDto> trackItems) throws Exception {
-    URL href =
-        new URL("https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0&time_range=short_term");
+      List<SpotifyTrackDto> trackItems) {
+    URL href = null;
+    try {
+      href =
+          new URL(
+              "https://api.spotify.com/v1/me/top/tracks?limit=1&offset=0&time_range=short_term");
+    } catch (MalformedURLException e) {
+      throw new RuntimeException(e);
+    }
     Integer offset = 0;
     Integer total = 50;
     Integer limit = 50;
@@ -368,9 +411,14 @@ public class SpotifyClientHelper {
     return GetRecommendationsResponse.builder().trackItems(trackItems).seeds(seeds).build();
   }
 
-  public static UpdateUpdateItemsResponse createAddItemsResponse() {
+  public static UpdateItemsResponse createUpdateItemsResponse() {
     String snapshotId = getRandomSnapshotId();
-    return UpdateUpdateItemsResponse.builder().snapshotId(snapshotId).build();
+    return UpdateItemsResponse.builder().snapshotId(snapshotId).build();
+  }
+
+  public static RemovePlaylistItemsResponse createRemoveItemsResponse() {
+    String snapshotId = getRandomSnapshotId();
+    return RemovePlaylistItemsResponse.builder().snapshotId(snapshotId).build();
   }
 
   public static List<SpotifyArtistDto> getArtistDtos(Integer size) {

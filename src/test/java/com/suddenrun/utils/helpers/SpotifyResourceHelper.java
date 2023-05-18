@@ -1,4 +1,4 @@
-package com.suddenrun.utils;
+package com.suddenrun.utils.helpers;
 
 import static java.util.concurrent.ThreadLocalRandom.current;
 

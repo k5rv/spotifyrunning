@@ -3,7 +3,7 @@ package com.suddenrun.spotify.model.playlist;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.utils.SpotifyServiceHelper;
+import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

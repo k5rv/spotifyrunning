@@ -10,7 +10,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class UpdateUpdateItemsResponseTest {
+class UpdateItemsResponseTest {
 
   private Validator validator;
 
@@ -22,11 +22,11 @@ class UpdateUpdateItemsResponseTest {
   @Test
   void itShouldDetectAddItemsResponseConstraintViolations() {
     // Given
-    UpdateUpdateItemsResponse updateUpdateItemsResponse =
-        UpdateUpdateItemsResponse.builder().snapshotId(null).build();
+    UpdateItemsResponse updateItemsResponse =
+        UpdateItemsResponse.builder().snapshotId(null).build();
     // When
-    Set<ConstraintViolation<UpdateUpdateItemsResponse>> constraintViolations =
-        validator.validate(updateUpdateItemsResponse);
+    Set<ConstraintViolation<UpdateItemsResponse>> constraintViolations =
+        validator.validate(updateItemsResponse);
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

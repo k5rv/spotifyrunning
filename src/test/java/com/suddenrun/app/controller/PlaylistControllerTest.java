@@ -18,7 +18,7 @@ import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfile;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.suddenrun.spotify.service.*;
-import com.suddenrun.utils.SpotifyServiceHelper;
+import com.suddenrun.utils.helpers.SpotifyServiceHelper;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;

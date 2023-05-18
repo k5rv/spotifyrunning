@@ -6,7 +6,7 @@ import com.suddenrun.spotify.client.dto.SpotifyPlaylistMusicDto;
 import com.suddenrun.spotify.client.dto.SpotifyPlaylistTrackDto;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
 import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.utils.SpotifyClientHelper;
+import com.suddenrun.utils.helpers.SpotifyClientHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

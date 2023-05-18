@@ -3,7 +3,7 @@ package com.suddenrun.spotify.client.dto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.suddenrun.spotify.client.SpotifyClient;
-import com.suddenrun.utils.SpotifyClientStub;
+import com.suddenrun.utils.stubs.SpotifyClientStub;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -88,11 +88,11 @@ class AddItemsToPlaylistTest {
       itShouldDetectAddItemsToPlaylistMethodCascadeConstraintViolationWhenReturnValueAddItemsToPlaylistResponseIsNotValid() {
     // Given
     String message = ".<return value>.snapshotId: must not be empty";
-    UpdateUpdateItemsResponse updateUpdateItemsResponse =
-        UpdateUpdateItemsResponse.builder().snapshotId(null).build();
+    UpdateItemsResponse updateItemsResponse =
+        UpdateItemsResponse.builder().snapshotId(null).build();
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
-        executableValidator.validateReturnValue(object, method, updateUpdateItemsResponse);
+        executableValidator.validateReturnValue(object, method, updateItemsResponse);
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
