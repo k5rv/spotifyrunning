@@ -16,7 +16,6 @@ import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
 import com.suddenrun.spotify.client.dto.UpdateUpdateItemsResponse;
 import com.suddenrun.utils.JsonHelper;
 import com.suddenrun.utils.SpotifyClientHelper;
-import com.suddenrun.utils.SpotifyServiceHelper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

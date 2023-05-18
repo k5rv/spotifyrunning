@@ -26,15 +26,6 @@ enum SpotifyResourceHelper {
 
   private final String type;
 
-  public URI getUri(String id) {
-    return URI.create("spotify:" + type + ":" + id);
-  }
-
-  @Override
-  public String toString() {
-    return this.type;
-  }
-
   public static String getRandomId() {
     return RandomStringUtils.randomAlphanumeric(22);
   }
@@ -141,5 +132,14 @@ enum SpotifyResourceHelper {
     } catch (MalformedURLException e) {
       throw new RuntimeException("unable to create URL: " + e.getMessage(), e);
     }
+  }
+
+  public URI getUri(String id) {
+    return URI.create("spotify:" + type + ":" + id);
+  }
+
+  @Override
+  public String toString() {
+    return this.type;
   }
 }
