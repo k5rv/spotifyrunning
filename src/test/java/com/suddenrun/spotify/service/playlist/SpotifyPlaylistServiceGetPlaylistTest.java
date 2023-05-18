@@ -99,6 +99,23 @@ class SpotifyPlaylistServiceGetPlaylistTest {
   }
 
   @Test
+  void getPlaylistShouldThrowGetSpotifyPlaylistExceptionWhenPlaylistMapperThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyServiceHelper.getPlaylist();
+    String playlistId = playlist.getId();
+    SpotifyPlaylistDto playlistDto = SpotifyClientHelper.getPlaylistDto(playlistId);
+    given(client.getPlaylist(any())).willReturn(playlistDto);
+    given(mapper.mapToModel(any(SpotifyPlaylistDto.class)))
+        .willThrow(new RuntimeException(message));
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
+        .isExactlyInstanceOf(GetSpotifyPlaylistException.class)
+        .hasMessageContaining(playlistId)
+        .hasMessageContaining(message);
+  }
+
+  @Test
   void itShouldDetectGetPlaylistConstraintViolationsWhenPlaylistIdIsNull() throws Exception {
     // Given
     Method method = SpotifyPlaylistService.class.getMethod("getPlaylist", String.class);
