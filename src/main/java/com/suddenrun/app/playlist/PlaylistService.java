@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -25,7 +26,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PlaylistService implements AppPlaylistService {
 
-  public static final String PLAYLIST_WITH_ID = "Playlist with id";
+  private static final String PLAYLIST_WITH_ID = "Playlist with id";
+  private static final String AND_SNAPSHOT_ID= "] and snapshot id [";
 
   private final PlaylistRepository playlistRepository;
 
@@ -40,7 +42,7 @@ public class PlaylistService implements AppPlaylistService {
   private final AppUserMapper appUserMapper;
 
   @Override
-  public AppPlaylist createPlaylist(AppUser appUser) {
+  public AppPlaylist createPlaylist(@NotNull AppUser appUser) {
     try {
       String appUserId = appUser.getId();
       log.info("Creating playlist for user id with [" + appUserId + "]");
@@ -55,7 +57,7 @@ public class PlaylistService implements AppPlaylistService {
               + PLAYLIST_WITH_ID
               + " ["
               + spotifyPlaylistId
-              + "] and snapshot id ["
+              + AND_SNAPSHOT_ID
               + spotifySnapshotId
               + "]");
       spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
@@ -66,7 +68,7 @@ public class PlaylistService implements AppPlaylistService {
               + PLAYLIST_WITH_ID
               + " ["
               + spotifyPlaylistId
-              + "] and snapshot id ["
+              + AND_SNAPSHOT_ID
               + spotifySnapshotId
               + "]");
       AppPlaylist appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
@@ -85,7 +87,7 @@ public class PlaylistService implements AppPlaylistService {
   }
 
   @Override
-  public Optional<AppPlaylist> getPlaylist(AppUser appUser) {
+  public Optional<AppPlaylist> getPlaylist(@NotNull AppUser appUser) {
     try {
       String appUserId = appUser.getId();
       log.info("Getting playlist for user with id [" + appUserId + "]");
@@ -155,7 +157,7 @@ public class PlaylistService implements AppPlaylistService {
       log.info(
           "Updated playlist with id ["
               + appPlaylistId
-              + "] and snapshot id ["
+              + AND_SNAPSHOT_ID
               + appPlaylistSnapshotId
               + "] from Spotify. Returning playlist.");
       return Optional.of(appPlaylist);
@@ -169,7 +171,7 @@ public class PlaylistService implements AppPlaylistService {
   }
 
   @Override
-  public AppPlaylist addTracks(AppPlaylist appPlaylist, List<AppTrack> appTracks) {
+  public AppPlaylist addTracks(@NotNull AppPlaylist appPlaylist, List<AppTrack> appTracks) {
     try {
       String appPlaylistId = appPlaylist.getId();
       int appTracksNumber = appTracks.size();
@@ -221,7 +223,7 @@ public class PlaylistService implements AppPlaylistService {
                 + PLAYLIST_WITH_ID
                 + " ["
                 + appPlaylistId
-                + "] and snapshot id ["
+                + AND_SNAPSHOT_ID
                 + appPlaylistSnapshotId
                 + "]. Saved in app.");
         return appPlaylist;
@@ -292,7 +294,7 @@ public class PlaylistService implements AppPlaylistService {
                 + PLAYLIST_WITH_ID
                 + " ["
                 + spotifyPlaylistId
-                + "] and snapshot id ["
+                + AND_SNAPSHOT_ID
                 + snapshotId
                 + "]");
       }
@@ -305,7 +307,7 @@ public class PlaylistService implements AppPlaylistService {
                 + PLAYLIST_WITH_ID
                 + " ["
                 + spotifyPlaylistId
-                + "] and snapshot id ["
+                + AND_SNAPSHOT_ID
                 + snapshotId
                 + "]");
       }
@@ -317,7 +319,7 @@ public class PlaylistService implements AppPlaylistService {
               + PLAYLIST_WITH_ID
               + " ["
               + spotifyPlaylistId
-              + "] and snapshot id ["
+              + AND_SNAPSHOT_ID
               + snapshotId
               + "]");
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
@@ -333,7 +335,7 @@ public class PlaylistService implements AppPlaylistService {
               + removeTracksNumber
               + "] tracks for playlist with id ["
               + appPlaylistId
-              + "] and  snapshotId ["
+              + AND_SNAPSHOT_ID
               + appPlaylist.getSnapshotId()
               + "]. Saved in app.");
       return appPlaylist;

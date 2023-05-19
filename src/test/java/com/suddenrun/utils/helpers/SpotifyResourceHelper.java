@@ -26,24 +26,8 @@ public enum SpotifyResourceHelper {
 
   private final String type;
 
-  public static String getRandomId() {
-    return RandomStringUtils.randomAlphanumeric(22);
-  }
-
   public static String getRandomSnapshotId() {
     return RandomStringUtils.randomAlphanumeric(57);
-  }
-
-  public static String getRandomName() {
-    return RandomStringUtils.randomAlphabetic(5, 15);
-  }
-
-  public static String getRandomDescription() {
-    return getRandomName() + " " + getRandomName() + " " + getRandomName();
-  }
-
-  public static String getRandomEmail() {
-    return RandomStringUtils.randomAlphanumeric(5, 10) + "@mail.com";
   }
 
   public static Integer getRandomPopularity() {
@@ -132,6 +116,22 @@ public enum SpotifyResourceHelper {
     } catch (MalformedURLException e) {
       throw new RuntimeException("unable to create URL: " + e.getMessage(), e);
     }
+  }
+
+  public static String getRandomId() {
+    return RandomStringUtils.randomAlphanumeric(22);
+  }
+
+  public static String getRandomName() {
+    return RandomStringUtils.randomAlphabetic(5, 15);
+  }
+
+  public static String getRandomDescription() {
+    return getRandomName() + " " + getRandomName() + " " + getRandomName();
+  }
+
+  public static String getRandomEmail() {
+    return RandomStringUtils.randomAlphanumeric(5, 10) + "@mail.com";
   }
 
   public URI getUri(String id) {
