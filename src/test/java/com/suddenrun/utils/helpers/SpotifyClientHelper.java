@@ -411,6 +411,10 @@ public class SpotifyClientHelper {
     return RemovePlaylistItemsResponse.builder().snapshotId(snapshotId).build();
   }
 
+  public static List<SpotifyPlaylistDto> getPlaylistDtos(Integer size) {
+    return getSpotifyClientDtos(size, SpotifyPlaylistDto.class);
+  }
+
   public static List<SpotifyArtistDto> getArtistDtos(Integer size) {
     return getSpotifyClientDtos(size, SpotifyArtistDto.class);
   }

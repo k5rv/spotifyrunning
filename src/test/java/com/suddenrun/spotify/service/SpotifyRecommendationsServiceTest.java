@@ -16,7 +16,6 @@ import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException
 import com.suddenrun.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
 import com.suddenrun.spotify.exception.GetSpotifyRecommendationsException;
 import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
-import com.suddenrun.spotify.model.SpotifyItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
 import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackFeatures;
@@ -299,7 +298,7 @@ class SpotifyRecommendationsServiceTest {
   }
 
   @Test
-  void itShouldReturnEmptyListWhenSpotifyTrackItemsIsEmpty() {
+  void itShouldReturnEmptyListWhenSpotifyTrackDtosIsEmpty() {
     // Given
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
@@ -324,7 +323,7 @@ class SpotifyRecommendationsServiceTest {
   }
 
   @Test
-  void itShouldReturnEmptyListWhenSpotifyTrackItemsAreNull() {
+  void itShouldReturnEmptyListWhenSpotifyTrackDtosAreNull() {
     // Given
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
@@ -351,7 +350,7 @@ class SpotifyRecommendationsServiceTest {
   }
 
   @Test
-  void itShouldReturnNonNullElementsWhenSpotifyTrackItemsContainsNulls() {
+  void itShouldReturnNonNullElementsWhenSpotifyTrackDtosContainsNulls() {
     // Given
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     SpotifyTrackDto trackDto = SpotifyClientHelper.getTrackDto();

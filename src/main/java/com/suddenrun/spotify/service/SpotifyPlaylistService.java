@@ -33,7 +33,8 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
   private final SpotifyPlaylistMapper mapper;
 
   @Override
-  public List<SpotifyPlaylistItem> getUserPlaylists(@NotNull SpotifyUserProfileItem userProfileItem) {
+  public List<SpotifyPlaylistItem> getUserPlaylists(
+      @NotNull SpotifyUserProfileItem userProfileItem) {
     String userId = userProfileItem.getId();
     try {
       GetUserPlaylistsRequest request = GetUserPlaylistsRequest.builder().build();
@@ -45,13 +46,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
               .filter(Objects::nonNull)
               .toList();
 
-      return playlistDtos.isEmpty()
-          ? List.of()
-          : playlistDtos.stream()
-              .map(mapper::mapToModel)
-              .map(SpotifyPlaylistItem.class::cast)
-              .toList();
-
+      return playlistDtos.isEmpty() ? List.of() : mapper.mapDtosToModels(playlistDtos);
     } catch (SpotifyUnauthorizedException e) {
       throw new SpotifyAccessTokenException(e);
     } catch (RuntimeException e) {
@@ -73,7 +68,8 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
   @Override
   public SpotifyPlaylistItem createPlaylist(
-          @NotNull SpotifyUserProfileItem userProfileItem, @NotNull SpotifyPlaylistItemDetails playlistItemDetails) {
+      @NotNull SpotifyUserProfileItem userProfileItem,
+      @NotNull SpotifyPlaylistItemDetails playlistItemDetails) {
     String userId = userProfileItem.getId();
     try {
       SpotifyPlaylistDetailsDto playlistDetailsDto =

@@ -99,6 +99,10 @@ public class SpotifyServiceHelper {
         .build();
   }
 
+
+  public static List<SpotifyPlaylistItem> getPlaylists(Integer size) {
+    return getSpotifyItems(size, SpotifyPlaylistItem.class);
+  }
   public static List<SpotifyArtistItem> getArtists(Integer size) {
     return getSpotifyItems(size, SpotifyArtistItem.class);
   }
