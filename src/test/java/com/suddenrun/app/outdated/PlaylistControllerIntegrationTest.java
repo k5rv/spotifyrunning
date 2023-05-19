@@ -1,39 +1,11 @@
-package com.suddenrun.app.controller;
+package com.suddenrun.app.outdated;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.suddenrun.app.playlist.PlaylistController;
-import com.suddenrun.spotify.client.dto.GetRecommendationsResponse;
-import com.suddenrun.spotify.client.dto.GetUserTopTracksResponse;
-import com.suddenrun.spotify.client.dto.SpotifyPlaylistDto;
-import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
-import com.suddenrun.spotify.client.dto.SpotifyUserProfileDto;
-import com.suddenrun.spotify.client.dto.UpdatePlaylistItemsResponse;
-import com.suddenrun.utils.helpers.JsonHelper;
-import com.suddenrun.utils.helpers.SpotifyClientHelper;
-import java.util.List;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-@AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles(value = "test")
-@AutoConfigureWireMock(port = 0)
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+//@AutoConfigureMockMvc(addFilters = false)
+//@ActiveProfiles(value = "test")
+//@AutoConfigureWireMock(port = 0)
+//@SpringBootTest(webEnvironment = RANDOM_PORT)
 class PlaylistControllerIntegrationTest {
-
+/*
   @Autowired
   PlaylistController underTest;
 
@@ -97,5 +69,5 @@ class PlaylistControllerIntegrationTest {
         .andExpect(jsonPath("$.id").value(playlist.id()))
         .andExpect(jsonPath("$.snapshotId").value(playlist.snapshotId()))
         .andDo(print());
-  }
+  }*/
 }

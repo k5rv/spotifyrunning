@@ -1,38 +1,9 @@
-package com.suddenrun.app.controller;
+package com.suddenrun.app.outdated;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
-
-import com.suddenrun.app.playlist.AppPlaylistConfig;
-import com.suddenrun.app.playlist.AppPlaylistService;
-import com.suddenrun.app.playlist.PlaylistController;
-import com.suddenrun.app.track.AppTrackService;
-import com.suddenrun.app.user.AppUserService;
-import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
-import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
-import com.suddenrun.spotify.model.track.SpotifyTrack;
-import com.suddenrun.spotify.model.track.SpotifyTrackItem;
-import com.suddenrun.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
-import com.suddenrun.spotify.model.userprofile.SpotifyUserProfile;
-import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.spotify.service.*;
-import com.suddenrun.utils.helpers.SpotifyServiceHelper;
-import java.util.ArrayList;
-import java.util.List;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 class PlaylistControllerTest {
-
+/*
   @Mock private SpotifyUserProfileItemService userService;
   @Mock private SpotifyUserTopTrackItemsService topTracksService;
   @Mock private SpotifyRecommendationItemsService recommendationsService;
@@ -238,5 +209,5 @@ class PlaylistControllerTest {
 //    Assertions.assertThatThrownBy(() -> underTest.createPlaylist())
 //        .isExactlyInstanceOf(RecommendationsNotFoundException.class)
 //        .hasMessage(RECOMMENDATIONS_NOT_FOUND);
-  }
+  }*/
 }

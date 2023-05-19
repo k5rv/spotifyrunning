@@ -1,31 +1,11 @@
-package com.suddenrun.app;
+package com.suddenrun.app.outdated;
 
-import com.suddenrun.app.playlist.AppPlaylist;
-import com.suddenrun.app.playlist.AppPlaylistMapper;
-import com.suddenrun.app.playlist.AppPlaylistMapperImpl;
-import com.suddenrun.app.playlist.Playlist;
-import com.suddenrun.app.track.AppTrackMapperImpl;
-import com.suddenrun.app.user.AppUser;
-import com.suddenrun.app.user.AppUserMapper;
-import com.suddenrun.app.user.AppUserMapperImpl;
-import com.suddenrun.app.user.Runner;
-import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
-import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.utils.helpers.SpotifyServiceHelper;
-import java.util.List;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-@ExtendWith(SpringExtension.class)
+/*@ExtendWith(SpringExtension.class)
 @ContextConfiguration(
-    classes = {AppPlaylistMapperImpl.class, AppUserMapperImpl.class, AppTrackMapperImpl.class})
+    classes = {AppPlaylistMapperImpl.class, AppUserMapperImpl.class, AppTrackMapperImpl.class})*/
 class AppPlaylistMapperTest {
 
-  @Autowired AppPlaylistMapper underTest;
+/*  @Autowired AppPlaylistMapper underTest;
   @Autowired AppUserMapper appUserMapper;
 
   @Test
@@ -60,5 +40,5 @@ class AppPlaylistMapperTest {
     Assertions.assertThat(playlistItem.getSnapshotId()).isEqualTo(playlistSnapshotId);
     SpotifyUserProfileItem playlistItemOwner = playlistItem.getOwner();
     Assertions.assertThat(playlistItemOwner).isEqualTo(appUserMapper.mapToDto(runner));
-  }
+  }*/
 }

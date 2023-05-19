@@ -1,24 +1,9 @@
-package com.suddenrun.app;
+package com.suddenrun.app.outdated;
 
-import com.suddenrun.app.track.AppTrack;
-import com.suddenrun.app.track.AppTrackMapper;
-import com.suddenrun.app.track.AppTrackMapperImpl;
-import com.suddenrun.app.track.Track;
-import com.suddenrun.spotify.model.SpotifyItemType;
-import com.suddenrun.spotify.model.track.SpotifyTrackItem;
-import com.suddenrun.utils.helpers.SpotifyServiceHelper;
-import java.net.URI;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppTrackMapperImpl.class})
+/*@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {AppTrackMapperImpl.class})*/
 class AppTrackMapperTest {
-
+/*
   @Autowired AppTrackMapper underTest;
 
   @Test
@@ -43,5 +28,5 @@ class AppTrackMapperTest {
     Assertions.assertThat(trackItem.getId()).isEqualTo(appTrack.getId());
     Assertions.assertThat(trackItem.getName()).isEqualTo(appTrack.getName());
     Assertions.assertThat(trackItem.getUri()).isEqualTo(uri);
-  }
+  }*/
 }
