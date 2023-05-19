@@ -7,8 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.suddenrun.spotify.client.SpotifyClient;
-import com.suddenrun.spotify.client.dto.SpotifyPlaylistDetailsDto;
-import com.suddenrun.spotify.client.dto.SpotifyPlaylistDto;
 import com.suddenrun.spotify.client.dto.UpdatePlaylistItemsRequest;
 import com.suddenrun.spotify.client.dto.UpdatePlaylistItemsResponse;
 import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
@@ -17,7 +15,6 @@ import com.suddenrun.spotify.exception.AddSpotifyPlaylistTracksExceptions;
 import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistItem;
 import com.suddenrun.spotify.model.playlist.SpotifyPlaylistMapper;
-import com.suddenrun.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.service.SpotifyPlaylistItemService;
 import com.suddenrun.spotify.service.SpotifyPlaylistService;
@@ -53,7 +50,7 @@ class SpotifyPlaylistServiceAddTracksTest {
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
-  void setUp() throws Exception {
+  void setUp() {
     MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
   }
