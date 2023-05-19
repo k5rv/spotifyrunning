@@ -8,18 +8,23 @@ server:
 spring:
   application:
     name: suddenrun
+  test:
+    database:
+      replace: none
   datasource:
-    url: jdbc:postgresql://localhost:5432/spotifyrun
-    username: user
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:suddenrun;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
     password: password
   jpa:
     hibernate:
       ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: false
-    show-sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+        show-sql: true
   cloud:
     openfeign:
       client:
@@ -55,6 +60,6 @@ logging:
   level:
     com.ksaraev.suddenrun.app: INFO
     com.ksaraev.suddenrun.spotify.SpotifyClient: INFO
-    org.springframework.security: TRACE
-    org.springframework.web: TRACE
+    org.springframework.security: INFO
+    org.springframework.web: INFO
     org.hibernate: INFO
