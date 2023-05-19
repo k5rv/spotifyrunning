@@ -29,6 +29,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -47,12 +49,22 @@ class SpotifyPlaylistServiceAddTracksTest {
   @Mock private AddSpotifyPlaylistItemsRequestConfig requestConfig;
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
   @Captor private ArgumentCaptor<UpdatePlaylistItemsRequest> requestArgumentCaptor;
+
+  private AutoCloseable closeable;
+
   private SpotifyPlaylistItemService underTest;
+
+
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -19,11 +20,17 @@ class SpotifyClientFeignQueryMapEncoderTest {
   @Mock HashMap<String, Object> fieldNameToValue;
   private SpotifyClientFeignQueryMapEncoder underTest;
 
+  private AutoCloseable closeable;
+
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
-
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyClientFeignQueryMapEncoder();
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test

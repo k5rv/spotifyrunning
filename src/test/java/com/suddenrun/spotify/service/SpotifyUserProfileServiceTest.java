@@ -18,6 +18,7 @@ import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfile;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,12 +30,22 @@ class SpotifyUserProfileServiceTest {
   @Mock private SpotifyClient client;
   @Mock private SpotifyUserProfileMapper mapper;
   @Captor private ArgumentCaptor<SpotifyUserProfileDto> argumentCaptor;
+
+  private AutoCloseable closeable;
+
   private SpotifyUserProfileItemService underTest;
+
+
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyUserProfileService(client, mapper);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test

@@ -25,6 +25,8 @@ import java.rmi.AccessException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -42,10 +44,17 @@ class SpotifyUserTopTracksServiceTest {
   @Captor private ArgumentCaptor<GetUserTopTracksRequest> requestArgumentCaptor;
   private SpotifyUserTopTrackItemsService underTest;
 
+  private AutoCloseable closeable;
+
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyUserTopTracksService(client, config, mapper);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test
@@ -115,7 +124,8 @@ class SpotifyUserTopTracksServiceTest {
   }
 
   @Test
-  void itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+  void
+      itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
     String message = "message";
     List<SpotifyTrackDto> trackDtos = getTrackDtos(1);
@@ -125,8 +135,8 @@ class SpotifyUserTopTracksServiceTest {
     given(client.getUserTopTracks(any())).willThrow(new SpotifyUnauthorizedException(message));
     // Then
     assertThatThrownBy(() -> underTest.getUserTopTracks())
-            .isExactlyInstanceOf(SpotifyAccessTokenException.class)
-            .hasMessageContaining(message);
+        .isExactlyInstanceOf(SpotifyAccessTokenException.class)
+        .hasMessageContaining(message);
   }
 
   @Test

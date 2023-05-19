@@ -17,6 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,10 +38,17 @@ class SpotifyClientFeignErrorDecoderTest {
   @Mock private SpotifyClientFeignExceptionHandler spotifyClientFeignExceptionHandler;
   private SpotifyClientFeignErrorDecoder underTest;
 
+  private AutoCloseable closeable;
+
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyClientFeignErrorDecoder(applicationContext, feignExceptionHandlers);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test

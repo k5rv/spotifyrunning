@@ -29,6 +29,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -47,12 +49,18 @@ class SpotifyPlaylistServiceRemoveTracksTest {
   @Mock private AddSpotifyPlaylistItemsRequestConfig requestConfig;
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
   @Captor private ArgumentCaptor<RemovePlaylistItemsRequest> requestArgumentCaptor;
+  private AutoCloseable closeable;
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
-  void setUp() throws Exception {
-    MockitoAnnotations.openMocks(this);
+  void setUp() {
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test
@@ -61,8 +69,7 @@ class SpotifyPlaylistServiceRemoveTracksTest {
     String playlistId = SpotifyResourceHelper.getRandomId();
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     List<URI> uris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
-    RemovePlaylistItemsRequest request =
-        RemovePlaylistItemsRequest.builder().uris(uris).build();
+    RemovePlaylistItemsRequest request = RemovePlaylistItemsRequest.builder().uris(uris).build();
     RemovePlaylistItemsResponse response = SpotifyClientHelper.createRemovePlaylistItemsResponse();
     given(client.removePlaylistItems(any(), any())).willReturn(response);
     // When
@@ -136,7 +143,8 @@ class SpotifyPlaylistServiceRemoveTracksTest {
   }
 
   @Test
-  void itShouldDetectRemoveTracksConstraintViolationWhenTrackListSizeMoreThan100() throws Exception {
+  void itShouldDetectRemoveTracksConstraintViolationWhenTrackListSizeMoreThan100()
+      throws Exception {
     // Given
     String playlistId = SpotifyResourceHelper.getRandomId();
     List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(101);

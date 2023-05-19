@@ -28,6 +28,8 @@ import jakarta.validation.Validation;
 import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.util.Set;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -56,12 +58,19 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
 
   @Captor private ArgumentCaptor<SpotifyPlaylistDetailsDto> playlistDetailsDtoArgumentCaptor;
 
+  private AutoCloseable closeable;
+
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test

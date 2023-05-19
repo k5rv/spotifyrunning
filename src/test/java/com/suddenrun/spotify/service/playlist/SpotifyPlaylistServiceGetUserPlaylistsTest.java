@@ -27,6 +27,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -50,12 +52,19 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
 
   @Captor private ArgumentCaptor<List<SpotifyPlaylistDto>> playlistDtosArgumentCaptor;
 
+  private AutoCloseable closeable;
+
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
   void setUp() {
-    MockitoAnnotations.openMocks(this);
+    closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
+  }
+
+  @AfterEach
+  void tearDown() throws Exception {
+    closeable.close();
   }
 
   @Test
