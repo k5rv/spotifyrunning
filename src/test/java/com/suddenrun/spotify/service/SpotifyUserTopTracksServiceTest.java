@@ -13,11 +13,15 @@ import com.suddenrun.spotify.client.SpotifyClient;
 import com.suddenrun.spotify.client.dto.GetUserTopTracksRequest;
 import com.suddenrun.spotify.client.dto.GetUserTopTracksResponse;
 import com.suddenrun.spotify.client.dto.SpotifyTrackDto;
+import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.suddenrun.spotify.config.GetSpotifyUserTopItemsRequestConfig;
 import com.suddenrun.spotify.exception.GetSpotifyUserTopTracksException;
+import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.track.SpotifyTrackItem;
 import com.suddenrun.spotify.model.track.SpotifyTrackMapper;
 import com.suddenrun.utils.helpers.SpotifyServiceHelper;
+
+import java.rmi.AccessException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -108,6 +112,21 @@ class SpotifyUserTopTracksServiceTest {
     assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isExactlyInstanceOf(GetSpotifyUserTopTracksException.class)
         .hasMessageContaining(message);
+  }
+
+  @Test
+  void itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+    // Given
+    String message = "message";
+    List<SpotifyTrackDto> trackDtos = getTrackDtos(1);
+    String timeRangeName = GetUserTopTracksRequest.TimeRange.SHORT_TERM.name();
+    GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackDtos);
+    given(config.getTimeRange()).willReturn(timeRangeName);
+    given(client.getUserTopTracks(any())).willThrow(new SpotifyUnauthorizedException(message));
+    // Then
+    assertThatThrownBy(() -> underTest.getUserTopTracks())
+            .isExactlyInstanceOf(SpotifyAccessTokenException.class)
+            .hasMessageContaining(message);
   }
 
   @Test

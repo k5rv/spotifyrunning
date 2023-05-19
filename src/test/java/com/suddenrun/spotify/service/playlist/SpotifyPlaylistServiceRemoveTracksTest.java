@@ -79,7 +79,7 @@ class SpotifyPlaylistServiceRemoveTracksTest {
   }
 
   @Test
-  void removeTracksShouldThrowAddTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
+  void itShouldThrowAddTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
@@ -95,7 +95,7 @@ class SpotifyPlaylistServiceRemoveTracksTest {
 
   @Test
   void
-      removeTracksShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+      itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     String playlistId = playlist.getId();

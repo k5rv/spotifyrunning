@@ -154,7 +154,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
 
   @Test
   void
-      getUserPlaylistsShouldThrowGetSpotifyUserPlaylistsExceptionWhenSpotifyClientThrowsRuntimeException() {
+      itShouldThrowGetSpotifyUserPlaylistsExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
     String message = "message";
     SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
@@ -169,7 +169,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
 
   @Test
   void
-      getUserPlaylistsShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+      itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
     String message = "message";
     SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
@@ -183,7 +183,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
 
   @Test
   void
-      getUserPlaylistsShouldThrowGetSpotifyUserPlaylistsExceptionWhenPlaylistMapperThrowsRuntimeException() {
+      itShouldThrowGetSpotifyUserPlaylistsExceptionWhenPlaylistMapperThrowsRuntimeException() {
     // Given
     String message = "message";
     SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
