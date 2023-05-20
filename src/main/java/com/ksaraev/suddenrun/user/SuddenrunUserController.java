@@ -31,6 +31,8 @@ public class SuddenrunUserController {
       return suddenrunUserService
           .getUser(userId)
           .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+    } catch (SpotifyServiceException e) {
+      throw new SuddenrunSpotifyInteractionException(e);
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     }

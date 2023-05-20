@@ -22,19 +22,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureWireMock(port = 0)
 @AutoConfigureMockMvc(addFilters = false)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SuddenrunUserIntegrationTest {
+class SuddenrunGetUserIntegrationTest {
 
   private static final String SPOTIFY_API_V1_ME = "/v1/me";
-
   private static final String SUDDENRUN_API_V1_USERS = "/api/v1/users";
 
   @Autowired private MockMvc mockMvc;
 
-  @Autowired
-  AppUserService appUserService;
+  @Autowired AppUserService suddenrunUserService;
 
   @Test
-  void itShouldRegisterUser() throws Exception {
+  void itShouldGetUser() throws Exception {
     // Given
     SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
     String id = userProfileDto.id();
@@ -46,14 +44,16 @@ class SuddenrunUserIntegrationTest {
                 WireMock.jsonResponse(
                     JsonHelper.objectToJson(userProfileDto), HttpStatus.OK.value())));
 
+    suddenrunUserService.registerUser(id, name);
+
     // When
-    ResultActions userRegistrationResultActions =
+    ResultActions getUserResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
     // Then
-    userRegistrationResultActions
+    getUserResultActions
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -62,14 +62,9 @@ class SuddenrunUserIntegrationTest {
   }
 
   @Test
-  void itShouldThrowSuddenrunUserIsAlreadyRegisteredExceptionIfUserIsAlreadyRegistered()
-      throws Exception {
+  void itShouldThrowSuddenrunUserIsNotRegisteredExceptionIfUserIsNotRegistered() throws Exception {
     // Given
     SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
-    String id = userProfileDto.id();
-    String name = userProfileDto.displayName();
-
-    appUserService.registerUser(id, name);
 
     WireMock.stubFor(
         WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
@@ -78,15 +73,14 @@ class SuddenrunUserIntegrationTest {
                     JsonHelper.objectToJson(userProfileDto), HttpStatus.OK.value())));
 
     // When
-    ResultActions userRegistrationRepeatedAttemptResultActions =
+    ResultActions getUserResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
     // Then
-    userRegistrationRepeatedAttemptResultActions.andExpect(
-        MockMvcResultMatchers.status().isConflict());
+    getUserResultActions.andExpect(MockMvcResultMatchers.status().isNotFound());
   }
 
   @Test
@@ -98,12 +92,31 @@ class SuddenrunUserIntegrationTest {
                 WireMock.jsonResponse(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.value())));
 
     // When
-    ResultActions userRegistrationResultActions =
+    ResultActions getUserResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
     // Then
-    userRegistrationResultActions.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    getUserResultActions.andExpect(MockMvcResultMatchers.status().isUnauthorized());
+  }
+
+  @Test
+  void itShouldReturnInternalServerErrorWhenSpotifyServiceCallFailed() throws Exception {
+    // Given
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
+            .willReturn(WireMock.jsonResponse(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value())));
+
+    // When
+    ResultActions userRegistrationResultActions =
+        mockMvc.perform(
+            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+    // Then
+    userRegistrationResultActions.andExpect(MockMvcResultMatchers.status().isInternalServerError());
   }
 }
