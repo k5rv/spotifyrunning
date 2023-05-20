@@ -1,11 +1,11 @@
 package com.suddenrun.app.user;
 
-import com.suddenrun.app.exception.AppAuthorizationException;
-import com.suddenrun.app.exception.AppUserAlreadyRegisteredException;
+import com.suddenrun.app.exception.SuddenrunAuthenticationException;
+import com.suddenrun.app.exception.SuddenrunUserIsAlreadyRegisteredException;
 import com.suddenrun.app.exception.AppUserNotRegisteredException;
-import com.suddenrun.spotify.client.feign.exception.SpotifyUnauthorizedException;
+import com.suddenrun.spotify.exception.SpotifyAccessTokenException;
 import com.suddenrun.spotify.model.userprofile.SpotifyUserProfileItem;
-import com.suddenrun.spotify.service.SpotifyUserProfileService;
+import com.suddenrun.spotify.service.SpotifyUserProfileItemService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +21,7 @@ public class RunnerController {
 
   private final AppUserService userService;
 
-  private final SpotifyUserProfileService userProfileService;
+  private final SpotifyUserProfileItemService userProfileService;
 
   @GetMapping
   public AppUser getUser() {
@@ -31,8 +31,8 @@ public class RunnerController {
       return userService
           .getUser(userId)
           .orElseThrow(() -> new AppUserNotRegisteredException(userId));
-    } catch (SpotifyUnauthorizedException e) {
-      throw new AppAuthorizationException(e);
+    } catch (SpotifyAccessTokenException e) {
+      throw new SuddenrunAuthenticationException(e);
     }
   }
 
@@ -43,10 +43,10 @@ public class RunnerController {
       String userId = userProfileItem.getId();
       String userName = userProfileItem.getName();
       boolean isUserRegistered = userService.isUserRegistered(userId);
-      if (isUserRegistered) throw new AppUserAlreadyRegisteredException(userId);
+      if (isUserRegistered) throw new SuddenrunUserIsAlreadyRegisteredException(userId);
       return userService.registerUser(userId, userName);
-    } catch (SpotifyUnauthorizedException e) {
-      throw new AppAuthorizationException(e);
+    } catch (SpotifyAccessTokenException e) {
+      throw new SuddenrunAuthenticationException(e);
     }
   }
 }

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-class RunnerServiceTest {
+class SuddenrunUserServiceTest {
 
   @Mock private RunnerRepository repository;
 

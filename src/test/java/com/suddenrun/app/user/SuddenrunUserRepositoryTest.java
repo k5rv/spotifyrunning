@@ -11,7 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
 @DataJpaTest()
-class RunnerRepositoryTest {
+class SuddenrunUserRepositoryTest {
 
   @Autowired private RunnerRepository underTest;
 

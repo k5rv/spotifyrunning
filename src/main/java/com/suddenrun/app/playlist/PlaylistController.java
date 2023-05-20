@@ -1,6 +1,6 @@
 package com.suddenrun.app.playlist;
 
-import com.suddenrun.app.exception.AppAuthorizationException;
+import com.suddenrun.app.exception.SuddenrunAuthenticationException;
 import com.suddenrun.app.exception.AppPlaylistAlreadyExistException;
 import com.suddenrun.app.exception.AppPlaylistNotFoundException;
 import com.suddenrun.app.exception.AppUserNotRegisteredException;
@@ -47,7 +47,7 @@ public class PlaylistController {
       List<AppTrack> appTracks = trackService.getTracks();
       return playlistService.addTracks(appPlaylist, appTracks);
     } catch (SpotifyUnauthorizedException e) {
-      throw new AppAuthorizationException(e);
+      throw new SuddenrunAuthenticationException(e);
     }
   }
 
@@ -82,7 +82,7 @@ public class PlaylistController {
           .getPlaylist(appUser)
           .orElseThrow(() -> new AppPlaylistNotFoundException(userId));
     } catch (SpotifyUnauthorizedException e) {
-      throw new AppAuthorizationException(e);
+      throw new SuddenrunAuthenticationException(e);
     }
   }
 }

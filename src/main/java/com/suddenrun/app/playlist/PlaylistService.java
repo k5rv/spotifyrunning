@@ -1,6 +1,6 @@
 package com.suddenrun.app.playlist;
 
-import com.suddenrun.app.exception.AppAuthorizationException;
+import com.suddenrun.app.exception.SuddenrunAuthenticationException;
 import com.suddenrun.app.exception.AppSpotifyServiceInteractionException;
 import com.suddenrun.app.track.AppTrack;
 import com.suddenrun.app.track.AppTrackMapper;
@@ -78,7 +78,7 @@ public class PlaylistService implements AppPlaylistService {
           "Created playlist with id [" + appPlaylistId + "] for user with id [" + appUserId + "]");
       return appPlaylist;
     } catch (SpotifyAccessTokenException e) {
-      throw new AppAuthorizationException(e);
+      throw new SuddenrunAuthenticationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {
@@ -162,7 +162,7 @@ public class PlaylistService implements AppPlaylistService {
               + "] from Spotify. Returning playlist.");
       return Optional.of(appPlaylist);
     } catch (SpotifyAccessTokenException e) {
-      throw new AppAuthorizationException(e);
+      throw new SuddenrunAuthenticationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {
@@ -340,7 +340,7 @@ public class PlaylistService implements AppPlaylistService {
               + "]. Saved in app.");
       return appPlaylist;
     } catch (SpotifyAccessTokenException e) {
-      throw new AppAuthorizationException(e);
+      throw new SuddenrunAuthenticationException(e);
     } catch (SpotifyPlaylistServiceException e) {
       throw new AppSpotifyServiceInteractionException(e);
     } catch (RuntimeException e) {
