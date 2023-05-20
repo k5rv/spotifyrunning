@@ -222,7 +222,7 @@
                         <artifactId>jib-maven-plugin</artifactId>
                         <configuration>
                             <container>
-                                <mainClass>com.suddenrun.SuddenrunApplication</mainClass>
+                                <mainClass>com.ksaraev.SuddenrunApplication</mainClass>
                             </container>
                         </configuration>
                     </plugin>

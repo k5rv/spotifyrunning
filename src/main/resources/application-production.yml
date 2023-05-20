@@ -65,6 +65,8 @@ suddenrun:
       max-tempo: "140"
       min-energy: "0.65"
       min-popularity: ""
+
+spotify:
   client:
     requests:
       get-user-top-tracks:
@@ -72,14 +74,14 @@ suddenrun:
         offset: 0
         time-range: LONG_TERM
       get-recommendations:
-        limit: 100
+        limit: 20
       update-playlist-items-request:
         position: 0
 
 logging:
   level:
-    com.suddenrun.app: INFO
-    com.suddenrun.spotify.client.SpotifyClient: ERROR
+    com.ksaraev.suddenrun: INFO
+    com.ksaraev.spotify.client.SpotifyClient: ERROR
     org.springframework.security: ERROR
     org.springframework.web: ERROR
     org.hibernate: ERROR
