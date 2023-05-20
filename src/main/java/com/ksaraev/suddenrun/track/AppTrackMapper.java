@@ -10,6 +10,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.URI;
+import java.util.List;
 
 import org.mapstruct.*;
 
@@ -22,6 +23,8 @@ public interface AppTrackMapper {
   }
 
   AppTrack mapToEntity(SpotifyTrackItem trackItem);
+
+  List<AppTrack> mapToEntities(List<SpotifyTrackItem> trackItems);
 
   @Mapping(target = "id", source = "id")
   @Mapping(target = "uri", source = "id", qualifiedBy = AppTrackIdToSpotifyTrackItemUriMapper.class)
@@ -36,7 +39,7 @@ public interface AppTrackMapper {
 
   @ObjectFactory
   default AppTrack createEntity() {
-    return Track.builder().build();
+    return SuddenrunTrack.builder().build();
   }
 
   @Qualifier

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Track implements AppTrack {
+public class SuddenrunTrack implements AppTrack {
   private String id;
   private String name;
 }

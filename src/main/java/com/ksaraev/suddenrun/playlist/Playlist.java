@@ -2,7 +2,7 @@ package com.ksaraev.suddenrun.playlist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksaraev.suddenrun.track.AppTrack;
-import com.ksaraev.suddenrun.track.Track;
+import com.ksaraev.suddenrun.track.SuddenrunTrack;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -29,10 +29,10 @@ public class Playlist implements AppPlaylist {
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<Track> customTracks = new ArrayList<>();
+  private List<SuddenrunTrack> customTracks = new ArrayList<>();
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<Track> rejectedTracks = new ArrayList<>();
+  private List<SuddenrunTrack> rejectedTracks = new ArrayList<>();
 
   @Override
   public List<AppTrack> getCustomTracks() {
@@ -41,7 +41,7 @@ public class Playlist implements AppPlaylist {
 
   @Override
   public void setCustomTracks(List<AppTrack> customTracks) {
-    this.customTracks = customTracks.stream().map(Track.class::cast).toList();
+    this.customTracks = customTracks.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
   @Override
@@ -51,12 +51,12 @@ public class Playlist implements AppPlaylist {
 
   @Override
   public void setRejectedTracks(List<AppTrack> rejectedTracks) {
-    this.rejectedTracks = rejectedTracks.stream().map(Track.class::cast).toList();
+    this.rejectedTracks = rejectedTracks.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<Track> tracks = new ArrayList<>();
+  private List<SuddenrunTrack> tracks = new ArrayList<>();
 
   private String snapshotId;
 
@@ -79,7 +79,7 @@ public class Playlist implements AppPlaylist {
 
   @Override
   public void setTracks(List<AppTrack> appTracks) {
-    this.tracks = appTracks.stream().map(Track.class::cast).toList();
+    this.tracks = appTracks.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
   @Override

@@ -1,13 +1,12 @@
 package com.ksaraev.suddenrun.track;
 
+import com.ksaraev.spotify.exception.SpotifyServiceException;
 import com.ksaraev.spotify.service.SpotifyRecommendationItemsService;
 import com.ksaraev.spotify.service.SpotifyUserTopTrackItemsService;
 import com.ksaraev.suddenrun.playlist.AppPlaylistConfig;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
-import com.ksaraev.spotify.exception.GetSpotifyRecommendationsException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
-import com.ksaraev.spotify.exception.GetSpotifyUserTopTracksException;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 
 import java.util.Collections;
@@ -23,11 +22,11 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TrackService implements AppTrackService {
+public class SuddenrunTrackService implements AppTrackService {
 
-  private final AppPlaylistConfig playlistConfig;
+  private final AppPlaylistConfig config;
 
-  private final AppTrackMapper appTrackMapper;
+  private final AppTrackMapper mapper;
 
   private final SpotifyUserTopTrackItemsService spotifyTopTracksService;
 
@@ -36,7 +35,7 @@ public class TrackService implements AppTrackService {
   @Override
   public List<AppTrack> getTracks() {
     try {
-      int playlistSizeLimit = playlistConfig.getSize();
+      int playlistSizeLimit = config.getSize();
       List<SpotifyTrackItem> userTopTracks = spotifyTopTracksService.getUserTopTracks();
       int topTracksSize = userTopTracks.size();
       log.info("Found [" + topTracksSize + "] top tracks in Spotify");
@@ -45,7 +44,7 @@ public class TrackService implements AppTrackService {
               .map(
                   userTopTrack ->
                       spotifyRecommendationsService.getRecommendations(
-                          List.of(userTopTrack), playlistConfig.getMusicFeatures()))
+                          List.of(userTopTrack), config.getMusicFeatures()))
               .flatMap(List::stream)
               .sorted(Comparator.comparingInt(SpotifyTrackItem::getPopularity).reversed())
               .distinct()
@@ -59,16 +58,17 @@ public class TrackService implements AppTrackService {
                       }));
       int recommendationsSize = recommendations.size();
       log.info("Found [" + recommendationsSize + "] recommended tracks in Spotify");
-      return recommendations.stream()
-          .filter(Objects::nonNull)
-          .map(appTrackMapper::mapToEntity)
-          .toList();
+      return mapper.mapToEntities(recommendations).stream().filter(Objects::nonNull).toList();
+      //      return recommendations.stream()
+      //          .filter(Objects::nonNull)
+      //          .map(mapper::mapToEntity)
+      //          .toList();
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
-    } catch (GetSpotifyUserTopTracksException | GetSpotifyRecommendationsException e) {
+    } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
-      throw new AppTrackServiceGetTracksException(e);
+      throw new GetSuddenrunTracksException(e);
     }
   }
 }

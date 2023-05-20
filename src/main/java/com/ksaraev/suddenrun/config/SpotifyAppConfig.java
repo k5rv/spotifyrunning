@@ -1,7 +1,7 @@
 package com.ksaraev.suddenrun.config;
 
 import com.ksaraev.suddenrun.playlist.AppPlaylistConfig;
-import com.ksaraev.suddenrun.playlist.PlaylistConfig;
+import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistConfig;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackFeatures;
@@ -78,7 +78,7 @@ public class SpotifyAppConfig {
             .minPopularity(this.minPopularity)
             .build();
 
-    return PlaylistConfig.builder()
+    return SuddenrunPlaylistConfig.builder()
         .details(playlistDetails)
         .musicFeatures(trackFeatures)
         .size(size)

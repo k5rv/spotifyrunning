@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PlaylistConfig implements AppPlaylistConfig {
+public class SuddenrunPlaylistConfig implements AppPlaylistConfig {
 
   private SpotifyPlaylistItemDetails details;
 
