@@ -5,7 +5,7 @@ import com.ksaraev.suddenrun.user.SuddenrunUser;
 
 public class SuddenrunHelper {
 
-  public static AppUser getUser() {
+  public static SuddenrunUser getUser() {
     String id = SpotifyResourceHelper.getRandomId();
     String name = SpotifyResourceHelper.getRandomName();
     return SuddenrunUser.builder().id(id).name(name).build();

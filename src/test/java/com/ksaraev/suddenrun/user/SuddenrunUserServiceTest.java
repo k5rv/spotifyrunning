@@ -15,6 +15,7 @@ class SuddenrunUserServiceTest {
   @Mock private SuddenrunUserRepository repository;
 
   @Captor private ArgumentCaptor<String> userIdArgumentCaptor;
+
   @Captor private ArgumentCaptor<SuddenrunUser> suddenrunUserArgumentCaptor;
 
   private AutoCloseable closeable;
@@ -35,7 +36,7 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldReturnTrueIfUserIsRegistered() {
     // Given
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     given(repository.existsById(id)).willReturn(true);
 
@@ -50,7 +51,7 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldReturnFalseIfUserIsNotRegistered() {
     // Given
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     given(repository.existsById(id)).willReturn(false);
 
@@ -67,7 +68,7 @@ class SuddenrunUserServiceTest {
       itShouldThrowGetSuddenrunUserRegistrationStatusExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
     String message = "message";
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     given(repository.existsById(id)).willThrow(new RuntimeException(message));
 
@@ -81,7 +82,7 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldReturnUserIfItIsPresent() {
     // Given
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     given(repository.findById(id)).willReturn(Optional.of(suddenrunUser));
 
@@ -98,7 +99,7 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldReturnEmptyOptionalIfUserIsNotPresent() {
     // Given
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     given(repository.findById(id)).willReturn(Optional.empty());
 
@@ -113,7 +114,7 @@ class SuddenrunUserServiceTest {
   void itShouldThrowGetSuddenrunUserExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
     String message = "message";
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     given(repository.findById(id)).willThrow(new RuntimeException(message));
 
@@ -127,7 +128,7 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldRegisterUser() {
     // Given
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     String name = suddenrunUser.getName();
 
@@ -144,7 +145,7 @@ class SuddenrunUserServiceTest {
   void itShouldThrowRegisterSuddenrunUserExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
     String message = "message";
-    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     String name = suddenrunUser.getName();
     given(repository.save(suddenrunUser)).willThrow(new RuntimeException(message));

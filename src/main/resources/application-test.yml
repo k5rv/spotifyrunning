@@ -45,6 +45,8 @@ suddenrun:
       max-tempo: "140"
       min-energy: "0.65"
       min-popularity: ""
+
+spotify:
   client:
     requests:
       get-user-top-tracks:
