@@ -1,9 +1,7 @@
 package com.ksaraev.spotify.exception;
 
-import lombok.experimental.StandardException;
 
-@StandardException
-public class GetSpotifyRecommendationsException extends RuntimeException {
+public class GetSpotifyRecommendationsException extends SpotifyServiceException {
 
   private static final String ERROR_WHILE_GETTING_SPOTIFY_USER_RECOMMENDATIONS =
       "Error while getting Spotify user recommendations";

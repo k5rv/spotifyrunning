@@ -1,9 +1,7 @@
 package com.ksaraev.spotify.exception;
 
-import lombok.experimental.StandardException;
 
-@StandardException
-public class RemoveSpotifyPlaylistTracksException extends SpotifyPlaylistServiceException {
+public class RemoveSpotifyPlaylistTracksException extends SpotifyServiceException {
 
   private static final String ERROR_WHILE_REMOVING_SPOTIFY_PLAYLIST_TRACKS =
       "Error while removing Spotify playlist tracks";

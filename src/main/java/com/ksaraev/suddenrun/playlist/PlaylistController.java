@@ -4,7 +4,7 @@ import com.ksaraev.spotify.service.SpotifyUserProfileService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.AppPlaylistAlreadyExistException;
 import com.ksaraev.suddenrun.exception.AppPlaylistNotFoundException;
-import com.ksaraev.suddenrun.exception.AppUserNotRegisteredException;
+import com.ksaraev.suddenrun.user.SuddenrunUserIsNotRegisteredException;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackService;
 import com.ksaraev.suddenrun.user.AppUser;
@@ -38,7 +38,7 @@ public class PlaylistController {
       SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       AppUser appUser =
-          userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
+          userService.getUser(userId).orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
       playlistService
           .getPlaylist(appUser)
           .ifPresent(
@@ -64,7 +64,7 @@ public class PlaylistController {
     SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
     String userId = userProfileItem.getId();
     AppUser appUser =
-        userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
+        userService.getUser(userId).orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
     AppPlaylist appPlaylist =
         playlistService
             .getPlaylist(appUser)
@@ -79,7 +79,7 @@ public class PlaylistController {
       SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       AppUser appUser =
-          userService.getUser(userId).orElseThrow(() -> new AppUserNotRegisteredException(userId));
+          userService.getUser(userId).orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
       return playlistService
           .getPlaylist(appUser)
           .orElseThrow(() -> new AppPlaylistNotFoundException(userId));

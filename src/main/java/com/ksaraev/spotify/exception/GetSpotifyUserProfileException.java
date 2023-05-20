@@ -1,9 +1,6 @@
 package com.ksaraev.spotify.exception;
 
-import lombok.experimental.StandardException;
-
-@StandardException
-public class GetSpotifyUserProfileException extends RuntimeException {
+public class GetSpotifyUserProfileException extends SpotifyServiceException {
   private static final String ERROR_WHILE_GETTING_SPOTIFY_CURRENT_USER_PROFILE =
       "Error while getting current Spotify user profile";
 

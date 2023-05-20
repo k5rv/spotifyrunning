@@ -1,9 +1,7 @@
 package com.ksaraev.spotify.exception;
 
-import lombok.experimental.StandardException;
 
-@StandardException
-public class CreateSpotifyPlaylistException extends RuntimeException {
+public class CreateSpotifyPlaylistException extends SpotifyServiceException {
 
   private static final String ERROR_WHILE_CREATING_SPOTIFY_PLAYLIST =
       "Error while creating Spotify playlist";

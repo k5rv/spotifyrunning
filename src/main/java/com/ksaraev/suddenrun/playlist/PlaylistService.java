@@ -1,22 +1,20 @@
 package com.ksaraev.suddenrun.playlist;
 
-import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
-import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
-import com.ksaraev.suddenrun.exception.AppSpotifyServiceInteractionException;
-import com.ksaraev.suddenrun.track.AppTrack;
-import com.ksaraev.suddenrun.track.AppTrackMapper;
-import com.ksaraev.suddenrun.user.AppUser;
-import com.ksaraev.suddenrun.user.AppUserMapper;
-import com.ksaraev.spotify.exception.SpotifyPlaylistServiceException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
+import com.ksaraev.spotify.exception.SpotifyServiceException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
-
+import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
+import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
+import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
+import com.ksaraev.suddenrun.track.AppTrack;
+import com.ksaraev.suddenrun.track.AppTrackMapper;
+import com.ksaraev.suddenrun.user.AppUser;
+import com.ksaraev.suddenrun.user.AppUserMapper;
 import java.util.*;
 import java.util.stream.Stream;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class PlaylistService implements AppPlaylistService {
 
   private static final String PLAYLIST_WITH_ID = "Playlist with id";
-  private static final String AND_SNAPSHOT_ID= "] and snapshot id [";
+  private static final String AND_SNAPSHOT_ID = "] and snapshot id [";
 
   private final PlaylistRepository playlistRepository;
 
@@ -80,8 +78,8 @@ public class PlaylistService implements AppPlaylistService {
       return appPlaylist;
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
-    } catch (SpotifyPlaylistServiceException e) {
-      throw new AppSpotifyServiceInteractionException(e);
+    } catch (SpotifyServiceException e) {
+      throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
       throw new AppPlaylistServiceCreatePlaylistException(e);
     }
@@ -92,7 +90,8 @@ public class PlaylistService implements AppPlaylistService {
     try {
       String appUserId = appUser.getId();
       log.info("Getting playlist for user with id [" + appUserId + "]");
-      Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findBySuddenrunUserId(appUserId);
+      Optional<Playlist> appRunningWorkoutPlaylist =
+          playlistRepository.findBySuddenrunUserId(appUserId);
       boolean appPlaylistExists = appRunningWorkoutPlaylist.isPresent();
       if (!appPlaylistExists) {
         log.info(
@@ -164,8 +163,8 @@ public class PlaylistService implements AppPlaylistService {
       return Optional.of(appPlaylist);
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
-    } catch (SpotifyPlaylistServiceException e) {
-      throw new AppSpotifyServiceInteractionException(e);
+    } catch (SpotifyServiceException e) {
+      throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
       throw new AppPlaylistServiceGetPlaylistException(e);
     }
@@ -342,8 +341,8 @@ public class PlaylistService implements AppPlaylistService {
       return appPlaylist;
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
-    } catch (SpotifyPlaylistServiceException e) {
-      throw new AppSpotifyServiceInteractionException(e);
+    } catch (SpotifyServiceException e) {
+      throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
       throw new AppPlaylistServiceAddTracksException(e);
     }

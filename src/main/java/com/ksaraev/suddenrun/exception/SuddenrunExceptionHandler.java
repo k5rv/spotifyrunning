@@ -2,6 +2,8 @@ package com.ksaraev.suddenrun.exception;
 
 import static org.springframework.http.HttpStatus.*;
 
+import com.ksaraev.suddenrun.user.SuddenrunUserIsAlreadyRegisteredException;
+import com.ksaraev.suddenrun.user.SuddenrunUserIsNotRegisteredException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,19 +11,20 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Slf4j
 @ControllerAdvice
-public class AppExceptionHandler {
+public class SuddenrunExceptionHandler {
 
   @ExceptionHandler(value = {SuddenrunAuthenticationException.class})
-  public ResponseEntity<SuddenrunError> handleSuddenrunAuthenticationException(SuddenrunAuthenticationException e) {
+  public ResponseEntity<SuddenrunError> handleSuddenrunAuthenticationException(
+      SuddenrunAuthenticationException e) {
     log.error(e.getMessage(), e);
     String message = "Suddenrun authentication error: ";
     int unauthorized = UNAUTHORIZED.value();
     return ResponseEntity.status(UNAUTHORIZED).body(new SuddenrunError(unauthorized, message));
   }
 
-  @ExceptionHandler(value = {AppUserNotRegisteredException.class})
-  public ResponseEntity<SuddenrunError> handleAppUserNotRegisteredException(
-      AppUserNotRegisteredException e) {
+  @ExceptionHandler(value = {SuddenrunUserIsNotRegisteredException.class})
+  public ResponseEntity<SuddenrunError> handleSuddenrunUserIsNotRegisteredException(
+      SuddenrunUserIsNotRegisteredException e) {
     String message = e.getMessage();
     log.error(message);
     int notFound = NOT_FOUND.value();
@@ -29,7 +32,7 @@ public class AppExceptionHandler {
   }
 
   @ExceptionHandler(value = {SuddenrunUserIsAlreadyRegisteredException.class})
-  public ResponseEntity<SuddenrunError> handleAppUserAlreadyRegisteredException(
+  public ResponseEntity<SuddenrunError> handleSuddenrunUserIsAlreadyRegisteredException(
       SuddenrunUserIsAlreadyRegisteredException e) {
     String message = e.getMessage();
     log.error(message);
@@ -59,7 +62,7 @@ public class AppExceptionHandler {
   public ResponseEntity<SuddenrunError> handleRuntimeException(RuntimeException e) {
     log.error(e.getMessage(), e);
     int internalServerError = INTERNAL_SERVER_ERROR.value();
-    String message = "Application internal error";
+    String message = "Suddenrun internal error";
     return ResponseEntity.status(INTERNAL_SERVER_ERROR)
         .body(new SuddenrunError(internalServerError, message));
   }

@@ -1,9 +1,7 @@
 package com.ksaraev.spotify.exception;
 
-import lombok.experimental.StandardException;
 
-@StandardException
-public class GetSpotifyUserPlaylistsException extends RuntimeException {
+public class GetSpotifyUserPlaylistsException extends SpotifyServiceException {
 
   private static final String ERROR_WHILE_GETTING_SPOTIFY_USER_PLAYLISTS =
       "Error while getting Spotify user playlists";
