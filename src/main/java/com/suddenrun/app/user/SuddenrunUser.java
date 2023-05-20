@@ -16,20 +16,20 @@ import org.hibernate.Hibernate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Runner implements AppUser {
+public class SuddenrunUser implements AppUser {
   @Id private String id;
 
   private String name;
 
   @JsonBackReference
-  @OneToMany(mappedBy = "runner", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "suddenrunUser", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Playlist> playlists = new ArrayList<>();
 
   @Override
   public void addPlaylist(AppPlaylist appPlaylist) {
     Playlist playlist = (Playlist) appPlaylist;
     playlists.add(playlist);
-    playlist.setRunner(this);
+    playlist.setSuddenrunUser(this);
   }
 
   @Override
@@ -38,7 +38,7 @@ public class Runner implements AppUser {
     if (!this.playlists.isEmpty()) {
       playlists.remove(playlist);
     }
-    playlist.setRunner(null);
+    playlist.setSuddenrunUser(null);
   }
 
   @Override
@@ -60,8 +60,8 @@ public class Runner implements AppUser {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-    Runner runner = (Runner) o;
-    return getId() != null && Objects.equals(getId(), runner.getId());
+    SuddenrunUser suddenrunUser = (SuddenrunUser) o;
+    return getId() != null && Objects.equals(getId(), suddenrunUser.getId());
   }
 
   @Override

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.suddenrun.app.track.AppTrack;
 import com.suddenrun.app.track.Track;
 import com.suddenrun.app.user.AppUser;
-import com.suddenrun.app.user.Runner;
+import com.suddenrun.app.user.SuddenrunUser;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class Playlist implements AppPlaylist {
   @Id private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  private Runner runner;
+  private SuddenrunUser suddenrunUser;
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
@@ -63,13 +63,13 @@ public class Playlist implements AppPlaylist {
   @JsonIgnore
   @Override
   public AppUser getOwner() {
-    return this.runner;
+    return this.suddenrunUser;
   }
 
   @JsonIgnore
   @Override
   public void setOwner(AppUser appUser) {
-    this.runner = (Runner) appUser;
+    this.suddenrunUser = (SuddenrunUser) appUser;
   }
 
   @Override

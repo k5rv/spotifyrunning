@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/users")
 @AllArgsConstructor
-public class RunnerController {
+public class SuddenrunUserController {
 
-  private final AppUserService userService;
+  private final AppUserService suddenrunUserService;
 
-  private final SpotifyUserProfileItemService userProfileService;
+  private final SpotifyUserProfileItemService spotifyUserProfileService;
 
   @GetMapping
   public AppUser getUser() {
     try {
-      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
+      SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
-      return userService
+      return suddenrunUserService
           .getUser(userId)
           .orElseThrow(() -> new AppUserNotRegisteredException(userId));
     } catch (SpotifyAccessTokenException e) {
@@ -39,12 +39,12 @@ public class RunnerController {
   @PostMapping
   public AppUser registerUser() {
     try {
-      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
+      SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       String userName = userProfileItem.getName();
-      boolean isUserRegistered = userService.isUserRegistered(userId);
+      boolean isUserRegistered = suddenrunUserService.isUserRegistered(userId);
       if (isUserRegistered) throw new SuddenrunUserIsAlreadyRegisteredException(userId);
-      return userService.registerUser(userId, userName);
+      return suddenrunUserService.registerUser(userId, userName);
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     }

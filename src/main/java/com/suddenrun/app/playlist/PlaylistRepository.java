@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, String> {
 
-  boolean existsByRunnerId(String id);
+  boolean existsBySuddenrunUserId(String userId);
 
-  Optional<Playlist> findByRunnerId(String id);
+  Optional<Playlist> findBySuddenrunUserId(String userId);
 
   @Transactional
   @Modifying
@@ -27,6 +27,6 @@ public interface PlaylistRepository extends JpaRepository<Playlist, String> {
 
   @Transactional
   @Modifying
-  @Query("DELETE FROM Playlist p WHERE p.runner.id = :runnerId")
-  void deleteByRunnerId(@NonNull String runnerId);
+  @Query("DELETE FROM Playlist p WHERE p.suddenrunUser.id = :userId")
+  void deleteBySuddenrunUserId(@NonNull String userId);
 }

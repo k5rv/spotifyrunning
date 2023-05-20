@@ -13,15 +13,15 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest()
 class SuddenrunUserRepositoryTest {
 
-  @Autowired private RunnerRepository underTest;
+  @Autowired private SuddenrunUserRepository underTest;
 
   @Test
-  void itShouldReturnTrueIfRunnerWithIdExists() {
+  void itShouldReturnTrueIfUserWithIdExists() {
     // Given
     String id = SpotifyResourceHelper.getRandomId();
     String name = SpotifyResourceHelper.getRandomName();
-    Runner runner = Runner.builder().id(id).name(name).build();
-    underTest.save(runner);
+    SuddenrunUser suddenrunUser = SuddenrunUser.builder().id(id).name(name).build();
+    underTest.save(suddenrunUser);
 
     // When
     boolean isExists = underTest.existsById(id);
@@ -31,7 +31,7 @@ class SuddenrunUserRepositoryTest {
   }
 
   @Test
-  void itShouldReturnFalseIfRunnerWithIdDoesNotExists() {
+  void itShouldReturnFalseIfUserWithIdDoesNotExists() {
     // Given
     String id = SpotifyResourceHelper.getRandomId();
 
@@ -43,36 +43,36 @@ class SuddenrunUserRepositoryTest {
   }
 
   @Test
-  void itShouldSaveRunner() {
+  void itShouldSaveUser() {
     // Given
     String id = SpotifyResourceHelper.getRandomId();
     String name = SpotifyResourceHelper.getRandomName();
-    Runner runner = Runner.builder().id(id).name(name).build();
+    SuddenrunUser suddenrunUser = SuddenrunUser.builder().id(id).name(name).build();
 
     // When
-    underTest.save(runner);
+    underTest.save(suddenrunUser);
 
     // Then
-    Optional<Runner> optionalRunner = underTest.findById(id);
-    assertThat(optionalRunner)
+    Optional<SuddenrunUser> optionalUser = underTest.findById(id);
+    assertThat(optionalUser)
         .isPresent()
-        .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison().isEqualTo(runner));
+        .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison().isEqualTo(suddenrunUser));
   }
 
   @Test
-  void itShouldFindRunnerById() {
+  void itShouldFindUserById() {
     // Given
     String id = SpotifyResourceHelper.getRandomId();
     String name = SpotifyResourceHelper.getRandomName();
-    Runner runner = Runner.builder().id(id).name(name).build();
-    underTest.save(runner);
+    SuddenrunUser suddenrunUser = SuddenrunUser.builder().id(id).name(name).build();
+    underTest.save(suddenrunUser);
 
     // When
-    Optional<Runner> optionalRunner = underTest.findById(id);
+    Optional<SuddenrunUser> optionalUser = underTest.findById(id);
 
     // Then
-    assertThat(optionalRunner)
+    assertThat(optionalUser)
         .isPresent()
-        .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison().isEqualTo(runner));
+        .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison().isEqualTo(suddenrunUser));
   }
 }

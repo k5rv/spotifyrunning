@@ -15,7 +15,7 @@ public interface AppUserMapper {
   default AppUser mapToEntity(SpotifyUserProfileItem userProfileItem) {
     String id = userProfileItem.getId();
     String name = userProfileItem.getName();
-    return Runner.builder().id(id).name(name).build();
+    return SuddenrunUser.builder().id(id).name(name).build();
   }
 
   default SpotifyUserProfileItem mapToDto(AppUser appUser) {
@@ -32,6 +32,6 @@ public interface AppUserMapper {
 
   @ObjectFactory
   default AppUser createEntity() {
-    return Runner.builder().build();
+    return SuddenrunUser.builder().build();
   }
 }

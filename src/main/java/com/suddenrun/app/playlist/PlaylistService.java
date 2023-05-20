@@ -91,7 +91,7 @@ public class PlaylistService implements AppPlaylistService {
     try {
       String appUserId = appUser.getId();
       log.info("Getting playlist for user with id [" + appUserId + "]");
-      Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findByRunnerId(appUserId);
+      Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findBySuddenrunUserId(appUserId);
       boolean appPlaylistExists = appRunningWorkoutPlaylist.isPresent();
       if (!appPlaylistExists) {
         log.info(

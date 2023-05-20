@@ -12,10 +12,10 @@ import org.mockito.*;
 
 class SuddenrunUserServiceTest {
 
-  @Mock private RunnerRepository repository;
+  @Mock private SuddenrunUserRepository repository;
 
-  @Captor private ArgumentCaptor<String> idArgumentCaptor;
-  @Captor private ArgumentCaptor<Runner> runnerArgumentCaptor;
+  @Captor private ArgumentCaptor<String> userIdArgumentCaptor;
+  @Captor private ArgumentCaptor<SuddenrunUser> suddenrunUserArgumentCaptor;
 
   private AutoCloseable closeable;
 
@@ -24,7 +24,7 @@ class SuddenrunUserServiceTest {
   @BeforeEach
   void setUp() {
     closeable = MockitoAnnotations.openMocks(this);
-    underTest = new RunnerService(repository);
+    underTest = new SuddenrunUserService(repository);
   }
 
   @AfterEach
@@ -35,31 +35,31 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldReturnTrueIfUserIsRegistered() {
     // Given
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
     given(repository.existsById(id)).willReturn(true);
 
     // When
     underTest.isUserRegistered(id);
 
     // Then
-    then(repository).should().existsById(idArgumentCaptor.capture());
-    assertThat(idArgumentCaptor.getValue()).isEqualTo(id);
+    then(repository).should().existsById(userIdArgumentCaptor.capture());
+    assertThat(userIdArgumentCaptor.getValue()).isEqualTo(id);
   }
 
   @Test
   void itShouldReturnFalseIfUserIsNotRegistered() {
     // Given
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
     given(repository.existsById(id)).willReturn(false);
 
     // When
     underTest.isUserRegistered(id);
 
     // Then
-    then(repository).should().existsById(idArgumentCaptor.capture());
-    assertThat(idArgumentCaptor.getValue()).isEqualTo(id);
+    then(repository).should().existsById(userIdArgumentCaptor.capture());
+    assertThat(userIdArgumentCaptor.getValue()).isEqualTo(id);
   }
 
   @Test
@@ -67,8 +67,8 @@ class SuddenrunUserServiceTest {
       itShouldThrowGetSuddenrunUserRegistrationStatusExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
     String message = "message";
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
     given(repository.existsById(id)).willThrow(new RuntimeException(message));
 
     // Then
@@ -81,9 +81,9 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldReturnUserIfItIsPresent() {
     // Given
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
-    given(repository.findById(id)).willReturn(Optional.of(runner));
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
+    given(repository.findById(id)).willReturn(Optional.of(suddenrunUser));
 
     // When
     Optional<AppUser> appUser = underTest.getUser(id);
@@ -92,14 +92,14 @@ class SuddenrunUserServiceTest {
     assertThat(appUser)
         .isPresent()
         .hasValueSatisfying(
-            user -> assertThat((Runner) user).usingRecursiveComparison().isEqualTo(runner));
+            user -> assertThat((SuddenrunUser) user).usingRecursiveComparison().isEqualTo(suddenrunUser));
   }
 
   @Test
   void itShouldReturnEmptyOptionalIfUserIsNotPresent() {
     // Given
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
     given(repository.findById(id)).willReturn(Optional.empty());
 
     // When
@@ -113,8 +113,8 @@ class SuddenrunUserServiceTest {
   void itShouldThrowGetSuddenrunUserExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
     String message = "message";
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
     given(repository.findById(id)).willThrow(new RuntimeException(message));
 
     // Then
@@ -127,27 +127,27 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldRegisterUser() {
     // Given
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
-    String name = runner.getName();
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
+    String name = suddenrunUser.getName();
 
     // When
     underTest.registerUser(id, name);
 
     // Then
-    then(repository).should().save(runnerArgumentCaptor.capture());
-    Runner runnerArgumentCaptureValue = runnerArgumentCaptor.getValue();
-    assertThat(runnerArgumentCaptureValue).isEqualTo(runner);
+    then(repository).should().save(suddenrunUserArgumentCaptor.capture());
+    SuddenrunUser suddenrunUserArgumentCaptureValue = suddenrunUserArgumentCaptor.getValue();
+    assertThat(suddenrunUserArgumentCaptureValue).isEqualTo(suddenrunUser);
   }
 
   @Test
   void itShouldThrowRegisterSuddenrunUserExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
     String message = "message";
-    Runner runner = (Runner) SuddenrunHelper.getUser();
-    String id = runner.getId();
-    String name = runner.getName();
-    given(repository.save(runner)).willThrow(new RuntimeException(message));
+    SuddenrunUser suddenrunUser = (SuddenrunUser) SuddenrunHelper.getUser();
+    String id = suddenrunUser.getId();
+    String name = suddenrunUser.getName();
+    given(repository.save(suddenrunUser)).willThrow(new RuntimeException(message));
 
     // Then
     assertThatThrownBy(() -> underTest.registerUser(id, name))
