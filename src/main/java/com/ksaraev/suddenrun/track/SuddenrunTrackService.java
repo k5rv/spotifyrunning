@@ -58,11 +58,7 @@ public class SuddenrunTrackService implements AppTrackService {
                       }));
       int recommendationsSize = recommendations.size();
       log.info("Found [" + recommendationsSize + "] recommended tracks in Spotify");
-      return mapper.mapToEntities(recommendations).stream().filter(Objects::nonNull).toList();
-      //      return recommendations.stream()
-      //          .filter(Objects::nonNull)
-      //          .map(mapper::mapToEntity)
-      //          .toList();
+      return mapper.mapToEntities(recommendations);
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     } catch (SpotifyServiceException e) {

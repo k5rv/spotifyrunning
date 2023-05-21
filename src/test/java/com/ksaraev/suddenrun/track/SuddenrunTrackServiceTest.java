@@ -1,25 +1,27 @@
 package com.ksaraev.suddenrun.track;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.*;
+
+import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
+import com.ksaraev.spotify.exception.SpotifyServiceException;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import com.ksaraev.spotify.service.SpotifyRecommendationItemsService;
 import com.ksaraev.spotify.service.SpotifyUserTopTrackItemsService;
+import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
+import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.playlist.AppPlaylistConfig;
-import com.ksaraev.suddenrun.user.AppUserService;
-import com.ksaraev.suddenrun.user.SuddenrunUserService;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-import java.util.List;
-
-import static org.mockito.BDDMockito.*;
-
-public class SuddenrunTrackServiceTest {
+class SuddenrunTrackServiceTest {
 
   @Mock private AppPlaylistConfig config;
 
@@ -29,7 +31,13 @@ public class SuddenrunTrackServiceTest {
 
   @Mock private SpotifyRecommendationItemsService spotifyRecommendationsService;
 
-  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> trackItemsArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> mapperArgumentCaptor;
+
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> userTopTracksArgumentCaptor;
+
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> recommendationsArgumentCaptor;
+
+  @Captor private ArgumentCaptor<SpotifyTrackItemFeatures> featuresArgumentCaptor;
 
   private AutoCloseable closeable;
 
@@ -73,11 +81,131 @@ public class SuddenrunTrackServiceTest {
     List<AppTrack> tracks = underTest.getTracks();
 
     // Then
-    then(mapper).should().mapToEntities(trackItemsArgumentCaptor.capture());
-    List<SpotifyTrackItem> trackItemsArgumentCaptorValue = trackItemsArgumentCaptor.getValue();
+    then(mapper).should().mapToEntities(mapperArgumentCaptor.capture());
+    List<SpotifyTrackItem> trackItemsArgumentCaptorValue = mapperArgumentCaptor.getValue();
     Assertions.assertThat(trackItemsArgumentCaptorValue)
         .isNotNull()
         .hasSameElementsAs(recommendations);
     Assertions.assertThat(tracks).hasSameElementsAs(appTracks);
+  }
+
+  /*  @Test
+  void itShouldGeNumberOfTracksThatEqualsToConfigPlaylistSize() {
+    // Given
+    int playlistSize = 2;
+    given(config.getSize()).willReturn(playlistSize);
+
+    SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    given(config.getMusicFeatures()).willReturn(features);
+
+    SpotifyTrackItem trackItemA = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem trackItemB = SpotifyServiceHelper.getTrack();
+    List<SpotifyTrackItem> userTopTracks = List.of(trackItemA, trackItemB);
+    given(spotifyTopTracksService.getUserTopTracks()).willReturn(userTopTracks);
+
+    List<SpotifyTrackItem> recommendationsA = SpotifyServiceHelper.getTracks(1);
+    List<SpotifyTrackItem> recommendationsB = SpotifyServiceHelper.getTracks(2);
+
+    given(spotifyRecommendationsService.getRecommendations(List.of(trackItemA), features))
+        .willReturn(recommendationsA);
+
+    given(spotifyRecommendationsService.getRecommendations(List.of(trackItemB), features))
+        .willReturn(recommendationsB);
+
+
+    // When
+    underTest.getTracks();
+
+    // Then
+    verify(spotifyRecommendationsService, times(2))
+        .getRecommendations(
+            recommendationsArgumentCaptor.capture(), featuresArgumentCaptor.capture());
+
+    verify(mapper).mapToEntities(mapperArgumentCaptor.capture());
+
+    List<SpotifyTrackItem> trackItemsArgumentCaptorValue =
+        mapperArgumentCaptor.getAllValues().stream().flatMap(Collection::stream).toList();
+
+    assertThat(trackItemsArgumentCaptorValue)
+        .hasSize(playlistSize)
+        .containsAll(recommendationsA)
+        .containsAll(recommendationsB);
+  }*/
+
+  @Test
+  void itShouldThrowGetSuddenrunTracksExceptionIfSpotifyClientThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    int playlistSize = 10;
+    given(config.getSize()).willReturn(playlistSize);
+    given(spotifyTopTracksService.getUserTopTracks()).willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getTracks())
+        .isExactlyInstanceOf(GetSuddenrunTracksException.class)
+        .hasMessageContaining(message);
+  }
+
+  @Test
+  void itShouldThrowGetSuddenrunTracksExceptionIfTrackMapperThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    int playlistSize = 10;
+    given(config.getSize()).willReturn(playlistSize);
+
+    SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    given(config.getMusicFeatures()).willReturn(features);
+
+    SpotifyTrackItem trackItem = SpotifyServiceHelper.getTrack();
+    List<SpotifyTrackItem> userTopTracks = List.of(trackItem);
+    given(spotifyTopTracksService.getUserTopTracks()).willReturn(userTopTracks);
+
+    int recommendationsNumber = 10;
+    List<SpotifyTrackItem> recommendations = SpotifyServiceHelper.getTracks(recommendationsNumber);
+    given(spotifyRecommendationsService.getRecommendations(userTopTracks, features))
+        .willReturn(recommendations);
+
+    given(mapper.mapToEntities(any())).willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getTracks())
+        .isExactlyInstanceOf(GetSuddenrunTracksException.class)
+        .hasMessageContaining(message);
+  }
+
+  @Test
+  void
+      itShouldThrowSuddenrunSpotifyInteractionExceptionIfSpotifyServiceThrowsSpotifyServiceException() {
+    // Given
+    String message = "message";
+    int playlistSize = 10;
+    given(config.getSize()).willReturn(playlistSize);
+    SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    given(config.getMusicFeatures()).willReturn(features);
+    given(spotifyTopTracksService.getUserTopTracks())
+        .willThrow(new SpotifyServiceException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getTracks())
+        .isExactlyInstanceOf(SuddenrunSpotifyInteractionException.class)
+        .hasMessageContaining(message);
+  }
+
+  @Test
+  void
+      itShouldThrowSuddenrunAuthenticationExceptionIfSpotifyServiceThrowsSpotifyAccessTokenException() {
+    // Given
+    String message = "message";
+    int playlistSize = 10;
+    given(config.getSize()).willReturn(playlistSize);
+    SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    given(config.getMusicFeatures()).willReturn(features);
+    given(spotifyTopTracksService.getUserTopTracks())
+        .willThrow(new SpotifyAccessTokenException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getTracks())
+        .isExactlyInstanceOf(SuddenrunAuthenticationException.class)
+        .hasMessageContaining(message);
   }
 }
