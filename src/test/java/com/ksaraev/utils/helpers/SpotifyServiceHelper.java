@@ -52,6 +52,20 @@ public class SpotifyServiceHelper {
         .build();
   }
 
+  public static SpotifyTrackItem getTrackWithPopularity(Integer popularity) {
+    String id = SpotifyResourceHelper.getRandomId();
+    String name = SpotifyResourceHelper.getRandomName();
+    URI uri = SpotifyResourceHelper.TRACK.getUri(id);
+    List<SpotifyArtistItem> artists = getArtists(1);
+    return SpotifyTrack.builder()
+        .id(id)
+        .name(name)
+        .uri(uri)
+        .popularity(popularity)
+        .artists(artists)
+        .build();
+  }
+
   public static SpotifyPlaylistItemDetails getPlaylistDetails() {
     String name = SpotifyResourceHelper.getRandomName();
     String description = SpotifyResourceHelper.getRandomDescription();
@@ -97,10 +111,10 @@ public class SpotifyServiceHelper {
         .build();
   }
 
-
   public static List<SpotifyPlaylistItem> getPlaylists(Integer size) {
     return getSpotifyItems(size, SpotifyPlaylistItem.class);
   }
+
   public static List<SpotifyArtistItem> getArtists(Integer size) {
     return getSpotifyItems(size, SpotifyArtistItem.class);
   }

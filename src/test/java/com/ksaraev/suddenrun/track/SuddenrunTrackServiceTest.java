@@ -1,5 +1,6 @@
 package com.ksaraev.suddenrun.track;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.*;
 
@@ -14,6 +15,7 @@ import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.playlist.AppPlaylistConfig;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
+import java.util.Collection;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -32,8 +34,6 @@ class SuddenrunTrackServiceTest {
   @Mock private SpotifyRecommendationItemsService spotifyRecommendationsService;
 
   @Captor private ArgumentCaptor<List<SpotifyTrackItem>> mapperArgumentCaptor;
-
-  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> userTopTracksArgumentCaptor;
 
   @Captor private ArgumentCaptor<List<SpotifyTrackItem>> recommendationsArgumentCaptor;
 
@@ -89,29 +89,29 @@ class SuddenrunTrackServiceTest {
     Assertions.assertThat(tracks).hasSameElementsAs(appTracks);
   }
 
-  /*  @Test
+  @Test
   void itShouldGeNumberOfTracksThatEqualsToConfigPlaylistSize() {
     // Given
     int playlistSize = 2;
     given(config.getSize()).willReturn(playlistSize);
-
     SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
     given(config.getMusicFeatures()).willReturn(features);
 
-    SpotifyTrackItem trackItemA = SpotifyServiceHelper.getTrack();
-    SpotifyTrackItem trackItemB = SpotifyServiceHelper.getTrack();
-    List<SpotifyTrackItem> userTopTracks = List.of(trackItemA, trackItemB);
+    SpotifyTrackItem topTrackItemA = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem topTrackItemB = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem topTrackItemC = SpotifyServiceHelper.getTrack();
+    List<SpotifyTrackItem> userTopTracks = List.of(topTrackItemA, topTrackItemB, topTrackItemC);
     given(spotifyTopTracksService.getUserTopTracks()).willReturn(userTopTracks);
 
-    List<SpotifyTrackItem> recommendationsA = SpotifyServiceHelper.getTracks(1);
-    List<SpotifyTrackItem> recommendationsB = SpotifyServiceHelper.getTracks(2);
-
-    given(spotifyRecommendationsService.getRecommendations(List.of(trackItemA), features))
-        .willReturn(recommendationsA);
-
-    given(spotifyRecommendationsService.getRecommendations(List.of(trackItemB), features))
-        .willReturn(recommendationsB);
-
+    SpotifyTrackItem recommendationTrackItemA = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem recommendationTrackItemB = SpotifyServiceHelper.getTrack();
+    SpotifyTrackItem recommendationTrackItemC = SpotifyServiceHelper.getTrack();
+    given(spotifyRecommendationsService.getRecommendations(List.of(topTrackItemA), features))
+        .willReturn(List.of(recommendationTrackItemA));
+    given(spotifyRecommendationsService.getRecommendations(List.of(topTrackItemB), features))
+        .willReturn(List.of(recommendationTrackItemB));
+    given(spotifyRecommendationsService.getRecommendations(List.of(topTrackItemC), features))
+        .willReturn(List.of(recommendationTrackItemC));
 
     // When
     underTest.getTracks();
@@ -120,17 +120,13 @@ class SuddenrunTrackServiceTest {
     verify(spotifyRecommendationsService, times(2))
         .getRecommendations(
             recommendationsArgumentCaptor.capture(), featuresArgumentCaptor.capture());
-
     verify(mapper).mapToEntities(mapperArgumentCaptor.capture());
-
-    List<SpotifyTrackItem> trackItemsArgumentCaptorValue =
+    List<SpotifyTrackItem> mapperArgumentCaptorValues =
         mapperArgumentCaptor.getAllValues().stream().flatMap(Collection::stream).toList();
-
-    assertThat(trackItemsArgumentCaptorValue)
+    assertThat(mapperArgumentCaptorValues)
         .hasSize(playlistSize)
-        .containsAll(recommendationsA)
-        .containsAll(recommendationsB);
-  }*/
+        .contains(recommendationTrackItemA, recommendationTrackItemB);
+  }
 
   @Test
   void itShouldThrowGetSuddenrunTracksExceptionIfSpotifyClientThrowsRuntimeException() {
