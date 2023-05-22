@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
-public class SpotifyAppConfig {
+public class SuddenrunConfig {
 
   @Value("${suddenrun.playlist.details.name}")
   @NotEmpty
@@ -62,7 +62,7 @@ public class SpotifyAppConfig {
   }
 
   @Bean
-  AppPlaylistConfig getWorkoutPlaylistConfig() {
+  AppPlaylistConfig getSuddenrunConfig() {
     SpotifyPlaylistItemDetails playlistDetails =
         SpotifyPlaylistDetails.builder()
             .name(this.name)
@@ -70,7 +70,7 @@ public class SpotifyAppConfig {
             .isPublic(this.isPublic)
             .build();
 
-    SpotifyTrackItemFeatures trackFeatures =
+    SpotifyTrackItemFeatures features =
         SpotifyTrackFeatures.builder()
             .minTempo(this.minTempo)
             .maxTempo(this.maxTempo)
@@ -80,7 +80,7 @@ public class SpotifyAppConfig {
 
     return SuddenrunPlaylistConfig.builder()
         .details(playlistDetails)
-        .musicFeatures(trackFeatures)
+        .musicFeatures(features)
         .size(size)
         .build();
   }
