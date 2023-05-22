@@ -37,6 +37,8 @@ class SuddenrunTrackServiceTest {
 
   @Captor private ArgumentCaptor<List<SpotifyTrackItem>> recommendationsArgumentCaptor;
 
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> userTopTracksArgumentCaptor;
+
   @Captor private ArgumentCaptor<SpotifyTrackItemFeatures> featuresArgumentCaptor;
 
   private AutoCloseable closeable;

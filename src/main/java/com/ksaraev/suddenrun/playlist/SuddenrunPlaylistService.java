@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 public class SuddenrunPlaylistService implements AppPlaylistService {
 
   private static final String PLAYLIST_WITH_ID = "Playlist with id";
+
   private static final String AND_SNAPSHOT_ID = "] and snapshot id [";
 
   private final SuddenrunPlaylistRepository repository;

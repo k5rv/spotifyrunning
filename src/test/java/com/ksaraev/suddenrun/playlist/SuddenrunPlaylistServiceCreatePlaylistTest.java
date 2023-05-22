@@ -36,6 +36,18 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
 
   @Mock private AppTrackMapper trackMapper;
 
+  @Captor private ArgumentCaptor<AppUser> appUserArgumentCaptor;
+
+  @Captor private ArgumentCaptor<SpotifyUserProfileItem> spotifyUserProfileArgumentCaptor;
+
+  @Captor private ArgumentCaptor<SpotifyPlaylistItemDetails> spotifyPlaylistDetailsArgumentCaptor;
+
+  @Captor private ArgumentCaptor<String> spotifyPlaylistIdArgumentCaptor;
+
+  @Captor private ArgumentCaptor<SpotifyPlaylistItem> spotifyPlaylistArgumentCaptor;
+
+  @Captor private ArgumentCaptor<SuddenrunPlaylist> suddenrunPlaylistArgumentCaptor;
+
   private AutoCloseable closeable;
 
   private AppPlaylistService underTest;
@@ -89,6 +101,21 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     AppPlaylist appPlaylist = underTest.createPlaylist(appUser);
 
     // Then
+    then(userMapper).should().mapToItem(appUserArgumentCaptor.capture());
+    assertThat(appUserArgumentCaptor.getValue()).isEqualTo(appUser);
+    then(spotifyPlaylistService)
+        .should()
+        .createPlaylist(
+            spotifyUserProfileArgumentCaptor.capture(),
+            spotifyPlaylistDetailsArgumentCaptor.capture());
+    assertThat(spotifyUserProfileArgumentCaptor.getValue()).isEqualTo(spotifyUserProfile);
+    assertThat(spotifyPlaylistDetailsArgumentCaptor.getValue()).isEqualTo(spotifyPlaylistDetails);
+    then(spotifyPlaylistService).should().getPlaylist(spotifyPlaylistIdArgumentCaptor.capture());
+    assertThat(spotifyPlaylistIdArgumentCaptor.getValue()).isEqualTo(spotifyPlaylistId);
+    then(playlistMapper).should().mapToEntity(spotifyPlaylistArgumentCaptor.capture());
+    assertThat(spotifyPlaylistArgumentCaptor.getValue()).isEqualTo(spotifyPlaylist);
+    then(repository).should().save(suddenrunPlaylistArgumentCaptor.capture());
+    assertThat(suddenrunPlaylistArgumentCaptor.getValue()).isEqualTo(suddenrunPlaylist);
     assertThat(appPlaylist).isEqualTo(suddenrunPlaylist);
   }
 
