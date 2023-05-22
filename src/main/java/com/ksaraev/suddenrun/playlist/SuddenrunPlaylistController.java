@@ -3,8 +3,6 @@ package com.ksaraev.suddenrun.playlist;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.service.SpotifyUserProfileService;
-import com.ksaraev.suddenrun.exception.AppPlaylistAlreadyExistException;
-import com.ksaraev.suddenrun.exception.AppPlaylistNotFoundException;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackService;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/playlists")
 @AllArgsConstructor
-public class PlaylistController {
+public class SuddenrunPlaylistController {
 
   private final AppUserService userService;
 

@@ -43,7 +43,7 @@ public interface AppPlaylistMapper {
 
   @ObjectFactory
   default AppPlaylist createEntity() {
-    return Playlist.builder()
+    return SuddenrunPlaylist.builder()
         .tracks(List.of())
         .customTracks(List.of())
         .rejectedTracks(List.of())

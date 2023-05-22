@@ -1,4 +1,4 @@
-package com.ksaraev.suddenrun.exception;
+package com.ksaraev.suddenrun.playlist;
 
 public class AppPlaylistAlreadyExistException extends RuntimeException {
 

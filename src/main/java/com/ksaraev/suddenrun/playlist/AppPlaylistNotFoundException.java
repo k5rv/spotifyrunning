@@ -1,4 +1,4 @@
-package com.ksaraev.suddenrun.exception;
+package com.ksaraev.suddenrun.playlist;
 
 import lombok.experimental.StandardException;
 

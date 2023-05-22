@@ -7,12 +7,14 @@ import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -20,19 +22,28 @@ import org.hibernate.annotations.Type;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class Playlist implements AppPlaylist {
+public class SuddenrunPlaylist implements AppPlaylist {
 
-  @Id private String id;
+  @Id
+  @Column(nullable = false)
+  private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  private SuddenrunUser suddenrunUser;
+  private SuddenrunUser owner;
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
   private List<SuddenrunTrack> customTracks = new ArrayList<>();
+
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
   private List<SuddenrunTrack> rejectedTracks = new ArrayList<>();
+
+  @Type(JsonType.class)
+  @Column(columnDefinition = "jsonb")
+  private List<SuddenrunTrack> tracks = new ArrayList<>();
+
+  private String snapshotId;
 
   @Override
   public List<AppTrack> getCustomTracks() {
@@ -54,22 +65,16 @@ public class Playlist implements AppPlaylist {
     this.rejectedTracks = rejectedTracks.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
-  @Type(JsonType.class)
-  @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> tracks = new ArrayList<>();
-
-  private String snapshotId;
-
   @JsonIgnore
   @Override
   public AppUser getOwner() {
-    return this.suddenrunUser;
+    return this.owner;
   }
 
   @JsonIgnore
   @Override
   public void setOwner(AppUser appUser) {
-    this.suddenrunUser = (SuddenrunUser) appUser;
+    this.owner = (SuddenrunUser) appUser;
   }
 
   @Override
@@ -86,7 +91,7 @@ public class Playlist implements AppPlaylist {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-    Playlist playlist = (Playlist) o;
+    SuddenrunPlaylist playlist = (SuddenrunPlaylist) o;
     return getId() != null && Objects.equals(getId(), playlist.getId());
   }
 

@@ -2,11 +2,13 @@ package com.ksaraev.suddenrun.user;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ksaraev.suddenrun.playlist.AppPlaylist;
-import com.ksaraev.suddenrun.playlist.Playlist;
+import com.ksaraev.suddenrun.playlist.SuddenrunPlaylist;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -17,28 +19,29 @@ import org.hibernate.Hibernate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SuddenrunUser implements AppUser {
+
   @Id private String id;
 
   private String name;
 
   @JsonBackReference
-  @OneToMany(mappedBy = "suddenrunUser", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Playlist> playlists = new ArrayList<>();
+  @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<SuddenrunPlaylist> playlists = new ArrayList<>();
 
   @Override
   public void addPlaylist(AppPlaylist appPlaylist) {
-    Playlist playlist = (Playlist) appPlaylist;
+    SuddenrunPlaylist playlist = (SuddenrunPlaylist) appPlaylist;
     playlists.add(playlist);
-    playlist.setSuddenrunUser(this);
+    playlist.setOwner(this);
   }
 
   @Override
   public void removePlaylist(AppPlaylist appPlaylist) {
-    Playlist playlist = (Playlist) appPlaylist;
+    SuddenrunPlaylist playlist = (SuddenrunPlaylist) appPlaylist;
     if (!this.playlists.isEmpty()) {
       playlists.remove(playlist);
     }
-    playlist.setSuddenrunUser(null);
+    playlist.setOwner(null);
   }
 
   @Override
@@ -50,10 +53,10 @@ public class SuddenrunUser implements AppUser {
   @Override
   public void setPlaylists(List<AppPlaylist> playlists) {
     if (playlists == null) {
-      this.playlists = List.of();
+      this.playlists = new ArrayList<>();
       return;
     }
-    this.playlists = playlists.stream().map(Playlist.class::cast).toList();
+    this.playlists = playlists.stream().map(SuddenrunPlaylist.class::cast).collect(Collectors.toList());
   }
 
   @Override

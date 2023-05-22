@@ -2,6 +2,8 @@ package com.ksaraev.suddenrun.exception;
 
 import static org.springframework.http.HttpStatus.*;
 
+import com.ksaraev.suddenrun.playlist.AppPlaylistAlreadyExistException;
+import com.ksaraev.suddenrun.playlist.AppPlaylistNotFoundException;
 import com.ksaraev.suddenrun.user.SuddenrunUserIsAlreadyRegisteredException;
 import com.ksaraev.suddenrun.user.SuddenrunUserIsNotRegisteredException;
 import lombok.extern.slf4j.Slf4j;

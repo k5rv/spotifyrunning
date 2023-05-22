@@ -23,30 +23,32 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PlaylistService implements AppPlaylistService {
+public class SuddenrunPlaylistService implements AppPlaylistService {
 
   private static final String PLAYLIST_WITH_ID = "Playlist with id";
   private static final String AND_SNAPSHOT_ID = "] and snapshot id [";
 
-  private final PlaylistRepository playlistRepository;
+  private final SuddenrunPlaylistRepository repository;
 
   private final SpotifyPlaylistItemService spotifyPlaylistService;
 
-  private final AppPlaylistConfig playlistConfig;
+  private final AppPlaylistConfig config;
+
+  private final AppUserMapper userMapper;
+
+  private final AppTrackMapper trackMapper;
 
   private final AppPlaylistMapper playlistMapper;
 
-  private final AppTrackMapper appTrackMapper;
 
-  private final AppUserMapper appUserMapper;
 
   @Override
   public AppPlaylist createPlaylist(@NotNull AppUser appUser) {
     try {
       String appUserId = appUser.getId();
       log.info("Creating playlist for user id with [" + appUserId + "]");
-      SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
-      SpotifyPlaylistItemDetails spotifyPlaylistDetails = playlistConfig.getDetails();
+      SpotifyUserProfileItem spotifyUser = userMapper.mapToDto(appUser);
+      SpotifyPlaylistItemDetails spotifyPlaylistDetails = config.getDetails();
       SpotifyPlaylistItem spotifyPlaylist =
           spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
       String spotifyPlaylistId = spotifyPlaylist.getId();
@@ -71,7 +73,7 @@ public class PlaylistService implements AppPlaylistService {
               + spotifySnapshotId
               + "]");
       AppPlaylist appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+      appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
       log.info(
           "Created playlist with id [" + appPlaylistId + "] for user with id [" + appUserId + "]");
@@ -90,8 +92,8 @@ public class PlaylistService implements AppPlaylistService {
     try {
       String appUserId = appUser.getId();
       log.info("Getting playlist for user with id [" + appUserId + "]");
-      Optional<Playlist> appRunningWorkoutPlaylist =
-          playlistRepository.findBySuddenrunUserId(appUserId);
+      Optional<SuddenrunPlaylist> appRunningWorkoutPlaylist =
+          repository.findByOwnerId(appUserId);
       boolean appPlaylistExists = appRunningWorkoutPlaylist.isPresent();
       if (!appPlaylistExists) {
         log.info(
@@ -101,7 +103,7 @@ public class PlaylistService implements AppPlaylistService {
         return Optional.empty();
       }
 
-      SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
+      SpotifyUserProfileItem spotifyUser = userMapper.mapToDto(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
       AppPlaylist appPlaylist = appRunningWorkoutPlaylist.get();
@@ -118,7 +120,7 @@ public class PlaylistService implements AppPlaylistService {
                 + appPlaylistId
                 + "] not found in Spotify. Deleting app playlist and returning empty result.");
         appUser.removePlaylist(appPlaylist);
-        playlistRepository.deleteById(appPlaylistId);
+        repository.deleteById(appPlaylistId);
         return Optional.empty();
       }
 
@@ -152,7 +154,7 @@ public class PlaylistService implements AppPlaylistService {
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist.setCustomTracks(customTracks);
       appPlaylist.setRejectedTracks(rejectedTracks);
-      appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+      appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       appPlaylistSnapshotId = appPlaylist.getSnapshotId();
       log.info(
           "Updated playlist with id ["
@@ -183,7 +185,7 @@ public class PlaylistService implements AppPlaylistService {
               + " ["
               + appPlaylistId
               + "]");
-      Optional<Playlist> appRunningWorkoutPlaylist = playlistRepository.findById(appPlaylistId);
+      Optional<SuddenrunPlaylist> appRunningWorkoutPlaylist = repository.findById(appPlaylistId);
 
       if (appRunningWorkoutPlaylist.isEmpty()) {
         log.error(PLAYLIST_WITH_ID + appPlaylistId + "] doesn't exist in app");
@@ -191,7 +193,7 @@ public class PlaylistService implements AppPlaylistService {
       }
 
       AppUser appUser = appPlaylist.getOwner();
-      SpotifyUserProfileItem spotifyUser = appUserMapper.mapToDto(appUser);
+      SpotifyUserProfileItem spotifyUser = userMapper.mapToDto(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
       Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
@@ -208,14 +210,14 @@ public class PlaylistService implements AppPlaylistService {
                 + appPlaylistId
                 + "] not found in Spotify. Deleting saved in app playlist and creating new one.");
         appUser.removePlaylist(appPlaylist);
-        playlistRepository.deleteById(appPlaylistId);
+        repository.deleteById(appPlaylistId);
         appPlaylist = createPlaylist(appUser);
         List<SpotifyTrackItem> spotifyAddTracks =
-            appTracks.stream().map(appTrackMapper::mapToDto).toList();
+            appTracks.stream().map(trackMapper::mapToDto).toList();
         spotifyPlaylistService.addTracks(appPlaylist.getId(), spotifyAddTracks);
         SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(appPlaylistId);
         appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-        appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+        appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
         String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
         log.info(
             "Added ["
@@ -258,7 +260,7 @@ public class PlaylistService implements AppPlaylistService {
                       rejectedTracks.stream()
                           .noneMatch(
                               rejectedTrack -> rejectedTrack.getId().equals(appTrack.getId())))
-              .map(appTrackMapper::mapToDto)
+              .map(trackMapper::mapToDto)
               .toList();
 
       List<AppTrack> customTracks = appPlaylist.getCustomTracks();
@@ -325,7 +327,7 @@ public class PlaylistService implements AppPlaylistService {
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist.setCustomTracks(customTracks);
       appPlaylist.setRejectedTracks(rejectedTracks);
-      appPlaylist = playlistRepository.save((Playlist) appPlaylist);
+      appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       int addTracksNumber = spotifyAddTracks.size();
       int removeTracksNumber = spotifyRemoveTracks.size();
       log.info(
@@ -366,7 +368,7 @@ public class PlaylistService implements AppPlaylistService {
                   track ->
                       customTracks.stream()
                           .noneMatch(favoriteTrack -> favoriteTrack.getId().equals(track.getId())))
-              .map(appTrackMapper::mapToEntity)
+              .map(trackMapper::mapToEntity)
               .toList();
 
       List<AppTrack> tracksExclusion =
