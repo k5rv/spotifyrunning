@@ -1,4 +1,4 @@
-package com.ksaraev.spotify.config;
+package com.ksaraev.spotify.model.playlist;
 
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class PlaylistConfig implements SpotifyPlaylistConfig {
+public class SpotifyPlaylistConfig implements SpotifyPlaylistItemConfig {
 
   private SpotifyPlaylistItemDetails details;
 

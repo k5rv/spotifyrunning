@@ -1,5 +1,7 @@
 package com.ksaraev.spotify.config;
 
+import com.ksaraev.spotify.model.playlist.SpotifyPlaylistConfig;
+import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackFeatures;
@@ -60,7 +62,7 @@ public class SpotifyServiceConfig {
   }
 
   @Bean
-  SpotifyPlaylistConfig getSpotifyServiceConfig() {
+  SpotifyPlaylistItemConfig getSpotifyPlaylistConfig() {
     SpotifyPlaylistItemDetails playlistDetails =
         SpotifyPlaylistDetails.builder()
             .name(this.name)
@@ -76,7 +78,7 @@ public class SpotifyServiceConfig {
             .minPopularity(this.minPopularity)
             .build();
 
-    return PlaylistConfig.builder()
+    return SpotifyPlaylistConfig.builder()
         .details(playlistDetails)
         .musicFeatures(features)
         .size(size)

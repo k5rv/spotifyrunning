@@ -1,6 +1,6 @@
 package com.ksaraev.suddenrun.playlist;
 
-import com.ksaraev.spotify.config.SpotifyPlaylistConfig;
+import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.exception.SpotifyServiceException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
@@ -33,7 +33,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   private final SpotifyPlaylistItemService spotifyPlaylistService;
 
-  private final SpotifyPlaylistConfig spotifyPlaylistConfig;
+  private final SpotifyPlaylistItemConfig spotifyPlaylistConfig;
 
   private final AppUserMapper userMapper;
 

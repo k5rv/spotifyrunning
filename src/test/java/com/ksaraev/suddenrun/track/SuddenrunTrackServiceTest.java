@@ -12,7 +12,7 @@ import com.ksaraev.spotify.service.SpotifyRecommendationItemsService;
 import com.ksaraev.spotify.service.SpotifyUserTopTrackItemsService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
-import com.ksaraev.spotify.config.SpotifyPlaylistConfig;
+import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.util.Collection;
@@ -25,7 +25,7 @@ import org.mockito.*;
 
 class SuddenrunTrackServiceTest {
 
-  @Mock private SpotifyPlaylistConfig config;
+  @Mock private SpotifyPlaylistItemConfig config;
 
   @Mock private AppTrackMapper mapper;
 

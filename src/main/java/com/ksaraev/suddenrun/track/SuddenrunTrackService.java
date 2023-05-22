@@ -8,7 +8,7 @@ import com.ksaraev.spotify.service.SpotifyRecommendationItemsService;
 import com.ksaraev.spotify.service.SpotifyUserTopTrackItemsService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
-import com.ksaraev.spotify.config.SpotifyPlaylistConfig;
+import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SuddenrunTrackService implements AppTrackService {
 
-  private final SpotifyPlaylistConfig config;
+  private final SpotifyPlaylistItemConfig config;
 
   private final AppTrackMapper mapper;
 
