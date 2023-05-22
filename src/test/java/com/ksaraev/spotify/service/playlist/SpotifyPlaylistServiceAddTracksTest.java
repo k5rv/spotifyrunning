@@ -10,7 +10,7 @@ import com.ksaraev.spotify.client.SpotifyClient;
 import com.ksaraev.spotify.client.dto.UpdatePlaylistItemsRequest;
 import com.ksaraev.spotify.client.dto.UpdatePlaylistItemsResponse;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
-import com.ksaraev.spotify.config.AddSpotifyPlaylistItemsRequestConfig;
+import com.ksaraev.spotify.config.UpdateSpotifyPlaylistItemsRequestConfig;
 import com.ksaraev.spotify.exception.AddSpotifyPlaylistTracksExceptions;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
@@ -45,7 +45,7 @@ class SpotifyPlaylistServiceAddTracksTest {
   @Mock private SpotifyClient client;
   @Mock private SpotifyPlaylistMapper mapper;
 
-  @Mock private AddSpotifyPlaylistItemsRequestConfig requestConfig;
+  @Mock private UpdateSpotifyPlaylistItemsRequestConfig requestConfig;
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
   @Captor private ArgumentCaptor<UpdatePlaylistItemsRequest> requestArgumentCaptor;
 

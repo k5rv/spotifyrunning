@@ -11,7 +11,7 @@ import com.ksaraev.spotify.client.dto.GetUserPlaylistsRequest;
 import com.ksaraev.spotify.client.dto.GetUserPlaylistsResponse;
 import com.ksaraev.spotify.client.dto.SpotifyPlaylistDto;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
-import com.ksaraev.spotify.config.AddSpotifyPlaylistItemsRequestConfig;
+import com.ksaraev.spotify.config.UpdateSpotifyPlaylistItemsRequestConfig;
 import com.ksaraev.spotify.exception.GetSpotifyUserPlaylistsException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
@@ -43,7 +43,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
 
   @Mock private SpotifyClient client;
 
-  @Mock private AddSpotifyPlaylistItemsRequestConfig requestConfig;
+  @Mock private UpdateSpotifyPlaylistItemsRequestConfig requestConfig;
 
   @Mock private SpotifyPlaylistMapper mapper;
 

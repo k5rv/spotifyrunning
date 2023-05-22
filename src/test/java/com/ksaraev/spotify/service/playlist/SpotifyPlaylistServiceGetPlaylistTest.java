@@ -9,7 +9,7 @@ import static org.mockito.BDDMockito.then;
 import com.ksaraev.spotify.client.SpotifyClient;
 import com.ksaraev.spotify.client.dto.SpotifyPlaylistDto;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
-import com.ksaraev.spotify.config.AddSpotifyPlaylistItemsRequestConfig;
+import com.ksaraev.spotify.config.UpdateSpotifyPlaylistItemsRequestConfig;
 import com.ksaraev.spotify.exception.GetSpotifyPlaylistException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylist;
@@ -38,7 +38,7 @@ class SpotifyPlaylistServiceGetPlaylistTest {
 
   @Mock private SpotifyClient client;
 
-  @Mock private AddSpotifyPlaylistItemsRequestConfig requestConfig;
+  @Mock private UpdateSpotifyPlaylistItemsRequestConfig requestConfig;
 
   @Mock private SpotifyPlaylistMapper mapper;
 

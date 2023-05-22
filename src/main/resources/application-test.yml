@@ -33,20 +33,19 @@ spring:
             url: http://127.0.0.1:${wiremock.server.port}/v1
             logger-level: basic
 
-suddenrun:
-  playlist:
-    details:
-      name: "Running Workout"
-      description: "Music for your training based on Spotify recommendations"
-      public: TRUE
-      size: 50
+spotify:
+  service:
+    playlist:
+      details:
+        name: "Running Workout"
+        description: "Music for your training based on Spotify recommendations"
+        public: TRUE
+        size: 50
     music-features:
       min-tempo: "120"
       max-tempo: "140"
       min-energy: "0.65"
       min-popularity: ""
-
-spotify:
   client:
     requests:
       get-user-top-tracks:

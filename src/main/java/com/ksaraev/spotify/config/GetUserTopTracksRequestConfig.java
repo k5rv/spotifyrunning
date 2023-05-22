@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GetSpotifyUserTopTracksRequestConfig implements GetSpotifyUserTopItemsRequestConfig {
+public class GetUserTopTracksRequestConfig implements GetSpotifyUserTopTrackRequestConfig {
   private Integer limit;
 
   private Integer offset;

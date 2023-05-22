@@ -1,7 +1,5 @@
-package com.ksaraev.suddenrun.config;
+package com.ksaraev.spotify.config;
 
-import com.ksaraev.suddenrun.playlist.AppPlaylistConfig;
-import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistConfig;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackFeatures;
@@ -15,41 +13,41 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
 @Configuration
-public class SuddenrunConfig {
+public class SpotifyServiceConfig {
 
-  @Value("${suddenrun.playlist.details.name}")
+  @Value("${spotify.service.playlist.details.name}")
   @NotEmpty
   private String name;
 
-  @Value("${suddenrun.playlist.details.description}")
+  @Value("${spotify.service.playlist.details.description}")
   @NotEmpty
   private String description;
 
-  @Value("${suddenrun.playlist.details.public}")
+  @Value("${spotify.service.playlist.details.public}")
   @NotEmpty
   private Boolean isPublic;
 
-  @Value("${suddenrun.playlist.details.size}")
+  @Value("${spotify.service.playlist.details.size}")
   @Min(1)
   @Max(50)
   private Integer size;
 
-  @Value("${suddenrun.playlist.music-features.min-tempo}")
+  @Value("${spotify.service.music-features.min-tempo}")
   @Min(1)
   @Max(220)
   private BigDecimal minTempo;
 
-  @Value("${suddenrun.playlist.music-features.max-tempo}")
+  @Value("${spotify.service.music-features.max-tempo}")
   @Min(1)
   @Max(220)
   private BigDecimal maxTempo;
 
-  @Value("${suddenrun.playlist.music-features.min-energy}")
+  @Value("${spotify.service.music-features.min-energy}")
   @DecimalMin("0.1")
   @DecimalMax("1.0")
   private BigDecimal minEnergy;
 
-  @Value("${suddenrun.playlist.music-features.min-popularity}")
+  @Value("${spotify.service.music-features.min-popularity}")
   @DecimalMin("0.1")
   @DecimalMax("1.0")
   private Integer minPopularity;
@@ -62,7 +60,7 @@ public class SuddenrunConfig {
   }
 
   @Bean
-  AppPlaylistConfig getSuddenrunConfig() {
+  SpotifyPlaylistConfig getSpotifyServiceConfig() {
     SpotifyPlaylistItemDetails playlistDetails =
         SpotifyPlaylistDetails.builder()
             .name(this.name)
@@ -78,7 +76,7 @@ public class SuddenrunConfig {
             .minPopularity(this.minPopularity)
             .build();
 
-    return SuddenrunPlaylistConfig.builder()
+    return PlaylistConfig.builder()
         .details(playlistDetails)
         .musicFeatures(features)
         .size(size)

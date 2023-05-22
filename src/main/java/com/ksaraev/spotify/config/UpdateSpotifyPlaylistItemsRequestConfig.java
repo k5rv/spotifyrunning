@@ -1,5 +1,5 @@
 package com.ksaraev.spotify.config;
 
-public interface AddSpotifyPlaylistItemsRequestConfig {
+public interface UpdateSpotifyPlaylistItemsRequestConfig {
   Integer getPosition();
 }

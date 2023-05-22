@@ -5,7 +5,7 @@ import com.ksaraev.spotify.client.dto.GetRecommendationsRequest;
 import com.ksaraev.spotify.client.dto.GetRecommendationsResponse;
 import com.ksaraev.spotify.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
-import com.ksaraev.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
+import com.ksaraev.spotify.config.GetSpotifyRecommendationRequestConfig;
 import com.ksaraev.spotify.exception.GetSpotifyRecommendationsException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
@@ -29,7 +29,7 @@ public class SpotifyRecommendationsService implements SpotifyRecommendationItems
 
   private final SpotifyClient client;
 
-  private final GetSpotifyRecommendationItemsRequestConfig requestConfig;
+  private final GetSpotifyRecommendationRequestConfig requestConfig;
 
   private final SpotifyTrackMapper trackMapper;
 

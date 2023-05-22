@@ -5,8 +5,8 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class GetSpotifyRecommendationsRequestConfig
-    implements GetSpotifyRecommendationItemsRequestConfig {
+public class GetRecommendationsRequestConfig
+    implements GetSpotifyRecommendationRequestConfig {
 
   private Integer limit;
 }

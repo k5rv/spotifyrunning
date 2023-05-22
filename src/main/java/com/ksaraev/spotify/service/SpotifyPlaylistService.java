@@ -4,8 +4,7 @@ import com.ksaraev.spotify.client.dto.*;
 import com.ksaraev.spotify.client.SpotifyClient;
 import com.ksaraev.spotify.exception.*;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
-import com.ksaraev.spotify.config.AddSpotifyPlaylistItemsRequestConfig;
-import com.ksaraev.spotify.exception.*;
+import com.ksaraev.spotify.config.UpdateSpotifyPlaylistItemsRequestConfig;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistMapper;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
@@ -29,7 +28,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
   private final SpotifyClient client;
 
-  private final AddSpotifyPlaylistItemsRequestConfig requestConfig;
+  private final UpdateSpotifyPlaylistItemsRequestConfig requestConfig;
 
   private final SpotifyPlaylistMapper mapper;
 

@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class AddSpotifyPlaylistTracksRequestConfig implements AddSpotifyPlaylistItemsRequestConfig {
+public class UpdatePlaylistItemsRequestConfig implements UpdateSpotifyPlaylistItemsRequestConfig {
   private Integer position;
 }

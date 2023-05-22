@@ -13,7 +13,7 @@ import com.ksaraev.spotify.client.dto.GetRecommendationsRequest;
 import com.ksaraev.spotify.client.dto.GetRecommendationsResponse;
 import com.ksaraev.spotify.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
-import com.ksaraev.spotify.config.GetSpotifyRecommendationItemsRequestConfig;
+import com.ksaraev.spotify.config.GetSpotifyRecommendationRequestConfig;
 import com.ksaraev.spotify.exception.GetSpotifyRecommendationsException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
@@ -46,7 +46,7 @@ class SpotifyRecommendationsServiceTest {
   private static final ExecutableValidator executableValidator =
       Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
   @Mock private SpotifyClient client;
-  @Mock private GetSpotifyRecommendationItemsRequestConfig requestConfig;
+  @Mock private GetSpotifyRecommendationRequestConfig requestConfig;
   @Mock private SpotifyTrackMapper trackMapper;
   @Mock private SpotifyTrackFeaturesMapper featuresMapper;
   @Captor private ArgumentCaptor<List<SpotifyTrackDto>> dtosArgumentCapture;

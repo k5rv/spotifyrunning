@@ -1,5 +1,6 @@
 package com.ksaraev.suddenrun.playlist;
 
+import com.ksaraev.spotify.config.SpotifyPlaylistConfig;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.exception.SpotifyServiceException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
@@ -32,7 +33,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   private final SpotifyPlaylistItemService spotifyPlaylistService;
 
-  private final AppPlaylistConfig config;
+  private final SpotifyPlaylistConfig spotifyPlaylistConfig;
 
   private final AppUserMapper userMapper;
 
@@ -48,7 +49,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       String appUserId = appUser.getId();
       log.info("Creating playlist for user id with [" + appUserId + "]");
       SpotifyUserProfileItem spotifyUser = userMapper.mapToDto(appUser);
-      SpotifyPlaylistItemDetails spotifyPlaylistDetails = config.getDetails();
+      SpotifyPlaylistItemDetails spotifyPlaylistDetails = spotifyPlaylistConfig.getDetails();
       SpotifyPlaylistItem spotifyPlaylist =
           spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
       String spotifyPlaylistId = spotifyPlaylist.getId();

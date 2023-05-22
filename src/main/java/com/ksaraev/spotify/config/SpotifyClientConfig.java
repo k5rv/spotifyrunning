@@ -23,8 +23,8 @@ public class SpotifyClientConfig {
   private Integer updatePlaylistItemsRequestPosition;
 
   @Bean
-  GetSpotifyUserTopItemsRequestConfig getUserTopTracksRequestConfig() {
-    return GetSpotifyUserTopTracksRequestConfig.builder()
+  GetSpotifyUserTopTrackRequestConfig getUserTopTracksRequestConfig() {
+    return GetUserTopTracksRequestConfig.builder()
         .timeRange(this.getUserTopTracksRequestTimeRange)
         .limit(this.getUserTopTracksRequestLimit)
         .offset(this.getUserTopTracksRequestOffset)
@@ -32,15 +32,15 @@ public class SpotifyClientConfig {
   }
 
   @Bean
-  GetSpotifyRecommendationItemsRequestConfig getRecommendationsRequestConfig() {
-    return GetSpotifyRecommendationsRequestConfig.builder()
+  GetSpotifyRecommendationRequestConfig getRecommendationsRequestConfig() {
+    return GetRecommendationsRequestConfig.builder()
         .limit(this.getRecommendationsRequestLimit)
         .build();
   }
 
   @Bean
-  AddSpotifyPlaylistItemsRequestConfig getUpdatePlaylistRequestConfig() {
-    return AddSpotifyPlaylistTracksRequestConfig.builder()
+  UpdateSpotifyPlaylistItemsRequestConfig getUpdatePlaylistRequestConfig() {
+    return UpdatePlaylistItemsRequestConfig.builder()
         .position(this.updatePlaylistItemsRequestPosition)
         .build();
   }

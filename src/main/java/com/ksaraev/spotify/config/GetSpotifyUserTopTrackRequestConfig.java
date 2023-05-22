@@ -1,6 +1,6 @@
 package com.ksaraev.spotify.config;
 
-public interface GetSpotifyUserTopItemsRequestConfig {
+public interface GetSpotifyUserTopTrackRequestConfig {
 
   Integer getLimit();
 

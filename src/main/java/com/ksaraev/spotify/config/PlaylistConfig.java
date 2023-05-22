@@ -1,4 +1,4 @@
-package com.ksaraev.suddenrun.playlist;
+package com.ksaraev.spotify.config;
 
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SuddenrunPlaylistConfig implements AppPlaylistConfig {
+public class PlaylistConfig implements SpotifyPlaylistConfig {
 
   private SpotifyPlaylistItemDetails details;
 
