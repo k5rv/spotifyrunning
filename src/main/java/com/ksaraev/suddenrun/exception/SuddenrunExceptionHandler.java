@@ -59,9 +59,9 @@ public class SuddenrunExceptionHandler {
   }
 
   @ExceptionHandler(value = {RuntimeException.class})
-  public ResponseEntity<SuddenrunError> handleRuntimeException(RuntimeException e) {
+  public ResponseEntity<SuddenrunError> handleSuddenrunRuntimeException(RuntimeException e) {
     log.error(e.getMessage(), e);
-    String message = "Suddenrun internal error";
+    String message = "Suddenrun internal error: please contact support";
     int internalServerError = INTERNAL_SERVER_ERROR.value();
     return ResponseEntity.status(INTERNAL_SERVER_ERROR)
         .body(new SuddenrunError(internalServerError, message));
