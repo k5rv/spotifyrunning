@@ -35,20 +35,18 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   private final SpotifyPlaylistItemConfig spotifyPlaylistConfig;
 
+  private final AppPlaylistMapper playlistMapper;
+
   private final AppUserMapper userMapper;
 
   private final AppTrackMapper trackMapper;
-
-  private final AppPlaylistMapper playlistMapper;
-
-
 
   @Override
   public AppPlaylist createPlaylist(@NotNull AppUser appUser) {
     try {
       String appUserId = appUser.getId();
       log.info("Creating playlist for user id with [" + appUserId + "]");
-      SpotifyUserProfileItem spotifyUser = userMapper.mapToDto(appUser);
+      SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
       SpotifyPlaylistItemDetails spotifyPlaylistDetails = spotifyPlaylistConfig.getDetails();
       SpotifyPlaylistItem spotifyPlaylist =
           spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
@@ -104,7 +102,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
         return Optional.empty();
       }
 
-      SpotifyUserProfileItem spotifyUser = userMapper.mapToDto(appUser);
+      SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
       AppPlaylist appPlaylist = appRunningWorkoutPlaylist.get();
@@ -194,7 +192,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       }
 
       AppUser appUser = appPlaylist.getOwner();
-      SpotifyUserProfileItem spotifyUser = userMapper.mapToDto(appUser);
+      SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
       Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =

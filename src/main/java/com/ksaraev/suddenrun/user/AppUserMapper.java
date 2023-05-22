@@ -18,7 +18,7 @@ public interface AppUserMapper {
     return SuddenrunUser.builder().id(id).name(name).build();
   }
 
-  default SpotifyUserProfileItem mapToDto(AppUser appUser) {
+  default SpotifyUserProfileItem mapToItem(AppUser appUser) {
     String id = appUser.getId();
     String name = appUser.getName();
     URI uri = SpotifyItemType.USER.createUri(id);
@@ -26,7 +26,7 @@ public interface AppUserMapper {
   }
 
   @ObjectFactory
-  default SpotifyUserProfileItem createDto() {
+  default SpotifyUserProfileItem createItem() {
     return SpotifyUserProfile.builder().build();
   }
 

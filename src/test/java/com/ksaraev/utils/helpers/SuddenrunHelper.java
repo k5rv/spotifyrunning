@@ -17,6 +17,10 @@ public class SuddenrunHelper {
     return SuddenrunUser.builder().id(id).name(name).build();
   }
 
+  public static SuddenrunUser getUser(String id, String name) {
+    return SuddenrunUser.builder().id(id).name(name).build();
+  }
+
   public static SuddenrunTrack getTrack() {
     String id = SpotifyResourceHelper.getRandomId();
     String name = SpotifyResourceHelper.getRandomName();
@@ -47,6 +51,25 @@ public class SuddenrunHelper {
         .tracks(tracks)
         .snapshotId(snapshotId)
         .build();
+  }
+
+  public static SuddenrunPlaylist getSuddenrunPlaylist(String id) {
+    SuddenrunUser user = getUser();
+    List<SuddenrunTrack> customTracks =
+            getTracks(3).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+    List<SuddenrunTrack> rejectedTracks =
+            getTracks(2).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+    List<SuddenrunTrack> tracks =
+            getTracks(10).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
+    return SuddenrunPlaylist.builder()
+            .id(id)
+            .owner(user)
+            .customTracks(customTracks)
+            .rejectedTracks(rejectedTracks)
+            .tracks(tracks)
+            .snapshotId(snapshotId)
+            .build();
   }
 
   public static SuddenrunPlaylist getSuddenrunPlaylist(SuddenrunUser user) {

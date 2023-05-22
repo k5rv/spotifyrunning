@@ -29,6 +29,12 @@ public class SpotifyServiceHelper {
     return SpotifyUserProfile.builder().id(id).name(name).uri(uri).email(email).build();
   }
 
+  public static SpotifyUserProfileItem getUserProfile(String id, String name) {
+    URI uri = SpotifyResourceHelper.USER.getUri(id);
+    String email = SpotifyResourceHelper.getRandomEmail();
+    return SpotifyUserProfile.builder().id(id).name(name).uri(uri).email(email).build();
+  }
+
   public static SpotifyArtistItem getArtist() {
     String id = SpotifyResourceHelper.getRandomId();
     String name = SpotifyResourceHelper.getRandomName();
@@ -98,6 +104,26 @@ public class SpotifyServiceHelper {
         .owner(user)
         .snapshotId(snapshotId)
         .build();
+  }
+
+  public static SpotifyPlaylistItem getPlaylist(SpotifyUserProfileItem user, SpotifyPlaylistItemDetails playlistDetails) {
+    String id = SpotifyResourceHelper.getRandomId();
+    String name = playlistDetails.getName();
+    String description = playlistDetails.getDescription();
+    Boolean isPublic = playlistDetails.getIsPublic();
+    Boolean isCollaborative = playlistDetails.getIsCollaborative();
+    URI uri = SpotifyResourceHelper.PLAYLIST.getUri(id);
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
+    return SpotifyPlaylist.builder()
+            .id(id)
+            .name(name)
+            .uri(uri)
+            .description(description)
+            .isPublic(isPublic)
+            .isCollaborative(isCollaborative)
+            .owner(user)
+            .snapshotId(snapshotId)
+            .build();
   }
 
   public static SpotifyTrackItemFeatures getSpotifyTrackFeatures() {
