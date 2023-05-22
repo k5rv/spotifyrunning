@@ -4,7 +4,6 @@ import static com.ksaraev.spotify.client.exception.SpotifyClientRequestEncodingE
 import static org.mockito.BDDMockito.*;
 
 import com.ksaraev.spotify.client.exception.SpotifyClientRequestEncodingException;
-import com.ksaraev.spotify.client.feign.encoders.SpotifyClientFeignQueryMapEncoder;
 import feign.Param;
 import java.util.HashMap;
 import java.util.List;

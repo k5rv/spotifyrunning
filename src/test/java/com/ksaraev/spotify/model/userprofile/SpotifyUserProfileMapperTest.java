@@ -2,8 +2,6 @@ package com.ksaraev.spotify.model.userprofile;
 
 import com.ksaraev.spotify.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
-import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileMapperImpl;
-
 import java.net.URL;
 import java.util.List;
 import java.util.Map;

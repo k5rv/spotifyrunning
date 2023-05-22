@@ -5,7 +5,6 @@ import static com.ksaraev.spotify.model.MappingSourceIsNullException.MAPPING_SOU
 import com.ksaraev.spotify.client.dto.SpotifyArtistDto;
 import com.ksaraev.spotify.model.MappingSourceIsNullException;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
-import com.ksaraev.spotify.model.artist.SpotifyArtistMapperImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

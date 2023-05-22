@@ -2,7 +2,6 @@ package com.ksaraev.spotify.client.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotify.client.dto.UpdatePlaylistItemsResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

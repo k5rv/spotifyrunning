@@ -1,7 +1,6 @@
 package com.ksaraev.utils.helpers;
 
 import com.ksaraev.spotify.client.dto.*;
-
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URI;

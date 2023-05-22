@@ -2,9 +2,7 @@ package com.ksaraev.utils.helpers;
 
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.SuddenrunTrack;
-import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;

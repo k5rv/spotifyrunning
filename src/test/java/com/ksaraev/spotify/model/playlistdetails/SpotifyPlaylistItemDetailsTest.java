@@ -2,8 +2,6 @@ package com.ksaraev.spotify.model.playlistdetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistDetails;
-import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;

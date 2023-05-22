@@ -1,7 +1,5 @@
 package com.ksaraev.spotify.client.feign.converters;
 
-import com.ksaraev.spotify.client.feign.converters.SpotifyClientRequestParameter;
-import com.ksaraev.spotify.client.feign.converters.SpotifyClientRequestParameterConverter;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

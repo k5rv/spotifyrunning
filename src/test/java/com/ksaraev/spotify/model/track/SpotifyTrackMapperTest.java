@@ -3,10 +3,8 @@ package com.ksaraev.spotify.model.track;
 import com.ksaraev.spotify.client.dto.*;
 import com.ksaraev.spotify.model.artist.SpotifyArtist;
 import com.ksaraev.spotify.model.artist.SpotifyArtistItem;
-import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import com.ksaraev.spotify.model.artist.SpotifyArtistMapperImpl;
-import com.ksaraev.spotify.model.track.SpotifyTrackMapperImpl;
-
+import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;

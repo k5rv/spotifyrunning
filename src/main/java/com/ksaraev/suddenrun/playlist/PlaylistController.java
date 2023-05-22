@@ -1,19 +1,17 @@
 package com.ksaraev.suddenrun.playlist;
 
+import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
+import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.service.SpotifyUserProfileService;
-import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.AppPlaylistAlreadyExistException;
 import com.ksaraev.suddenrun.exception.AppPlaylistNotFoundException;
-import com.ksaraev.suddenrun.user.SuddenrunUserIsNotRegisteredException;
+import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackService;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.AppUserService;
-import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
-import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
-
+import com.ksaraev.suddenrun.user.SuddenrunUserIsNotRegisteredException;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +36,9 @@ public class PlaylistController {
       SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       AppUser appUser =
-          userService.getUser(userId).orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+          userService
+              .getUser(userId)
+              .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
       playlistService
           .getPlaylist(appUser)
           .ifPresent(
@@ -47,6 +47,20 @@ public class PlaylistController {
               });
       AppPlaylist appPlaylist = createPlaylistIfNotExists(appUser);
       List<AppTrack> appTracks = trackService.getTracks();
+
+      //
+      //              .distinct()
+      //              .limit(playlistSizeLimit)
+      //              .collect(
+      //                      Collectors.collectingAndThen(
+      //                              Collectors.toList(),
+      //                              list -> {
+      //                                Collections.shuffle(list);
+      //                                return list;
+      //                              }));
+
+      //
+
       return playlistService.addTracks(appPlaylist, appTracks);
     } catch (SpotifyUnauthorizedException e) {
       throw new SuddenrunAuthenticationException(e);
@@ -64,7 +78,9 @@ public class PlaylistController {
     SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
     String userId = userProfileItem.getId();
     AppUser appUser =
-        userService.getUser(userId).orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+        userService
+            .getUser(userId)
+            .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
     AppPlaylist appPlaylist =
         playlistService
             .getPlaylist(appUser)
@@ -79,7 +95,9 @@ public class PlaylistController {
       SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
       String userId = userProfileItem.getId();
       AppUser appUser =
-          userService.getUser(userId).orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+          userService
+              .getUser(userId)
+              .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
       return playlistService
           .getPlaylist(appUser)
           .orElseThrow(() -> new AppPlaylistNotFoundException(userId));

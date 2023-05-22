@@ -27,11 +27,9 @@ class SuddenrunRegisterUserIntegrationTest {
   private static final String SPOTIFY_API_V1_ME = "/v1/me";
 
   private static final String SUDDENRUN_API_V1_USERS = "/api/v1/users";
-
-  @Autowired private MockMvc mockMvc;
-
   @Autowired
   AppUserService suddenrunUserService;
+  @Autowired private MockMvc mockMvc;
 
   @Test
   void itShouldRegisterUser() throws Exception {

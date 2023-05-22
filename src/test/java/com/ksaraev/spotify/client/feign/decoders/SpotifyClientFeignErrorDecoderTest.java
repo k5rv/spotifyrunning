@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 
 import com.ksaraev.spotify.client.SpotifyClient;
 import com.ksaraev.spotify.client.exception.SpotifyClientDecodingErrorResponseIsNullException;
-import com.ksaraev.spotify.client.feign.decoders.SpotifyClientFeignErrorDecoder;
 import com.ksaraev.spotify.client.feign.exception.FeignExceptionHandler;
 import com.ksaraev.spotify.client.feign.exception.SpotifyClientFeignExceptionHandler;
 import com.ksaraev.spotify.client.feign.exception.SpotifyWebApiException;
@@ -18,7 +17,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

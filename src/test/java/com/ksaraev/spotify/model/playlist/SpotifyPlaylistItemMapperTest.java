@@ -3,8 +3,6 @@ package com.ksaraev.spotify.model.playlist;
 import static com.ksaraev.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 
 import com.ksaraev.spotify.client.dto.*;
-import com.ksaraev.spotify.model.playlist.SpotifyPlaylist;
-import com.ksaraev.spotify.model.playlist.SpotifyPlaylistMapper;
 import com.ksaraev.spotify.model.MappingSourceIsNullException;
 import com.ksaraev.spotify.model.artist.SpotifyArtist;
 import com.ksaraev.spotify.model.artist.SpotifyArtistItem;
@@ -13,7 +11,6 @@ import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistDetails;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.track.SpotifyTrack;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
-import com.ksaraev.spotify.model.playlist.SpotifyPlaylistMapperImpl;
 import com.ksaraev.spotify.model.track.SpotifyTrackMapperImpl;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfile;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;

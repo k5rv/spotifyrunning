@@ -18,8 +18,8 @@ import com.ksaraev.spotify.model.playlist.SpotifyPlaylistMapper;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.spotify.service.SpotifyPlaylistService;
-import com.ksaraev.utils.helpers.SpotifyResourceHelper;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
+import com.ksaraev.utils.helpers.SpotifyResourceHelper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -29,7 +29,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
