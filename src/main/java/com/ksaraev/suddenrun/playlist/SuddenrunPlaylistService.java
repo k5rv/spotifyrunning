@@ -97,23 +97,23 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   @Override
   public Optional<AppPlaylist> getPlaylist(@NotNull AppUser appUser) {
+    String userId = appUser.getId();
     try {
-      String appUserId = appUser.getId();
-      log.info("Getting playlist for user with id [" + appUserId + "]");
-      Optional<SuddenrunPlaylist> appRunningWorkoutPlaylist = repository.findByOwnerId(appUserId);
-      boolean appPlaylistExists = appRunningWorkoutPlaylist.isPresent();
-      if (!appPlaylistExists) {
+      log.info("Getting playlist for user with id [" + userId + "]");
+      Optional<SuddenrunPlaylist> suddenrunPlaylist = repository.findByOwnerId(userId);
+      boolean suddenrunPlaylistExists = suddenrunPlaylist.isPresent();
+      if (!suddenrunPlaylistExists) {
         log.info(
             "User with id ["
-                + appUserId
+                + userId
                 + "] doesn't have any playlists in app. Returning empty result.");
         return Optional.empty();
       }
 
-      SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
+      SpotifyUserProfileItem spotifyUserProfile = userMapper.mapToItem(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
-          spotifyPlaylistService.getUserPlaylists(spotifyUser);
-      AppPlaylist appPlaylist = appRunningWorkoutPlaylist.get();
+          spotifyPlaylistService.getUserPlaylists(spotifyUserProfile);
+      AppPlaylist appPlaylist = suddenrunPlaylist.get();
       String appPlaylistId = appPlaylist.getId();
       Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
           spotifyUserPlaylists.stream()
@@ -175,7 +175,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
     } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
-      throw new AppPlaylistServiceGetPlaylistException(e);
+      throw new GetSuddenrunPlaylistException(userId, e);
     }
   }
 
