@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SuddenrunTrackService implements AppTrackService {
 
-  private final SpotifyPlaylistItemConfig config;
+  private final SpotifyPlaylistItemConfig spotifyPlaylistConfig;
 
   private final AppTrackMapper mapper;
 
@@ -33,8 +33,8 @@ public class SuddenrunTrackService implements AppTrackService {
   @Override
   public List<AppTrack> getTracks() {
     try {
-      int playlistSizeLimit = config.getSize();
-      SpotifyTrackItemFeatures features = config.getMusicFeatures();
+      int playlistSizeLimit = spotifyPlaylistConfig.getSize();
+      SpotifyTrackItemFeatures features = spotifyPlaylistConfig.getMusicFeatures();
       List<SpotifyTrackItem> userTopTracks = getUserTopTracks();
       int topTracksSize = userTopTracks.size();
       log.info("Found [" + topTracksSize + "] top tracks in Spotify");
