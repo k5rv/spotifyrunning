@@ -43,13 +43,13 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   @Override
   public AppPlaylist createPlaylist(@NotNull AppUser appUser) {
+    String appUserId = appUser.getId();
     try {
-      String appUserId = appUser.getId();
       log.info("Creating playlist for user id with [" + appUserId + "]");
-      SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
+      SpotifyUserProfileItem spotifyUserProfile = userMapper.mapToItem(appUser);
       SpotifyPlaylistItemDetails spotifyPlaylistDetails = spotifyPlaylistConfig.getDetails();
       SpotifyPlaylistItem spotifyPlaylist =
-          spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails);
+          spotifyPlaylistService.createPlaylist(spotifyUserProfile, spotifyPlaylistDetails);
       String spotifyPlaylistId = spotifyPlaylist.getId();
       String spotifySnapshotId = spotifyPlaylist.getSnapshotId();
       log.info(
@@ -74,15 +74,23 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       AppPlaylist appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       String appPlaylistId = appPlaylist.getId();
+      String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
       log.info(
-          "Created playlist with id [" + appPlaylistId + "] for user with id [" + appUserId + "]");
+          "Created playlist with id ["
+              + appPlaylistId
+              + AND_SNAPSHOT_ID
+              + appPlaylistSnapshotId
+              + "] "
+              + "for user with id ["
+              + appUserId
+              + "]");
       return appPlaylist;
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
-      throw new AppPlaylistServiceCreatePlaylistException(e);
+      throw new CreateSuddenrunPlaylistException(appUserId ,e);
     }
   }
 
@@ -91,8 +99,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
     try {
       String appUserId = appUser.getId();
       log.info("Getting playlist for user with id [" + appUserId + "]");
-      Optional<SuddenrunPlaylist> appRunningWorkoutPlaylist =
-          repository.findByOwnerId(appUserId);
+      Optional<SuddenrunPlaylist> appRunningWorkoutPlaylist = repository.findByOwnerId(appUserId);
       boolean appPlaylistExists = appRunningWorkoutPlaylist.isPresent();
       if (!appPlaylistExists) {
         log.info(
