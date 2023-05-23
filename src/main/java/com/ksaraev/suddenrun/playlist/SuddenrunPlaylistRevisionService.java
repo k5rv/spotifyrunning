@@ -22,15 +22,15 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
 
   private final AppTrackMapper trackMapper;
 
-  public List<AppTrack> getAddedSourceTracks(
-      @NotNull AppPlaylist appPlaylist, @NotNull SpotifyPlaylistItem spotifyPlaylist) {
-    String playlistId = appPlaylist.getId();
-    AppUser appUser = appPlaylist.getOwner();
+  public List<AppTrack> getAddedTracks(
+          @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
+    String playlistId = targetPlaylist.getId();
+    AppUser appUser = targetPlaylist.getOwner();
     String userId = appUser.getId();
     try {
-      List<AppTrack> targetTracks = appPlaylist.getTracks();
-      List<AppTrack> customTracks = appPlaylist.getCustomTracks();
-      List<SpotifyTrackItem> sourceTracks = spotifyPlaylist.getTracks();
+      List<AppTrack> targetTracks = targetPlaylist.getTracks();
+      List<AppTrack> customTracks = targetPlaylist.getCustomTracks();
+      List<SpotifyTrackItem> sourceTracks = sourcePlaylist.getTracks();
 
       List<AppTrack> tracksInclusion =
           sourceTracks.stream()
@@ -67,15 +67,15 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     }
   }
 
-  public List<AppTrack> getRemovedSourceTracks(
-      @NotNull AppPlaylist target, @NotNull SpotifyPlaylistItem source) {
-    String playlistId = target.getId();
-    AppUser appUser = target.getOwner();
+  public List<AppTrack> getRemovedTracks(
+          @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
+    String playlistId = targetPlaylist.getId();
+    AppUser appUser = targetPlaylist.getOwner();
     String userId = appUser.getId();
     try {
-      List<AppTrack> targetTracks = target.getTracks();
-      List<AppTrack> rejectedTracks = target.getRejectedTracks();
-      List<SpotifyTrackItem> sourceTracks = source.getTracks();
+      List<AppTrack> targetTracks = targetPlaylist.getTracks();
+      List<AppTrack> rejectedTracks = targetPlaylist.getRejectedTracks();
+      List<SpotifyTrackItem> sourceTracks = sourcePlaylist.getTracks();
 
       List<AppTrack> tracksInclusion =
           targetTracks.stream()
@@ -112,10 +112,10 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   }
 
   @Override
-  public List<SpotifyTrackItem> getSourceTracksToAdd(
+  public List<SpotifyTrackItem> getTracksToAdd(
       @NotNull List<AppTrack> appTracks,
       @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
-      @NotNull List<AppTrack> rejectedTracks) {
+      @NotNull List<AppTrack> addedTracks) {
     return appTracks.stream()
         .filter(Objects::nonNull)
         .filter(
@@ -126,17 +126,17 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
                             spotifyPlaylistTrack.getId().equals(appTrack.getId())))
         .filter(
             appTrack ->
-                rejectedTracks.stream()
+                addedTracks.stream()
                     .noneMatch(rejectedTrack -> rejectedTrack.getId().equals(appTrack.getId())))
         .map(trackMapper::mapToDto)
         .toList();
   }
 
   @Override
-  public List<SpotifyTrackItem> getSourceTracksToRemove(
+  public List<SpotifyTrackItem> getTracksToRemove(
       @NotNull List<AppTrack> appTracks,
       @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
-      @NotNull List<AppTrack> customTracks) {
+      @NotNull List<AppTrack> removedTracks) {
     return spotifyPlaylistTracks.stream()
         .filter(Objects::nonNull)
         .filter(
@@ -145,7 +145,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
                     .noneMatch(appTrack -> appTrack.getId().equals(spotifyPlaylistTrack.getId())))
         .filter(
             appTrack ->
-                customTracks.stream()
+                removedTracks.stream()
                     .noneMatch(customTrack -> customTrack.getId().equals(appTrack.getId())))
         .toList();
   }

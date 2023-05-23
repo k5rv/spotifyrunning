@@ -45,20 +45,6 @@ public class SuddenrunPlaylistController {
               });
       AppPlaylist appPlaylist = createPlaylistIfNotExists(appUser);
       List<AppTrack> appTracks = trackService.getTracks();
-
-      //
-      //              .distinct()
-      //              .limit(playlistSizeLimit)
-      //              .collect(
-      //                      Collectors.collectingAndThen(
-      //                              Collectors.toList(),
-      //                              list -> {
-      //                                Collections.shuffle(list);
-      //                                return list;
-      //                              }));
-
-      //
-
       return playlistService.addTracks(appPlaylist, appTracks);
     } catch (SpotifyUnauthorizedException e) {
       throw new SuddenrunAuthenticationException(e);

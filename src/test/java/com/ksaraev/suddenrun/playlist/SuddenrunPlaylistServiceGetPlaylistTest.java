@@ -39,8 +39,6 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
   @Mock private AppUserMapper userMapper;
 
-  @Mock private AppTrackMapper trackMapper;
-
   @Captor private ArgumentCaptor<SpotifyUserProfileItem> spotifyUserProfileArgumentCaptor;
 
   @Captor private ArgumentCaptor<String> spotifyPlaylistIdArgumentCaptor;
@@ -69,8 +67,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,
-            userMapper,
-            trackMapper);
+            userMapper);
   }
 
   @AfterEach
@@ -203,11 +200,11 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     given(spotifyPlaylistService.getPlaylist(playlistId)).willReturn(spotifyPlaylist);
 
     List<AppTrack> customTracks = SuddenrunHelper.getTracks(2);
-    given(suddenrunRevisionService.getAddedSourceTracks(suddenrunPlaylist, spotifyPlaylist))
+    given(suddenrunRevisionService.getAddedTracks(suddenrunPlaylist, spotifyPlaylist))
         .willReturn(customTracks);
 
     List<AppTrack> rejectedTracks = SuddenrunHelper.getTracks(1);
-    given(suddenrunRevisionService.getRemovedSourceTracks(suddenrunPlaylist, spotifyPlaylist))
+    given(suddenrunRevisionService.getRemovedTracks(suddenrunPlaylist, spotifyPlaylist))
         .willReturn(rejectedTracks);
 
     given(playlistMapper.mapToEntity(spotifyPlaylist)).willReturn(suddenrunPlaylist);
@@ -238,14 +235,14 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     then(suddenrunRevisionService)
         .should()
-        .getAddedSourceTracks(
+        .getAddedTracks(
             suddenrunPlaylistArgumentCaptor.capture(), spotifyPlaylistArgumentCaptor.capture());
     assertThat(suddenrunPlaylistArgumentCaptor.getValue()).isEqualTo(suddenrunPlaylist);
     assertThat(spotifyPlaylistArgumentCaptor.getValue()).isEqualTo(spotifyPlaylist);
 
     then(suddenrunRevisionService)
         .should()
-        .getRemovedSourceTracks(
+        .getRemovedTracks(
             suddenrunPlaylistArgumentCaptor.capture(), spotifyPlaylistArgumentCaptor.capture());
     assertThat(suddenrunPlaylistArgumentCaptor.getValue()).isEqualTo(suddenrunPlaylist);
     assertThat(spotifyPlaylistArgumentCaptor.getValue()).isEqualTo(spotifyPlaylist);

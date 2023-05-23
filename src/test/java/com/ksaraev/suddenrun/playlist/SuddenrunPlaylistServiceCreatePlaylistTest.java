@@ -38,8 +38,6 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
 
   @Mock private AppUserMapper userMapper;
 
-  @Mock private AppTrackMapper trackMapper;
-
   @Captor private ArgumentCaptor<AppUser> appUserArgumentCaptor;
 
   @Captor private ArgumentCaptor<SpotifyUserProfileItem> spotifyUserProfileArgumentCaptor;
@@ -66,8 +64,7 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,
-            userMapper,
-            trackMapper);
+            userMapper);
   }
 
   @AfterEach

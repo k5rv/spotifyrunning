@@ -2,6 +2,7 @@ package com.ksaraev.suddenrun.playlist;
 
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.exception.SpotifyServiceException;
+import com.ksaraev.spotify.model.SpotifyItem;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
@@ -40,8 +41,6 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
   private final AppPlaylistMapper playlistMapper;
 
   private final AppUserMapper userMapper;
-
-  private final AppTrackMapper trackMapper;
 
   @Override
   public AppPlaylist createPlaylist(@NotNull AppUser appUser) {
@@ -159,10 +158,10 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + "] respectively. Updating app version from Spotify.");
 
       List<AppTrack> customTracks =
-          playlistRevisionService.getAddedSourceTracks(appPlaylist, spotifyPlaylist);
+          playlistRevisionService.getAddedTracks(appPlaylist, spotifyPlaylist);
 
       List<AppTrack> rejectedTracks =
-          playlistRevisionService.getRemovedSourceTracks(appPlaylist, spotifyPlaylist);
+          playlistRevisionService.getRemovedTracks(appPlaylist, spotifyPlaylist);
 
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist.setCustomTracks(customTracks);
@@ -187,107 +186,77 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   @Override
   public AppPlaylist addTracks(@NotNull AppPlaylist appPlaylist, List<AppTrack> appTracks) {
-    String appPlaylistId = appPlaylist.getId();
+    String playlistId = appPlaylist.getId();
     try {
-      int appTracksNumber = appTracks.size();
       log.info(
           "Adding ["
-              + appTracksNumber
+              + appTracks.size()
               + "] tracks to "
               + PLAYLIST_WITH_ID
               + " ["
-              + appPlaylistId
+              + playlistId
               + "]");
 
-      boolean appPlaylistExists = repository.existsById(appPlaylistId);
+      boolean playlistExists = repository.existsById(playlistId);
 
-      if (!appPlaylistExists) {
-        log.error(PLAYLIST_WITH_ID + appPlaylistId + "] doesn't exist in app");
-        throw new SuddenrunPlaylistDoesNotExistException(appPlaylistId);
+      if (!playlistExists) {
+        log.error(PLAYLIST_WITH_ID + playlistId + "] doesn't exist in Suddenrun");
+        throw new SuddenrunPlaylistDoesNotExistException(playlistId);
       }
 
-      AppUser appUser = appPlaylist.getOwner();
-      SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
+      AppUser suddenrunUser = appPlaylist.getOwner();
+      SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(suddenrunUser);
 
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
 
-      Optional<SpotifyPlaylistItem> optionalSpotifyPlaylist =
-          spotifyUserPlaylists.stream()
-              .filter(playlist -> playlist.getId().equals(appPlaylistId))
-              .findFirst();
-
-      boolean spotifyPlaylistExists = optionalSpotifyPlaylist.isPresent();
-
-      // probably this one should be deleted, instead throw exception in the section above
-      if (!spotifyPlaylistExists) {
-        log.info(
-            PLAYLIST_WITH_ID
-                + " ["
-                + appPlaylistId
-                + "] not found in Spotify. Deleting saved in app playlist and creating new one.");
-        appUser.removePlaylist(appPlaylist);
-        repository.deleteById(appPlaylistId);
-        appPlaylist = createPlaylist(appUser);
-        List<SpotifyTrackItem> spotifyAddTracks =
-            appTracks.stream().map(trackMapper::mapToDto).toList();
-        spotifyPlaylistService.addTracks(appPlaylist.getId(), spotifyAddTracks);
-        SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(appPlaylistId);
-        appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-        appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
-        String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
-        log.info(
-            "Added ["
-                + appTracksNumber
-                + PLAYLIST_WITH_ID
-                + " ["
-                + appPlaylistId
-                + AND_SNAPSHOT_ID
-                + appPlaylistSnapshotId
-                + "]. Saved in app.");
-        return appPlaylist;
-      }
-
       String spotifyPlaylistId =
-          optionalSpotifyPlaylist.map(SpotifyPlaylistItem::getId).orElseThrow();
+          spotifyUserPlaylists.stream()
+              .filter(playlist -> playlist.getId().equals(playlistId))
+              .findFirst()
+              .map(SpotifyItem::getId)
+              .orElseThrow(() -> new SuddenrunPlaylistDoesNotExistException(playlistId));
+
       SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       List<SpotifyTrackItem> spotifyPlaylistTracks = spotifyPlaylist.getTracks().stream().toList();
 
-      List<AppTrack> rejectedTracks = appPlaylist.getRejectedTracks();
-      int rejectedTracksSize = rejectedTracks.size();
-      if (rejectedTracksSize > 0)
+      List<AppTrack> suddenrunRemovedTracks = appPlaylist.getRejectedTracks();
+      int removedTracksSize = suddenrunRemovedTracks.size();
+      if (removedTracksSize > 0)
         log.info(
             "Determining ["
-                + rejectedTracksSize
-                + "] tracks previously removed outside of the app from Spotify playlist with id ["
-                + appPlaylistId
+                + removedTracksSize
+                + "] tracks previously removed outside of the Suddenrun from Spotify playlist with id ["
+                + playlistId
                 + "]");
 
-      List<SpotifyTrackItem> spotifyAddTracks =
-          playlistRevisionService.getSourceTracksToAdd(
-              appTracks, spotifyPlaylistTracks, rejectedTracks);
+      List<SpotifyTrackItem> spotifyTracksToAdd =
+          playlistRevisionService.getTracksToAdd(
+              appTracks, spotifyPlaylistTracks, suddenrunRemovedTracks);
 
-      List<AppTrack> customTracks = appPlaylist.getCustomTracks();
-      int customTracksSize = customTracks.size();
-      if (customTracksSize > 0) {
+      List<AppTrack> suddenrunAddedTracks = appPlaylist.getCustomTracks();
+      int addedTracksSize = suddenrunAddedTracks.size();
+      if (addedTracksSize > 0) {
         log.info(
             "Determining ["
-                + customTracksSize
-                + "] tracks previously added outside of the app to Spotify playlist with id ["
-                + appPlaylistId
+                + addedTracksSize
+                + "] tracks previously added outside of the Suddenrun to Spotify playlist with id ["
+                + playlistId
                 + "]");
       }
 
-      List<SpotifyTrackItem> spotifyRemoveTracks =
-          playlistRevisionService.getSourceTracksToRemove(
-              appTracks, spotifyPlaylistTracks, customTracks);
+      List<SpotifyTrackItem> spotifyTracksToRemove =
+          playlistRevisionService.getTracksToRemove(
+              appTracks, spotifyPlaylistTracks, suddenrunAddedTracks);
 
-      boolean spotifyRemoveTracksExist = !spotifyRemoveTracks.isEmpty();
-      if (spotifyRemoveTracksExist) {
+      boolean tracksToRemoveExist = !spotifyTracksToRemove.isEmpty();
+      if (tracksToRemoveExist) {
         String snapshotId =
-            spotifyPlaylistService.removeTracks(spotifyPlaylistId, spotifyRemoveTracks);
+            spotifyPlaylistService.removeTracks(spotifyPlaylistId, spotifyTracksToRemove);
         log.info(
-            "Removed tracks from "
+            "Removed ["
+                + spotifyTracksToRemove.size()
+                + "] tracks from "
                 + PLAYLIST_WITH_ID
                 + " ["
                 + spotifyPlaylistId
@@ -296,11 +265,13 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
                 + "]");
       }
 
-      boolean spotifyAddTracksExist = !spotifyAddTracks.isEmpty();
-      if (spotifyAddTracksExist) {
-        String snapshotId = spotifyPlaylistService.addTracks(spotifyPlaylistId, spotifyAddTracks);
+      boolean tracksToAddExist = !spotifyTracksToAdd.isEmpty();
+      if (tracksToAddExist) {
+        String snapshotId = spotifyPlaylistService.addTracks(spotifyPlaylistId, spotifyTracksToAdd);
         log.info(
-            "Added tracks to "
+            "Added ["
+                + spotifyTracksToAdd.size()
+                + "] tracks to "
                 + PLAYLIST_WITH_ID
                 + " ["
                 + spotifyPlaylistId
@@ -321,28 +292,22 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + "]");
 
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist.setCustomTracks(customTracks);
-      appPlaylist.setRejectedTracks(rejectedTracks);
+      appPlaylist.setCustomTracks(suddenrunAddedTracks);
+      appPlaylist.setRejectedTracks(suddenrunRemovedTracks);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
-      int addTracksNumber = spotifyAddTracks.size();
-      int removeTracksNumber = spotifyRemoveTracks.size();
       log.info(
-          "Added ["
-              + addTracksNumber
-              + "] and removed ["
-              + removeTracksNumber
-              + "] tracks for playlist with id ["
-              + appPlaylistId
+          "Saved playlist with id ["
+              + playlistId
               + AND_SNAPSHOT_ID
               + appPlaylist.getSnapshotId()
-              + "]. Saved in app.");
+              + "] in Suddenrun");
       return appPlaylist;
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
-      throw new SuddenrunAddPlaylistTracksException(appPlaylistId, e);
+      throw new AddSuddenrunPlaylistTracksException(playlistId, e);
     }
   }
 }

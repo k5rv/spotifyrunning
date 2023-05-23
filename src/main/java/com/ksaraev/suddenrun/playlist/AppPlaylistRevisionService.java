@@ -8,19 +8,19 @@ import java.util.List;
 
 public interface AppPlaylistRevisionService {
 
-  List<AppTrack> getAddedSourceTracks(
-      @NotNull AppPlaylist appPlaylist, @NotNull SpotifyPlaylistItem spotifyPlaylist);
+  List<AppTrack> getAddedTracks(
+      @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist);
 
-  List<AppTrack> getRemovedSourceTracks(
-      @NotNull AppPlaylist appPlaylist, @NotNull SpotifyPlaylistItem spotifyPlaylist);
+  List<AppTrack> getRemovedTracks(
+      @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist);
 
-  List<SpotifyTrackItem> getSourceTracksToAdd(
-          @NotNull List<AppTrack> appTracks,
-          @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
-          @NotNull List<AppTrack> rejectedTracks);
+  List<SpotifyTrackItem> getTracksToAdd(
+      @NotNull List<AppTrack> appTracks,
+      @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
+      @NotNull List<AppTrack> addedTracks);
 
-  List<SpotifyTrackItem> getSourceTracksToRemove(
-          @org.jetbrains.annotations.NotNull List<AppTrack> appTracks,
-          @org.jetbrains.annotations.NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
-          @org.jetbrains.annotations.NotNull List<AppTrack> customTracks);
+  List<SpotifyTrackItem> getTracksToRemove(
+      @NotNull List<AppTrack> appTracks,
+      @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
+      @NotNull List<AppTrack> removedTracks);
 }
