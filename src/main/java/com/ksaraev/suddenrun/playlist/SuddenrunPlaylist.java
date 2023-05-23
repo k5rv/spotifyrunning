@@ -7,7 +7,6 @@ import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
@@ -33,11 +32,11 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> customTracks = new ArrayList<>();
+  private List<SuddenrunTrack> addedByUser = new ArrayList<>();
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> rejectedTracks = new ArrayList<>();
+  private List<SuddenrunTrack> removedByUser = new ArrayList<>();
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
@@ -45,24 +44,20 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   private String snapshotId;
 
-  @Override
-  public List<AppTrack> getCustomTracks() {
-    return this.customTracks.stream().map(AppTrack.class::cast).toList();
+  public List<AppTrack> getAddedByUser() {
+    return this.addedByUser.stream().map(AppTrack.class::cast).toList();
   }
 
-  @Override
-  public void setCustomTracks(List<AppTrack> customTracks) {
-    this.customTracks = customTracks.stream().map(SuddenrunTrack.class::cast).toList();
+  public void setAddedByUser(List<AppTrack> addedByUser) {
+    this.addedByUser = addedByUser.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
-  @Override
-  public List<AppTrack> getRejectedTracks() {
-    return this.rejectedTracks.stream().map(AppTrack.class::cast).toList();
+  public List<AppTrack> getRemovedByUser() {
+    return this.removedByUser.stream().map(AppTrack.class::cast).toList();
   }
 
-  @Override
-  public void setRejectedTracks(List<AppTrack> rejectedTracks) {
-    this.rejectedTracks = rejectedTracks.stream().map(SuddenrunTrack.class::cast).toList();
+  public void setRemovedByUser(List<AppTrack> removedByUser) {
+    this.removedByUser = removedByUser.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
   @JsonIgnore

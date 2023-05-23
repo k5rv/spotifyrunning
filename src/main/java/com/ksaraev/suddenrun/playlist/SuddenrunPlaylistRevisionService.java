@@ -29,7 +29,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     String userId = appUser.getId();
     try {
       List<AppTrack> targetTracks = targetPlaylist.getTracks();
-      List<AppTrack> customTracks = targetPlaylist.getCustomTracks();
+      List<AppTrack> customTracks = targetPlaylist.getAddedByUser();
       List<SpotifyTrackItem> sourceTracks = sourcePlaylist.getTracks();
 
       List<AppTrack> tracksInclusion =
@@ -74,7 +74,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     String userId = appUser.getId();
     try {
       List<AppTrack> targetTracks = targetPlaylist.getTracks();
-      List<AppTrack> rejectedTracks = targetPlaylist.getRejectedTracks();
+      List<AppTrack> rejectedTracks = targetPlaylist.getRemovedByUser();
       List<SpotifyTrackItem> sourceTracks = sourcePlaylist.getTracks();
 
       List<AppTrack> tracksInclusion =

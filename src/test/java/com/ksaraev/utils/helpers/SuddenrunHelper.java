@@ -47,8 +47,8 @@ public class SuddenrunHelper {
     return SuddenrunPlaylist.builder()
         .id(id)
         .owner(user)
-        .customTracks(customTracks)
-        .rejectedTracks(rejectedTracks)
+        .addedByUser(customTracks)
+        .removedByUser(rejectedTracks)
         .tracks(tracks)
         .snapshotId(snapshotId)
         .build();
@@ -66,8 +66,8 @@ public class SuddenrunHelper {
     return SuddenrunPlaylist.builder()
             .id(id)
             .owner(user)
-            .customTracks(customTracks)
-            .rejectedTracks(rejectedTracks)
+            .addedByUser(customTracks)
+            .removedByUser(rejectedTracks)
             .tracks(tracks)
             .snapshotId(snapshotId)
             .build();
@@ -85,8 +85,8 @@ public class SuddenrunHelper {
     return SuddenrunPlaylist.builder()
             .id(id)
             .owner(user)
-            .customTracks(customTracks)
-            .rejectedTracks(rejectedTracks)
+            .addedByUser(customTracks)
+            .removedByUser(rejectedTracks)
             .tracks(tracks)
             .snapshotId(snapshotId)
             .build();

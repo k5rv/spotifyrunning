@@ -19,13 +19,13 @@ public interface AppPlaylist {
 
   void setTracks(List<AppTrack> tracks);
 
-  List<AppTrack> getCustomTracks();
+  List<AppTrack> getAddedByUser();
 
-  void setCustomTracks(List<AppTrack> customTracks);
+  void setAddedByUser(List<AppTrack> addedByUser);
 
-  List<AppTrack> getRejectedTracks();
+  List<AppTrack> getRemovedByUser();
 
-  void setRejectedTracks(List<AppTrack> rejectedTracks);
+  void setRemovedByUser(List<AppTrack> removedByUser);
 
   String getSnapshotId();
 

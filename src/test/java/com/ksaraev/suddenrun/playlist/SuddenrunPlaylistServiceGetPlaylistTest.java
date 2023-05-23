@@ -208,8 +208,8 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     given(playlistMapper.mapToEntity(spotifyPlaylist)).willReturn(suddenrunPlaylist);
 
-    suddenrunPlaylist.setCustomTracks(customTracks);
-    suddenrunPlaylist.setRejectedTracks(rejectedTracks);
+    suddenrunPlaylist.setAddedByUser(customTracks);
+    suddenrunPlaylist.setRemovedByUser(rejectedTracks);
     given(suddenrunPlaylistRepository.save(suddenrunPlaylist)).willReturn(suddenrunPlaylist);
 
     // When

@@ -8,7 +8,6 @@ import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
-import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
@@ -100,8 +99,8 @@ class SuddenrunPlaylistServiceAddTracksTest {
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     List<AppTrack> suddenrunTracks = SuddenrunHelper.getTracks(10);
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
-    List<AppTrack> rejectedTracks = suddenrunPlaylist.getRejectedTracks();
-    List<AppTrack> customTracks = suddenrunPlaylist.getCustomTracks();
+    List<AppTrack> rejectedTracks = suddenrunPlaylist.getRemovedByUser();
+    List<AppTrack> customTracks = suddenrunPlaylist.getAddedByUser();
     suddenrunUser.addPlaylist(suddenrunPlaylist);
     String playlistId = suddenrunPlaylist.getId();
 
