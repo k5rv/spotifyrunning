@@ -59,6 +59,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + AND_SNAPSHOT_ID
               + spotifySnapshotId
               + "]");
+
       spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       spotifyPlaylistId = spotifyPlaylist.getId();
       spotifySnapshotId = spotifyPlaylist.getSnapshotId();
@@ -70,15 +71,16 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + AND_SNAPSHOT_ID
               + spotifySnapshotId
               + "]");
+
       AppPlaylist appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
-      String appPlaylistId = appPlaylist.getId();
-      String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
+      String playlistId = appPlaylist.getId();
+      String playlistSnapshotId = appPlaylist.getSnapshotId();
       log.info(
           "Created playlist with id ["
-              + appPlaylistId
+              + playlistId
               + AND_SNAPSHOT_ID
-              + appPlaylistSnapshotId
+              + playlistSnapshotId
               + "] "
               + "for user with id ["
               + appUserId
@@ -98,79 +100,77 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
     String userId = appUser.getId();
     try {
       log.info("Getting playlist for user with id [" + userId + "]");
-      Optional<SuddenrunPlaylist> suddenrunPlaylist = repository.findByOwnerId(userId);
-      boolean suddenrunPlaylistExists = suddenrunPlaylist.isPresent();
+      Optional<SuddenrunPlaylist> optionalSuddenrunPlaylist = repository.findByOwnerId(userId);
+      boolean suddenrunPlaylistExists = optionalSuddenrunPlaylist.isPresent();
       if (!suddenrunPlaylistExists) {
         log.info(
             "User with id ["
                 + userId
-                + "] doesn't have any playlists in app. Returning empty result.");
+                + "] doesn't have any playlists in Suddenrun. Returning empty result.");
         return Optional.empty();
       }
 
       SpotifyUserProfileItem spotifyUserProfile = userMapper.mapToItem(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUserProfile);
-      AppPlaylist appPlaylist = suddenrunPlaylist.get();
-      String appPlaylistId = appPlaylist.getId();
-      Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
+      AppPlaylist appPlaylist = optionalSuddenrunPlaylist.get();
+      String playlistId = appPlaylist.getId();
+      Optional<SpotifyPlaylistItem> optionalSpotifyPlaylist =
           spotifyUserPlaylists.stream()
-              .filter(spotifyPlaylist -> spotifyPlaylist.getId().equals(appPlaylistId))
+              .filter(spotifyPlaylist -> spotifyPlaylist.getId().equals(playlistId))
               .findFirst();
-      boolean spotifyPlaylistExists = spotifyRunningWorkoutPlaylist.isPresent();
+      boolean spotifyPlaylistExists = optionalSpotifyPlaylist.isPresent();
       if (!spotifyPlaylistExists) {
         log.info(
             PLAYLIST_WITH_ID
                 + " ["
-                + appPlaylistId
-                + "] not found in Spotify. Deleting app playlist and returning empty result.");
+                + playlistId
+                + "] not found in Spotify. Deleting Suddenrun playlist and returning empty result.");
         appUser.removePlaylist(appPlaylist);
-        repository.deleteById(appPlaylistId);
+        repository.deleteById(playlistId);
         return Optional.empty();
       }
 
-      String spotifyPlaylistId =
-          spotifyRunningWorkoutPlaylist.map(SpotifyPlaylistItem::getId).orElseThrow();
-      SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
+      SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
       String spotifyPlaylistSnapshotId = spotifyPlaylist.getSnapshotId();
       String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
-      boolean snapshotIdentical = spotifyPlaylistSnapshotId.equals(appPlaylistSnapshotId);
-      if (snapshotIdentical) {
+      boolean snapshotsAreIdentical = spotifyPlaylistSnapshotId.equals(appPlaylistSnapshotId);
+      if (snapshotsAreIdentical) {
         log.info(
             PLAYLIST_WITH_ID
                 + " ["
-                + appPlaylistId
+                + playlistId
                 + "] has the exact same snapshot version in app and Spotify. Returning playlist with snapshot id ["
                 + appPlaylistSnapshotId
                 + "].");
         return Optional.of(appPlaylist);
       }
+
       log.info(
           PLAYLIST_WITH_ID
               + " ["
-              + appPlaylistId
+              + playlistId
               + "] found in app and Spotify with the different snapshot versions ["
               + appPlaylistSnapshotId
               + "] and ["
               + spotifyPlaylistSnapshotId
               + "] respectively. Updating app version from Spotify.");
 
-      List<AppTrack> customTracks =
+      List<AppTrack> suddenrunAddedTracks =
           playlistRevisionService.getAddedTracks(appPlaylist, spotifyPlaylist);
 
-      List<AppTrack> rejectedTracks =
+      List<AppTrack> suddenrunRemovedTracks =
           playlistRevisionService.getRemovedTracks(appPlaylist, spotifyPlaylist);
 
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist.setCustomTracks(customTracks);
-      appPlaylist.setRejectedTracks(rejectedTracks);
+      appPlaylist.setCustomTracks(suddenrunAddedTracks);
+      appPlaylist.setRejectedTracks(suddenrunRemovedTracks);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
-      appPlaylistSnapshotId = appPlaylist.getSnapshotId();
       log.info(
           "Updated playlist with id ["
-              + appPlaylistId
+              + playlistId
               + AND_SNAPSHOT_ID
-              + appPlaylistSnapshotId
+              + appPlaylist.getSnapshotId()
               + "] from Spotify. Returning playlist.");
       return Optional.of(appPlaylist);
     } catch (SpotifyAccessTokenException e) {
