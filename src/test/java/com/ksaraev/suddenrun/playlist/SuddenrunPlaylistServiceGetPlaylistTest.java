@@ -203,11 +203,11 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     given(spotifyPlaylistService.getPlaylist(playlistId)).willReturn(spotifyPlaylist);
 
     List<AppTrack> customTracks = SuddenrunHelper.getTracks(2);
-    given(suddenrunRevisionService.reviseCustomTracks(suddenrunPlaylist, spotifyPlaylist))
+    given(suddenrunRevisionService.getAddedSourceTracks(suddenrunPlaylist, spotifyPlaylist))
         .willReturn(customTracks);
 
     List<AppTrack> rejectedTracks = SuddenrunHelper.getTracks(1);
-    given(suddenrunRevisionService.reviseRejectedTracks(suddenrunPlaylist, spotifyPlaylist))
+    given(suddenrunRevisionService.getRemovedSourceTracks(suddenrunPlaylist, spotifyPlaylist))
         .willReturn(rejectedTracks);
 
     given(playlistMapper.mapToEntity(spotifyPlaylist)).willReturn(suddenrunPlaylist);
@@ -238,14 +238,14 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     then(suddenrunRevisionService)
         .should()
-        .reviseCustomTracks(
+        .getAddedSourceTracks(
             suddenrunPlaylistArgumentCaptor.capture(), spotifyPlaylistArgumentCaptor.capture());
     assertThat(suddenrunPlaylistArgumentCaptor.getValue()).isEqualTo(suddenrunPlaylist);
     assertThat(spotifyPlaylistArgumentCaptor.getValue()).isEqualTo(spotifyPlaylist);
 
     then(suddenrunRevisionService)
         .should()
-        .reviseRejectedTracks(
+        .getRemovedSourceTracks(
             suddenrunPlaylistArgumentCaptor.capture(), spotifyPlaylistArgumentCaptor.capture());
     assertThat(suddenrunPlaylistArgumentCaptor.getValue()).isEqualTo(suddenrunPlaylist);
     assertThat(spotifyPlaylistArgumentCaptor.getValue()).isEqualTo(spotifyPlaylist);

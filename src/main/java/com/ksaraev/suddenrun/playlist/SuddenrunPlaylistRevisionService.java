@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -21,7 +22,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
 
   private final AppTrackMapper trackMapper;
 
-  public List<AppTrack> reviseCustomTracks(
+  public List<AppTrack> getAddedSourceTracks(
       @NotNull AppPlaylist appPlaylist, @NotNull SpotifyPlaylistItem spotifyPlaylist) {
     String playlistId = appPlaylist.getId();
     AppUser appUser = appPlaylist.getOwner();
@@ -66,15 +67,15 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     }
   }
 
-  public List<AppTrack> reviseRejectedTracks(
-      @NotNull AppPlaylist appPlaylist, @NotNull SpotifyPlaylistItem spotifyPlaylist) {
-    String playlistId = appPlaylist.getId();
-    AppUser appUser = appPlaylist.getOwner();
+  public List<AppTrack> getRemovedSourceTracks(
+      @NotNull AppPlaylist target, @NotNull SpotifyPlaylistItem source) {
+    String playlistId = target.getId();
+    AppUser appUser = target.getOwner();
     String userId = appUser.getId();
     try {
-      List<AppTrack> targetTracks = appPlaylist.getTracks();
-      List<AppTrack> rejectedTracks = appPlaylist.getRejectedTracks();
-      List<SpotifyTrackItem> sourceTracks = spotifyPlaylist.getTracks();
+      List<AppTrack> targetTracks = target.getTracks();
+      List<AppTrack> rejectedTracks = target.getRejectedTracks();
+      List<SpotifyTrackItem> sourceTracks = source.getTracks();
 
       List<AppTrack> tracksInclusion =
           targetTracks.stream()
@@ -108,5 +109,44 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     } catch (RuntimeException e) {
       throw new ReviseSuddenrunRejectedUserTracksException(userId, playlistId, e);
     }
+  }
+
+  @Override
+  public List<SpotifyTrackItem> getSourceTracksToAdd(
+      @NotNull List<AppTrack> appTracks,
+      @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
+      @NotNull List<AppTrack> rejectedTracks) {
+    return appTracks.stream()
+        .filter(Objects::nonNull)
+        .filter(
+            appTrack ->
+                spotifyPlaylistTracks.stream()
+                    .noneMatch(
+                        spotifyPlaylistTrack ->
+                            spotifyPlaylistTrack.getId().equals(appTrack.getId())))
+        .filter(
+            appTrack ->
+                rejectedTracks.stream()
+                    .noneMatch(rejectedTrack -> rejectedTrack.getId().equals(appTrack.getId())))
+        .map(trackMapper::mapToDto)
+        .toList();
+  }
+
+  @Override
+  public List<SpotifyTrackItem> getSourceTracksToRemove(
+      @NotNull List<AppTrack> appTracks,
+      @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
+      @NotNull List<AppTrack> customTracks) {
+    return spotifyPlaylistTracks.stream()
+        .filter(Objects::nonNull)
+        .filter(
+            spotifyPlaylistTrack ->
+                appTracks.stream()
+                    .noneMatch(appTrack -> appTrack.getId().equals(spotifyPlaylistTrack.getId())))
+        .filter(
+            appTrack ->
+                customTracks.stream()
+                    .noneMatch(customTrack -> customTrack.getId().equals(appTrack.getId())))
+        .toList();
   }
 }

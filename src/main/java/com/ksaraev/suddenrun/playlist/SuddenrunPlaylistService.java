@@ -157,10 +157,13 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + "] and ["
               + spotifyPlaylistSnapshotId
               + "] respectively. Updating app version from Spotify.");
+
       List<AppTrack> customTracks =
-          playlistRevisionService.reviseCustomTracks(appPlaylist, spotifyPlaylist);
+          playlistRevisionService.getAddedSourceTracks(appPlaylist, spotifyPlaylist);
+
       List<AppTrack> rejectedTracks =
-          playlistRevisionService.reviseRejectedTracks(appPlaylist, spotifyPlaylist);
+          playlistRevisionService.getRemovedSourceTracks(appPlaylist, spotifyPlaylist);
+
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist.setCustomTracks(customTracks);
       appPlaylist.setRejectedTracks(rejectedTracks);
@@ -195,6 +198,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + " ["
               + appPlaylistId
               + "]");
+
       Optional<SuddenrunPlaylist> appRunningWorkoutPlaylist = repository.findById(appPlaylistId);
 
       if (appRunningWorkoutPlaylist.isEmpty()) {
@@ -206,6 +210,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
+
       Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
           spotifyUserPlaylists.stream()
               .filter(playlist -> playlist.getId().equals(appPlaylistId))
@@ -257,45 +262,23 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
                 + "]");
 
       List<SpotifyTrackItem> spotifyAddTracks =
-          appTracks.stream()
-              .filter(Objects::nonNull)
-              .filter(
-                  appTrack ->
-                      spotifyPlaylistTracks.stream()
-                          .noneMatch(
-                              spotifyPlaylistTrack ->
-                                  spotifyPlaylistTrack.getId().equals(appTrack.getId())))
-              .filter(
-                  appTrack ->
-                      rejectedTracks.stream()
-                          .noneMatch(
-                              rejectedTrack -> rejectedTrack.getId().equals(appTrack.getId())))
-              .map(trackMapper::mapToDto)
-              .toList();
+          playlistRevisionService.getSourceTracksToAdd(
+              appTracks, spotifyPlaylistTracks, rejectedTracks);
 
       List<AppTrack> customTracks = appPlaylist.getCustomTracks();
       int customTracksSize = customTracks.size();
-      if (customTracksSize > 0)
+      if (customTracksSize > 0) {
         log.info(
             "Determining ["
                 + customTracksSize
                 + "] tracks previously added outside of the app to Spotify playlist with id ["
                 + appPlaylistId
                 + "]");
+      }
 
       List<SpotifyTrackItem> spotifyRemoveTracks =
-          spotifyPlaylistTracks.stream()
-              .filter(Objects::nonNull)
-              .filter(
-                  spotifyPlaylistTrack ->
-                      appTracks.stream()
-                          .noneMatch(
-                              appTrack -> appTrack.getId().equals(spotifyPlaylistTrack.getId())))
-              .filter(
-                  appTrack ->
-                      customTracks.stream()
-                          .noneMatch(customTrack -> customTrack.getId().equals(appTrack.getId())))
-              .toList();
+          playlistRevisionService.getSourceTracksToRemove(
+              appTracks, spotifyPlaylistTracks, customTracks);
 
       boolean spotifyRemoveTracksExist = !spotifyRemoveTracks.isEmpty();
       if (spotifyRemoveTracksExist) {
