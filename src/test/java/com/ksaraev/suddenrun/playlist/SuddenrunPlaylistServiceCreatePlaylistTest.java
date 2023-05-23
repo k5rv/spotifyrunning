@@ -3,6 +3,8 @@ package com.ksaraev.suddenrun.playlist;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import com.ksaraev.spotify.exception.CreateSpotifyPlaylistException;
+import com.ksaraev.spotify.exception.GetSpotifyPlaylistException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.exception.SpotifyServiceException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
@@ -157,13 +159,14 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     given(userMapper.mapToItem(appUser)).willReturn(spotifyUserProfile);
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
     given(spotifyPlaylistConfig.getDetails()).willReturn(spotifyPlaylistDetails);
+    RuntimeException runtimeException = new RuntimeException(message);
     given(spotifyPlaylistService.createPlaylist(spotifyUserProfile, spotifyPlaylistDetails))
-        .willThrow(new SpotifyServiceException(message));
+        .willThrow(new CreateSpotifyPlaylistException(userId, runtimeException));
 
     // Then
     assertThatThrownBy(() -> underTest.createPlaylist(appUser))
         .isExactlyInstanceOf(SuddenrunSpotifyInteractionException.class)
-        .hasMessageContaining(message);
+        .hasMessageContaining(userId);
   }
 
   @Test

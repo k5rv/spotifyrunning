@@ -3,11 +3,15 @@ package com.ksaraev.suddenrun.playlist;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import com.ksaraev.spotify.exception.GetSpotifyPlaylistException;
+import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
+import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
+import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUserMapper;
@@ -255,5 +259,110 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     assertThat(optionalOfActual)
         .isPresent()
         .hasValueSatisfying(p -> assertThat(p).isEqualTo(suddenrunPlaylist));
+  }
+
+  @Test
+  void
+      itShouldThrowSuddenrunAuthenticationExceptionIfSpotifyServiceThrowsSpotifyAccessTokenException() {
+    // Given
+    String message = "message";
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
+    String userId = suddenrunUser.getId();
+    String userName = suddenrunUser.getName();
+    SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
+    Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
+    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    SpotifyUserProfileItem spotifyUserProfile =
+        SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(suddenrunUser)).willReturn(spotifyUserProfile);
+    given(spotifyPlaylistService.getUserPlaylists(spotifyUserProfile))
+        .willThrow(new SpotifyAccessTokenException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(suddenrunUser))
+        .isExactlyInstanceOf(SuddenrunAuthenticationException.class)
+        .hasMessageContaining(message);
+  }
+
+  @Test
+  void
+      itShouldThrowSuddenrunSpotifyInteractionExceptionIfSpotifyServiceThrowsSpotifyServiceException() {
+    // Given
+    String message = "message";
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
+    String userId = suddenrunUser.getId();
+    String userName = suddenrunUser.getName();
+    SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
+    String playlistId = suddenrunPlaylist.getId();
+    Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
+    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    SpotifyUserProfileItem spotifyUserProfile =
+        SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(suddenrunUser)).willReturn(spotifyUserProfile);
+    RuntimeException runtimeException = new RuntimeException(message);
+    given(spotifyPlaylistService.getUserPlaylists(spotifyUserProfile))
+        .willThrow(new GetSpotifyPlaylistException(playlistId, runtimeException));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(suddenrunUser))
+        .isExactlyInstanceOf(SuddenrunSpotifyInteractionException.class)
+        .hasMessageContaining(playlistId);
+  }
+
+  @Test
+  void itShouldThrowGetSuddenrunPlaylistExceptionIfSpotifyServiceThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
+    String userId = suddenrunUser.getId();
+    String userName = suddenrunUser.getName();
+    SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
+    Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
+    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    SpotifyUserProfileItem spotifyUserProfile =
+        SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(suddenrunUser)).willReturn(spotifyUserProfile);
+    given(spotifyPlaylistService.getUserPlaylists(spotifyUserProfile))
+        .willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(suddenrunUser))
+        .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
+        .hasMessageContaining(message);
+  }
+
+  @Test
+  void itShouldThrowGetSuddenrunPlaylistExceptionIfMapperThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
+    String userId = suddenrunUser.getId();
+    String userName = suddenrunUser.getName();
+    SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
+    Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
+    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    SpotifyUserProfileItem spotifyUserProfile =
+        SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(suddenrunUser)).willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(suddenrunUser))
+        .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
+        .hasMessageContaining(message);
+  }
+
+  @Test
+  void itShouldThrowGetSuddenrunPlaylistExceptionIfRepositoryThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
+    String userId = suddenrunUser.getId();
+    given(suddenrunPlaylistRepository.findByOwnerId(userId))
+        .willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(suddenrunUser))
+        .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
+        .hasMessageContaining(message);
   }
 }

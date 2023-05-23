@@ -15,7 +15,6 @@ import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import java.util.*;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -158,8 +157,10 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + "] and ["
               + spotifyPlaylistSnapshotId
               + "] respectively. Updating app version from Spotify.");
-      List<AppTrack> customTracks = playlistRevisionService.reviseCustomTracks(appPlaylist, spotifyPlaylist);
-      List<AppTrack> rejectedTracks = playlistRevisionService.reviseRejectedTracks(appPlaylist, spotifyPlaylist);
+      List<AppTrack> customTracks =
+          playlistRevisionService.reviseCustomTracks(appPlaylist, spotifyPlaylist);
+      List<AppTrack> rejectedTracks =
+          playlistRevisionService.reviseRejectedTracks(appPlaylist, spotifyPlaylist);
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist.setCustomTracks(customTracks);
       appPlaylist.setRejectedTracks(rejectedTracks);
@@ -358,5 +359,4 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       throw new AppPlaylistServiceAddTracksException(e);
     }
   }
-
 }
