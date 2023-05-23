@@ -100,7 +100,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
     String userId = appUser.getId();
     try {
       log.info("Getting playlist for user with id [" + userId + "]");
-      Optional<SuddenrunPlaylist> optionalSuddenrunPlaylist = repository.findByOwnerId(userId);
+      Optional<SuddenrunPlaylist> optionalSuddenrunPlaylist = repository.findByUserId(userId);
       boolean suddenrunPlaylistExists = optionalSuddenrunPlaylist.isPresent();
       if (!suddenrunPlaylistExists) {
         log.info(

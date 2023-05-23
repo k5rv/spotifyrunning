@@ -95,7 +95,7 @@ class SuddenrunPlaylistRepositoryTest {
     underTest.save(playlist);
 
     // When
-    Optional<SuddenrunPlaylist> optionalPlaylist = underTest.findByOwnerId(userId);
+    Optional<SuddenrunPlaylist> optionalPlaylist = underTest.findByUserId(userId);
 
     // Then
     assertThat(optionalPlaylist)

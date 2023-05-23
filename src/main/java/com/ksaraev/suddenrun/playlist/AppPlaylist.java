@@ -11,9 +11,9 @@ public interface AppPlaylist {
 
   void setId(String id);
 
-  AppUser getOwner();
+  AppUser getUser();
 
-  void setOwner(AppUser appUser);
+  void setUser(AppUser appUser);
 
   List<AppTrack> getTracks();
 

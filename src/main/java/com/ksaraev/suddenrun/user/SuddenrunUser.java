@@ -25,14 +25,14 @@ public class SuddenrunUser implements AppUser {
   private String name;
 
   @JsonBackReference
-  @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<SuddenrunPlaylist> playlists = new ArrayList<>();
 
   @Override
   public void addPlaylist(AppPlaylist appPlaylist) {
     SuddenrunPlaylist playlist = (SuddenrunPlaylist) appPlaylist;
     playlists.add(playlist);
-    playlist.setOwner(this);
+    playlist.setUser(this);
   }
 
   @Override
@@ -41,7 +41,7 @@ public class SuddenrunUser implements AppUser {
     if (!this.playlists.isEmpty()) {
       playlists.remove(playlist);
     }
-    playlist.setOwner(null);
+    playlist.setUser(null);
   }
 
   @Override

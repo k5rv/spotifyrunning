@@ -46,7 +46,7 @@ public class SuddenrunHelper {
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     return SuddenrunPlaylist.builder()
         .id(id)
-        .owner(user)
+        .user(user)
         .addedByUser(customTracks)
         .removedByUser(rejectedTracks)
         .tracks(tracks)
@@ -65,7 +65,7 @@ public class SuddenrunHelper {
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     return SuddenrunPlaylist.builder()
             .id(id)
-            .owner(user)
+            .user(user)
             .addedByUser(customTracks)
             .removedByUser(rejectedTracks)
             .tracks(tracks)
@@ -84,7 +84,7 @@ public class SuddenrunHelper {
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     return SuddenrunPlaylist.builder()
             .id(id)
-            .owner(user)
+            .user(user)
             .addedByUser(customTracks)
             .removedByUser(rejectedTracks)
             .tracks(tracks)

@@ -84,7 +84,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     String snapshotId = suddenrunPlaylist.getSnapshotId();
     String playlistId = suddenrunPlaylist.getId();
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(optionalOfPlaylist);
 
     SpotifyUserProfileItem spotifyUserProfile =
         SpotifyServiceHelper.getUserProfile(userId, userName);
@@ -102,7 +102,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     // Then
     then(suddenrunPlaylistRepository)
         .should()
-        .findByOwnerId(suddenrunUserIdArgumentCaptor.capture());
+        .findByUserId(suddenrunUserIdArgumentCaptor.capture());
     assertThat(suddenrunUserIdArgumentCaptor.getValue()).isEqualTo(userId);
     then(userMapper).should().mapToItem(suddenrunUserArgumentCaptor.capture());
     assertThat(suddenrunUserArgumentCaptor.getValue()).isEqualTo(suddenrunUser);
@@ -122,7 +122,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     // Given
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String userId = suddenrunUser.getId();
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(Optional.empty());
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(Optional.empty());
 
     // When
     Optional<AppPlaylist> optionalOfActual = underTest.getPlaylist(suddenrunUser);
@@ -130,7 +130,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     // Then
     then(suddenrunPlaylistRepository)
         .should()
-        .findByOwnerId(suddenrunUserIdArgumentCaptor.capture());
+        .findByUserId(suddenrunUserIdArgumentCaptor.capture());
     assertThat(optionalOfActual).isNotPresent();
   }
 
@@ -143,7 +143,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     String playlistId = suddenrunPlaylist.getId();
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(optionalOfPlaylist);
 
     SpotifyUserProfileItem spotifyUserProfile =
         SpotifyServiceHelper.getUserProfile(userId, userName);
@@ -159,7 +159,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     // Then
     then(suddenrunPlaylistRepository)
         .should()
-        .findByOwnerId(suddenrunUserIdArgumentCaptor.capture());
+        .findByUserId(suddenrunUserIdArgumentCaptor.capture());
     assertThat(suddenrunUserIdArgumentCaptor.getValue()).isEqualTo(userId);
 
     then(userMapper).should().mapToItem(suddenrunUserArgumentCaptor.capture());
@@ -185,7 +185,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     String playlistId = suddenrunPlaylist.getId();
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(optionalOfPlaylist);
 
     SpotifyUserProfileItem spotifyUserProfile =
         SpotifyServiceHelper.getUserProfile(userId, userName);
@@ -218,7 +218,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     // Then
     then(suddenrunPlaylistRepository)
         .should()
-        .findByOwnerId(suddenrunUserIdArgumentCaptor.capture());
+        .findByUserId(suddenrunUserIdArgumentCaptor.capture());
     assertThat(suddenrunUserIdArgumentCaptor.getValue()).isEqualTo(userId);
 
     then(userMapper).should().mapToItem(suddenrunUserArgumentCaptor.capture());
@@ -267,7 +267,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     String userName = suddenrunUser.getName();
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(optionalOfPlaylist);
     SpotifyUserProfileItem spotifyUserProfile =
         SpotifyServiceHelper.getUserProfile(userId, userName);
     given(userMapper.mapToItem(suddenrunUser)).willReturn(spotifyUserProfile);
@@ -291,7 +291,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     String playlistId = suddenrunPlaylist.getId();
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(optionalOfPlaylist);
     SpotifyUserProfileItem spotifyUserProfile =
         SpotifyServiceHelper.getUserProfile(userId, userName);
     given(userMapper.mapToItem(suddenrunUser)).willReturn(spotifyUserProfile);
@@ -314,7 +314,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     String userName = suddenrunUser.getName();
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(optionalOfPlaylist);
     SpotifyUserProfileItem spotifyUserProfile =
         SpotifyServiceHelper.getUserProfile(userId, userName);
     given(userMapper.mapToItem(suddenrunUser)).willReturn(spotifyUserProfile);
@@ -335,7 +335,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     String userId = suddenrunUser.getId();
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
-    given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
+    given(suddenrunPlaylistRepository.findByUserId(userId)).willReturn(optionalOfPlaylist);
     given(userMapper.mapToItem(suddenrunUser)).willThrow(new RuntimeException(message));
 
     // Then
@@ -350,7 +350,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     String message = "message";
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String userId = suddenrunUser.getId();
-    given(suddenrunPlaylistRepository.findByOwnerId(userId))
+    given(suddenrunPlaylistRepository.findByUserId(userId))
         .willThrow(new RuntimeException(message));
 
     // Then

@@ -25,7 +25,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   public List<AppTrack> getAddedTracks(
           @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
     String playlistId = targetPlaylist.getId();
-    AppUser appUser = targetPlaylist.getOwner();
+    AppUser appUser = targetPlaylist.getUser();
     String userId = appUser.getId();
     try {
       List<AppTrack> targetTracks = targetPlaylist.getTracks();
@@ -70,7 +70,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   public List<AppTrack> getRemovedTracks(
           @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
     String playlistId = targetPlaylist.getId();
-    AppUser appUser = targetPlaylist.getOwner();
+    AppUser appUser = targetPlaylist.getUser();
     String userId = appUser.getId();
     try {
       List<AppTrack> targetTracks = targetPlaylist.getTracks();

@@ -28,7 +28,7 @@ public class SuddenrunPlaylist implements AppPlaylist {
   private String id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  private SuddenrunUser owner;
+  private SuddenrunUser user;
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
@@ -62,14 +62,14 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   @JsonIgnore
   @Override
-  public AppUser getOwner() {
-    return this.owner;
+  public AppUser getUser() {
+    return this.user;
   }
 
   @JsonIgnore
   @Override
-  public void setOwner(AppUser appUser) {
-    this.owner = (SuddenrunUser) appUser;
+  public void setUser(AppUser appUser) {
+    this.user = (SuddenrunUser) appUser;
   }
 
   @Override

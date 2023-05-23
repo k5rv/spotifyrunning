@@ -17,7 +17,7 @@ public interface SuddenrunPlaylistRepository extends JpaRepository<SuddenrunPlay
 
   boolean existsById(@NotNull String playlistId);
 
-  Optional<SuddenrunPlaylist> findByOwnerId(String userId);
+  Optional<SuddenrunPlaylist> findByUserId(String userId);
 
   @Transactional
   @Modifying
