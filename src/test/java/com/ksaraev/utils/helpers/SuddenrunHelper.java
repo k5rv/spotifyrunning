@@ -14,7 +14,8 @@ public class SuddenrunHelper {
   public static SuddenrunUser getUser() {
     String id = SpotifyResourceHelper.getRandomId();
     String name = SpotifyResourceHelper.getRandomName();
-    return SuddenrunUser.builder().id(id).name(name).build();
+    List<SuddenrunPlaylist> playlists = new ArrayList<>();
+    return SuddenrunUser.builder().id(id).name(name).playlists(playlists).build();
   }
 
   public static SuddenrunUser getUser(String id, String name) {

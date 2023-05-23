@@ -33,7 +33,7 @@ public interface AppTrackMapper {
   SpotifyTrackItem mapToDto(AppTrack appTrack);
 
   @ObjectFactory
-  default SpotifyTrackItem createDto() {
+  default SpotifyTrackItem createItem() {
     return SpotifyTrack.builder().build();
   }
 
