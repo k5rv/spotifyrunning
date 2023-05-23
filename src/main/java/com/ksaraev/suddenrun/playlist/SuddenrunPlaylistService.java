@@ -187,8 +187,8 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   @Override
   public AppPlaylist addTracks(@NotNull AppPlaylist appPlaylist, List<AppTrack> appTracks) {
+    String appPlaylistId = appPlaylist.getId();
     try {
-      String appPlaylistId = appPlaylist.getId();
       int appTracksNumber = appTracks.size();
       log.info(
           "Adding ["
@@ -199,25 +199,27 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + appPlaylistId
               + "]");
 
-      Optional<SuddenrunPlaylist> appRunningWorkoutPlaylist = repository.findById(appPlaylistId);
+      boolean appPlaylistExists = repository.existsById(appPlaylistId);
 
-      if (appRunningWorkoutPlaylist.isEmpty()) {
+      if (!appPlaylistExists) {
         log.error(PLAYLIST_WITH_ID + appPlaylistId + "] doesn't exist in app");
-        throw new AppPlaylistServicePlaylistDoesNotExistException(appPlaylistId);
+        throw new SuddenrunPlaylistDoesNotExistException(appPlaylistId);
       }
 
       AppUser appUser = appPlaylist.getOwner();
       SpotifyUserProfileItem spotifyUser = userMapper.mapToItem(appUser);
+
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUser);
 
-      Optional<SpotifyPlaylistItem> spotifyRunningWorkoutPlaylist =
+      Optional<SpotifyPlaylistItem> optionalSpotifyPlaylist =
           spotifyUserPlaylists.stream()
               .filter(playlist -> playlist.getId().equals(appPlaylistId))
               .findFirst();
 
-      boolean spotifyPlaylistExists = spotifyRunningWorkoutPlaylist.isPresent();
+      boolean spotifyPlaylistExists = optionalSpotifyPlaylist.isPresent();
 
+      // probably this one should be deleted, instead throw exception in the section above
       if (!spotifyPlaylistExists) {
         log.info(
             PLAYLIST_WITH_ID
@@ -247,7 +249,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       }
 
       String spotifyPlaylistId =
-          spotifyRunningWorkoutPlaylist.map(SpotifyPlaylistItem::getId).orElseThrow();
+          optionalSpotifyPlaylist.map(SpotifyPlaylistItem::getId).orElseThrow();
       SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(spotifyPlaylistId);
       List<SpotifyTrackItem> spotifyPlaylistTracks = spotifyPlaylist.getTracks().stream().toList();
 
@@ -317,6 +319,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + AND_SNAPSHOT_ID
               + snapshotId
               + "]");
+
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       appPlaylist.setCustomTracks(customTracks);
       appPlaylist.setRejectedTracks(rejectedTracks);
@@ -339,7 +342,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
     } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
-      throw new AppPlaylistServiceAddTracksException(e);
+      throw new SuddenrunAddPlaylistTracksException(appPlaylistId, e);
     }
   }
 }
