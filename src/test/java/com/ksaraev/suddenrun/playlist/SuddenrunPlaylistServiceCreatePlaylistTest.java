@@ -4,9 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import com.ksaraev.spotify.exception.CreateSpotifyPlaylistException;
-import com.ksaraev.spotify.exception.GetSpotifyPlaylistException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
-import com.ksaraev.spotify.exception.SpotifyServiceException;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
@@ -14,7 +12,6 @@ import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
-import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;

@@ -13,7 +13,6 @@ import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.track.AppTrack;
-import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SpotifyResourceHelper;

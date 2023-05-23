@@ -2,23 +2,14 @@ package com.ksaraev.suddenrun.playlist;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
-import com.ksaraev.suddenrun.user.SuddenrunUserRepository;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
-
-import java.util.ArrayList;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
-
-import jakarta.persistence.EntityManager;
-import org.hibernate.HibernateException;
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
@@ -61,6 +52,37 @@ class SuddenrunPlaylistRepositoryTest {
     assertThat(optionalPlaylist)
         .isPresent()
         .hasValueSatisfying(p -> assertThat(p).usingRecursiveComparison().isEqualTo(playlist));
+  }
+
+  @Test
+  void itShouldReturnTrueIfPlaylistExists() {
+    // Given
+    SuddenrunUser user = SuddenrunHelper.getUser();
+    SuddenrunPlaylist playlist = SuddenrunHelper.getSuddenrunPlaylist(user);
+    String playlistId = playlist.getId();
+    user.setPlaylists(List.of(playlist));
+    entityManager.persist(user);
+    underTest.save(playlist);
+
+    // When
+    boolean isExists = underTest.existsById(playlistId);
+
+    // Then
+    assertThat(isExists).isTrue();
+  }
+
+  @Test
+  void itShouldReturnFalseIfPlaylistDoesNotExist() {
+    // Given
+    SuddenrunUser user = SuddenrunHelper.getUser();
+    SuddenrunPlaylist playlist = SuddenrunHelper.getSuddenrunPlaylist(user);
+    String playlistId = playlist.getId();
+
+    // When
+    boolean isExists = underTest.existsById(playlistId);
+
+    // Then
+    assertThat(isExists).isFalse();
   }
 
   @Test

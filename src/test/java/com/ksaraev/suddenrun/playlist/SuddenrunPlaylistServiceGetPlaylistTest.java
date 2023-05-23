@@ -13,7 +13,6 @@ import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.track.AppTrack;
-import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
@@ -334,12 +333,9 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     String message = "message";
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String userId = suddenrunUser.getId();
-    String userName = suddenrunUser.getName();
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(suddenrunPlaylist);
     given(suddenrunPlaylistRepository.findByOwnerId(userId)).willReturn(optionalOfPlaylist);
-    SpotifyUserProfileItem spotifyUserProfile =
-        SpotifyServiceHelper.getUserProfile(userId, userName);
     given(userMapper.mapToItem(suddenrunUser)).willThrow(new RuntimeException(message));
 
     // Then
