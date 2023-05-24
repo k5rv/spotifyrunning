@@ -11,6 +11,7 @@ import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.track.AppTrack;
+import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import java.util.*;
@@ -156,15 +157,15 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + spotifyPlaylistSnapshotId
               + "] respectively. Updating app version from Spotify.");
 
-      List<AppTrack> suddenrunAddedTracks =
+      List<AppTrack> addedTracks =
           playlistRevisionService.getAddedTracks(appPlaylist, spotifyPlaylist);
 
-      List<AppTrack> suddenrunRemovedTracks =
+      List<AppTrack> removedTracks =
           playlistRevisionService.getRemovedTracks(appPlaylist, spotifyPlaylist);
 
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist.setAddedByUser(suddenrunAddedTracks);
-      appPlaylist.setRemovedByUser(suddenrunRemovedTracks);
+      appPlaylist.setAddedByUser(addedTracks);
+      appPlaylist.setRemovedByUser(removedTracks);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       log.info(
           "Updated playlist with id ["

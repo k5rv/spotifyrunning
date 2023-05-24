@@ -104,7 +104,7 @@ class SpotifyPlaylistItemMapperTest {
             .isPublic(isPublic)
             .uri(playlistUri)
             .snapshotId(playlistSnapshotId)
-            .owner(spotifyUser)
+            .user(spotifyUser)
             .description(playlistDescription)
             .tracks(List.of(trackOne, trackTwo))
             .build();
@@ -199,7 +199,7 @@ class SpotifyPlaylistItemMapperTest {
             "tracks",
             "isCollaborative",
             "isPublic",
-            "owner",
+            "user",
             "snapshotId");
   }
 

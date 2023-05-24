@@ -28,7 +28,7 @@ public interface AppPlaylistMapper {
 
   @Mapping(target = "removedByUser", ignore = true)
   @Mapping(target = "addedByUser", ignore = true)
-  @Mapping(target = "user", source = "playlistItem.owner")
+  @Mapping(target = "user", source = "playlistItem.user")
   AppPlaylist mapToEntity(SpotifyPlaylistItem playlistItem);
 
   @Mapping(

@@ -19,7 +19,7 @@ public class SpotifyPlaylist implements SpotifyPlaylistItem {
 
   @NotNull private String snapshotId;
 
-  @Valid @NotNull private SpotifyUserProfileItem owner;
+  @Valid @NotNull private SpotifyUserProfileItem user;
 
   private String name;
 

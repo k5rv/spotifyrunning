@@ -100,7 +100,7 @@ public class SpotifyServiceHelper {
         .description(description)
         .isPublic(isPublic)
         .isCollaborative(isCollaborative)
-        .owner(user)
+        .user(user)
         .snapshotId(snapshotId)
         .build();
   }
@@ -121,7 +121,7 @@ public class SpotifyServiceHelper {
             .description(description)
             .isPublic(isPublic)
             .isCollaborative(isCollaborative)
-            .owner(user)
+            .user(user)
             .snapshotId(snapshotId)
             .build();
   }
@@ -141,7 +141,7 @@ public class SpotifyServiceHelper {
             .description(description)
             .isPublic(isPublic)
             .isCollaborative(isCollaborative)
-            .owner(user)
+            .user(user)
             .snapshotId(snapshotId)
             .build();
   }

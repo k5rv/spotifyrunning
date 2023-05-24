@@ -26,7 +26,7 @@ class SpotifyPlaylistItemTest {
           """
            null                  |playlist name|spotify:playlist:0moWPCTPTShumonjlsDgLe|MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1|TRUE |id: must not be null
            0moWPCTPTShumonjlsDgLe|playlist name|spotify:playlist:0moWPCTPTShumonjlsDgLe|null                                                    |TRUE |snapshotId: must not be null
-           0moWPCTPTShumonjlsDgLe|playlist name|spotify:playlist:0moWPCTPTShumonjlsDgLe|MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1|FALSE|owner: must not be null
+           0moWPCTPTShumonjlsDgLe|playlist name|spotify:playlist:0moWPCTPTShumonjlsDgLe|MixjZThiNmNkZTcwNDc2MjQ0ZDYxOTQxNGM3MGNmNThhZmE1N2YyMTE1|FALSE|user: must not be null
            """)
   void itShouldDetectSpotifyPlaylistConstraintViolations(
       String id, String name, URI uri, String snapshotId, Boolean hasOwner, String message) {
@@ -41,7 +41,7 @@ class SpotifyPlaylistItemTest {
             .name(name)
             .uri(uri)
             .snapshotId(snapshotId)
-            .owner(user)
+            .user(user)
             .build();
 
     // When
@@ -60,7 +60,7 @@ class SpotifyPlaylistItemTest {
     user.setId(null);
 
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
-    playlist.setOwner(user);
+    playlist.setUser(user);
 
     // When
     Set<ConstraintViolation<SpotifyPlaylistItem>> constraintViolations =
@@ -69,6 +69,6 @@ class SpotifyPlaylistItemTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage("owner.id: must not be null");
+        .hasMessage("user.id: must not be null");
   }
 }

@@ -12,9 +12,9 @@ public interface SpotifyPlaylistItem extends SpotifyItem, SpotifyPlaylistItemDet
 
   void setSnapshotId(String snapshotId);
 
-  SpotifyUserProfileItem getOwner();
+  SpotifyUserProfileItem getUser();
 
-  void setOwner(SpotifyUserProfileItem user);
+  void setUser(SpotifyUserProfileItem user);
 
   List<SpotifyTrackItem> getTracks();
 
