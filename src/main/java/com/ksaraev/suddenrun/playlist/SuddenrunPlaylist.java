@@ -32,11 +32,11 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> addedByUser = new ArrayList<>();
+  private List<SuddenrunTrack> preferences = new ArrayList<>();
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> removedByUser = new ArrayList<>();
+  private List<SuddenrunTrack> exclusions = new ArrayList<>();
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
@@ -44,20 +44,20 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   private String snapshotId;
 
-  public List<AppTrack> getAddedByUser() {
-    return this.addedByUser.stream().map(AppTrack.class::cast).toList();
+  public List<AppTrack> getPreferences() {
+    return this.preferences.stream().map(AppTrack.class::cast).toList();
   }
 
-  public void setAddedByUser(List<AppTrack> addedByUser) {
-    this.addedByUser = addedByUser.stream().map(SuddenrunTrack.class::cast).toList();
+  public void setPreferences(List<AppTrack> preferences) {
+    this.preferences = preferences.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
-  public List<AppTrack> getRemovedByUser() {
-    return this.removedByUser.stream().map(AppTrack.class::cast).toList();
+  public List<AppTrack> getExclusions() {
+    return this.exclusions.stream().map(AppTrack.class::cast).toList();
   }
 
-  public void setRemovedByUser(List<AppTrack> removedByUser) {
-    this.removedByUser = removedByUser.stream().map(SuddenrunTrack.class::cast).toList();
+  public void setExclusions(List<AppTrack> exclusions) {
+    this.exclusions = exclusions.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
   @JsonIgnore

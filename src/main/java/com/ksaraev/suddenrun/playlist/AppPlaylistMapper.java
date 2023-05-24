@@ -26,8 +26,8 @@ public interface AppPlaylistMapper {
     return PLAYLIST.createUri(id);
   }
 
-  @Mapping(target = "removedByUser", ignore = true)
-  @Mapping(target = "addedByUser", ignore = true)
+  @Mapping(target = "exclusions", ignore = true)
+  @Mapping(target = "preferences", ignore = true)
   @Mapping(target = "user", source = "playlistItem.user")
   AppPlaylist mapToEntity(SpotifyPlaylistItem playlistItem);
 
@@ -45,8 +45,8 @@ public interface AppPlaylistMapper {
   default AppPlaylist createEntity() {
     return SuddenrunPlaylist.builder()
         .tracks(List.of())
-        .addedByUser(List.of())
-        .removedByUser(List.of())
+        .preferences(List.of())
+        .exclusions(List.of())
         .build();
   }
 

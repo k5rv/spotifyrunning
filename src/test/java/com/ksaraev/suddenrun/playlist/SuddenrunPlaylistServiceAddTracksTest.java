@@ -12,6 +12,7 @@ import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.track.AppTrack;
+import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SpotifyResourceHelper;
@@ -39,6 +40,8 @@ class SuddenrunPlaylistServiceAddTracksTest {
   @Mock private AppPlaylistMapper playlistMapper;
 
   @Mock private AppUserMapper userMapper;
+
+  @Mock private AppTrackMapper trackMapper;
 
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
 
@@ -68,6 +71,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,
+            trackMapper,
             userMapper);
   }
 
@@ -99,8 +103,8 @@ class SuddenrunPlaylistServiceAddTracksTest {
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     List<AppTrack> suddenrunTracks = SuddenrunHelper.getTracks(10);
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
-    List<AppTrack> rejectedTracks = suddenrunPlaylist.getRemovedByUser();
-    List<AppTrack> customTracks = suddenrunPlaylist.getAddedByUser();
+    List<AppTrack> rejectedTracks = suddenrunPlaylist.getExclusions();
+    List<AppTrack> customTracks = suddenrunPlaylist.getPreferences();
     suddenrunUser.addPlaylist(suddenrunPlaylist);
     String playlistId = suddenrunPlaylist.getId();
 

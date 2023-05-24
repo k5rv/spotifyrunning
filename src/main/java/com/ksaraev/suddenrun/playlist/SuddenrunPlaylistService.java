@@ -39,6 +39,8 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   private final AppPlaylistMapper playlistMapper;
 
+  private final AppTrackMapper trackMapper;
+
   private final AppUserMapper userMapper;
 
   @Override
@@ -164,8 +166,8 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
           playlistRevisionService.getRemovedTracks(appPlaylist, spotifyPlaylist);
 
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist.setAddedByUser(addedTracks);
-      appPlaylist.setRemovedByUser(removedTracks);
+      appPlaylist.setPreferences(addedTracks);
+      appPlaylist.setExclusions(removedTracks);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       log.info(
           "Updated playlist with id ["
@@ -206,7 +208,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
       List<SpotifyTrackItem> spotifyPlaylistTracks = spotifyPlaylist.getTracks().stream().toList();
 
-      List<AppTrack> suddenrunRemovedTracks = appPlaylist.getRemovedByUser();
+      List<AppTrack> suddenrunRemovedTracks = appPlaylist.getExclusions();
       int removedTracksSize = suddenrunRemovedTracks.size();
       if (removedTracksSize > 0)
         log.info(
@@ -220,7 +222,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
           playlistRevisionService.getTracksToAdd(
               appTracks, spotifyPlaylistTracks, suddenrunRemovedTracks);
 
-      List<AppTrack> suddenrunAddedTracks = appPlaylist.getAddedByUser();
+      List<AppTrack> suddenrunAddedTracks = appPlaylist.getPreferences();
       int addedTracksSize = suddenrunAddedTracks.size();
       if (addedTracksSize > 0) {
         log.info(
@@ -271,8 +273,8 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
           "Received " + PLAYLIST_WITH_ID + " [" + playlistId + AND_SNAPSHOT_ID + snapshotId + "]");
 
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist.setAddedByUser(suddenrunAddedTracks);
-      appPlaylist.setRemovedByUser(suddenrunRemovedTracks);
+      appPlaylist.setPreferences(suddenrunAddedTracks);
+      appPlaylist.setExclusions(suddenrunRemovedTracks);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       log.info(
           "Saved playlist with id ["

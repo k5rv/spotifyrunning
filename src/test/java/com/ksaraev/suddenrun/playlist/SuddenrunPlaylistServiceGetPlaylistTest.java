@@ -13,6 +13,7 @@ import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.track.AppTrack;
+import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
@@ -37,6 +38,8 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
   @Mock private AppPlaylistMapper playlistMapper;
 
   @Mock private AppUserMapper userMapper;
+
+  @Mock private AppTrackMapper trackMapper;
 
   @Captor private ArgumentCaptor<SpotifyUserProfileItem> spotifyUserProfileArgumentCaptor;
 
@@ -66,6 +69,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,
+            trackMapper,
             userMapper);
   }
 
@@ -208,8 +212,8 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     given(playlistMapper.mapToEntity(spotifyPlaylist)).willReturn(suddenrunPlaylist);
 
-    suddenrunPlaylist.setAddedByUser(customTracks);
-    suddenrunPlaylist.setRemovedByUser(rejectedTracks);
+    suddenrunPlaylist.setPreferences(customTracks);
+    suddenrunPlaylist.setExclusions(rejectedTracks);
     given(suddenrunPlaylistRepository.save(suddenrunPlaylist)).willReturn(suddenrunPlaylist);
 
     // When

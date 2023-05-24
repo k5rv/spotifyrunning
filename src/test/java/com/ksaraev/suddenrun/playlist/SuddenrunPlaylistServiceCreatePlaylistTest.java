@@ -12,6 +12,7 @@ import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
+import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
@@ -34,6 +35,8 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
   @Mock private AppPlaylistMapper playlistMapper;
 
   @Mock private AppUserMapper userMapper;
+
+  @Mock private AppTrackMapper trackMapper;
 
   @Captor private ArgumentCaptor<AppUser> appUserArgumentCaptor;
 
@@ -61,6 +64,7 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,
+            trackMapper,
             userMapper);
   }
 

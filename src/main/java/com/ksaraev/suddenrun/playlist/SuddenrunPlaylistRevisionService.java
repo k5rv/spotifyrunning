@@ -5,15 +5,14 @@ import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.stereotype.Service;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -22,6 +21,42 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
 
   private final AppTrackMapper trackMapper;
 
+  @Override
+  public AppPlaylist updatePlaylist(@NotNull AppPlaylist actualPlaylist, @NotNull AppPlaylist sourcePlaylist) {
+    List<AppTrack> sourceTracks = sourcePlaylist.getTracks();
+    List<AppTrack> actualTrackPreferences = actualPlaylist.getPreferences();
+    List<AppTrack> actualTrackExclusions = actualPlaylist.getExclusions();
+    List<AppTrack> trackPreferences = matchSource(actualTrackPreferences, sourceTracks);
+    List<AppTrack> trackExclusions = noneMatchSource(actualTrackExclusions, sourceTracks);
+    sourcePlaylist.setPreferences(trackPreferences);
+    sourcePlaylist.setExclusions(trackExclusions);
+    return sourcePlaylist;
+  }
+
+  @Override
+  public List<AppTrack> matchSource(
+      @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks) {
+    if (actualTracks.isEmpty()) return List.of();
+    if (sourceTracks.isEmpty()) return List.of();
+    return actualTracks.stream()
+        .filter(
+            actual ->
+                sourceTracks.stream().anyMatch(source -> source.getId().equals(actual.getId())))
+        .toList();
+  }
+
+  @Override
+  public List<AppTrack> noneMatchSource(
+      @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks) {
+    if (actualTracks.isEmpty()) return List.of();
+    if (sourceTracks.isEmpty()) return actualTracks;
+    return actualTracks.stream()
+        .filter(
+            actual ->
+                sourceTracks.stream().noneMatch(source -> source.getId().equals(actual.getId())))
+        .toList();
+  }
+
   public List<AppTrack> getAddedTracks(
       @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
     String playlistId = targetPlaylist.getId();
@@ -29,7 +64,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     String userId = appUser.getId();
     try {
       List<AppTrack> targetTracks = targetPlaylist.getTracks();
-      List<AppTrack> customTracks = targetPlaylist.getAddedByUser();
+      List<AppTrack> customTracks = targetPlaylist.getPreferences();
       List<SpotifyTrackItem> sourceTracks = sourcePlaylist.getTracks();
 
       List<AppTrack> tracksInclusion =
@@ -74,7 +109,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     String userId = appUser.getId();
     try {
       List<AppTrack> targetTracks = targetPlaylist.getTracks();
-      List<AppTrack> rejectedTracks = targetPlaylist.getRemovedByUser();
+      List<AppTrack> rejectedTracks = targetPlaylist.getExclusions();
       List<SpotifyTrackItem> sourceTracks = sourcePlaylist.getTracks();
 
       List<AppTrack> tracksInclusion =

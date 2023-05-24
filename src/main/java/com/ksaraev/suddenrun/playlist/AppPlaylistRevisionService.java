@@ -8,6 +8,14 @@ import java.util.List;
 
 public interface AppPlaylistRevisionService {
 
+  AppPlaylist updatePlaylist(@NotNull AppPlaylist actualPlaylist, @NotNull AppPlaylist sourcePlaylist);
+
+  List<AppTrack> matchSource(
+      @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks);
+
+  List<AppTrack> noneMatchSource(
+      @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks);
+
   List<AppTrack> getAddedTracks(
       @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist);
 
