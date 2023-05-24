@@ -2,7 +2,7 @@ package com.ksaraev.suddenrun.exception;
 
 import static org.springframework.http.HttpStatus.*;
 
-import com.ksaraev.suddenrun.playlist.AppPlaylistAlreadyExistException;
+import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistAlreadyExistsException;
 import com.ksaraev.suddenrun.playlist.AppPlaylistNotFoundException;
 import com.ksaraev.suddenrun.user.SuddenrunUserIsAlreadyRegisteredException;
 import com.ksaraev.suddenrun.user.SuddenrunUserIsNotRegisteredException;
@@ -51,9 +51,9 @@ public class SuddenrunExceptionHandler {
     return ResponseEntity.status(NOT_FOUND).body(new SuddenrunError(notFound, message));
   }
 
-  @ExceptionHandler(value = {AppPlaylistAlreadyExistException.class})
+  @ExceptionHandler(value = {SuddenrunPlaylistAlreadyExistsException.class})
   public ResponseEntity<SuddenrunError> handleAppPlaylistAlreadyExistException(
-      AppPlaylistAlreadyExistException e) {
+      SuddenrunPlaylistAlreadyExistsException e) {
     String message = e.getMessage();
     log.error(message);
     int conflict = CONFLICT.value();

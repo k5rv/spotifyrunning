@@ -3,12 +3,12 @@ package com.ksaraev.suddenrun.playlist;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class ReviseSuddenrunCustomUserTracksException extends RuntimeException {
+public class GetAddedTracksException extends RuntimeException {
 
   private static final String ERROR_WHILE_REVISING_CUSTOM_TRACKS_FOR_USER_WITH_ID =
-      "Error while revising tracks by user with id";
+      "Error while getting added tracks by user with id";
 
-  public ReviseSuddenrunCustomUserTracksException(
+  public GetAddedTracksException(
       String userId, String playlistId, Throwable cause) {
     super(
         ERROR_WHILE_REVISING_CUSTOM_TRACKS_FOR_USER_WITH_ID

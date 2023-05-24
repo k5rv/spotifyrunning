@@ -23,7 +23,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   private final AppTrackMapper trackMapper;
 
   public List<AppTrack> getAddedTracks(
-          @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
+      @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
     String playlistId = targetPlaylist.getId();
     AppUser appUser = targetPlaylist.getUser();
     String userId = appUser.getId();
@@ -63,12 +63,12 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
                       .noneMatch(removeTrack -> removeTrack.getId().equals(track.getId())))
           .toList();
     } catch (RuntimeException e) {
-      throw new ReviseSuddenrunCustomUserTracksException(userId, playlistId, e);
+      throw new GetAddedTracksException(userId, playlistId, e);
     }
   }
 
   public List<AppTrack> getRemovedTracks(
-          @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
+      @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist) {
     String playlistId = targetPlaylist.getId();
     AppUser appUser = targetPlaylist.getUser();
     String userId = appUser.getId();
@@ -107,7 +107,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
                       .noneMatch(removeTrack -> removeTrack.getId().equals(track.getId())))
           .toList();
     } catch (RuntimeException e) {
-      throw new ReviseSuddenrunRejectedUserTracksException(userId, playlistId, e);
+      throw new GetRemovedTracksException(userId, playlistId, e);
     }
   }
 

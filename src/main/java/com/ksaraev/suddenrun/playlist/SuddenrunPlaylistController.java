@@ -41,7 +41,7 @@ public class SuddenrunPlaylistController {
           .getPlaylist(appUser)
           .ifPresent(
               playlist -> {
-                throw new AppPlaylistAlreadyExistException(userId, playlist.getId());
+                throw new SuddenrunPlaylistAlreadyExistsException(playlist.getId());
               });
       AppPlaylist appPlaylist = createPlaylistIfNotExists(appUser);
       List<AppTrack> appTracks = trackService.getTracks();
