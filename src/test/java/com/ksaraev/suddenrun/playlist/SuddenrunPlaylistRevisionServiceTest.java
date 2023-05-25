@@ -241,10 +241,10 @@ class SuddenrunPlaylistRevisionServiceTest {
     sourcePlaylist.setTracks(List.of(trackA, trackB));
 
     // When
-    List<AppTrack> result = underTest.updateExclusions(sourcePlaylist, targetPlaylist);
+    AppPlaylist result = underTest.updatePlaylist(sourcePlaylist, targetPlaylist);
 
     // Then
-    assertThat(result).containsExactlyInAnyOrder(trackC);
+    assertThat(result.getExclusions()).containsExactlyInAnyOrder(trackC);
   }
 
   @Test
@@ -266,9 +266,9 @@ class SuddenrunPlaylistRevisionServiceTest {
     sourcePlaylist.setTracks(List.of(trackA, trackB, trackC));
 
     // When
-    List<AppTrack> result = underTest.updateExclusions(sourcePlaylist, targetPlaylist);
+    AppPlaylist result = underTest.updatePlaylist(sourcePlaylist, targetPlaylist);
 
     // Then
-    assertThat(result).containsExactlyInAnyOrder(trackD);
+    assertThat(result.getExclusions()).containsExactlyInAnyOrder(trackD);
   }
 }

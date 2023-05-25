@@ -11,9 +11,11 @@ public interface AppPlaylistRevisionService {
   AppPlaylist updatePlaylist(
       @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist actualPlaylist);
 
-  List<AppTrack> updatePreferences(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist);
+  List<AppTrack> updatePreferences(
+      List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetPreferences);
 
-  List<AppTrack> updateExclusions(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist);
+  List<AppTrack> updateExclusions(
+      List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetExclusions);
 
   List<AppTrack> findTracksMatch(
       @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks);
