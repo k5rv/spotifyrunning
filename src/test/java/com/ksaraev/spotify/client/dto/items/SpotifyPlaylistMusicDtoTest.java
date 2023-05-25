@@ -7,10 +7,8 @@ import com.ksaraev.spotify.client.dto.SpotifyPlaylistTrackDto;
 import com.ksaraev.spotify.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotify.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
+import jakarta.validation.*;
+
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +18,13 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 class SpotifyPlaylistMusicDtoTest {
 
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
   private Validator validator;
 
   @BeforeEach
   void setUp() {
-    validator = Validation.buildDefaultValidatorFactory().getValidator();
+    validator = factory.getValidator();
   }
 
   @ParameterizedTest

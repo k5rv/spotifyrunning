@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionService {
+public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynchronizationService {
 
   private final AppTrackMapper trackMapper;
 
@@ -23,13 +23,13 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
       @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist targetPlaylist) {
     List<AppTrack> target = targetPlaylist.getTracks();
     List<AppTrack> source = sourcePlaylist.getTracks();
-    List<AppTrack> targetPreferences = targetPlaylist.getPreferences();
+    List<AppTrack> targetPreferences = targetPlaylist.getInclusions();
     List<AppTrack> targetExclusions = targetPlaylist.getExclusions();
     List<AppTrack> preferences = updatePreferences(source, target, targetPreferences);
     if (!preferences.isEmpty()) log.info("Found [" + preferences.size() + "] track preferences");
     List<AppTrack> exclusions = updateExclusions(source, target, targetExclusions);
     if (!exclusions.isEmpty()) log.info("Found [" + exclusions.size() + "] track exclusions");
-    sourcePlaylist.setPreferences(preferences);
+    sourcePlaylist.setInclusions(preferences);
     sourcePlaylist.setExclusions(exclusions);
     return sourcePlaylist;
   }

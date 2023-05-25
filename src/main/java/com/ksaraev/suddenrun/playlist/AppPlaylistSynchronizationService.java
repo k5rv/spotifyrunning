@@ -1,15 +1,14 @@
 package com.ksaraev.suddenrun.playlist;
 
-import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.suddenrun.track.AppTrack;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
-public interface AppPlaylistRevisionService {
+public interface AppPlaylistSynchronizationService {
 
   AppPlaylist updatePlaylist(
-      @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist actualPlaylist);
+      @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist targetPlaylist);
 
   List<SpotifyTrackItem> getTracksToAdd(
       @NotNull List<AppTrack> appTracks,

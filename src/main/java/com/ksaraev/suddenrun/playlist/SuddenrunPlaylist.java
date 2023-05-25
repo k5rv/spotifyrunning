@@ -33,7 +33,7 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> preferences = new ArrayList<>();
+  private List<SuddenrunTrack> inclusions = new ArrayList<>();
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
@@ -45,13 +45,13 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   private String snapshotId;
 
-  public List<AppTrack> getPreferences() {
-    return this.preferences.stream().map(AppTrack.class::cast).collect(Collectors.toList());
+  public List<AppTrack> getInclusions() {
+    return this.inclusions.stream().map(AppTrack.class::cast).collect(Collectors.toList());
   }
 
-  public void setPreferences(List<AppTrack> preferences) {
-    this.preferences =
-        preferences.stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+  public void setInclusions(List<AppTrack> inclusions) {
+    this.inclusions =
+        inclusions.stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
   }
 
   public List<AppTrack> getExclusions() {

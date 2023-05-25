@@ -28,7 +28,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
   @Mock private SuddenrunPlaylistRepository suddenrunPlaylistRepository;
 
-  @Mock private AppPlaylistRevisionService suddenrunRevisionService;
+  @Mock private AppPlaylistSynchronizationService suddenrunRevisionService;
 
   @Mock private SpotifyPlaylistItemService spotifyPlaylistService;
 

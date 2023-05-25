@@ -19,9 +19,9 @@ public interface AppPlaylist {
 
   void setTracks(List<AppTrack> tracks);
 
-  List<AppTrack> getPreferences();
+  List<AppTrack> getInclusions();
 
-  void setPreferences(List<AppTrack> preferences);
+  void setInclusions(List<AppTrack> inclusions);
 
   List<AppTrack> getExclusions();
 

@@ -26,7 +26,7 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
 
   @Mock private SuddenrunPlaylistRepository repository;
 
-  @Mock private AppPlaylistRevisionService playlistRevisionService;
+  @Mock private AppPlaylistSynchronizationService playlistSynchronizationService;
 
   @Mock private SpotifyPlaylistItemService spotifyPlaylistService;
 
@@ -60,7 +60,7 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     underTest =
         new SuddenrunPlaylistService(
             repository,
-            playlistRevisionService,
+                playlistSynchronizationService,
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,

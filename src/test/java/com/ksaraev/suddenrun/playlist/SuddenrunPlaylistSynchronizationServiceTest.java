@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-class SuddenrunPlaylistRevisionServiceTest {
+class SuddenrunPlaylistSynchronizationServiceTest {
 
   @Mock AppTrackMapper trackMapper;
 
@@ -28,12 +28,12 @@ class SuddenrunPlaylistRevisionServiceTest {
 
   private AutoCloseable closeable;
 
-  private AppPlaylistRevisionService underTest;
+  private AppPlaylistSynchronizationService underTest;
 
   @BeforeEach
   void setUp() {
     closeable = MockitoAnnotations.openMocks(this);
-    underTest = new SuddenrunPlaylistRevisionService(trackMapper);
+    underTest = new SuddenrunPlaylistSynchronizationService(trackMapper);
   }
 
   @AfterEach
@@ -71,7 +71,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> sourceTracks = List.of(trackA, trackB, trackC);
     List<AppTrack> targetPreferences = List.of();
     Method updatePreferences =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             UPDATE_PREFERENCES, List.class, List.class, List.class);
     updatePreferences.setAccessible(true);
 
@@ -95,7 +95,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> targetPreferences = List.of(trackC, trackD);
     List<AppTrack> sourceTracks = List.of(trackA, trackB, trackC);
     Method updatePreferences =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             UPDATE_PREFERENCES, List.class, List.class, List.class);
     updatePreferences.setAccessible(true);
 
@@ -118,7 +118,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> targetExclusions = List.of();
     List<AppTrack> sourceTracks = List.of(trackA, trackB);
     Method updateExclusions =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             UPDATE_EXCLUSIONS, List.class, List.class, List.class);
     updateExclusions.setAccessible(true);
 
@@ -142,7 +142,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> targetExclusions = List.of(trackC, trackD);
     List<AppTrack> sourceTracks = List.of(trackA, trackB, trackC);
     Method updateExclusions =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             UPDATE_EXCLUSIONS, List.class, List.class, List.class);
     updateExclusions.setAccessible(true);
 
@@ -163,7 +163,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of(trackA, trackB);
     List<AppTrack> comparisonTargetTracks = List.of(trackB, trackA);
     Method findTracksMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_MATCH, List.class, List.class);
     findTracksMatch.setAccessible(true);
 
@@ -184,7 +184,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of();
     List<AppTrack> comparisonTargetTracks = List.of(trackA, trackB);
     Method findTracksMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_MATCH, List.class, List.class);
     findTracksMatch.setAccessible(true);
 
@@ -205,7 +205,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of(trackA, trackB);
     List<AppTrack> comparisonTargetTracks = List.of();
     Method findTracksMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_MATCH, List.class, List.class);
     findTracksMatch.setAccessible(true);
 
@@ -227,7 +227,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of(trackA, trackB);
     List<AppTrack> comparisonTargetTracks = List.of(trackA, trackC);
     Method findTracksMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_MATCH, List.class, List.class);
     findTracksMatch.setAccessible(true);
 
@@ -248,7 +248,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of(trackA, trackB);
     List<AppTrack> comparisonTargetTracks = List.of(trackB, trackA);
     Method findTracksNoneMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_NONE_MATCH, List.class, List.class);
     findTracksNoneMatch.setAccessible(true);
 
@@ -269,7 +269,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of();
     List<AppTrack> comparisonTargetTracks = List.of(trackA, trackB);
     Method findTracksNoneMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_NONE_MATCH, List.class, List.class);
     findTracksNoneMatch.setAccessible(true);
 
@@ -290,7 +290,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of(trackA, trackB);
     List<AppTrack> comparisonTargetTracks = List.of();
     Method findTracksNoneMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_NONE_MATCH, List.class, List.class);
     findTracksNoneMatch.setAccessible(true);
 
@@ -312,7 +312,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> comparisonSourceTracks = List.of(trackA, trackB);
     List<AppTrack> comparisonTargetTracks = List.of(trackA, trackC);
     Method findTracksNoneMatch =
-        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+        SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
             FIND_TRACKS_NONE_MATCH, List.class, List.class);
     findTracksNoneMatch.setAccessible(true);
 

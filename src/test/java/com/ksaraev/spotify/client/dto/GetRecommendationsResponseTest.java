@@ -3,10 +3,8 @@ package com.ksaraev.spotify.client.dto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
+import jakarta.validation.*;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
@@ -14,11 +12,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class GetRecommendationsResponseTest {
+
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
   private Validator validator;
 
   @BeforeEach
   void setUp() {
-    validator = Validation.buildDefaultValidatorFactory().getValidator();
+    validator = factory.getValidator();
   }
 
   @Test

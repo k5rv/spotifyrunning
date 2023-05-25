@@ -2,18 +2,25 @@ package com.ksaraev.spotify.model.userprofile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
+import jakarta.validation.*;
+
 import java.net.URI;
 import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class SpotifyUserProfileItemTest {
-  private static final Validator validator =
-      Validation.buildDefaultValidatorFactory().getValidator();
+
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
+  private Validator validator;
+
+  @BeforeEach
+  void setUp() {
+    validator = factory.getValidator();
+  }
 
   @ParameterizedTest
   @CsvSource(

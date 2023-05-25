@@ -31,7 +31,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
 
   @Mock private SuddenrunPlaylistRepository suddenrunPlaylistRepository;
 
-  @Mock private AppPlaylistRevisionService suddenrunRevisionService;
+  @Mock private AppPlaylistSynchronizationService suddenrunPlaylistSynchronizationService;
 
   @Mock private SpotifyPlaylistItemService spotifyPlaylistService;
 
@@ -67,7 +67,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
     underTest =
         new SuddenrunPlaylistService(
             suddenrunPlaylistRepository,
-            suddenrunRevisionService,
+                suddenrunPlaylistSynchronizationService,
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,
@@ -104,7 +104,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
     List<AppTrack> suddenrunTracks = SuddenrunHelper.getTracks(10);
     SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(suddenrunUser);
     List<AppTrack> rejectedTracks = suddenrunPlaylist.getExclusions();
-    List<AppTrack> customTracks = suddenrunPlaylist.getPreferences();
+    List<AppTrack> customTracks = suddenrunPlaylist.getInclusions();
     suddenrunUser.addPlaylist(suddenrunPlaylist);
     String playlistId = suddenrunPlaylist.getId();
 
@@ -117,11 +117,11 @@ class SuddenrunPlaylistServiceAddTracksTest {
     given(spotifyPlaylistService.getPlaylist(playlistId)).willReturn(spotifyPlaylist);
 
     List<SpotifyTrackItem> spotifyAddTracks = SpotifyServiceHelper.getTracks(10);
-    given(suddenrunRevisionService.getTracksToAdd(suddenrunTracks, spotifyTracks, rejectedTracks))
+    given(suddenrunPlaylistSynchronizationService.getTracksToAdd(suddenrunTracks, spotifyTracks, rejectedTracks))
         .willReturn(spotifyAddTracks);
 
     List<SpotifyTrackItem> spotifyRemoveTracks = SpotifyServiceHelper.getTracks(3);
-    given(suddenrunRevisionService.getTracksToRemove(suddenrunTracks, spotifyTracks, customTracks))
+    given(suddenrunPlaylistSynchronizationService.getTracksToRemove(suddenrunTracks, spotifyTracks, customTracks))
         .willReturn(spotifyRemoveTracks);
 
     String removeTracksSnapshotId = SpotifyResourceHelper.getRandomSnapshotId();
@@ -148,7 +148,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
     then(spotifyPlaylistService).should(times(2)).getPlaylist(playlistIdArgumentCaptor.capture());
     assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
 
-    then(suddenrunRevisionService)
+    then(suddenrunPlaylistSynchronizationService)
         .should()
         .getTracksToAdd(
             appTracksArgumentCaptor.capture(),
@@ -158,7 +158,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
     assertThat(spotifyTracksArgumentCapture.getValue()).isEqualTo(spotifyTracks);
     assertThat(rejectedTracksArgumentCaptor.getValue()).isEqualTo(rejectedTracks);
 
-    then(suddenrunRevisionService)
+    then(suddenrunPlaylistSynchronizationService)
         .should()
         .getTracksToRemove(
             appTracksArgumentCaptor.capture(),

@@ -4,20 +4,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotify.model.artist.SpotifyArtistItem;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
+import jakarta.validation.*;
+
 import java.net.URI;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class SpotifyTrackItemTest {
-  private static final Validator validator =
-      Validation.buildDefaultValidatorFactory().getValidator();
+
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
+  private Validator validator;
+
+  @BeforeEach
+  void setUp() {
+    validator = factory.getValidator();
+  }
 
   @ParameterizedTest
   @CsvSource(

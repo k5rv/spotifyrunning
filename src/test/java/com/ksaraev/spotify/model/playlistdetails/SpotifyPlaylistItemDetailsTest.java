@@ -2,16 +2,23 @@ package com.ksaraev.spotify.model.playlistdetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
+import jakarta.validation.*;
+
 import java.util.Set;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SpotifyPlaylistItemDetailsTest {
-  private static final Validator validator =
-      Validation.buildDefaultValidatorFactory().getValidator();
+
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
+  private Validator validator;
+
+  @BeforeEach
+  void setUp() {
+    validator = factory.getValidator();
+  }
 
   @Test
   void itShouldDetectSpotifyPlaylistConstraintViolations() {
