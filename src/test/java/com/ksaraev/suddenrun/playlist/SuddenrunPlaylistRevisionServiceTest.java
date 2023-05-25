@@ -7,7 +7,6 @@ import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -70,7 +69,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     AppTrack trackC = SuddenrunHelper.getTrack("C");
     List<AppTrack> targetTracks = List.of(trackA, trackB);
     List<AppTrack> sourceTracks = List.of(trackA, trackB, trackC);
-    List<AppTrack> targetPreferences = new ArrayList<>();
+    List<AppTrack> targetPreferences = List.of();
     Method updatePreferences =
         SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
             UPDATE_PREFERENCES, List.class, List.class, List.class);
@@ -93,9 +92,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     AppTrack trackC = SuddenrunHelper.getTrack("C");
     AppTrack trackD = SuddenrunHelper.getTrack("D");
     List<AppTrack> targetTracks = List.of(trackA, trackB, trackC, trackD);
-    List<AppTrack> targetPreferences = new ArrayList<>();
-    targetPreferences.add(trackC);
-    targetPreferences.add(trackD);
+    List<AppTrack> targetPreferences = List.of(trackC, trackD);
     List<AppTrack> sourceTracks = List.of(trackA, trackB, trackC);
     Method updatePreferences =
         SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
@@ -118,7 +115,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     AppTrack trackB = SuddenrunHelper.getTrack("B");
     AppTrack trackC = SuddenrunHelper.getTrack("C");
     List<AppTrack> targetTracks = List.of(trackA, trackB, trackC);
-    List<AppTrack> targetExclusions = new ArrayList<>();
+    List<AppTrack> targetExclusions = List.of();
     List<AppTrack> sourceTracks = List.of(trackA, trackB);
     Method updateExclusions =
         SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
@@ -142,9 +139,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     AppTrack trackC = SuddenrunHelper.getTrack("C");
     AppTrack trackD = SuddenrunHelper.getTrack("D");
     List<AppTrack> targetTracks = List.of(trackA, trackB);
-    List<AppTrack> targetExclusions = new ArrayList<>();
-    targetExclusions.add(trackC);
-    targetExclusions.add(trackD);
+    List<AppTrack> targetExclusions = List.of(trackC, trackD);
     List<AppTrack> sourceTracks = List.of(trackA, trackB, trackC);
     Method updateExclusions =
         SuddenrunPlaylistRevisionService.class.getDeclaredMethod(

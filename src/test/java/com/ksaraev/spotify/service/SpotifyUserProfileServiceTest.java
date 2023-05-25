@@ -35,8 +35,6 @@ class SpotifyUserProfileServiceTest {
 
   private SpotifyUserProfileItemService underTest;
 
-
-
   @BeforeEach
   void setUp() {
     closeable = MockitoAnnotations.openMocks(this);

@@ -5,9 +5,12 @@ import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,22 +42,24 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
 
   private List<AppTrack> updatePreferences(
       List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetPreferences) {
+    List<AppTrack> preferences = new ArrayList<>(targetPreferences);
     List<AppTrack> sourceDifference = findTracksNoneMatch(sourceTracks, targetTracks);
-    List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, targetPreferences);
-    targetPreferences.addAll(addedPreferences);
-    List<AppTrack> removedPreferences = findTracksNoneMatch(targetPreferences, sourceTracks);
-    targetPreferences.removeAll(removedPreferences);
-    return targetPreferences;
+    List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, preferences);
+    preferences.addAll(addedPreferences);
+    List<AppTrack> removedPreferences = findTracksNoneMatch(preferences, sourceTracks);
+    preferences.removeAll(removedPreferences);
+    return preferences;
   }
 
   private List<AppTrack> updateExclusions(
       List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetExclusions) {
+    List<AppTrack> exclusions = new ArrayList<>(targetExclusions);
     List<AppTrack> targetDifference = findTracksNoneMatch(targetTracks, sourceTracks);
-    List<AppTrack> addedExclusions = findTracksNoneMatch(targetDifference, targetExclusions);
-    targetExclusions.addAll(addedExclusions);
-    List<AppTrack> removedExclusions = findTracksMatch(targetExclusions, sourceTracks);
-    targetExclusions.removeAll(removedExclusions);
-    return targetExclusions;
+    List<AppTrack> addedExclusions = findTracksNoneMatch(targetDifference, exclusions);
+    exclusions.addAll(addedExclusions);
+    List<AppTrack> removedExclusions = findTracksMatch(exclusions, sourceTracks);
+    exclusions.removeAll(removedExclusions);
+    return exclusions;
   }
 
   private List<AppTrack> findTracksMatch(
