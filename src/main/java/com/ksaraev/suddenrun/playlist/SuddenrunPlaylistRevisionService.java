@@ -37,8 +37,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     return sourcePlaylist;
   }
 
-  @Override
-  public List<AppTrack> updatePreferences(
+  private List<AppTrack> updatePreferences(
       List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetPreferences) {
     List<AppTrack> sourceDifference = findTracksNoneMatch(sourceTracks, targetTracks);
     List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, targetPreferences);
@@ -48,8 +47,7 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     return targetPreferences;
   }
 
-  @Override
-  public List<AppTrack> updateExclusions(
+  private List<AppTrack> updateExclusions(
       List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetExclusions) {
     List<AppTrack> targetDifference = findTracksNoneMatch(targetTracks, sourceTracks);
     List<AppTrack> addedExclusions = findTracksNoneMatch(targetDifference, targetExclusions);
@@ -75,6 +73,8 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   private List<AppTrack> findTracksNoneMatch(
       @NotNull List<AppTrack> comparisonSourceTracks,
       @NotNull List<AppTrack> comparisonTargetTracks) {
+    if (comparisonSourceTracks.isEmpty()) return List.of();
+    if (comparisonTargetTracks.isEmpty()) return comparisonSourceTracks;
     return comparisonSourceTracks.stream()
         .filter(
             source ->
