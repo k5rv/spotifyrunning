@@ -28,6 +28,11 @@ public class SuddenrunHelper {
     return SuddenrunTrack.builder().id(id).name(name).build();
   }
 
+  public static SuddenrunTrack getTrack(String id) {
+    String name = SpotifyResourceHelper.getRandomName();
+    return SuddenrunTrack.builder().id(id).name(name).build();
+  }
+
   public static List<AppTrack> getTracks(Integer size) {
     List<AppTrack> appTracks = new ArrayList<>();
     IntStream.range(0, size).forEach(index -> appTracks.add(index, getTrack()));
