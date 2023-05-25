@@ -59,21 +59,22 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
     return targetExclusions;
   }
 
-  @Override
-  public List<AppTrack> findTracksMatch(
-           @NotNull List<AppTrack> comparisonSourceTracks , @NotNull List<AppTrack> comparisonTargetTracks) {
+  private List<AppTrack> findTracksMatch(
+      @NotNull List<AppTrack> comparisonSourceTracks,
+      @NotNull List<AppTrack> comparisonTargetTracks) {
     if (comparisonSourceTracks.isEmpty()) return List.of();
     if (comparisonTargetTracks.isEmpty()) return List.of();
     return comparisonSourceTracks.stream()
         .filter(
             actual ->
-                comparisonTargetTracks.stream().anyMatch(source -> source.getId().equals(actual.getId())))
+                comparisonTargetTracks.stream()
+                    .anyMatch(source -> source.getId().equals(actual.getId())))
         .toList();
   }
 
-  @Override
-  public List<AppTrack> findTracksNoneMatch(
-          @NotNull List<AppTrack> comparisonSourceTracks, @NotNull List<AppTrack> comparisonTargetTracks) {
+  private List<AppTrack> findTracksNoneMatch(
+      @NotNull List<AppTrack> comparisonSourceTracks,
+      @NotNull List<AppTrack> comparisonTargetTracks) {
     return comparisonSourceTracks.stream()
         .filter(
             source ->

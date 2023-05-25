@@ -6,6 +6,7 @@ import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
+import java.lang.reflect.Method;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,10 @@ import org.mockito.MockitoAnnotations;
 class SuddenrunPlaylistRevisionServiceTest {
 
   @Mock AppTrackMapper trackMapper;
+
+  private static final String FIND_TRACKS_NONE_MATCH = "findTracksNoneMatch";
+
+  private static final String FIND_TRACKS_MATCH = "findTracksMatch";
 
   private AutoCloseable closeable;
 
@@ -53,122 +58,154 @@ class SuddenrunPlaylistRevisionServiceTest {
   }
 
   @Test
-  void matchShouldReturnActualIfItEqualsToSource() {
+  void matchShouldReturnActualIfItEqualsToSource() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of(trackA, trackB);
     List<AppTrack> source = List.of(trackB, trackA);
+    Method findTracksMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_MATCH, List.class, List.class);
+    findTracksMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackA, trackB);
   }
 
   @Test
-  void matchShouldReturnEmptyIfActualIsEmpty() {
+  void matchShouldReturnEmptyIfActualIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of();
     List<AppTrack> source = List.of(trackA, trackB);
+    Method findTracksMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_MATCH, List.class, List.class);
+    findTracksMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void matchShouldReturnEmptyIfSourceIsEmpty() {
+  void matchShouldReturnEmptyIfSourceIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of(trackA, trackB);
     List<AppTrack> source = List.of();
+    Method findTracksMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_MATCH, List.class, List.class);
+    findTracksMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void matchShouldReturnTracksThatPresentBothInActualAndSource() {
+  void matchShouldReturnTracksThatPresentBothInActualAndSource() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     AppTrack trackC = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of(trackA, trackB);
     List<AppTrack> source = List.of(trackA, trackC);
+    Method findTracksMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_MATCH, List.class, List.class);
+    findTracksMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackA);
   }
 
   @Test
-  void noneMatchShouldReturnEmptyIfActualEqualsToSource() {
+  void noneMatchShouldReturnEmptyIfActualEqualsToSource() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of(trackA, trackB);
     List<AppTrack> source = List.of(trackB, trackA);
+    Method findTracksNoneMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_NONE_MATCH, List.class, List.class);
+    findTracksNoneMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksNoneMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void noneMatchShouldReturnEmptyIfActualIsEmpty() {
+  void noneMatchShouldReturnEmptyIfActualIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of();
     List<AppTrack> source = List.of(trackA, trackB);
+    Method findTracksNoneMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_NONE_MATCH, List.class, List.class);
+    findTracksNoneMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksNoneMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).isEmpty();
   }
 
   @Test
-  void noneMatchShouldReturnActualIfSourceIsEmpty() {
+  void noneMatchShouldReturnActualIfSourceIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of(trackA, trackB);
     List<AppTrack> source = List.of();
+    Method findTracksNoneMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_NONE_MATCH, List.class, List.class);
+    findTracksNoneMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksNoneMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackA, trackB);
   }
 
   @Test
-  void noneMatchShouldReturnTracksThatPresentInActualAndNotPresentInSource() {
+  void noneMatchShouldReturnTracksThatPresentInActualAndNotPresentInSource() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
     AppTrack trackB = SuddenrunHelper.getTrack();
     AppTrack trackC = SuddenrunHelper.getTrack();
     List<AppTrack> actual = List.of(trackA, trackB);
     List<AppTrack> source = List.of(trackA, trackC);
+    Method findTracksNoneMatch =
+        SuddenrunPlaylistRevisionService.class.getDeclaredMethod(
+            FIND_TRACKS_NONE_MATCH, List.class, List.class);
+    findTracksNoneMatch.setAccessible(true);
 
     // When
-    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
+    List<AppTrack> result = (List<AppTrack>) findTracksNoneMatch.invoke(underTest, actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackB);
