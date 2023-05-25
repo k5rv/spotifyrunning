@@ -11,12 +11,6 @@ public interface AppPlaylistRevisionService {
   AppPlaylist updatePlaylist(
       @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist actualPlaylist);
 
-  List<AppTrack> getAddedTracks(
-      @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist);
-
-  List<AppTrack> getRemovedTracks(
-      @NotNull AppPlaylist targetPlaylist, @NotNull SpotifyPlaylistItem sourcePlaylist);
-
   List<SpotifyTrackItem> getTracksToAdd(
       @NotNull List<AppTrack> appTracks,
       @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
