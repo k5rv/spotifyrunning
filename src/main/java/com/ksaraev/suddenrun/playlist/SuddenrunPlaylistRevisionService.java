@@ -22,19 +22,35 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   private final AppTrackMapper trackMapper;
 
   @Override
-  public AppPlaylist updatePlaylist(@NotNull AppPlaylist actualPlaylist, @NotNull AppPlaylist sourcePlaylist) {
-    List<AppTrack> sourceTracks = sourcePlaylist.getTracks();
-    List<AppTrack> actualTrackPreferences = actualPlaylist.getPreferences();
-    List<AppTrack> actualTrackExclusions = actualPlaylist.getExclusions();
-    List<AppTrack> trackPreferences = matchSource(actualTrackPreferences, sourceTracks);
-    List<AppTrack> trackExclusions = noneMatchSource(actualTrackExclusions, sourceTracks);
-    sourcePlaylist.setPreferences(trackPreferences);
-    sourcePlaylist.setExclusions(trackExclusions);
+  public AppPlaylist updatePlaylist(
+      @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist targetPlaylist) {
+    List<AppTrack> target = targetPlaylist.getTracks();
+    List<AppTrack> source = sourcePlaylist.getTracks();
+    List<AppTrack> preferences = targetPlaylist.getPreferences();
+    List<AppTrack> exclusions = targetPlaylist.getExclusions();
+    List<AppTrack> sourceDifference = findTracksNoneMatch(source, target);
+    List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, preferences);
+    preferences.addAll(addedPreferences);
+    List<AppTrack> removedPreferences = findTracksNoneMatch(preferences, source);
+    preferences.removeAll(removedPreferences);
+    sourcePlaylist.setPreferences(preferences);
     return sourcePlaylist;
   }
 
+//  private List<AppTrack> determinePreferences(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist) {
+//    List<AppTrack> target = targetPlaylist.getTracks();
+//    List<AppTrack> source = sourcePlaylist.getTracks();
+//    List<AppTrack> preferences = targetPlaylist.getPreferences();
+//    List<AppTrack> sourceDifference = findTracksNoneMatch(source, target);
+//    List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, preferences);
+//    preferences.addAll(addedPreferences);
+//    List<AppTrack> removedPreferences = findTracksNoneMatch(preferences, source);
+//    preferences.removeAll(removedPreferences);
+//    return preferences;
+//  }
+
   @Override
-  public List<AppTrack> matchSource(
+  public List<AppTrack> findTracksMatch(
       @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks) {
     if (actualTracks.isEmpty()) return List.of();
     if (sourceTracks.isEmpty()) return List.of();
@@ -46,14 +62,13 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   }
 
   @Override
-  public List<AppTrack> noneMatchSource(
-      @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks) {
-    if (actualTracks.isEmpty()) return List.of();
-    if (sourceTracks.isEmpty()) return actualTracks;
-    return actualTracks.stream()
+  public List<AppTrack> findTracksNoneMatch(
+      @NotNull List<AppTrack> comparisonSource, @NotNull List<AppTrack> comparisonTarget) {
+    return comparisonSource.stream()
         .filter(
-            actual ->
-                sourceTracks.stream().noneMatch(source -> source.getId().equals(actual.getId())))
+            source ->
+                comparisonTarget.stream()
+                    .noneMatch(target -> target.getId().equals(source.getId())))
         .toList();
   }
 
