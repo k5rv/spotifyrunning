@@ -7,8 +7,6 @@ import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.util.List;
-
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,21 +36,20 @@ class SuddenrunPlaylistRevisionServiceTest {
   void itShouldUpdatePlaylist() {
     // Given
     SuddenrunUser user = SuddenrunHelper.getUser();
-    AppPlaylist actualPlaylist = SuddenrunHelper.getSuddenrunPlaylist(user);
-    String playlistId = actualPlaylist.getId();
+    AppPlaylist targetPlaylist = SuddenrunHelper.getSuddenrunPlaylist(user);
+    String playlistId = targetPlaylist.getId();
     AppPlaylist sourcePlaylist = SuddenrunHelper.getSuddenrunPlaylist(playlistId, user);
     List<AppTrack> tracks = sourcePlaylist.getTracks();
     String snapshotId = sourcePlaylist.getSnapshotId();
 
     // When
-    AppPlaylist result = underTest.updatePlaylist(actualPlaylist, sourcePlaylist);
+    AppPlaylist result = underTest.updatePlaylist(sourcePlaylist, targetPlaylist);
 
     // Then
     assertThat(result.getId()).isEqualTo(playlistId);
     assertThat(result.getSnapshotId()).isEqualTo(snapshotId);
     assertThat(result.getUser()).usingRecursiveComparison().isEqualTo(user);
     assertThat(result.getTracks()).isEqualTo(tracks);
-
   }
 
   @Test
@@ -64,7 +61,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of(trackB, trackA);
 
     // When
-    List<AppTrack> result = underTest.matchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksMatch(actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackA, trackB);
@@ -79,7 +76,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of(trackA, trackB);
 
     // When
-    List<AppTrack> result = underTest.matchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksMatch(actual, source);
 
     // Then
     assertThat(result).isEmpty();
@@ -94,7 +91,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of();
 
     // When
-    List<AppTrack> result = underTest.matchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksMatch(actual, source);
 
     // Then
     assertThat(result).isEmpty();
@@ -110,7 +107,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of(trackA, trackC);
 
     // When
-    List<AppTrack> result = underTest.matchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksMatch(actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackA);
@@ -125,7 +122,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of(trackB, trackA);
 
     // When
-    List<AppTrack> result = underTest.noneMatchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
 
     // Then
     assertThat(result).isEmpty();
@@ -140,7 +137,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of(trackA, trackB);
 
     // When
-    List<AppTrack> result = underTest.noneMatchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
 
     // Then
     assertThat(result).isEmpty();
@@ -155,7 +152,7 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of();
 
     // When
-    List<AppTrack> result = underTest.noneMatchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackA, trackB);
@@ -171,9 +168,107 @@ class SuddenrunPlaylistRevisionServiceTest {
     List<AppTrack> source = List.of(trackA, trackC);
 
     // When
-    List<AppTrack> result = underTest.noneMatchSource(actual, source);
+    List<AppTrack> result = underTest.findTracksNoneMatch(actual, source);
 
     // Then
     assertThat(result).containsExactlyInAnyOrder(trackB);
+  }
+
+  @Test
+  void itShouldAddNewTrackToPreferences() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppTrack trackC = SuddenrunHelper.getTrack("C");
+
+    AppPlaylist targetPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    targetPlaylist.setPreferences(List.of());
+    targetPlaylist.setExclusions(List.of());
+    targetPlaylist.setTracks(List.of(trackA, trackB));
+
+    AppPlaylist sourcePlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    sourcePlaylist.setPreferences(List.of());
+    sourcePlaylist.setExclusions(List.of());
+    sourcePlaylist.setTracks(List.of(trackA, trackB, trackC));
+
+    // When
+    AppPlaylist result = underTest.updatePlaylist(sourcePlaylist, targetPlaylist);
+
+    // Then
+    assertThat(result.getPreferences()).containsExactlyInAnyOrder(trackC);
+  }
+
+  @Test
+  void itShouldDeletePreferenceIfPreferenceRemovedFromSource() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppTrack trackC = SuddenrunHelper.getTrack("C");
+    AppTrack trackD = SuddenrunHelper.getTrack("D");
+
+    AppPlaylist targetPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    targetPlaylist.setExclusions(List.of());
+    targetPlaylist.setPreferences(List.of(trackC, trackD));
+    targetPlaylist.setTracks(List.of(trackA, trackB, trackC, trackD));
+
+    AppPlaylist sourcePlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    sourcePlaylist.setExclusions(List.of());
+    sourcePlaylist.setPreferences(List.of());
+    sourcePlaylist.setTracks(List.of(trackA, trackB, trackC));
+
+    // When
+    AppPlaylist result = underTest.updatePlaylist(sourcePlaylist, targetPlaylist);
+
+    // Then
+    assertThat(result.getPreferences()).containsExactlyInAnyOrder(trackC);
+  }
+
+  @Test
+  void itShouldAddExclusions() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppTrack trackC = SuddenrunHelper.getTrack("C");
+
+    AppPlaylist targetPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    targetPlaylist.setExclusions(List.of());
+    targetPlaylist.setPreferences(List.of());
+    targetPlaylist.setTracks(List.of(trackA, trackB, trackC));
+
+    AppPlaylist sourcePlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    sourcePlaylist.setExclusions(List.of());
+    sourcePlaylist.setPreferences(List.of());
+    sourcePlaylist.setTracks(List.of(trackA, trackB));
+
+    // When
+    List<AppTrack> result = underTest.updateExclusions(sourcePlaylist, targetPlaylist);
+
+    // Then
+    assertThat(result).containsExactlyInAnyOrder(trackC);
+  }
+
+  @Test
+  void itShouldDeleteExclusionsIfExclusionAddedToSource() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppTrack trackC = SuddenrunHelper.getTrack("C");
+    AppTrack trackD = SuddenrunHelper.getTrack("D");
+
+    AppPlaylist targetPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    targetPlaylist.setExclusions(List.of(trackC, trackD));
+    targetPlaylist.setPreferences(List.of());
+    targetPlaylist.setTracks(List.of(trackA, trackB));
+
+    AppPlaylist sourcePlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    sourcePlaylist.setExclusions(List.of());
+    sourcePlaylist.setPreferences(List.of());
+    sourcePlaylist.setTracks(List.of(trackA, trackB, trackC));
+
+    // When
+    List<AppTrack> result = underTest.updateExclusions(sourcePlaylist, targetPlaylist);
+
+    // Then
+    assertThat(result).containsExactlyInAnyOrder(trackD);
   }
 }

@@ -8,12 +8,17 @@ import java.util.List;
 
 public interface AppPlaylistRevisionService {
 
-  AppPlaylist updatePlaylist(@NotNull AppPlaylist actualPlaylist, @NotNull AppPlaylist sourcePlaylist);
+  AppPlaylist updatePlaylist(
+      @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist actualPlaylist);
 
-  List<AppTrack> matchSource(
+  List<AppTrack> updatePreferences(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist);
+
+  List<AppTrack> updateExclusions(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist);
+
+  List<AppTrack> findTracksMatch(
       @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks);
 
-  List<AppTrack> noneMatchSource(
+  List<AppTrack> findTracksNoneMatch(
       @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks);
 
   List<AppTrack> getAddedTracks(

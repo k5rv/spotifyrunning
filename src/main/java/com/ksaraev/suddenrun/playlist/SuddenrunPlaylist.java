@@ -14,6 +14,7 @@ import org.hibernate.annotations.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -45,19 +46,21 @@ public class SuddenrunPlaylist implements AppPlaylist {
   private String snapshotId;
 
   public List<AppTrack> getPreferences() {
-    return this.preferences.stream().map(AppTrack.class::cast).toList();
+    return this.preferences.stream().map(AppTrack.class::cast).collect(Collectors.toList());
   }
 
   public void setPreferences(List<AppTrack> preferences) {
-    this.preferences = preferences.stream().map(SuddenrunTrack.class::cast).toList();
+    this.preferences =
+        preferences.stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
   }
 
   public List<AppTrack> getExclusions() {
-    return this.exclusions.stream().map(AppTrack.class::cast).toList();
+    return this.exclusions.stream().map(AppTrack.class::cast).collect(Collectors.toList());
   }
 
   public void setExclusions(List<AppTrack> exclusions) {
-    this.exclusions = exclusions.stream().map(SuddenrunTrack.class::cast).toList();
+    this.exclusions =
+        exclusions.stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
   }
 
   @JsonIgnore

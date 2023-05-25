@@ -24,30 +24,38 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
   @Override
   public AppPlaylist updatePlaylist(
       @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist targetPlaylist) {
+    List<AppTrack> preferences = updatePreferences(sourcePlaylist, targetPlaylist);
+    List<AppTrack> exclusions = updateExclusions(sourcePlaylist, targetPlaylist);
+    sourcePlaylist.setPreferences(preferences);
+    sourcePlaylist.setExclusions(exclusions);
+    return sourcePlaylist;
+  }
+
+  @Override
+  public List<AppTrack> updatePreferences(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist) {
     List<AppTrack> target = targetPlaylist.getTracks();
     List<AppTrack> source = sourcePlaylist.getTracks();
     List<AppTrack> preferences = targetPlaylist.getPreferences();
-    List<AppTrack> exclusions = targetPlaylist.getExclusions();
     List<AppTrack> sourceDifference = findTracksNoneMatch(source, target);
     List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, preferences);
     preferences.addAll(addedPreferences);
     List<AppTrack> removedPreferences = findTracksNoneMatch(preferences, source);
     preferences.removeAll(removedPreferences);
-    sourcePlaylist.setPreferences(preferences);
-    return sourcePlaylist;
+    return preferences;
   }
 
-//  private List<AppTrack> determinePreferences(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist) {
-//    List<AppTrack> target = targetPlaylist.getTracks();
-//    List<AppTrack> source = sourcePlaylist.getTracks();
-//    List<AppTrack> preferences = targetPlaylist.getPreferences();
-//    List<AppTrack> sourceDifference = findTracksNoneMatch(source, target);
-//    List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, preferences);
-//    preferences.addAll(addedPreferences);
-//    List<AppTrack> removedPreferences = findTracksNoneMatch(preferences, source);
-//    preferences.removeAll(removedPreferences);
-//    return preferences;
-//  }
+  @Override
+  public List<AppTrack> updateExclusions(AppPlaylist sourcePlaylist, AppPlaylist targetPlaylist) {
+    List<AppTrack> target = targetPlaylist.getTracks();
+    List<AppTrack> source = sourcePlaylist.getTracks();
+    List<AppTrack> exclusions = targetPlaylist.getExclusions();
+    List<AppTrack> targetDifference = findTracksNoneMatch(target, source);
+    List<AppTrack> addedExclusions = findTracksNoneMatch(targetDifference, exclusions);
+    exclusions.addAll(addedExclusions);
+    List<AppTrack> removedExclusions = findTracksMatch(exclusions, source);
+    exclusions.removeAll(removedExclusions);
+    return exclusions;
+  }
 
   @Override
   public List<AppTrack> findTracksMatch(

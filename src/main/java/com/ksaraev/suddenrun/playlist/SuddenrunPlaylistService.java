@@ -116,8 +116,8 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       SpotifyUserProfileItem spotifyUserProfile = userMapper.mapToItem(appUser);
       List<SpotifyPlaylistItem> spotifyUserPlaylists =
           spotifyPlaylistService.getUserPlaylists(spotifyUserProfile);
-      AppPlaylist appPlaylist = optionalSuddenrunPlaylist.get();
-      String playlistId = appPlaylist.getId();
+      AppPlaylist targetPlaylist = optionalSuddenrunPlaylist.get();
+      String playlistId = targetPlaylist.getId();
       Optional<SpotifyPlaylistItem> optionalSpotifyPlaylist =
           spotifyUserPlaylists.stream()
               .filter(spotifyPlaylist -> spotifyPlaylist.getId().equals(playlistId))
@@ -129,45 +129,39 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
                 + " ["
                 + playlistId
                 + "] not found in Spotify. Deleting Suddenrun playlist and returning empty result.");
-        appUser.removePlaylist(appPlaylist);
+        appUser.removePlaylist(targetPlaylist);
         repository.deleteById(playlistId);
         return Optional.empty();
       }
 
       SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
       String spotifyPlaylistSnapshotId = spotifyPlaylist.getSnapshotId();
-      String appPlaylistSnapshotId = appPlaylist.getSnapshotId();
+      String appPlaylistSnapshotId = targetPlaylist.getSnapshotId();
       boolean snapshotsAreIdentical = spotifyPlaylistSnapshotId.equals(appPlaylistSnapshotId);
       if (snapshotsAreIdentical) {
         log.info(
             PLAYLIST_WITH_ID
                 + " ["
                 + playlistId
-                + "] has the exact same snapshot version in app and Spotify. Returning playlist with snapshot id ["
+                + "] has the exact same snapshot id ["
                 + appPlaylistSnapshotId
-                + "].");
-        return Optional.of(appPlaylist);
+                + "] in Suddenrun and Spotify. Returning playlist.");
+        return Optional.of(targetPlaylist);
       }
 
       log.info(
           PLAYLIST_WITH_ID
               + " ["
               + playlistId
-              + "] found in app and Spotify with the different snapshot versions ["
+              + "] found in Suddenrun and Spotify with the different snapshot ids ["
               + appPlaylistSnapshotId
               + "] and ["
               + spotifyPlaylistSnapshotId
-              + "] respectively. Updating app version from Spotify.");
+              + "] respectively. Updating Suddenrun playlist from Spotify.");
 
-      List<AppTrack> addedTracks =
-          playlistRevisionService.getAddedTracks(appPlaylist, spotifyPlaylist);
-
-      List<AppTrack> removedTracks =
-          playlistRevisionService.getRemovedTracks(appPlaylist, spotifyPlaylist);
-
-      appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist.setPreferences(addedTracks);
-      appPlaylist.setExclusions(removedTracks);
+      AppPlaylist sourcePlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
+      AppPlaylist appPlaylist =
+          playlistRevisionService.updatePlaylist(sourcePlaylist, targetPlaylist);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       log.info(
           "Updated playlist with id ["
@@ -175,7 +169,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + AND_SNAPSHOT_ID
               + appPlaylist.getSnapshotId()
               + "] from Spotify. Returning playlist.");
-      return Optional.of(appPlaylist);
+      return Optional.of(targetPlaylist);
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     } catch (SpotifyServiceException e) {
