@@ -61,23 +61,23 @@ public class SuddenrunPlaylistRevisionService implements AppPlaylistRevisionServ
 
   @Override
   public List<AppTrack> findTracksMatch(
-      @NotNull List<AppTrack> actualTracks, @NotNull List<AppTrack> sourceTracks) {
-    if (actualTracks.isEmpty()) return List.of();
-    if (sourceTracks.isEmpty()) return List.of();
-    return actualTracks.stream()
+           @NotNull List<AppTrack> comparisonSourceTracks , @NotNull List<AppTrack> comparisonTargetTracks) {
+    if (comparisonSourceTracks.isEmpty()) return List.of();
+    if (comparisonTargetTracks.isEmpty()) return List.of();
+    return comparisonSourceTracks.stream()
         .filter(
             actual ->
-                sourceTracks.stream().anyMatch(source -> source.getId().equals(actual.getId())))
+                comparisonTargetTracks.stream().anyMatch(source -> source.getId().equals(actual.getId())))
         .toList();
   }
 
   @Override
   public List<AppTrack> findTracksNoneMatch(
-      @NotNull List<AppTrack> comparisonSource, @NotNull List<AppTrack> comparisonTarget) {
-    return comparisonSource.stream()
+          @NotNull List<AppTrack> comparisonSourceTracks, @NotNull List<AppTrack> comparisonTargetTracks) {
+    return comparisonSourceTracks.stream()
         .filter(
             source ->
-                comparisonTarget.stream()
+                comparisonTargetTracks.stream()
                     .noneMatch(target -> target.getId().equals(source.getId())))
         .toList();
   }
