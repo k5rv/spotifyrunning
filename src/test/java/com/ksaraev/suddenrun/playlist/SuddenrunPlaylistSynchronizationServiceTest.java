@@ -42,7 +42,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
-  void itShouldUpdatePlaylist() {
+  void itShouldUpdateFromSource() {
     // Given
     SuddenrunUser user = SuddenrunHelper.getUser();
     AppPlaylist targetPlaylist = SuddenrunHelper.getSuddenrunPlaylist(user);
@@ -52,7 +52,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     String snapshotId = sourcePlaylist.getSnapshotId();
 
     // When
-    AppPlaylist result = underTest.updatePlaylist(sourcePlaylist, targetPlaylist);
+    AppPlaylist result = underTest.updateFromSource(targetPlaylist, sourcePlaylist);
 
     // Then
     assertThat(result.getId()).isEqualTo(playlistId);

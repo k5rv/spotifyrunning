@@ -31,7 +31,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
   private final SuddenrunPlaylistRepository repository;
 
-  private final AppPlaylistSynchronizationService playlistSynchronizationService;
+  private final AppPlaylistSynchronizationService synchronizationService;
 
   private final SpotifyPlaylistItemService spotifyPlaylistService;
 
@@ -127,6 +127,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       String spotifyPlaylistSnapshotId = spotifyPlaylist.getSnapshotId();
       String appPlaylistSnapshotId = targetPlaylist.getSnapshotId();
       boolean snapshotsAreIdentical = spotifyPlaylistSnapshotId.equals(appPlaylistSnapshotId);
+
       if (snapshotsAreIdentical) {
         log.info(
             PLAYLIST_WITH_ID
@@ -150,7 +151,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
 
       AppPlaylist sourcePlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
       AppPlaylist appPlaylist =
-          playlistSynchronizationService.updatePlaylist(sourcePlaylist, targetPlaylist);
+          synchronizationService.updateFromSource(targetPlaylist, sourcePlaylist);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       log.info(
           "Updated playlist with id ["
@@ -201,8 +202,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
                 + "]");
 
       List<SpotifyTrackItem> spotifyTracksToAdd =
-          playlistSynchronizationService.getTracksToAdd(
-              appTracks, spotifyTracks, playlistExclusions);
+          synchronizationService.getTracksToAdd(appTracks, spotifyTracks, playlistExclusions);
 
       List<AppTrack> playlistInclusions = appPlaylist.getInclusions();
       if (!playlistInclusions.isEmpty()) {
@@ -215,8 +215,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       }
 
       List<SpotifyTrackItem> spotifyTracksToRemove =
-          playlistSynchronizationService.getTracksToRemove(
-              appTracks, spotifyTracks, playlistInclusions);
+          synchronizationService.getTracksToRemove(appTracks, spotifyTracks, playlistInclusions);
 
       if (!spotifyTracksToRemove.isEmpty()) {
         String snapshotId = spotifyPlaylistService.removeTracks(playlistId, spotifyTracksToRemove);

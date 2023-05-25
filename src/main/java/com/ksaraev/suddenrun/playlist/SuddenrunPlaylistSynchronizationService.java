@@ -19,8 +19,8 @@ public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynch
   private final AppTrackMapper trackMapper;
 
   @Override
-  public AppPlaylist updatePlaylist(
-      @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist targetPlaylist) {
+  public AppPlaylist updateFromSource(
+      @NotNull AppPlaylist targetPlaylist, @NotNull AppPlaylist sourcePlaylist) {
     List<AppTrack> target = targetPlaylist.getTracks();
     List<AppTrack> source = sourcePlaylist.getTracks();
     List<AppTrack> targetPreferences = targetPlaylist.getInclusions();
@@ -81,6 +81,16 @@ public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynch
                     .noneMatch(target -> target.getId().equals(source.getId())))
         .toList();
   }
+
+  /*
+  playlistSynchronizationService.getTracksToAdd(
+              appTracks, spotifyTracks, playlistExclusions);
+   */
+
+  //  private List<AppTrack> findTracks(@NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist
+  // targetPlaylist, @NotEmpty List<AppTrack> appTracks) {
+  //
+  //  }
 
   @Override
   public List<SpotifyTrackItem> getTracksToAdd(

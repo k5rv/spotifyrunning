@@ -7,8 +7,8 @@ import java.util.List;
 
 public interface AppPlaylistSynchronizationService {
 
-  AppPlaylist updatePlaylist(
-      @NotNull AppPlaylist sourcePlaylist, @NotNull AppPlaylist targetPlaylist);
+  AppPlaylist updateFromSource(
+      @NotNull AppPlaylist targetPlaylist, @NotNull AppPlaylist sourcePlaylist);
 
   List<SpotifyTrackItem> getTracksToAdd(
       @NotNull List<AppTrack> appTracks,

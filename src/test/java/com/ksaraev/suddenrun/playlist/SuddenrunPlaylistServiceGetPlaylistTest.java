@@ -205,7 +205,9 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     given(spotifyPlaylistService.getUserPlaylists(spotifyUserProfile)).willReturn(userPlaylists);
     given(spotifyPlaylistService.getPlaylist(playlistId)).willReturn(spotifyPlaylist);
     given(playlistMapper.mapToEntity(spotifyPlaylist)).willReturn(sourceSuddenrunPlaylist);
-    given(suddenrunRevisionService.updatePlaylist(sourceSuddenrunPlaylist, targetSuddenrunPlaylist))
+    given(
+            suddenrunRevisionService.updateFromSource(
+                targetSuddenrunPlaylist, sourceSuddenrunPlaylist))
         .willReturn(sourceSuddenrunPlaylist);
     given(suddenrunPlaylistRepository.save(sourceSuddenrunPlaylist))
         .willReturn(sourceSuddenrunPlaylist);
@@ -232,9 +234,9 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     then(suddenrunRevisionService)
         .should()
-        .updatePlaylist(
-            suddenrunSourcePlaylistArgumentCaptor.capture(),
-            suddenrunTargetPlaylistArgumentCaptor.capture());
+        .updateFromSource(
+            suddenrunTargetPlaylistArgumentCaptor.capture(),
+            suddenrunSourcePlaylistArgumentCaptor.capture());
     assertThat(suddenrunSourcePlaylistArgumentCaptor.getValue()).isEqualTo(sourceSuddenrunPlaylist);
     assertThat(suddenrunTargetPlaylistArgumentCaptor.getValue()).isEqualTo(targetSuddenrunPlaylist);
 
