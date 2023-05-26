@@ -7,14 +7,13 @@ import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.Hibernate;
-import org.hibernate.annotations.Type;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.*;
+import org.hibernate.Hibernate;
+import org.hibernate.annotations.Type;
 
 @Entity
 @Getter

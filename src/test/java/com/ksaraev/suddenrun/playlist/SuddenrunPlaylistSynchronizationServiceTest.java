@@ -33,7 +33,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   @BeforeEach
   void setUp() {
     closeable = MockitoAnnotations.openMocks(this);
-    underTest = new SuddenrunPlaylistSynchronizationService(trackMapper);
+    underTest = new SuddenrunPlaylistSynchronizationService();
   }
 
   @AfterEach
