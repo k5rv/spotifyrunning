@@ -182,46 +182,24 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
               + playlistId
               + "]");
 
-      boolean playlistExists = repository.existsById(playlistId);
+      Optional<SuddenrunPlaylist> optionalSuddenrunPlaylist = repository.findById(playlistId);
 
-      if (!playlistExists) {
+      if (optionalSuddenrunPlaylist.isEmpty()) {
         log.error(PLAYLIST_WITH_ID + playlistId + "] doesn't exist in Suddenrun");
         throw new SuddenrunPlaylistDoesNotExistException(playlistId);
       }
 
-      SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
-      List<SpotifyTrackItem> spotifyTracks = spotifyPlaylist.getTracks().stream().toList();
+      appPlaylist = optionalSuddenrunPlaylist.get();
 
-      List<AppTrack> playlistExclusions = appPlaylist.getExclusions();
-      if (!playlistExclusions.isEmpty())
-        log.info(
-            "Found ["
-                + playlistExclusions.size()
-                + "] tracks previously excluded outside of the Suddenrun from Spotify playlist with id ["
-                + playlistId
-                + "]");
+      List<AppTrack> appTrackRemovals =
+          synchronizationService.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
 
-      List<SpotifyTrackItem> spotifyTracksToAdd =
-          synchronizationService.getTracksToAdd(appTracks, spotifyTracks, playlistExclusions);
-
-      List<AppTrack> playlistInclusions = appPlaylist.getInclusions();
-      if (!playlistInclusions.isEmpty()) {
-        log.info(
-            "Found ["
-                + playlistInclusions.size()
-                + "] tracks previously included outside of the Suddenrun to Spotify playlist with id ["
-                + playlistId
-                + "]");
-      }
-
-      List<SpotifyTrackItem> spotifyTracksToRemove =
-          synchronizationService.getTracksToRemove(appTracks, spotifyTracks, playlistInclusions);
-
-      if (!spotifyTracksToRemove.isEmpty()) {
-        String snapshotId = spotifyPlaylistService.removeTracks(playlistId, spotifyTracksToRemove);
+      if (!appTrackRemovals.isEmpty()) {
+        List<SpotifyTrackItem> spotifyTrackRemovals = trackMapper.mapToDtos(appTrackRemovals);
+        String snapshotId = spotifyPlaylistService.removeTracks(playlistId, spotifyTrackRemovals);
         log.info(
             "Removed ["
-                + spotifyTracksToRemove.size()
+                + appTrackRemovals.size()
                 + "] tracks from "
                 + PLAYLIST_WITH_ID
                 + " ["
@@ -231,11 +209,15 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
                 + "]");
       }
 
-      if (!spotifyTracksToAdd.isEmpty()) {
-        String snapshotId = spotifyPlaylistService.addTracks(playlistId, spotifyTracksToAdd);
+      List<AppTrack> appTrackAdditions =
+          synchronizationService.findTracksNoneMatchPlaylist(appPlaylist, appTracks);
+
+      if (!appTrackAdditions.isEmpty()) {
+        List<SpotifyTrackItem> spotifyTrackAdditions = trackMapper.mapToDtos(appTrackAdditions);
+        String snapshotId = spotifyPlaylistService.addTracks(playlistId, spotifyTrackAdditions);
         log.info(
             "Added ["
-                + spotifyTracksToAdd.size()
+                + appTrackAdditions.size()
                 + "] tracks to "
                 + PLAYLIST_WITH_ID
                 + " ["
@@ -245,10 +227,12 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
                 + "]");
       }
 
-      spotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
+      List<AppTrack> trackInclusions = appPlaylist.getInclusions();
+      List<AppTrack> trackExclusions = appPlaylist.getExclusions();
+      SpotifyPlaylistItem spotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
       appPlaylist = playlistMapper.mapToEntity(spotifyPlaylist);
-      appPlaylist.setInclusions(playlistInclusions);
-      appPlaylist.setExclusions(playlistExclusions);
+      appPlaylist.setInclusions(trackInclusions);
+      appPlaylist.setExclusions(trackExclusions);
       appPlaylist = repository.save((SuddenrunPlaylist) appPlaylist);
       log.info(
           "Saved playlist with id ["

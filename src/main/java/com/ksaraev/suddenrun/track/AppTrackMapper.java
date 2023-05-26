@@ -32,6 +32,8 @@ public interface AppTrackMapper {
   @Mapping(target = "artists", ignore = true)
   SpotifyTrackItem mapToDto(AppTrack appTrack);
 
+  List<SpotifyTrackItem> mapToDtos(List<AppTrack> appTracks);
+
   @ObjectFactory
   default SpotifyTrackItem createItem() {
     return SpotifyTrack.builder().build();

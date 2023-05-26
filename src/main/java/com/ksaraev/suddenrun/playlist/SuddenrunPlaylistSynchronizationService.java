@@ -25,13 +25,35 @@ public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynch
     List<AppTrack> source = sourcePlaylist.getTracks();
     List<AppTrack> targetInclusions = targetPlaylist.getInclusions();
     List<AppTrack> targetExclusions = targetPlaylist.getExclusions();
-    List<AppTrack> preferences = updateInclusions(source, target, targetInclusions);
-    if (!preferences.isEmpty()) log.info("Found [" + preferences.size() + "] track preferences");
+    List<AppTrack> inclusions = updateInclusions(source, target, targetInclusions);
+    if (!inclusions.isEmpty()) log.info("Found [" + inclusions.size() + "] track inclusions");
     List<AppTrack> exclusions = updateExclusions(source, target, targetExclusions);
     if (!exclusions.isEmpty()) log.info("Found [" + exclusions.size() + "] track exclusions");
-    sourcePlaylist.setInclusions(preferences);
+    sourcePlaylist.setInclusions(inclusions);
     sourcePlaylist.setExclusions(exclusions);
     return sourcePlaylist;
+  }
+
+  private List<AppTrack> updateInclusions(
+          List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetInclusions) {
+    List<AppTrack> inclusions = new ArrayList<>(targetInclusions);
+    List<AppTrack> sourceDifference = findTracksNoneMatch(sourceTracks, targetTracks);
+    List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, inclusions);
+    inclusions.addAll(addedPreferences);
+    List<AppTrack> removedPreferences = findTracksNoneMatch(inclusions, sourceTracks);
+    inclusions.removeAll(removedPreferences);
+    return inclusions;
+  }
+
+  private List<AppTrack> updateExclusions(
+          List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetExclusions) {
+    List<AppTrack> exclusions = new ArrayList<>(targetExclusions);
+    List<AppTrack> targetDifference = findTracksNoneMatch(targetTracks, sourceTracks);
+    List<AppTrack> addedExclusions = findTracksNoneMatch(targetDifference, exclusions);
+    exclusions.addAll(addedExclusions);
+    List<AppTrack> removedExclusions = findTracksMatch(exclusions, sourceTracks);
+    exclusions.removeAll(removedExclusions);
+    return exclusions;
   }
 
   @Override
@@ -56,27 +78,6 @@ public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynch
     return findTracksNoneMatch(playlistDifference, playlistInclusions);
   }
 
-  private List<AppTrack> updateInclusions(
-      List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetInclusions) {
-    List<AppTrack> inclusions = new ArrayList<>(targetInclusions);
-    List<AppTrack> sourceDifference = findTracksNoneMatch(sourceTracks, targetTracks);
-    List<AppTrack> addedPreferences = findTracksNoneMatch(sourceDifference, inclusions);
-    inclusions.addAll(addedPreferences);
-    List<AppTrack> removedPreferences = findTracksNoneMatch(inclusions, sourceTracks);
-    inclusions.removeAll(removedPreferences);
-    return inclusions;
-  }
-
-  private List<AppTrack> updateExclusions(
-      List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetExclusions) {
-    List<AppTrack> exclusions = new ArrayList<>(targetExclusions);
-    List<AppTrack> targetDifference = findTracksNoneMatch(targetTracks, sourceTracks);
-    List<AppTrack> addedExclusions = findTracksNoneMatch(targetDifference, exclusions);
-    exclusions.addAll(addedExclusions);
-    List<AppTrack> removedExclusions = findTracksMatch(exclusions, sourceTracks);
-    exclusions.removeAll(removedExclusions);
-    return exclusions;
-  }
 
   private List<AppTrack> findTracksMatch(
       @NotNull List<AppTrack> comparisonSourceTracks,
