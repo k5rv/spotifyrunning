@@ -10,6 +10,12 @@ public interface AppPlaylistSynchronizationService {
   AppPlaylist updateFromSource(
       @NotNull AppPlaylist targetPlaylist, @NotNull AppPlaylist sourcePlaylist);
 
+  List<AppTrack> findTracksNoneMatchPlaylist(
+      @NotNull AppPlaylist appPlaylist, @NotNull List<AppTrack> appTracks);
+
+  List<AppTrack> findPlaylistNoneMatchTracks(
+      @NotNull AppPlaylist appPlaylist, @NotNull List<AppTrack> appTracks);
+
   List<SpotifyTrackItem> getTracksToAdd(
       @NotNull List<AppTrack> appTracks,
       @NotNull List<SpotifyTrackItem> spotifyPlaylistTracks,
