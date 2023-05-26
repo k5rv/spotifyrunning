@@ -22,7 +22,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
 
   private static final String FIND_TRACKS_MATCH = "findTracksMatch";
 
-  private static final String UPDATE_PREFERENCES = "updateInclusions";
+  private static final String UPDATE_INCLUSIONS = "updateInclusions";
 
   private static final String UPDATE_EXCLUSIONS = "updateExclusions";
 
@@ -66,11 +66,9 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack("A");
     AppTrack trackB = SuddenrunHelper.getTrack("B");
-
     AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
     appPlaylist.setTracks(List.of());
     appPlaylist.setExclusions(List.of());
-
     List<AppTrack> appTracks = List.of(trackA, trackB);
 
     // When
@@ -87,11 +85,9 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     AppTrack trackA = SuddenrunHelper.getTrack("A");
     AppTrack trackB = SuddenrunHelper.getTrack("B");
     AppTrack trackC = SuddenrunHelper.getTrack("C");
-
     AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
     appPlaylist.setTracks(List.of(trackA, trackB));
     appPlaylist.setExclusions(List.of());
-
     List<AppTrack> appTracks = List.of(trackA, trackC);
 
     // When
@@ -109,11 +105,9 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     AppTrack trackC = SuddenrunHelper.getTrack("C");
     AppTrack trackD = SuddenrunHelper.getTrack("D");
     AppTrack trackE = SuddenrunHelper.getTrack("E");
-
     AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
     appPlaylist.setTracks(List.of(trackA, trackB, trackC));
     appPlaylist.setExclusions(List.of(trackD));
-
     List<AppTrack> appTracks = List.of(trackD, trackE);
 
     // When
@@ -129,11 +123,9 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack("A");
     AppTrack trackB = SuddenrunHelper.getTrack("B");
-
     AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
     appPlaylist.setTracks(List.of());
     appPlaylist.setExclusions(List.of(trackA));
-
     List<AppTrack> appTracks = List.of(trackA, trackB);
 
     // When
@@ -150,11 +142,9 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     AppTrack trackA = SuddenrunHelper.getTrack("A");
     AppTrack trackB = SuddenrunHelper.getTrack("B");
     AppTrack trackC = SuddenrunHelper.getTrack("C");
-
     AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
     appPlaylist.setTracks(List.of(trackA, trackB));
     appPlaylist.setExclusions(List.of(trackC));
-
     List<AppTrack> appTracks = List.of();
 
     // When
@@ -169,11 +159,9 @@ class SuddenrunPlaylistSynchronizationServiceTest {
       findTracksNoneMatchPlaylistShouldReturnEmptyResultIfBothTracksAndPlaylistAreEmptyButExclusionsPresent() {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack("A");
-
     AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
     appPlaylist.setTracks(List.of());
     appPlaylist.setExclusions(List.of(trackA));
-
     List<AppTrack> appTracks = List.of();
 
     // When
@@ -190,7 +178,6 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
     appPlaylist.setTracks(List.of());
     appPlaylist.setExclusions(List.of());
-
     List<AppTrack> appTracks = List.of();
 
     // When
@@ -201,6 +188,167 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  void findPlaylistNoneMatchTracksShouldReturnTracksThatNotPresentInPlaylist() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppTrack trackC = SuddenrunHelper.getTrack("C");
+    AppTrack trackD = SuddenrunHelper.getTrack("D");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of(trackA, trackB, trackC));
+    appPlaylist.setInclusions(List.of());
+    List<AppTrack> appTracks = List.of(trackA, trackB, trackD);
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).containsExactlyInAnyOrder(trackC);
+  }
+
+  @Test
+  void findPlaylistNoneMatchTracksShouldReturnTracksThatNotPresentInPlaylistAndInclusions() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppTrack trackC = SuddenrunHelper.getTrack("C");
+    AppTrack trackD = SuddenrunHelper.getTrack("D");
+    AppTrack trackE = SuddenrunHelper.getTrack("E");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of(trackA, trackB, trackC, trackD));
+    appPlaylist.setInclusions(List.of(trackD));
+    List<AppTrack> appTracks = List.of(trackA, trackB, trackD, trackE);
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).containsExactlyInAnyOrder(trackC);
+  }
+
+  @Test
+  void findPlaylistNoneMatchTracksShouldReturnEmptyResultIfPlaylistTracksIncludedInTracks() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppTrack trackC = SuddenrunHelper.getTrack("C");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of(trackA, trackB));
+    appPlaylist.setInclusions(List.of());
+    List<AppTrack> appTracks = List.of(trackA, trackB, trackC);
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void findPlaylistNoneMatchTracksShouldReturnEmptyResultIfPlaylistAndInclusionsAreEmpty() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of());
+    appPlaylist.setInclusions(List.of());
+    List<AppTrack> appTracks = List.of(trackA, trackB);
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void findPlaylistNoneMatchTracksShouldReturnEmptyResultIfPlaylistEmptyAndInclusionsArePresent() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of());
+    appPlaylist.setInclusions(List.of(trackB));
+    List<AppTrack> appTracks = List.of(trackA, trackB);
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void
+      findPlaylistNoneMatchTracksShouldReturnEmptyResultIfTracksAndInclusionsAreEmptyButPlaylistTracksArePresent() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of(trackA, trackB));
+    appPlaylist.setInclusions(List.of());
+    List<AppTrack> appTracks = List.of();
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).containsExactlyInAnyOrder(trackB, trackA);
+  }
+
+  @Test
+  void
+      findPlaylistNoneMatchTracksShouldReturnEmptyResultIfTracksAreEmptyButPlaylistAndInclusionsArePresent() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppTrack trackB = SuddenrunHelper.getTrack("B");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of(trackA, trackB));
+    appPlaylist.setInclusions(List.of(trackA));
+    List<AppTrack> appTracks = List.of();
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).containsExactlyInAnyOrder(trackB);
+  }
+
+  @Test
+  void
+      findPlaylistNoneMatchTracksShouldReturnEmptyResultIfPlaylistAndTracksAndInclusionsAreEmpty() {
+    // Given
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of());
+    appPlaylist.setInclusions(List.of());
+    List<AppTrack> appTracks = List.of();
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  void
+      findPlaylistNoneMatchTracksShouldReturnEmptyResultIfPlaylistAndTracksEmptyButInclusionsArePresent() {
+    // Given
+    AppTrack trackA = SuddenrunHelper.getTrack("A");
+    AppPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    appPlaylist.setTracks(List.of());
+    appPlaylist.setInclusions(List.of(trackA));
+    List<AppTrack> appTracks = List.of();
+
+    // When
+    List<AppTrack> result = underTest.findPlaylistNoneMatchTracks(appPlaylist, appTracks);
+
+    // Then
+    assertThat(result).isEmpty();
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
   void updateInclusionsShouldAddInclusions() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack("A");
@@ -211,7 +359,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     List<AppTrack> targetPreferences = List.of();
     Method updatePreferences =
         SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
-            UPDATE_PREFERENCES, List.class, List.class, List.class);
+                UPDATE_INCLUSIONS, List.class, List.class, List.class);
     updatePreferences.setAccessible(true);
 
     // When
@@ -224,6 +372,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void updateInclusionsShouldDeleteInclusions() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack("A");
@@ -235,7 +384,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     List<AppTrack> sourceTracks = List.of(trackA, trackB, trackC);
     Method updatePreferences =
         SuddenrunPlaylistSynchronizationService.class.getDeclaredMethod(
-            UPDATE_PREFERENCES, List.class, List.class, List.class);
+                UPDATE_INCLUSIONS, List.class, List.class, List.class);
     updatePreferences.setAccessible(true);
 
     // When
@@ -248,6 +397,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void updateExclusionsShouldAddExclusions() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack("A");
@@ -271,6 +421,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void updateExclusionsShouldDeleteExclusions() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack("A");
@@ -295,6 +446,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void matchShouldReturnSourceIfItEqualsToTarget() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
@@ -316,6 +468,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void matchShouldReturnEmptyIfSourceIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
@@ -337,6 +490,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void matchShouldReturnEmptyIfTargetIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
@@ -358,6 +512,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void matchShouldReturnTracksThatPresentBothInTargetAndSource() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
@@ -380,6 +535,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void noneMatchShouldReturnEmptyIfSourceEqualsToTarget() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
@@ -401,6 +557,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void noneMatchShouldReturnEmptyIfSourceIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
@@ -422,6 +579,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void noneMatchShouldReturnSourceIfTargetIsEmpty() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();
@@ -443,6 +601,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   void noneMatchShouldReturnTracksThatPresentOnlyInSource() throws Exception {
     // Given
     AppTrack trackA = SuddenrunHelper.getTrack();

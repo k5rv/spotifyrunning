@@ -34,6 +34,28 @@ public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynch
     return sourcePlaylist;
   }
 
+  @Override
+  public List<AppTrack> findTracksNoneMatchPlaylist(
+      @NotNull AppPlaylist appPlaylist, @NotNull List<AppTrack> appTracks) {
+    if (appTracks.isEmpty()) return List.of();
+    List<AppTrack> playlistTracks = appPlaylist.getTracks();
+    List<AppTrack> tracksDifference = findTracksNoneMatch(appTracks, playlistTracks);
+    List<AppTrack> playlistExclusions = appPlaylist.getExclusions();
+    if (playlistExclusions.isEmpty()) return tracksDifference;
+    return findTracksNoneMatch(tracksDifference, playlistExclusions);
+  }
+
+  @Override
+  public List<AppTrack> findPlaylistNoneMatchTracks(
+      @NotNull AppPlaylist appPlaylist, @NotNull List<AppTrack> appTracks) {
+    List<AppTrack> playlistTracks = appPlaylist.getTracks();
+    if (playlistTracks.isEmpty()) return List.of();
+    List<AppTrack> playlistDifference = findTracksNoneMatch(playlistTracks, appTracks);
+    List<AppTrack> playlistInclusions = appPlaylist.getInclusions();
+    if (playlistInclusions.isEmpty()) return playlistDifference;
+    return findTracksNoneMatch(playlistDifference, playlistInclusions);
+  }
+
   private List<AppTrack> updateInclusions(
       List<AppTrack> sourceTracks, List<AppTrack> targetTracks, List<AppTrack> targetInclusions) {
     List<AppTrack> inclusions = new ArrayList<>(targetInclusions);
@@ -80,26 +102,6 @@ public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynch
                 comparisonTargetTracks.stream()
                     .noneMatch(target -> target.getId().equals(source.getId())))
         .toList();
-  }
-
-  @Override
-  public List<AppTrack> findTracksNoneMatchPlaylist(
-      @NotNull AppPlaylist appPlaylist, @NotNull List<AppTrack> appTracks) {
-    if (appTracks.isEmpty()) return List.of();
-    List<AppTrack> playlistTracks = appPlaylist.getTracks();
-    List<AppTrack> tracksDifference = findTracksNoneMatch(appTracks, playlistTracks);
-    List<AppTrack> playlistExclusions = appPlaylist.getExclusions();
-    if (playlistExclusions.isEmpty()) return tracksDifference;
-    return findTracksNoneMatch(tracksDifference, playlistExclusions);
-  }
-
-  @Override
-  public List<AppTrack> findPlaylistNoneMatchTracks(
-      @NotNull AppPlaylist appPlaylist, @NotNull List<AppTrack> appTracks) {
-    List<AppTrack> playlistTracks = appPlaylist.getTracks();
-    List<AppTrack> playlistInclusions = appPlaylist.getInclusions();
-    List<AppTrack> playlistDifference = findTracksNoneMatch(playlistTracks, appTracks);
-    return findTracksNoneMatch(playlistDifference, playlistInclusions);
   }
 
   @Override
