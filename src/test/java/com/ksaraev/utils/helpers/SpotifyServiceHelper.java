@@ -146,6 +146,27 @@ public class SpotifyServiceHelper {
             .build();
   }
 
+  public static SpotifyPlaylistItem getPlaylist(SpotifyUserProfileItem user) {
+    String id = SpotifyResourceHelper.getRandomId();
+    SpotifyPlaylistItemDetails playlistDetails = getPlaylistDetails();
+    String name = playlistDetails.getName();
+    String description = playlistDetails.getDescription();
+    Boolean isPublic = playlistDetails.getIsPublic();
+    Boolean isCollaborative = playlistDetails.getIsCollaborative();
+    URI uri = SpotifyResourceHelper.PLAYLIST.getUri(id);
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
+    return SpotifyPlaylist.builder()
+            .id(id)
+            .name(name)
+            .uri(uri)
+            .description(description)
+            .isPublic(isPublic)
+            .isCollaborative(isCollaborative)
+            .user(user)
+            .snapshotId(snapshotId)
+            .build();
+  }
+
   public static SpotifyTrackItemFeatures getSpotifyTrackFeatures() {
     BigDecimal minTempo = new BigDecimal(120);
     BigDecimal maxTempo = new BigDecimal(140);

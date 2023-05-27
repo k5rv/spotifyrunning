@@ -49,17 +49,9 @@ class SuddenrunPlaylistServiceAddTracksTest {
 
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
 
-  @Captor private ArgumentCaptor<SpotifyPlaylistItem> spotifyPlaylistArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> appTrackRemovalsArgumentCapture;
 
-  @Captor private ArgumentCaptor<SuddenrunPlaylist> suddenrunPlaylistArgumentCaptor;
-
-  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> spotifyTracksArgumentCapture;
-
-  @Captor private ArgumentCaptor<List<AppTrack>> appTracksArgumentCaptor;
-
-  @Captor private ArgumentCaptor<List<AppTrack>> rejectedTracksArgumentCaptor;
-
-  @Captor private ArgumentCaptor<List<AppTrack>> customTracksArgumentCaptor;
+  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> appTrackAdditionsArgumentCapture;
 
   @Captor private ArgumentCaptor<AppPlaylist> targetAppPlaylistArgumentCaptor;
 
@@ -133,7 +125,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
     given(trackMapper.mapToDtos(appTrackRemovals)).willReturn(spotifyTrackRemovals);
 
     String removalSnapshotId = SpotifyResourceHelper.getRandomSnapshotId();
-    given(spotifyPlaylistService.removeTracks(any(), anyList())).willReturn(removalSnapshotId);
+    given(spotifyPlaylistService.removeTracks(any(), any())).willReturn(removalSnapshotId);
 
     List<SpotifyTrackItem> spotifyTrackAdditions = SpotifyServiceHelper.getTracks(5);
 
@@ -154,7 +146,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
 
     String additionSnapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     targetAppTracks.addAll(appTrackAdditions);
-    given(spotifyPlaylistService.addTracks(any(), anyList())).willReturn(additionSnapshotId);
+    given(spotifyPlaylistService.addTracks(any(), any())).willReturn(additionSnapshotId);
 
     SpotifyPlaylistItem sourceSpotifyPlaylist = SpotifyServiceHelper.getPlaylist(playlistId);
     sourceSpotifyPlaylist.setTracks(spotifyTrackAdditions);
@@ -174,18 +166,32 @@ class SuddenrunPlaylistServiceAddTracksTest {
     AppPlaylist actualAppPlaylist = underTest.addTracks(targetAppPlaylist, appTracks);
 
     // Then
+    then(spotifyPlaylistService)
+        .should()
+        .removeTracks(
+            playlistIdArgumentCaptor.capture(), appTrackRemovalsArgumentCapture.capture());
+    assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
+    assertThat(appTrackRemovalsArgumentCapture.getValue())
+        .containsExactlyElementsOf(spotifyTrackRemovals);
+
+    then(spotifyPlaylistService)
+        .should()
+        .addTracks(playlistIdArgumentCaptor.capture(), appTrackAdditionsArgumentCapture.capture());
+    assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
+    assertThat(appTrackAdditionsArgumentCapture.getValue())
+        .containsExactlyElementsOf(spotifyTrackAdditions);
+
     then(synchronizationService)
         .should()
-        .updateFromSource(
-            targetAppPlaylistArgumentCaptor.capture(), sourceAppPlaylistArgumentCaptor.capture());
+        .updateFromSource(targetAppPlaylistArgumentCaptor.capture(), any());
     List<AppTrack> actualAppTracks = targetAppPlaylistArgumentCaptor.getValue().getTracks();
     assertThat(actualAppTracks)
         .containsAll(appTrackAdditions)
         .doesNotContainAnyElementsOf(appTrackRemovals);
 
     assertThat(actualAppPlaylist.getTracks())
-            .containsAll(appTrackAdditions)
-            .doesNotContainAnyElementsOf(appTrackRemovals);
+        .containsAll(appTrackAdditions)
+        .doesNotContainAnyElementsOf(appTrackRemovals);
   }
 
   @Test

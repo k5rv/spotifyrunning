@@ -26,7 +26,7 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
 
   @Mock private SuddenrunPlaylistRepository repository;
 
-  @Mock private AppPlaylistSynchronizationService playlistSynchronizationService;
+  @Mock private AppPlaylistSynchronizationService synchronizationService;
 
   @Mock private SpotifyPlaylistItemService spotifyPlaylistService;
 
@@ -38,18 +38,6 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
 
   @Mock private AppTrackMapper trackMapper;
 
-  @Captor private ArgumentCaptor<AppUser> appUserArgumentCaptor;
-
-  @Captor private ArgumentCaptor<SpotifyUserProfileItem> spotifyUserProfileArgumentCaptor;
-
-  @Captor private ArgumentCaptor<SpotifyPlaylistItemDetails> spotifyPlaylistDetailsArgumentCaptor;
-
-  @Captor private ArgumentCaptor<String> spotifyPlaylistIdArgumentCaptor;
-
-  @Captor private ArgumentCaptor<SpotifyPlaylistItem> spotifyPlaylistArgumentCaptor;
-
-  @Captor private ArgumentCaptor<SuddenrunPlaylist> suddenrunPlaylistArgumentCaptor;
-
   private AutoCloseable closeable;
 
   private AppPlaylistService underTest;
@@ -60,7 +48,7 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     underTest =
         new SuddenrunPlaylistService(
             repository,
-                playlistSynchronizationService,
+                synchronizationService,
             spotifyPlaylistService,
             spotifyPlaylistConfig,
             playlistMapper,
@@ -79,47 +67,35 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     AppUser appUser = SuddenrunHelper.getUser();
     String userId = appUser.getId();
     String userName = appUser.getName();
-    SpotifyUserProfileItem spotifyUserProfile =
-        SpotifyServiceHelper.getUserProfile(userId, userName);
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile(userId, userName);
 
-    given(userMapper.mapToItem(appUser)).willReturn(spotifyUserProfile);
+    given(userMapper.mapToItem(appUser)).willReturn(spotifyUser);
 
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
     given(spotifyPlaylistConfig.getDetails()).willReturn(spotifyPlaylistDetails);
 
     SpotifyPlaylistItem spotifyPlaylist =
-        SpotifyServiceHelper.getPlaylist(spotifyUserProfile, spotifyPlaylistDetails);
+        SpotifyServiceHelper.getPlaylist(spotifyUser, spotifyPlaylistDetails);
     String spotifyPlaylistId = spotifyPlaylist.getId();
-    given(spotifyPlaylistService.createPlaylist(spotifyUserProfile, spotifyPlaylistDetails))
+    String spotifySnapshotId = spotifyPlaylist.getSnapshotId();
+
+    given(spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails))
         .willReturn(spotifyPlaylist);
 
     given(spotifyPlaylistService.getPlaylist(spotifyPlaylistId)).willReturn(spotifyPlaylist);
 
-    SuddenrunPlaylist suddenrunPlaylist = SuddenrunHelper.getSuddenrunPlaylist(spotifyPlaylistId);
-    given(playlistMapper.mapToEntity(spotifyPlaylist)).willReturn(suddenrunPlaylist);
+    SuddenrunPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist(spotifyPlaylistId);
+    appPlaylist.setSnapshotId(spotifySnapshotId);
 
-    given(repository.save(suddenrunPlaylist)).willReturn(suddenrunPlaylist);
+    given(playlistMapper.mapToEntity(spotifyPlaylist)).willReturn(appPlaylist);
+
+    given(repository.save(appPlaylist)).willReturn(appPlaylist);
 
     // When
-    AppPlaylist appPlaylist = underTest.createPlaylist(appUser);
+    AppPlaylist result = underTest.createPlaylist(appUser);
 
     // Then
-    then(userMapper).should().mapToItem(appUserArgumentCaptor.capture());
-    assertThat(appUserArgumentCaptor.getValue()).isEqualTo(appUser);
-    then(spotifyPlaylistService)
-        .should()
-        .createPlaylist(
-            spotifyUserProfileArgumentCaptor.capture(),
-            spotifyPlaylistDetailsArgumentCaptor.capture());
-    assertThat(spotifyUserProfileArgumentCaptor.getValue()).isEqualTo(spotifyUserProfile);
-    assertThat(spotifyPlaylistDetailsArgumentCaptor.getValue()).isEqualTo(spotifyPlaylistDetails);
-    then(spotifyPlaylistService).should().getPlaylist(spotifyPlaylistIdArgumentCaptor.capture());
-    assertThat(spotifyPlaylistIdArgumentCaptor.getValue()).isEqualTo(spotifyPlaylistId);
-    then(playlistMapper).should().mapToEntity(spotifyPlaylistArgumentCaptor.capture());
-    assertThat(spotifyPlaylistArgumentCaptor.getValue()).isEqualTo(spotifyPlaylist);
-    then(repository).should().save(suddenrunPlaylistArgumentCaptor.capture());
-    assertThat(suddenrunPlaylistArgumentCaptor.getValue()).isEqualTo(suddenrunPlaylist);
-    assertThat(appPlaylist).isEqualTo(suddenrunPlaylist);
+    assertThat(appPlaylist).isEqualTo(result);
   }
 
   @Test
@@ -130,12 +106,11 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     AppUser appUser = SuddenrunHelper.getUser();
     String userId = appUser.getId();
     String userName = appUser.getName();
-    SpotifyUserProfileItem spotifyUserProfile =
-        SpotifyServiceHelper.getUserProfile(userId, userName);
-    given(userMapper.mapToItem(appUser)).willReturn(spotifyUserProfile);
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(appUser)).willReturn(spotifyUser);
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
     given(spotifyPlaylistConfig.getDetails()).willReturn(spotifyPlaylistDetails);
-    given(spotifyPlaylistService.createPlaylist(spotifyUserProfile, spotifyPlaylistDetails))
+    given(spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails))
         .willThrow(new SpotifyAccessTokenException(message));
 
     // Then
@@ -152,13 +127,12 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     AppUser appUser = SuddenrunHelper.getUser();
     String userId = appUser.getId();
     String userName = appUser.getName();
-    SpotifyUserProfileItem spotifyUserProfile =
-        SpotifyServiceHelper.getUserProfile(userId, userName);
-    given(userMapper.mapToItem(appUser)).willReturn(spotifyUserProfile);
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(appUser)).willReturn(spotifyUser);
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
     given(spotifyPlaylistConfig.getDetails()).willReturn(spotifyPlaylistDetails);
     RuntimeException runtimeException = new RuntimeException(message);
-    given(spotifyPlaylistService.createPlaylist(spotifyUserProfile, spotifyPlaylistDetails))
+    given(spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails))
         .willThrow(new CreateSpotifyPlaylistException(userId, runtimeException));
 
     // Then
@@ -174,12 +148,11 @@ class SuddenrunPlaylistServiceCreatePlaylistTest {
     AppUser appUser = SuddenrunHelper.getUser();
     String userId = appUser.getId();
     String userName = appUser.getName();
-    SpotifyUserProfileItem spotifyUserProfile =
-        SpotifyServiceHelper.getUserProfile(userId, userName);
-    given(userMapper.mapToItem(appUser)).willReturn(spotifyUserProfile);
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(appUser)).willReturn(spotifyUser);
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
     given(spotifyPlaylistConfig.getDetails()).willReturn(spotifyPlaylistDetails);
-    given(spotifyPlaylistService.createPlaylist(spotifyUserProfile, spotifyPlaylistDetails))
+    given(spotifyPlaylistService.createPlaylist(spotifyUser, spotifyPlaylistDetails))
         .willThrow(new RuntimeException(message));
 
     // Then
