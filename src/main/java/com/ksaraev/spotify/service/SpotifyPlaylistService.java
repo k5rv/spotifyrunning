@@ -87,12 +87,12 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
   public String addTracks(@NotNull String playlistId, List<SpotifyTrackItem> trackItems) {
     try {
       List<URI> trackItemUris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
-      UpdatePlaylistItemsRequest request =
-          UpdatePlaylistItemsRequest.builder()
+      AddPlaylistItemsRequest request =
+          AddPlaylistItemsRequest.builder()
               .uris(trackItemUris)
               .position(requestConfig.getPosition())
               .build();
-      UpdatePlaylistItemsResponse response = client.addPlaylistItems(playlistId, request);
+      AddPlaylistItemsResponse response = client.addPlaylistItems(playlistId, request);
       return response.snapshotId();
     } catch (SpotifyUnauthorizedException e) {
       throw new SpotifyAccessTokenException(e);

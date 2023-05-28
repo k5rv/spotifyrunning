@@ -62,9 +62,9 @@ public interface SpotifyClient {
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   @Valid
   @NotNull
-  UpdatePlaylistItemsResponse addPlaylistItems(
+  AddPlaylistItemsResponse addPlaylistItems(
       @NotNull @PathVariable(value = "playlist_id") String playlistId,
-      @Valid @NotNull @RequestBody UpdatePlaylistItemsRequest request);
+      @Valid @NotNull @RequestBody AddPlaylistItemsRequest request);
 
   @DeleteMapping(path = "playlists/{playlist_id}/tracks")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)

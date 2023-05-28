@@ -8,7 +8,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class UpdatePlaylistItemsResponseTest {
+class AddPlaylistItemsResponseTest {
 
   private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
@@ -22,10 +22,10 @@ class UpdatePlaylistItemsResponseTest {
   @Test
   void itShouldDetectAddItemsResponseConstraintViolations() {
     // Given
-    UpdatePlaylistItemsResponse updatePlaylistItemsResponse =
-        UpdatePlaylistItemsResponse.builder().snapshotId(null).build();
+    AddPlaylistItemsResponse updatePlaylistItemsResponse =
+        AddPlaylistItemsResponse.builder().snapshotId(null).build();
     // When
-    Set<ConstraintViolation<UpdatePlaylistItemsResponse>> constraintViolations =
+    Set<ConstraintViolation<AddPlaylistItemsResponse>> constraintViolations =
         validator.validate(updatePlaylistItemsResponse);
     // Then
     assertThat(constraintViolations).hasSize(1);

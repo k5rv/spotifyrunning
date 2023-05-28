@@ -7,8 +7,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.ksaraev.spotify.client.SpotifyClient;
-import com.ksaraev.spotify.client.dto.UpdatePlaylistItemsRequest;
-import com.ksaraev.spotify.client.dto.UpdatePlaylistItemsResponse;
+import com.ksaraev.spotify.client.dto.AddPlaylistItemsRequest;
+import com.ksaraev.spotify.client.dto.AddPlaylistItemsResponse;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotify.config.UpdateSpotifyPlaylistItemsRequestConfig;
 import com.ksaraev.spotify.exception.AddSpotifyPlaylistTracksExceptions;
@@ -47,7 +47,7 @@ class SpotifyPlaylistServiceAddTracksTest {
 
   @Mock private UpdateSpotifyPlaylistItemsRequestConfig requestConfig;
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
-  @Captor private ArgumentCaptor<UpdatePlaylistItemsRequest> requestArgumentCaptor;
+  @Captor private ArgumentCaptor<AddPlaylistItemsRequest> requestArgumentCaptor;
 
   private AutoCloseable closeable;
 
@@ -73,9 +73,9 @@ class SpotifyPlaylistServiceAddTracksTest {
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     List<URI> uris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
     Integer position = 10;
-    UpdatePlaylistItemsRequest request =
-        UpdatePlaylistItemsRequest.builder().uris(uris).position(position).build();
-    UpdatePlaylistItemsResponse response = SpotifyClientHelper.createUpdatePlaylistItemsResponse();
+    AddPlaylistItemsRequest request =
+        AddPlaylistItemsRequest.builder().uris(uris).position(position).build();
+    AddPlaylistItemsResponse response = SpotifyClientHelper.createAddPlaylistItemsResponse();
     given(requestConfig.getPosition()).willReturn(position);
     given(client.addPlaylistItems(any(), any())).willReturn(response);
     // When

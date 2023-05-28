@@ -21,7 +21,8 @@ public class SpotifyClientHelper {
     String email = SpotifyResourceHelper.getRandomEmail();
     Map<String, Object> explicitContent = SpotifyResourceHelper.getExplicitContent();
     Map<String, Object> followers = SpotifyResourceHelper.getFollowers();
-    Map<String, Object> externalUrls = SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.USER, id);
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.USER, id);
     List<Map<String, Object>> images = SpotifyResourceHelper.getImages();
     String country = SpotifyResourceHelper.getCountry();
     String product = SpotifyResourceHelper.getProduct();
@@ -61,8 +62,10 @@ public class SpotifyClientHelper {
     Integer discNumber = 5;
     Integer durationMs = 18000;
     Integer trackNumber = 2;
-    Map<String, Object> externalUrls = SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.TRACK, id);
-    Map<String, Object> externalIds = SpotifyResourceHelper.getExternalIds(SpotifyResourceHelper.TRACK, id);
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.TRACK, id);
+    Map<String, Object> externalIds =
+        SpotifyResourceHelper.getExternalIds(SpotifyResourceHelper.TRACK, id);
     return SpotifyTrackDto.builder()
         .id(id)
         .name(name)
@@ -115,7 +118,8 @@ public class SpotifyClientHelper {
     List<String> availableMarkets = SpotifyResourceHelper.getAvailableMarkets();
     List<SpotifyArtistDto> artistDtos = getArtistDtos(1);
     List<Map<String, Object>> restrictions = SpotifyResourceHelper.getRestrictions();
-    Map<String, Object> externalUrls = SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.ARTIST, id);
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.ARTIST, id);
     List<Map<String, Object>> images = SpotifyResourceHelper.getImages();
     return SpotifyAlbumDto.builder()
         .id(id)
@@ -145,7 +149,8 @@ public class SpotifyClientHelper {
     URI uri = SpotifyResourceHelper.ARTIST.getUri(id);
     URL href = SpotifyResourceHelper.getHref(SpotifyResourceHelper.ARTIST, id);
     Map<String, Object> followers = SpotifyResourceHelper.getFollowers();
-    Map<String, Object> externalUrls = SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.ARTIST, id);
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.ARTIST, id);
     List<Map<String, Object>> images = SpotifyResourceHelper.getImages();
     return SpotifyArtistDto.builder()
         .id(id)
@@ -177,7 +182,8 @@ public class SpotifyClientHelper {
     Boolean isCollaborative = false;
     String primaryColor = SpotifyResourceHelper.getPrimaryColor();
     Map<String, Object> followers = SpotifyResourceHelper.getFollowers();
-    Map<String, Object> externalUrls = SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.PLAYLIST, id);
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.PLAYLIST, id);
     List<Map<String, Object>> images = SpotifyResourceHelper.getImages();
     URL href = SpotifyResourceHelper.getHref(SpotifyResourceHelper.PLAYLIST, id);
     return SpotifyPlaylistDto.builder()
@@ -190,6 +196,73 @@ public class SpotifyClientHelper {
         .type(type)
         .isCollaborative(isCollaborative)
         .isPublic(isPublic)
+        .primaryColor(primaryColor)
+        .followers(followers)
+        .externalUrls(externalUrls)
+        .images(images)
+        .href(href)
+        .build();
+  }
+
+  public static SpotifyPlaylistDto getPlaylistDto(
+      SpotifyUserProfileDto userProfileDto,
+      String id,
+      String name,
+      String description,
+      Boolean isPublic,
+      List<SpotifyTrackDto> trackDtos) {
+    SpotifyPlaylistMusicDto spotifyPlaylistMusicDto =
+        getSpotifyPlaylistMusicDto(userProfileDto, trackDtos);
+    URI uri = SpotifyResourceHelper.PLAYLIST.getUri(id);
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
+    String type = SpotifyResourceHelper.PLAYLIST.getType();
+    String primaryColor = SpotifyResourceHelper.getPrimaryColor();
+    Map<String, Object> followers = SpotifyResourceHelper.getFollowers();
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.PLAYLIST, id);
+    List<Map<String, Object>> images = SpotifyResourceHelper.getImages();
+    URL href = SpotifyResourceHelper.getHref(SpotifyResourceHelper.PLAYLIST, id);
+    return SpotifyPlaylistDto.builder()
+        .id(id)
+        .name(name)
+        .uri(uri)
+        .userProfileDto(userProfileDto)
+        .snapshotId(snapshotId)
+        .description(description)
+        .type(type)
+        .isPublic(isPublic)
+        .isCollaborative(false)
+        .playlistMusicDto(spotifyPlaylistMusicDto)
+        .primaryColor(primaryColor)
+        .followers(followers)
+        .externalUrls(externalUrls)
+        .images(images)
+        .href(href)
+        .build();
+  }
+
+  public static SpotifyPlaylistDto getPlaylistDto(
+      SpotifyUserProfileDto userProfileDto, String name, String description, Boolean isPublic) {
+    String id = SpotifyResourceHelper.getRandomId();
+    URI uri = SpotifyResourceHelper.PLAYLIST.getUri(id);
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
+    String type = SpotifyResourceHelper.PLAYLIST.getType();
+    String primaryColor = SpotifyResourceHelper.getPrimaryColor();
+    Map<String, Object> followers = SpotifyResourceHelper.getFollowers();
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.PLAYLIST, id);
+    List<Map<String, Object>> images = SpotifyResourceHelper.getImages();
+    URL href = SpotifyResourceHelper.getHref(SpotifyResourceHelper.PLAYLIST, id);
+    return SpotifyPlaylistDto.builder()
+        .id(id)
+        .name(name)
+        .uri(uri)
+        .userProfileDto(userProfileDto)
+        .snapshotId(snapshotId)
+        .description(description)
+        .type(type)
+        .isPublic(isPublic)
+        .isCollaborative(false)
         .primaryColor(primaryColor)
         .followers(followers)
         .externalUrls(externalUrls)
@@ -256,7 +329,8 @@ public class SpotifyClientHelper {
     Boolean isCollaborative = false;
     String primaryColor = SpotifyResourceHelper.getPrimaryColor();
     Map<String, Object> followers = SpotifyResourceHelper.getFollowers();
-    Map<String, Object> externalUrls = SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.PLAYLIST, playlistItem.id());
+    Map<String, Object> externalUrls =
+        SpotifyResourceHelper.getExternalUrls(SpotifyResourceHelper.PLAYLIST, playlistItem.id());
     List<Map<String, Object>> images = SpotifyResourceHelper.getImages();
     URL href = SpotifyResourceHelper.getHref(SpotifyResourceHelper.PLAYLIST, playlistItem.id());
     SpotifyPlaylistMusicDto playlistMusicDto =
@@ -399,9 +473,9 @@ public class SpotifyClientHelper {
     return GetRecommendationsResponse.builder().trackDtos(trackDtos).seeds(seeds).build();
   }
 
-  public static UpdatePlaylistItemsResponse createUpdatePlaylistItemsResponse() {
+  public static AddPlaylistItemsResponse createAddPlaylistItemsResponse() {
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
-    return UpdatePlaylistItemsResponse.builder().snapshotId(snapshotId).build();
+    return AddPlaylistItemsResponse.builder().snapshotId(snapshotId).build();
   }
 
   public static RemovePlaylistItemsResponse createRemovePlaylistItemsResponse() {

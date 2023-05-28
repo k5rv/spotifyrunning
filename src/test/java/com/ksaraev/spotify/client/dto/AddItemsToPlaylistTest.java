@@ -27,7 +27,7 @@ class AddItemsToPlaylistTest {
     object = new SpotifyClientStub();
     method =
         SpotifyClient.class.getMethod(
-                ADD_PLAYLIST_ITEMS, String.class, UpdatePlaylistItemsRequest.class);
+                ADD_PLAYLIST_ITEMS, String.class, AddPlaylistItemsRequest.class);
     executableValidator = Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
   }
 
@@ -37,8 +37,8 @@ class AddItemsToPlaylistTest {
     String message = ".playlistId: must not be null";
     URI trackUri = URI.create("spotify:track:1234567890AaBbCcDdEeFfG");
     List<URI> uris = List.of(trackUri);
-    UpdatePlaylistItemsRequest updateItemsRequest =
-        UpdatePlaylistItemsRequest.builder().uris(uris).build();
+    AddPlaylistItemsRequest updateItemsRequest =
+        AddPlaylistItemsRequest.builder().uris(uris).build();
     // When
     Object[] parameterValues = {null, updateItemsRequest};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
@@ -71,8 +71,8 @@ class AddItemsToPlaylistTest {
     String message = ".request.uris: size must be between 1 and 100";
     String playlistId = "0moWPCTPTShumonjlsDgLe";
     List<URI> uris = List.of();
-    UpdatePlaylistItemsRequest updateItemsRequest =
-        UpdatePlaylistItemsRequest.builder().uris(uris).build();
+    AddPlaylistItemsRequest updateItemsRequest =
+        AddPlaylistItemsRequest.builder().uris(uris).build();
     // When
     Object[] parameterValues = {playlistId, updateItemsRequest};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
@@ -88,8 +88,8 @@ class AddItemsToPlaylistTest {
       itShouldDetectAddItemsToPlaylistMethodCascadeConstraintViolationWhenReturnValueAddItemsToPlaylistResponseIsNotValid() {
     // Given
     String message = ".<return value>.snapshotId: must not be empty";
-    UpdatePlaylistItemsResponse updatePlaylistItemsResponse =
-        UpdatePlaylistItemsResponse.builder().snapshotId(null).build();
+    AddPlaylistItemsResponse updatePlaylistItemsResponse =
+        AddPlaylistItemsResponse.builder().snapshotId(null).build();
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, updatePlaylistItemsResponse);

@@ -8,6 +8,6 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record UpdatePlaylistItemsRequest(
+public record AddPlaylistItemsRequest(
     @JsonProperty("uris") @Size(min = 1, max = 100) List<@NotNull URI> uris,
     Integer position) {}

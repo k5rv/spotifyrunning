@@ -43,7 +43,7 @@ public class SuddenrunPlaylistController {
               playlist -> {
                 throw new SuddenrunPlaylistAlreadyExistsException(playlist.getId());
               });
-      AppPlaylist appPlaylist = createPlaylistIfNotExists(appUser);
+      AppPlaylist appPlaylist = createPlaylist(appUser);
       List<AppTrack> appTracks = trackService.getTracks();
       return playlistService.addTracks(appPlaylist, appTracks);
     } catch (SpotifyUnauthorizedException e) {
@@ -51,10 +51,8 @@ public class SuddenrunPlaylistController {
     }
   }
 
-  private AppPlaylist createPlaylistIfNotExists(AppUser appUser) {
-    return playlistService
-        .getPlaylist(appUser)
-        .orElseGet(() -> playlistService.createPlaylist(appUser));
+  private AppPlaylist createPlaylist(AppUser appUser) {
+    return playlistService.createPlaylist(appUser);
   }
 
   @PutMapping

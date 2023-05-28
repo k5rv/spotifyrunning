@@ -54,9 +54,9 @@ public class SpotifyClientStub implements SpotifyClient {
 
   @NotNull
   @Override
-  public UpdatePlaylistItemsResponse addPlaylistItems(
-      @NotNull String playlistId, @NotNull UpdatePlaylistItemsRequest request) {
-    return SpotifyClientHelper.createUpdatePlaylistItemsResponse();
+  public AddPlaylistItemsResponse addPlaylistItems(
+      @NotNull String playlistId, @NotNull AddPlaylistItemsRequest request) {
+    return SpotifyClientHelper.createAddPlaylistItemsResponse();
   }
 
   @NotNull

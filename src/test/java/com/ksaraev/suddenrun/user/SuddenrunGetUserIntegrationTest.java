@@ -26,7 +26,9 @@ class SuddenrunGetUserIntegrationTest {
 
   private static final String SPOTIFY_API_V1_ME = "/v1/me";
   private static final String SUDDENRUN_API_V1_USERS = "/api/v1/users";
-  @Autowired AppUserService suddenrunUserService;
+
+  @Autowired private AppUserService appUserService;
+
   @Autowired private MockMvc mockMvc;
 
   @Test
@@ -42,7 +44,7 @@ class SuddenrunGetUserIntegrationTest {
                 WireMock.jsonResponse(
                     JsonHelper.objectToJson(userProfileDto), HttpStatus.OK.value())));
 
-    suddenrunUserService.registerUser(id, name);
+    appUserService.registerUser(id, name);
 
     // When
     ResultActions getUserResultActions =

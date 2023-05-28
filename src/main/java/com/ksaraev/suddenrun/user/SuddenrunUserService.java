@@ -25,13 +25,13 @@ public class SuddenrunUserService implements AppUserService {
   @Override
   public Optional<AppUser> getUser(String userId) {
     try {
-      log.info("Getting app user with id [" + userId + "]");
+      log.info("Getting user with id [" + userId + "]");
       Optional<SuddenrunUser> optionalUser = repository.findById(userId);
       if (optionalUser.isEmpty()) {
-        log.info("User with id [" + userId + "] not found in app. Returning empty result.");
+        log.info("User with id [" + userId + "] not found in Suddenrun. Returning empty result.");
         return Optional.empty();
       }
-      log.info("Found user with id [" + userId + "] in app. Returning user.");
+      log.info("Found user with id [" + userId + "] in Suddenrun. Returning user.");
       return optionalUser.map(AppUser.class::cast);
     } catch (RuntimeException e) {
       throw new GetSuddenrunUserException(userId, e);
@@ -41,10 +41,10 @@ public class SuddenrunUserService implements AppUserService {
   @Override
   public AppUser registerUser(String userId, String userName) {
     try {
-      log.info("Registering user with id [" + userId + "] in app");
+      log.info("Registering user with id [" + userId + "] in Suddenrun");
       SuddenrunUser suddenrunUser = SuddenrunUser.builder().id(userId).name(userName).build();
       repository.save(suddenrunUser);
-      log.info("Registered user with id [" + userId + "] in app");
+      log.info("Registered user with id [" + userId + "] in Suddenrun");
       return suddenrunUser;
     } catch (RuntimeException e) {
       throw new RegisterSuddenrunUserException(userId, e);

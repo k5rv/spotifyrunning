@@ -27,8 +27,9 @@ class SuddenrunRegisterUserIntegrationTest {
   private static final String SPOTIFY_API_V1_ME = "/v1/me";
 
   private static final String SUDDENRUN_API_V1_USERS = "/api/v1/users";
-  @Autowired
-  AppUserService suddenrunUserService;
+
+  @Autowired private AppUserService appUserService;
+
   @Autowired private MockMvc mockMvc;
 
   @Test
@@ -67,7 +68,7 @@ class SuddenrunRegisterUserIntegrationTest {
     String id = userProfileDto.id();
     String name = userProfileDto.displayName();
 
-    suddenrunUserService.registerUser(id, name);
+    appUserService.registerUser(id, name);
 
     WireMock.stubFor(
         WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
@@ -110,16 +111,15 @@ class SuddenrunRegisterUserIntegrationTest {
   void itShouldReturnInternalServerErrorWhenSpotifyServiceCallFailed() throws Exception {
     // Given
     WireMock.stubFor(
-            WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
-                    .willReturn(
-                            WireMock.jsonResponse(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value())));
+        WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
+            .willReturn(WireMock.jsonResponse(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value())));
 
     // When
     ResultActions userRegistrationResultActions =
-            mockMvc.perform(
-                    MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .with(SecurityMockMvcRequestPostProcessors.csrf()));
+        mockMvc.perform(
+            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
     // Then
     userRegistrationResultActions.andExpect(MockMvcResultMatchers.status().isInternalServerError());

@@ -53,7 +53,7 @@ spotify:
         offset: 0
         time-range: LONG_TERM
       get-recommendations:
-        limit: 20
+        limit: 15
       update-playlist-items-request:
         position: 0
 

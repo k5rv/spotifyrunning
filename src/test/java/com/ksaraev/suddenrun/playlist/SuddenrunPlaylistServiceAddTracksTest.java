@@ -55,8 +55,6 @@ class SuddenrunPlaylistServiceAddTracksTest {
 
   @Captor private ArgumentCaptor<AppPlaylist> targetAppPlaylistArgumentCaptor;
 
-  @Captor private ArgumentCaptor<AppPlaylist> sourceAppPlaylistArgumentCaptor;
-
   private AutoCloseable closeable;
 
   private AppPlaylistService underTest;

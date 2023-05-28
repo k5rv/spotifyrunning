@@ -6,13 +6,13 @@ import static org.mockito.BDDMockito.*;
 
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.exception.SpotifyServiceException;
+import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import com.ksaraev.spotify.service.SpotifyRecommendationItemsService;
 import com.ksaraev.spotify.service.SpotifyUserTopTrackItemsService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
-import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItemConfig;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.util.Collection;
@@ -36,8 +36,6 @@ class SuddenrunTrackServiceTest {
   @Captor private ArgumentCaptor<List<SpotifyTrackItem>> mapperArgumentCaptor;
 
   @Captor private ArgumentCaptor<List<SpotifyTrackItem>> recommendationsArgumentCaptor;
-
-  @Captor private ArgumentCaptor<List<SpotifyTrackItem>> userTopTracksArgumentCaptor;
 
   @Captor private ArgumentCaptor<SpotifyTrackItemFeatures> featuresArgumentCaptor;
 
