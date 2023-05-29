@@ -18,8 +18,8 @@ public class SuddenrunPlaylistSynchronizationService implements AppPlaylistSynch
       @NotNull AppPlaylist targetPlaylist, @NotNull AppPlaylist sourcePlaylist) {
     List<AppTrack> target = targetPlaylist.getTracks();
     List<AppTrack> source = sourcePlaylist.getTracks();
-    List<AppTrack> targetInclusions = targetPlaylist.getInclusions();
-    List<AppTrack> targetExclusions = targetPlaylist.getExclusions();
+    List<AppTrack> targetInclusions = new ArrayList<>(targetPlaylist.getInclusions());
+    List<AppTrack> targetExclusions = new ArrayList<>(targetPlaylist.getExclusions());
     List<AppTrack> inclusions = updateInclusions(source, target, targetInclusions);
     if (!inclusions.isEmpty()) log.info("Found [" + inclusions.size() + "] track inclusions");
     List<AppTrack> exclusions = updateExclusions(source, target, targetExclusions);

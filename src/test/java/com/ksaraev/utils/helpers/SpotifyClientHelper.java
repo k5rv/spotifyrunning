@@ -376,7 +376,7 @@ public class SpotifyClientHelper {
         .build();
   }
 
-  public static GetUserPlaylistsResponse createUserPlaylistResponse(
+  public static GetUserPlaylistsResponse createGetUserPlaylistResponse(
       List<SpotifyPlaylistDto> playlistDtos) {
     URL href = null;
     try {
@@ -404,7 +404,7 @@ public class SpotifyClientHelper {
 
   public static GetUserTopTracksResponse createGetUserTopTracksResponse(
       List<SpotifyTrackDto> trackDtos) {
-    URL href = null;
+    URL href;
     try {
       href =
           new URL(

@@ -1,6 +1,6 @@
 package com.ksaraev.suddenrun.playlist;
 
-import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
+import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.service.SpotifyUserProfileService;
 import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
@@ -46,7 +46,7 @@ public class SuddenrunPlaylistController {
       AppPlaylist appPlaylist = createPlaylist(appUser);
       List<AppTrack> appTracks = trackService.getTracks();
       return playlistService.addTracks(appPlaylist, appTracks);
-    } catch (SpotifyUnauthorizedException e) {
+    } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     }
   }
@@ -57,18 +57,22 @@ public class SuddenrunPlaylistController {
 
   @PutMapping
   public AppPlaylist updatePlaylist() {
-    SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
-    String userId = userProfileItem.getId();
-    AppUser appUser =
-        userService
-            .getUser(userId)
-            .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
-    AppPlaylist appPlaylist =
-        playlistService
-            .getPlaylist(appUser)
-            .orElseThrow(() -> new AppPlaylistNotFoundException(userId));
-    List<AppTrack> appTracks = trackService.getTracks();
-    return playlistService.addTracks(appPlaylist, appTracks);
+    try {
+      SpotifyUserProfileItem userProfileItem = userProfileService.getCurrentUserProfile();
+      String userId = userProfileItem.getId();
+      AppUser appUser =
+          userService
+              .getUser(userId)
+              .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+      AppPlaylist appPlaylist =
+          playlistService
+              .getPlaylist(appUser)
+              .orElseThrow(() -> new SuddenrunPlaylistNotFoundException(userId));
+      List<AppTrack> appTracks = trackService.getTracks();
+      return playlistService.addTracks(appPlaylist, appTracks);
+    } catch (SpotifyAccessTokenException e) {
+      throw new SuddenrunAuthenticationException(e);
+    }
   }
 
   @GetMapping
@@ -82,8 +86,8 @@ public class SuddenrunPlaylistController {
               .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
       return playlistService
           .getPlaylist(appUser)
-          .orElseThrow(() -> new AppPlaylistNotFoundException(userId));
-    } catch (SpotifyUnauthorizedException e) {
+          .orElseThrow(() -> new SuddenrunPlaylistNotFoundException(userId));
+    } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     }
   }

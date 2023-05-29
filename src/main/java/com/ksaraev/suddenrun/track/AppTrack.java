@@ -1,15 +1,13 @@
 package com.ksaraev.suddenrun.track;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 public interface AppTrack {
 
-    String getId();
+  String getId();
 
-    void setId(String id);
+  void setId(String id);
 
-    String getName();
+  String getName();
 
-    void setName(String name);
-
+  void setName(String name);
 }

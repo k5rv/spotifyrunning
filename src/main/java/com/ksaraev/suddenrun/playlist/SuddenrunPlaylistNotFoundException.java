@@ -3,9 +3,9 @@ package com.ksaraev.suddenrun.playlist;
 import lombok.experimental.StandardException;
 
 @StandardException
-public class AppPlaylistNotFoundException extends RuntimeException {
+public class SuddenrunPlaylistNotFoundException extends RuntimeException {
 
-  public AppPlaylistNotFoundException(String appUserId) {
+  public SuddenrunPlaylistNotFoundException(String appUserId) {
     super("User with id [" + appUserId + "] doesn't have any playlists");
   }
 }

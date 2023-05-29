@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
@@ -45,21 +44,21 @@ public class SuddenrunPlaylist implements AppPlaylist {
   private String snapshotId;
 
   public List<AppTrack> getInclusions() {
-    return this.inclusions.stream().map(AppTrack.class::cast).collect(Collectors.toList());
+    return this.inclusions.stream().map(AppTrack.class::cast).toList();
   }
 
   public void setInclusions(List<AppTrack> inclusions) {
     this.inclusions =
-        inclusions.stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+        inclusions.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
   public List<AppTrack> getExclusions() {
-    return this.exclusions.stream().map(AppTrack.class::cast).collect(Collectors.toList());
+    return this.exclusions.stream().map(AppTrack.class::cast).toList();
   }
 
   public void setExclusions(List<AppTrack> exclusions) {
     this.exclusions =
-        exclusions.stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+        exclusions.stream().map(SuddenrunTrack.class::cast).toList();
   }
 
   @JsonIgnore

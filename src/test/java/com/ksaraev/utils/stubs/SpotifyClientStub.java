@@ -36,7 +36,7 @@ public class SpotifyClientStub implements SpotifyClient {
     List<SpotifyPlaylistDto> playlistDtos = new ArrayList<>();
     SpotifyPlaylistDto playlistDto = SpotifyClientHelper.getPlaylistDto();
     playlistDtos.add(playlistDto);
-    return SpotifyClientHelper.createUserPlaylistResponse(playlistDtos);
+    return SpotifyClientHelper.createGetUserPlaylistResponse(playlistDtos);
   }
 
   @NotNull

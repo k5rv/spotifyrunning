@@ -7,7 +7,11 @@ import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,8 +19,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 class SuddenrunPlaylistSynchronizationServiceTest {
-
-  @Mock AppTrackMapper trackMapper;
 
   private static final String FIND_TRACKS_NONE_MATCH = "findTracksNoneMatch";
 
@@ -59,6 +61,39 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     assertThat(result.getSnapshotId()).isEqualTo(snapshotId);
     assertThat(result.getUser()).usingRecursiveComparison().isEqualTo(user);
     assertThat(result.getTracks()).isEqualTo(tracks);
+  }
+
+  @Test
+  void itShouldUpdateFromSourceDDD() {
+    // Given
+    SuddenrunUser user = SuddenrunHelper.getUser();
+    AppPlaylist targetPlaylist = SuddenrunHelper.getSuddenrunPlaylist(user);
+    targetPlaylist.setInclusions(List.of());
+    targetPlaylist.setExclusions(List.of());
+    List<AppTrack> tracksA = SuddenrunHelper.getTracks(10);
+    List<AppTrack> tracksB = SuddenrunHelper.getTracks(10);
+    List<AppTrack> tracksC = SuddenrunHelper.getTracks(10);
+    List<AppTrack> tracksD = SuddenrunHelper.getTracks(10);
+    List<AppTrack> targetTracks = Stream.of(tracksA, tracksB, tracksC).flatMap(Collection::stream).toList();
+    targetPlaylist.setTracks(targetTracks);
+
+    String playlistId = targetPlaylist.getId();
+    AppPlaylist sourcePlaylist = SuddenrunHelper.getSuddenrunPlaylist(playlistId, user);
+    sourcePlaylist.setInclusions(List.of());
+    sourcePlaylist.setExclusions(List.of());
+    List<AppTrack> sourceTracks = Stream.of(tracksA, tracksB, tracksD).flatMap(Collection::stream).toList();
+    sourcePlaylist.setTracks(sourceTracks);
+    List<AppTrack> tracks = sourcePlaylist.getTracks();
+    String snapshotId = sourcePlaylist.getSnapshotId();
+
+    // When
+    AppPlaylist result = underTest.updateFromSource(targetPlaylist, sourcePlaylist);
+
+    // Then
+//    assertThat(result.getId()).isEqualTo(playlistId);
+//    assertThat(result.getSnapshotId()).isEqualTo(snapshotId);
+//    assertThat(result.getUser()).usingRecursiveComparison().isEqualTo(user);
+//    assertThat(result.getTracks()).isEqualTo(tracks);
   }
 
   @Test

@@ -77,7 +77,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     List<SpotifyPlaylistItem> playlists = SpotifyServiceHelper.getPlaylists(2);
     GetUserPlaylistsRequest request = GetUserPlaylistsRequest.builder().build();
     GetUserPlaylistsResponse response =
-        SpotifyClientHelper.createUserPlaylistResponse(playlistDtos);
+        SpotifyClientHelper.createGetUserPlaylistResponse(playlistDtos);
     given(client.getPlaylists(any(), any())).willReturn(response);
     given(mapper.mapDtosToModels(any())).willReturn(playlists);
     // When
@@ -100,7 +100,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     List<SpotifyPlaylistDto> playlistDtos = List.of();
     GetUserPlaylistsRequest request = GetUserPlaylistsRequest.builder().build();
     GetUserPlaylistsResponse response =
-        SpotifyClientHelper.createUserPlaylistResponse(playlistDtos);
+        SpotifyClientHelper.createGetUserPlaylistResponse(playlistDtos);
     given(client.getPlaylists(any(), any())).willReturn(response);
     // When
     underTest.getUserPlaylists(userProfile);
@@ -123,7 +123,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     playlistDtos.add(null);
     GetUserPlaylistsRequest request = GetUserPlaylistsRequest.builder().build();
     GetUserPlaylistsResponse response =
-        SpotifyClientHelper.createUserPlaylistResponse(playlistDtos);
+        SpotifyClientHelper.createGetUserPlaylistResponse(playlistDtos);
     given(client.getPlaylists(any(), any())).willReturn(response);
     // When
     underTest.getUserPlaylists(userProfile);
@@ -148,7 +148,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     playlistDtos.add(null);
     GetUserPlaylistsRequest request = GetUserPlaylistsRequest.builder().build();
     GetUserPlaylistsResponse response =
-        SpotifyClientHelper.createUserPlaylistResponse(playlistDtos);
+        SpotifyClientHelper.createGetUserPlaylistResponse(playlistDtos);
     given(client.getPlaylists(any(), any())).willReturn(response);
     // When
     underTest.getUserPlaylists(userProfile);
@@ -200,7 +200,7 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     String userId = userProfile.getId();
     List<SpotifyPlaylistDto> playlistDtos = SpotifyClientHelper.getPlaylistDtos(2);
     GetUserPlaylistsResponse response =
-        SpotifyClientHelper.createUserPlaylistResponse(playlistDtos);
+        SpotifyClientHelper.createGetUserPlaylistResponse(playlistDtos);
     given(client.getPlaylists(any(), any())).willReturn(response);
     given(mapper.mapDtosToModels(any())).willThrow(new RuntimeException(message));
     // Then
