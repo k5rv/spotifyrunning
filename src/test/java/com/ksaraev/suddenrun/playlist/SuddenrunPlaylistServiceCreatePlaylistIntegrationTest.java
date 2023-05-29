@@ -32,6 +32,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.assertj.core.api.Assertions.*;
+
 @ActiveProfiles(value = "test")
 @AutoConfigureWireMock(port = 0)
 @AutoConfigureMockMvc(addFilters = false)
@@ -192,11 +194,12 @@ class SuddenrunPlaylistServiceCreatePlaylistIntegrationTest {
             .andReturn();
 
     AppPlaylist appPlaylist =
-        JsonHelper.jsonToAppPlaylist(result.getResponse().getContentAsString());
+        JsonHelper.jsonToObject(result.getResponse().getContentAsString(), AppPlaylist.class);
 
-    Assertions.assertThat(appPlaylist.getId()).isEqualTo(playlistId);
-    Assertions.assertThat(appPlaylist.getSnapshotId()).isEqualTo(spotifyPlaylistDto.snapshotId());
-    Assertions.assertThat(appPlaylist.getTracks())
+    assertThat(appPlaylist).isNotNull();
+    assertThat(appPlaylist.getId()).isEqualTo(playlistId);
+    assertThat(appPlaylist.getSnapshotId()).isEqualTo(spotifyPlaylistDto.snapshotId());
+    assertThat(appPlaylist.getTracks())
         .containsAll(
             spotifyPlaylistTracks.stream()
                 .map(
@@ -278,9 +281,9 @@ class SuddenrunPlaylistServiceCreatePlaylistIntegrationTest {
 
     SuddenrunError error =
         JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunError.class);
-    Assertions.assertThat(error).isNotNull();
-    Assertions.assertThat(error.status()).isEqualTo(HttpStatus.CONFLICT.value());
-    Assertions.assertThat(error.message()).contains(playlistId);
+    assertThat(error).isNotNull();
+    assertThat(error.status()).isEqualTo(HttpStatus.CONFLICT.value());
+    assertThat(error.message()).contains(playlistId);
   }
 
   @Test
@@ -307,7 +310,7 @@ class SuddenrunPlaylistServiceCreatePlaylistIntegrationTest {
 
     SuddenrunError error =
             JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunError.class);
-    Assertions.assertThat(error).isNotNull();
-    Assertions.assertThat(error.status()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    assertThat(error).isNotNull();
+    assertThat(error.status()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
   }
 }

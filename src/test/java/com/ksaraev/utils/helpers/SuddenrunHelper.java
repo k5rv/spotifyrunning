@@ -1,5 +1,6 @@
 package com.ksaraev.utils.helpers;
 
+import com.ksaraev.suddenrun.playlist.AppPlaylist;
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylist;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.SuddenrunTrack;
@@ -16,10 +17,6 @@ public class SuddenrunHelper {
     String name = SpotifyResourceHelper.getRandomName();
     List<SuddenrunPlaylist> playlists = new ArrayList<>();
     return SuddenrunUser.builder().id(id).name(name).playlists(playlists).build();
-  }
-
-  public static SuddenrunUser getUser(String id, String name) {
-    return SuddenrunUser.builder().id(id).name(name).build();
   }
 
   public static SuddenrunTrack getTrack() {
@@ -42,12 +39,9 @@ public class SuddenrunHelper {
   public static SuddenrunPlaylist getSuddenrunPlaylist() {
     String id = SpotifyResourceHelper.getRandomId();
     SuddenrunUser user = getUser();
-    List<SuddenrunTrack> customTracks =
-        getTracks(3).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> rejectedTracks =
-        getTracks(2).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> tracks =
-        getTracks(10).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+    List<AppTrack> customTracks = new ArrayList<>(getTracks(3));
+    List<AppTrack> rejectedTracks = new ArrayList<>(getTracks(2));
+    List<AppTrack> tracks = new ArrayList<>(getTracks(10));
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     return SuddenrunPlaylist.builder()
         .id(id)
@@ -61,12 +55,9 @@ public class SuddenrunHelper {
 
   public static SuddenrunPlaylist getSuddenrunPlaylist(String id) {
     SuddenrunUser user = getUser();
-    List<SuddenrunTrack> customTracks =
-        getTracks(3).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> rejectedTracks =
-        getTracks(2).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> tracks =
-        getTracks(10).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+    List<AppTrack> customTracks = new ArrayList<>(getTracks(3));
+    List<AppTrack> rejectedTracks = new ArrayList<>(getTracks(2));
+    List<AppTrack> tracks = new ArrayList<>(getTracks(10));
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     return SuddenrunPlaylist.builder()
         .id(id)
@@ -79,12 +70,9 @@ public class SuddenrunHelper {
   }
 
   public static SuddenrunPlaylist getSuddenrunPlaylist(String id, SuddenrunUser user) {
-    List<SuddenrunTrack> customTracks =
-        getTracks(3).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> rejectedTracks =
-        getTracks(2).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> tracks =
-        getTracks(10).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+    List<AppTrack> customTracks = new ArrayList<>(getTracks(3));
+    List<AppTrack> rejectedTracks = new ArrayList<>(getTracks(2));
+    List<AppTrack> tracks = new ArrayList<>(getTracks(10));
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     return SuddenrunPlaylist.builder()
         .id(id)
@@ -98,12 +86,9 @@ public class SuddenrunHelper {
 
   public static SuddenrunPlaylist getSuddenrunPlaylist(SuddenrunUser user) {
     String id = SpotifyResourceHelper.getRandomId();
-    List<SuddenrunTrack> customTracks =
-        getTracks(3).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> rejectedTracks =
-        getTracks(2).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
-    List<SuddenrunTrack> tracks =
-        getTracks(10).stream().map(SuddenrunTrack.class::cast).collect(Collectors.toList());
+    List<AppTrack> customTracks = new ArrayList<>(getTracks(3));
+    List<AppTrack> rejectedTracks = new ArrayList<>(getTracks(2));
+    List<AppTrack> tracks = new ArrayList<>(getTracks(10));
     String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     return SuddenrunPlaylist.builder()
         .id(id)

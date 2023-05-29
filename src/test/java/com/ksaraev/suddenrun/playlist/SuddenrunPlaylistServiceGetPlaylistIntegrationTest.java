@@ -31,6 +31,8 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.assertj.core.api.Assertions.*;
+
 @ActiveProfiles(value = "test")
 @AutoConfigureWireMock(port = 0)
 @AutoConfigureMockMvc(addFilters = false)
@@ -133,11 +135,12 @@ class SuddenrunPlaylistServiceGetPlaylistIntegrationTest {
         getPlaylistResultActions.andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
     AppPlaylist appPlaylist =
-        JsonHelper.jsonToAppPlaylist(result.getResponse().getContentAsString());
+        JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunPlaylist.class);
 
-    Assertions.assertThat(appPlaylist.getId()).isEqualTo(playlistId);
-    Assertions.assertThat(appPlaylist.getSnapshotId()).isEqualTo(spotifyPlaylistDto.snapshotId());
-    Assertions.assertThat(appPlaylist.getTracks()).containsAll(appPlaylistTracks);
+    assertThat(appPlaylist).isNotNull();
+    assertThat(appPlaylist.getId()).isEqualTo(playlistId);
+    assertThat(appPlaylist.getSnapshotId()).isEqualTo(spotifyPlaylistDto.snapshotId());
+    assertThat(appPlaylist.getTracks()).containsAll(appPlaylistTracks);
   }
 
   @Test
@@ -169,9 +172,9 @@ class SuddenrunPlaylistServiceGetPlaylistIntegrationTest {
 
     SuddenrunError error =
         JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunError.class);
-    Assertions.assertThat(error).isNotNull();
-    Assertions.assertThat(error.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    Assertions.assertThat(error.message()).contains(spotifyUserId);
+    assertThat(error).isNotNull();
+    assertThat(error.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    assertThat(error.message()).contains(spotifyUserId);
   }
 
   @Test
@@ -197,7 +200,7 @@ class SuddenrunPlaylistServiceGetPlaylistIntegrationTest {
 
     SuddenrunError error =
         JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunError.class);
-    Assertions.assertThat(error).isNotNull();
-    Assertions.assertThat(error.status()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+    assertThat(error).isNotNull();
+    assertThat(error.status()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
   }
 }

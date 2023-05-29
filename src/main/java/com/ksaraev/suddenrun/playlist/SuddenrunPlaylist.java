@@ -10,9 +10,12 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import jakarta.validation.Valid;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
@@ -31,15 +34,15 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> inclusions = new ArrayList<>();
+  private List<AppTrack> inclusions = new ArrayList<>();
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> exclusions = new ArrayList<>();
+  private List<AppTrack> exclusions = new ArrayList<>();
 
   @Type(JsonType.class)
   @Column(columnDefinition = "jsonb")
-  private List<SuddenrunTrack> tracks = new ArrayList<>();
+  private List<AppTrack> tracks = new ArrayList<>();
 
   private String snapshotId;
 
@@ -47,18 +50,16 @@ public class SuddenrunPlaylist implements AppPlaylist {
     return this.inclusions.stream().map(AppTrack.class::cast).toList();
   }
 
-  public void setInclusions(List<AppTrack> inclusions) {
-    this.inclusions =
-        inclusions.stream().map(SuddenrunTrack.class::cast).toList();
+  public void setInclusions(@NotNull List<AppTrack> inclusions) {
+    this.inclusions = inclusions;
   }
 
   public List<AppTrack> getExclusions() {
     return this.exclusions.stream().map(AppTrack.class::cast).toList();
   }
 
-  public void setExclusions(List<AppTrack> exclusions) {
-    this.exclusions =
-        exclusions.stream().map(SuddenrunTrack.class::cast).toList();
+  public void setExclusions(@NotNull List<AppTrack> exclusions) {
+    this.exclusions = exclusions;
   }
 
   @JsonIgnore
@@ -69,18 +70,18 @@ public class SuddenrunPlaylist implements AppPlaylist {
 
   @JsonIgnore
   @Override
-  public void setUser(AppUser appUser) {
+  public void setUser(@Valid AppUser appUser) {
     this.user = (SuddenrunUser) appUser;
   }
 
   @Override
   public List<AppTrack> getTracks() {
-    return this.tracks.stream().map(AppTrack.class::cast).toList();
+    return this.tracks;
   }
 
   @Override
-  public void setTracks(List<AppTrack> appTracks) {
-    this.tracks = appTracks.stream().map(SuddenrunTrack.class::cast).toList();
+  public void setTracks(@NotNull List<AppTrack> appTracks) {
+    this.tracks = appTracks;
   }
 
   @Override
