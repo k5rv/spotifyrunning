@@ -11,20 +11,21 @@ import java.util.List;
 
 public interface SpotifyPlaylistItemService {
 
-  List<SpotifyPlaylistItem> getUserPlaylists(@Valid @NotNull SpotifyUserProfileItem userProfileItem);
+  List<SpotifyPlaylistItem> getUserPlaylists(
+      @Valid @NotNull SpotifyUserProfileItem userProfileItem);
 
   SpotifyPlaylistItem getPlaylist(@NotNull String playlistId);
 
   SpotifyPlaylistItem createPlaylist(
-      @Valid @NotNull SpotifyUserProfileItem user, @Valid @NotNull SpotifyPlaylistItemDetails playlistItemDetails);
+      @Valid @NotNull SpotifyUserProfileItem user,
+      @Valid @NotNull SpotifyPlaylistItemDetails playlistItemDetails);
 
   String addTracks(
       @Valid @NotNull String playlistId,
       @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems);
 
   String removeTracks(
-          @Valid @NotNull String playlistId,
-          @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems);
-
-
+      @NotNull String playlistId,
+      @NotNull String snapshotId,
+      @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems);
 }

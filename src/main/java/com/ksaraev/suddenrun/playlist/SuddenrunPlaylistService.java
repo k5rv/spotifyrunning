@@ -125,7 +125,8 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       SpotifyPlaylistItem sourceSpotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
       String sourceSpotifyPlaylistSnapshotId = sourceSpotifyPlaylist.getSnapshotId();
       String targetAppPlaylistSnapshotId = targetAppPlaylist.getSnapshotId();
-      boolean snapshotsAreIdentical = sourceSpotifyPlaylistSnapshotId.equals(targetAppPlaylistSnapshotId);
+      boolean snapshotsAreIdentical =
+          sourceSpotifyPlaylistSnapshotId.equals(targetAppPlaylistSnapshotId);
 
       if (snapshotsAreIdentical) {
         log.info(
@@ -193,8 +194,10 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
           synchronizationService.findPlaylistNoneMatchTracks(targetAppPlaylist, appTracks);
       if (!appTrackRemovals.isEmpty()) {
         targetAppTracks.removeAll(appTrackRemovals);
+        String snapshotId = appPlaylist.getSnapshotId();
         List<SpotifyTrackItem> spotifyTrackRemovals = trackMapper.mapToDtos(appTrackRemovals);
-        String snapshotId = spotifyPlaylistService.removeTracks(playlistId, spotifyTrackRemovals);
+        String removalSnapshotId =
+            spotifyPlaylistService.removeTracks(playlistId, snapshotId, spotifyTrackRemovals);
         log.info(
             "Removed ["
                 + appTrackRemovals.size()
@@ -203,7 +206,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
                 + " ["
                 + playlistId
                 + AND_SNAPSHOT_ID
-                + snapshotId
+                + removalSnapshotId
                 + "]");
       }
 

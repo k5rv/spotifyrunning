@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Getter
@@ -29,14 +31,14 @@ public class SuddenrunUser implements AppUser {
   private List<SuddenrunPlaylist> playlists = new ArrayList<>();
 
   @Override
-  public void addPlaylist(AppPlaylist appPlaylist) {
+  public void addPlaylist(@NotNull AppPlaylist appPlaylist) {
     SuddenrunPlaylist playlist = (SuddenrunPlaylist) appPlaylist;
     playlists.add(playlist);
     playlist.setUser(this);
   }
 
   @Override
-  public void removePlaylist(AppPlaylist appPlaylist) {
+  public void removePlaylist(@NotNull AppPlaylist appPlaylist) {
     SuddenrunPlaylist playlist = (SuddenrunPlaylist) appPlaylist;
     if (!this.playlists.isEmpty()) {
       playlists.remove(playlist);
@@ -51,12 +53,9 @@ public class SuddenrunUser implements AppUser {
   }
 
   @Override
-  public void setPlaylists(List<AppPlaylist> playlists) {
-    if (playlists == null) {
-      this.playlists = new ArrayList<>();
-      return;
-    }
-    this.playlists = playlists.stream().map(SuddenrunPlaylist.class::cast).collect(Collectors.toList());
+  public void setPlaylists(@NotEmpty List<AppPlaylist> playlists) {
+    this.playlists =
+        playlists.stream().map(SuddenrunPlaylist.class::cast).collect(Collectors.toList());
   }
 
   @Override

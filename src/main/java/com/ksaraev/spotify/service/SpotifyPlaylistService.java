@@ -102,11 +102,11 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
   }
 
   @Override
-  public String removeTracks(@NotNull String playlistId, List<SpotifyTrackItem> trackItems) {
+  public String removeTracks(@NotNull String playlistId, @NotNull String snapshotId, List<SpotifyTrackItem> trackItems) {
     try {
       List<URI> trackItemUris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
       RemovePlaylistItemsRequest request =
-          RemovePlaylistItemsRequest.builder().uris(trackItemUris).build();
+          RemovePlaylistItemsRequest.builder().snapshotId(snapshotId).uris(trackItemUris).build();
       RemovePlaylistItemsResponse response = client.removePlaylistItems(playlistId, request);
       return response.snapshotId();
     } catch (SpotifyUnauthorizedException e) {

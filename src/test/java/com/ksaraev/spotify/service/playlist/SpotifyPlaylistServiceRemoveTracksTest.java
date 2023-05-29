@@ -66,13 +66,15 @@ class SpotifyPlaylistServiceRemoveTracksTest {
   void itShouldRemoveTracks() {
     // Given
     String playlistId = SpotifyResourceHelper.getRandomId();
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     List<URI> uris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
-    RemovePlaylistItemsRequest request = RemovePlaylistItemsRequest.builder().uris(uris).build();
+    RemovePlaylistItemsRequest request =
+        RemovePlaylistItemsRequest.builder().uris(uris).snapshotId(snapshotId).build();
     RemovePlaylistItemsResponse response = SpotifyClientHelper.createRemovePlaylistItemsResponse();
     given(client.removePlaylistItems(any(), any())).willReturn(response);
     // When
-    underTest.removeTracks(playlistId, trackItems);
+    underTest.removeTracks(playlistId, snapshotId, trackItems);
     // Then
     then(client)
         .should()
@@ -87,10 +89,11 @@ class SpotifyPlaylistServiceRemoveTracksTest {
     String message = "message";
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     String playlistId = playlist.getId();
+    String snapshotId = playlist.getSnapshotId();
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     given(client.removePlaylistItems(any(), any())).willThrow(new RuntimeException(message));
     // Then
-    assertThatThrownBy(() -> underTest.removeTracks(playlistId, trackItems))
+    assertThatThrownBy(() -> underTest.removeTracks(playlistId, snapshotId, trackItems))
         .isExactlyInstanceOf(RemoveSpotifyPlaylistTracksException.class)
         .hasMessageContaining(playlistId)
         .hasMessageContaining(message);
@@ -102,10 +105,11 @@ class SpotifyPlaylistServiceRemoveTracksTest {
     // Given
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     String playlistId = playlist.getId();
+    String snapshotId = playlist.getSnapshotId();
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     given(client.removePlaylistItems(any(), any())).willThrow(new SpotifyUnauthorizedException());
     // Then
-    assertThatThrownBy(() -> underTest.removeTracks(playlistId, trackItems))
+    assertThatThrownBy(() -> underTest.removeTracks(playlistId, snapshotId, trackItems))
         .isExactlyInstanceOf(SpotifyAccessTokenException.class);
   }
 
@@ -114,8 +118,11 @@ class SpotifyPlaylistServiceRemoveTracksTest {
       throws Exception {
     // Given
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
-    Method method = SpotifyPlaylistService.class.getMethod(REMOVE_TRACKS, String.class, List.class);
-    Object[] parameterValues = {null, trackItems};
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
+    Method method =
+        SpotifyPlaylistService.class.getMethod(
+            REMOVE_TRACKS, String.class, String.class, List.class);
+    Object[] parameterValues = {null, snapshotId, trackItems};
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
@@ -126,12 +133,34 @@ class SpotifyPlaylistServiceRemoveTracksTest {
   }
 
   @Test
+  void itShouldDetectRemoveTracksCascadeConstraintViolationWhenSpotifySnapshotIdIsNull()
+      throws Exception {
+    // Given
+    List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
+    String playlistId = SpotifyResourceHelper.getRandomId();
+    Method method =
+        SpotifyPlaylistService.class.getMethod(
+            REMOVE_TRACKS, String.class, String.class, List.class);
+    Object[] parameterValues = {playlistId, null, trackItems};
+    // When
+    Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
+        executableValidator.validateParameters(underTest, method, parameterValues);
+    // Then
+    assertThat(constraintViolations).hasSize(1);
+    assertThat(new ConstraintViolationException(constraintViolations))
+        .hasMessage(REMOVE_TRACKS + ".snapshotId: must not be null");
+  }
+
+  @Test
   void itShouldDetectRemoveTracksConstraintViolationWhenTrackListIsEmpty() throws Exception {
     // Given
     String playlistId = SpotifyResourceHelper.getRandomId();
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     List<SpotifyTrackItem> tracks = List.of();
-    Object[] parameterValues = {playlistId, tracks};
-    Method method = SpotifyPlaylistService.class.getMethod(REMOVE_TRACKS, String.class, List.class);
+    Object[] parameterValues = {playlistId, snapshotId, tracks};
+    Method method =
+        SpotifyPlaylistService.class.getMethod(
+            REMOVE_TRACKS, String.class, String.class, List.class);
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
@@ -146,9 +175,12 @@ class SpotifyPlaylistServiceRemoveTracksTest {
       throws Exception {
     // Given
     String playlistId = SpotifyResourceHelper.getRandomId();
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(101);
-    Object[] parameterValues = {playlistId, tracks};
-    Method method = SpotifyPlaylistService.class.getMethod(REMOVE_TRACKS, String.class, List.class);
+    Object[] parameterValues = {playlistId, snapshotId, tracks};
+    Method method =
+        SpotifyPlaylistService.class.getMethod(
+            REMOVE_TRACKS, String.class, String.class, List.class);
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
@@ -163,12 +195,13 @@ class SpotifyPlaylistServiceRemoveTracksTest {
       throws Exception {
     // Given
     String playlistId = SpotifyResourceHelper.getRandomId();
+    String snapshotId = SpotifyResourceHelper.getRandomSnapshotId();
     SpotifyTrackItem track = SpotifyServiceHelper.getTrack();
     track.setId(null);
     List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(1);
     tracks.add(1, track);
-    Object[] parameterValues = {playlistId, tracks};
-    Method method = SpotifyPlaylistService.class.getMethod(REMOVE_TRACKS, String.class, List.class);
+    Object[] parameterValues = {playlistId, snapshotId, tracks};
+    Method method = SpotifyPlaylistService.class.getMethod(REMOVE_TRACKS, String.class,String.class, List.class);
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);

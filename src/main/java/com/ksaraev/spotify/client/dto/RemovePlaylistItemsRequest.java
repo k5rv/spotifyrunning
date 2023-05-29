@@ -10,4 +10,5 @@ import lombok.Builder;
 
 @Builder
 public record RemovePlaylistItemsRequest(
-    @JsonProperty("uris") @Size(min = 1, max = 100) @NotEmpty List<@NotNull URI> uris) {}
+    @JsonProperty("uris") @Size(min = 1, max = 100) @NotEmpty List<@NotNull URI> uris,
+    @NotNull String snapshotId) {}
