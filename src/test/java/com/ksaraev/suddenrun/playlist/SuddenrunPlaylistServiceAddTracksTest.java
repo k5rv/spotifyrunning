@@ -49,6 +49,8 @@ class SuddenrunPlaylistServiceAddTracksTest {
 
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
 
+  @Captor private ArgumentCaptor<SpotifyPlaylistItem> spotifyPlaylistArgumentCaptor;
+
   @Captor private ArgumentCaptor<String> playlistSnapshotIdArgumentCaptor;
 
   @Captor private ArgumentCaptor<List<SpotifyTrackItem>> appTrackRemovalsArgumentCapture;
@@ -173,13 +175,15 @@ class SuddenrunPlaylistServiceAddTracksTest {
             playlistSnapshotIdArgumentCaptor.capture(),
             appTrackRemovalsArgumentCapture.capture());
     assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
-    assertThat(playlistSnapshotIdArgumentCaptor.getValue()).isEqualTo(targetAppPlaylist.getSnapshotId());
+    assertThat(playlistSnapshotIdArgumentCaptor.getValue())
+        .isEqualTo(targetAppPlaylist.getSnapshotId());
     assertThat(appTrackRemovalsArgumentCapture.getValue())
         .containsExactlyElementsOf(spotifyTrackRemovals);
 
     then(spotifyPlaylistService)
         .should()
-        .addTracks(playlistIdArgumentCaptor.capture(), appTrackAdditionsArgumentCapture.capture());
+        .addTracks(
+            spotifyPlaylistArgumentCaptor.capture(), appTrackAdditionsArgumentCapture.capture());
     assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
     assertThat(appTrackAdditionsArgumentCapture.getValue())
         .containsExactlyElementsOf(spotifyTrackAdditions);

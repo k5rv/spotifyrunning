@@ -1,22 +1,25 @@
 package com.ksaraev.spotify.service;
 
-import com.ksaraev.spotify.client.dto.*;
 import com.ksaraev.spotify.client.SpotifyClient;
-import com.ksaraev.spotify.exception.*;
+import com.ksaraev.spotify.client.dto.*;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotify.config.UpdateSpotifyPlaylistItemsRequestConfig;
+import com.ksaraev.spotify.exception.*;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistMapper;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
+
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -34,7 +37,7 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
   @Override
   public List<SpotifyPlaylistItem> getUserPlaylists(
-      @NotNull SpotifyUserProfileItem userProfileItem) {
+      @Valid @NotNull SpotifyUserProfileItem userProfileItem) {
     String userId = userProfileItem.getId();
     try {
       GetUserPlaylistsRequest request = GetUserPlaylistsRequest.builder().build();
@@ -68,8 +71,8 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
   @Override
   public SpotifyPlaylistItem createPlaylist(
-      @NotNull SpotifyUserProfileItem userProfileItem,
-      @NotNull SpotifyPlaylistItemDetails playlistItemDetails) {
+      @NotNull @Valid SpotifyUserProfileItem userProfileItem,
+      @NotNull @Valid SpotifyPlaylistItemDetails playlistItemDetails) {
     String userId = userProfileItem.getId();
     try {
       SpotifyPlaylistDetailsDto playlistDetailsDto =
@@ -84,7 +87,9 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
   }
 
   @Override
-  public String addTracks(@NotNull String playlistId, List<SpotifyTrackItem> trackItems) {
+  public String addTracks(
+      @Valid @NotNull SpotifyPlaylistItem spotifyPlaylistItem, @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems) {
+    String playlistId = spotifyPlaylistItem.getId();
     try {
       List<URI> trackItemUris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
       AddPlaylistItemsRequest request =
@@ -102,7 +107,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
   }
 
   @Override
-  public String removeTracks(@NotNull String playlistId, @NotNull String snapshotId, List<SpotifyTrackItem> trackItems) {
+  public String removeTracks(
+      @NotNull String playlistId,
+      @NotNull String snapshotId,
+      @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems) {
     try {
       List<URI> trackItemUris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
       RemovePlaylistItemsRequest request =

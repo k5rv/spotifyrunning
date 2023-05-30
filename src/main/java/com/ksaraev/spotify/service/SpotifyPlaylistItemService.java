@@ -17,11 +17,11 @@ public interface SpotifyPlaylistItemService {
   SpotifyPlaylistItem getPlaylist(@NotNull String playlistId);
 
   SpotifyPlaylistItem createPlaylist(
-      @Valid @NotNull SpotifyUserProfileItem user,
+      @Valid @NotNull SpotifyUserProfileItem userProfileItem,
       @Valid @NotNull SpotifyPlaylistItemDetails playlistItemDetails);
 
   String addTracks(
-      @Valid @NotNull String playlistId,
+      @Valid @NotNull SpotifyPlaylistItem spotifyPlaylistItem,
       @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems);
 
   String removeTracks(

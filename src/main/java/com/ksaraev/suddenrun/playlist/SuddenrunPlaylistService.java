@@ -15,9 +15,10 @@ import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import java.util.*;
+
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -44,7 +45,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
   private final AppUserMapper userMapper;
 
   @Override
-  public AppPlaylist createPlaylist(@NotNull AppUser appUser) {
+  public AppPlaylist createPlaylist(AppUser appUser) {
     String appUserId = appUser.getId();
     try {
       log.info("Creating playlist for user id with [" + appUserId + "]");
@@ -188,6 +189,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
         throw new SuddenrunPlaylistDoesNotExistException(playlistId);
       }
       AppPlaylist targetAppPlaylist = optionalAppPlaylist.get();
+      SpotifyPlaylistItem spotifyPlaylist = playlistMapper.mapToDto(targetAppPlaylist);
       List<AppTrack> targetAppTracks = new ArrayList<>(targetAppPlaylist.getTracks());
 
       List<AppTrack> appTrackRemovals =
@@ -215,7 +217,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       if (!appTrackAdditions.isEmpty()) {
         targetAppTracks.addAll(appTrackAdditions);
         List<SpotifyTrackItem> spotifyTrackAdditions = trackMapper.mapToDtos(appTrackAdditions);
-        String snapshotId = spotifyPlaylistService.addTracks(playlistId, spotifyTrackAdditions);
+        String snapshotId = spotifyPlaylistService.addTracks(spotifyPlaylist, spotifyTrackAdditions);
         log.info(
             "Added ["
                 + appTrackAdditions.size()
