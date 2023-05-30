@@ -152,7 +152,7 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(CREATE_PLAYLIST + ".user: must not be null");
+        .hasMessage(CREATE_PLAYLIST + ".userProfileItem: must not be null");
   }
 
   @Test
@@ -190,7 +190,7 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage(CREATE_PLAYLIST + ".user.id: must not be null");
+        .hasMessage(CREATE_PLAYLIST + ".userProfileItem.id: must not be null");
   }
 
   @Test

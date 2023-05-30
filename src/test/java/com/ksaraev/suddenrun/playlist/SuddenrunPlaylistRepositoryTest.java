@@ -2,6 +2,7 @@ package com.ksaraev.suddenrun.playlist;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import jakarta.persistence.EntityManager;
@@ -52,6 +53,33 @@ class SuddenrunPlaylistRepositoryTest {
     assertThat(optionalPlaylist)
         .isPresent()
         .hasValueSatisfying(p -> assertThat(p).usingRecursiveComparison().isEqualTo(playlist));
+  }
+
+  @Test
+  void itShouldFindPlaylistAndItTracksById() {
+    // Given
+    SuddenrunUser user = SuddenrunHelper.getUser();
+    SuddenrunPlaylist playlist = SuddenrunHelper.getSuddenrunPlaylist(user);
+    String playlistId = playlist.getId();
+    List<AppTrack> tracks = SuddenrunHelper.getTracks(50);
+    playlist.setTracks(tracks);
+    playlist.setInclusions(List.of());
+    playlist.setInclusions(List.of());
+    user.setPlaylists(List.of(playlist));
+    entityManager.persist(user);
+    underTest.save(playlist);
+
+    // When
+    Optional<SuddenrunPlaylist> optionalPlaylist = underTest.findById(playlistId);
+
+    // Then
+    assertThat(optionalPlaylist)
+        .isPresent()
+        .hasValueSatisfying(p -> assertThat(p.getTracks()).isEqualTo(tracks));
+    //    assertThat(optionalPlaylist)
+    //            .isPresent()
+    //            .hasValueSatisfying(p ->
+    // assertThat(p).usingRecursiveComparison().isEqualTo(playlist));
   }
 
   @Test
