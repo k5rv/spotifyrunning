@@ -25,7 +25,6 @@ public interface SpotifyPlaylistItemService {
       @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems);
 
   String removeTracks(
-      @NotNull String playlistId,
-      @NotNull String snapshotId,
+      @Valid @NotNull SpotifyPlaylistItem spotifyPlaylistItem,
       @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems);
 }

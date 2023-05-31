@@ -196,10 +196,9 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
           synchronizationService.findPlaylistNoneMatchTracks(targetAppPlaylist, appTracks);
       if (!appTrackRemovals.isEmpty()) {
         targetAppTracks.removeAll(appTrackRemovals);
-        String snapshotId = appPlaylist.getSnapshotId();
         List<SpotifyTrackItem> spotifyTrackRemovals = trackMapper.mapToDtos(appTrackRemovals);
         String removalSnapshotId =
-            spotifyPlaylistService.removeTracks(playlistId, snapshotId, spotifyTrackRemovals);
+            spotifyPlaylistService.removeTracks(spotifyPlaylist, spotifyTrackRemovals);
         log.info(
             "Removed ["
                 + appTrackRemovals.size()

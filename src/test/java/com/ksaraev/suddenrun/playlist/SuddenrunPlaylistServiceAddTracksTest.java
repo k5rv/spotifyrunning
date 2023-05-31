@@ -47,11 +47,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
 
   @Mock private AppTrackMapper trackMapper;
 
-  @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
-
   @Captor private ArgumentCaptor<SpotifyPlaylistItem> spotifyPlaylistArgumentCaptor;
-
-  @Captor private ArgumentCaptor<String> playlistSnapshotIdArgumentCaptor;
 
   @Captor private ArgumentCaptor<List<SpotifyTrackItem>> appTrackRemovalsArgumentCapture;
 
@@ -102,10 +98,17 @@ class SuddenrunPlaylistServiceAddTracksTest {
   @Test
   void itShouldAddPlaylistTracks() {
     // Given
+    SpotifyPlaylistItem spotifyPlaylist = SpotifyServiceHelper.getPlaylist();
+    String playlistId = spotifyPlaylist.getId();
+    String snapshotId = spotifyPlaylist.getSnapshotId();
+
     List<AppTrack> appTracks = SuddenrunHelper.getTracks(10);
     SuddenrunPlaylist targetAppPlaylist = SuddenrunHelper.getSuddenrunPlaylist();
+    targetAppPlaylist.setId(playlistId);
+    targetAppPlaylist.setSnapshotId(snapshotId);
+    targetAppPlaylist.setInclusions(List.of());
+    targetAppPlaylist.setExclusions(List.of());
     List<AppTrack> targetAppTracks = new ArrayList<>(targetAppPlaylist.getTracks());
-    String playlistId = targetAppPlaylist.getId();
     given(repository.findById(playlistId)).willReturn(Optional.of(targetAppPlaylist));
 
     List<SpotifyTrackItem> spotifyTrackRemovals = SpotifyServiceHelper.getTracks(5);
@@ -120,6 +123,8 @@ class SuddenrunPlaylistServiceAddTracksTest {
                         .build())
             .collect(Collectors.toList());
 
+    given(playlistMapper.mapToDto(targetAppPlaylist)).willReturn(spotifyPlaylist);
+
     targetAppTracks.addAll(appTrackRemovals);
     given(synchronizationService.findPlaylistNoneMatchTracks(targetAppPlaylist, appTracks))
         .willReturn(appTrackRemovals);
@@ -127,7 +132,7 @@ class SuddenrunPlaylistServiceAddTracksTest {
     given(trackMapper.mapToDtos(appTrackRemovals)).willReturn(spotifyTrackRemovals);
 
     String removalSnapshotId = SpotifyResourceHelper.getRandomSnapshotId();
-    given(spotifyPlaylistService.removeTracks(any(), any(), any())).willReturn(removalSnapshotId);
+    given(spotifyPlaylistService.removeTracks(any(), any())).willReturn(removalSnapshotId);
 
     List<SpotifyTrackItem> spotifyTrackAdditions = SpotifyServiceHelper.getTracks(5);
 
@@ -171,12 +176,9 @@ class SuddenrunPlaylistServiceAddTracksTest {
     then(spotifyPlaylistService)
         .should()
         .removeTracks(
-            playlistIdArgumentCaptor.capture(),
-            playlistSnapshotIdArgumentCaptor.capture(),
+            spotifyPlaylistArgumentCaptor.capture(),
             appTrackRemovalsArgumentCapture.capture());
-    assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
-    assertThat(playlistSnapshotIdArgumentCaptor.getValue())
-        .isEqualTo(targetAppPlaylist.getSnapshotId());
+    assertThat(spotifyPlaylistArgumentCaptor.getValue()).isEqualTo(spotifyPlaylist);
     assertThat(appTrackRemovalsArgumentCapture.getValue())
         .containsExactlyElementsOf(spotifyTrackRemovals);
 
@@ -184,7 +186,6 @@ class SuddenrunPlaylistServiceAddTracksTest {
         .should()
         .addTracks(
             spotifyPlaylistArgumentCaptor.capture(), appTrackAdditionsArgumentCapture.capture());
-    assertThat(playlistIdArgumentCaptor.getValue()).isEqualTo(playlistId);
     assertThat(appTrackAdditionsArgumentCapture.getValue())
         .containsExactlyElementsOf(spotifyTrackAdditions);
 

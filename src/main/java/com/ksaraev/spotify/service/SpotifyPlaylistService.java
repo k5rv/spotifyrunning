@@ -88,7 +88,8 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
   @Override
   public String addTracks(
-      @Valid @NotNull SpotifyPlaylistItem spotifyPlaylistItem, @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems) {
+      @Valid @NotNull SpotifyPlaylistItem spotifyPlaylistItem,
+      @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems) {
     String playlistId = spotifyPlaylistItem.getId();
     try {
       List<URI> trackItemUris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
@@ -108,9 +109,10 @@ public class SpotifyPlaylistService implements SpotifyPlaylistItemService {
 
   @Override
   public String removeTracks(
-      @NotNull String playlistId,
-      @NotNull String snapshotId,
+      @Valid @NotNull SpotifyPlaylistItem spotifyPlaylistItem,
       @Valid @Size(min = 1, max = 100) List<SpotifyTrackItem> trackItems) {
+    String playlistId = spotifyPlaylistItem.getId();
+    String snapshotId = spotifyPlaylistItem.getSnapshotId();
     try {
       List<URI> trackItemUris = trackItems.stream().map(SpotifyTrackItem::getUri).toList();
       RemovePlaylistItemsRequest request =
