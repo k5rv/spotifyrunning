@@ -14,8 +14,6 @@ class SuddenrunUserServiceTest {
 
   @Mock private SuddenrunUserRepository repository;
 
-  @Captor private ArgumentCaptor<String> userIdArgumentCaptor;
-
   @Captor private ArgumentCaptor<SuddenrunUser> suddenrunUserArgumentCaptor;
 
   private AutoCloseable closeable;
@@ -34,52 +32,6 @@ class SuddenrunUserServiceTest {
   }
 
   @Test
-  void itShouldReturnTrueIfUserIsRegistered() {
-    // Given
-    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
-    String id = suddenrunUser.getId();
-    given(repository.existsById(id)).willReturn(true);
-
-    // When
-    underTest.isUserRegistered(id);
-
-    // Then
-    then(repository).should().existsById(userIdArgumentCaptor.capture());
-    assertThat(userIdArgumentCaptor.getValue()).isEqualTo(id);
-  }
-
-  @Test
-  void itShouldReturnFalseIfUserIsNotRegistered() {
-    // Given
-    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
-    String id = suddenrunUser.getId();
-    given(repository.existsById(id)).willReturn(false);
-
-    // When
-    underTest.isUserRegistered(id);
-
-    // Then
-    then(repository).should().existsById(userIdArgumentCaptor.capture());
-    assertThat(userIdArgumentCaptor.getValue()).isEqualTo(id);
-  }
-
-  @Test
-  void
-      itShouldThrowGetSuddenrunUserRegistrationStatusExceptionIfUserRepositoryThrowsRuntimeException() {
-    // Given
-    String message = "message";
-    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
-    String id = suddenrunUser.getId();
-    given(repository.existsById(id)).willThrow(new RuntimeException(message));
-
-    // Then
-    assertThatThrownBy(() -> underTest.isUserRegistered(id))
-        .isExactlyInstanceOf(GetSuddenrunUserRegistrationStatusException.class)
-        .hasMessageContaining(id)
-        .hasMessageContaining(message);
-  }
-
-  @Test
   void itShouldReturnUserIfItIsPresent() {
     // Given
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
@@ -93,7 +45,10 @@ class SuddenrunUserServiceTest {
     assertThat(appUser)
         .isPresent()
         .hasValueSatisfying(
-            user -> assertThat((SuddenrunUser) user).usingRecursiveComparison().isEqualTo(suddenrunUser));
+            user ->
+                assertThat((SuddenrunUser) user)
+                    .usingRecursiveComparison()
+                    .isEqualTo(suddenrunUser));
   }
 
   @Test

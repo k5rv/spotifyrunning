@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.ksaraev.spotify.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.utils.helpers.JsonHelper;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
+import com.ksaraev.utils.helpers.SpotifyResourceHelper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -36,8 +37,8 @@ class SuddenrunRegisterUserIntegrationTest {
   void itShouldRegisterUser() throws Exception {
     // Given
     SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
-    String id = userProfileDto.id();
-    String name = userProfileDto.displayName();
+    String userId = userProfileDto.id();
+    String userName = userProfileDto.displayName();
 
     WireMock.stubFor(
         WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
@@ -48,7 +49,7 @@ class SuddenrunRegisterUserIntegrationTest {
     // When
     ResultActions userRegistrationResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS + "/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
     // Then
@@ -56,8 +57,32 @@ class SuddenrunRegisterUserIntegrationTest {
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-        .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(name));
+        .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(userId))
+        .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(userName));
+  }
+
+  @Test
+  void itShouldThrowSuddenrunUserDoesNotMatchCurrentSpotifyUserException() throws Exception {
+    // Given
+    SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
+    String fraudUserId = SpotifyResourceHelper.getRandomId();
+
+    WireMock.stubFor(
+            WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
+                    .willReturn(
+                            WireMock.jsonResponse(
+                                    JsonHelper.objectToJson(userProfileDto), HttpStatus.OK.value())));
+
+    // When
+    ResultActions userRegistrationRepeatedAttemptResultActions =
+            mockMvc.perform(
+                    MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS + "/" + fraudUserId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+    // Then
+    userRegistrationRepeatedAttemptResultActions.andExpect(
+            MockMvcResultMatchers.status().isConflict());
   }
 
   @Test
@@ -65,10 +90,10 @@ class SuddenrunRegisterUserIntegrationTest {
       throws Exception {
     // Given
     SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
-    String id = userProfileDto.id();
-    String name = userProfileDto.displayName();
+    String userId = userProfileDto.id();
+    String userName = userProfileDto.displayName();
 
-    appUserService.registerUser(id, name);
+    appUserService.registerUser(userId, userName);
 
     WireMock.stubFor(
         WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
@@ -79,7 +104,7 @@ class SuddenrunRegisterUserIntegrationTest {
     // When
     ResultActions userRegistrationRepeatedAttemptResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS + "/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
@@ -91,6 +116,8 @@ class SuddenrunRegisterUserIntegrationTest {
   @Test
   void itShouldReturnAuthenticationErrorWhenSpotifyAuthorizationFailed() throws Exception {
     // Given
+    String userId = SpotifyResourceHelper.getRandomId();
+
     WireMock.stubFor(
         WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
             .willReturn(
@@ -99,7 +126,7 @@ class SuddenrunRegisterUserIntegrationTest {
     // When
     ResultActions userRegistrationResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS + "/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
@@ -110,6 +137,8 @@ class SuddenrunRegisterUserIntegrationTest {
   @Test
   void itShouldReturnInternalServerErrorWhenSpotifyServiceCallFailed() throws Exception {
     // Given
+    String userId = SpotifyResourceHelper.getRandomId();
+
     WireMock.stubFor(
         WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
             .willReturn(WireMock.jsonResponse(HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value())));
@@ -117,7 +146,7 @@ class SuddenrunRegisterUserIntegrationTest {
     // When
     ResultActions userRegistrationResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS + "/" + userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 

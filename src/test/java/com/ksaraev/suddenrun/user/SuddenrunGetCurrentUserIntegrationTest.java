@@ -22,17 +22,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureWireMock(port = 0)
 @AutoConfigureMockMvc(addFilters = false)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SuddenrunGetUserIntegrationTest {
+class SuddenrunGetCurrentUserIntegrationTest {
 
   private static final String SPOTIFY_API_V1_ME = "/v1/me";
-  private static final String SUDDENRUN_API_V1_USERS = "/api/v1/users";
+  private static final String SUDDENRUN_API_V1_USERS_CURRENT = "/api/v1/users/current";
 
   @Autowired private AppUserService appUserService;
 
   @Autowired private MockMvc mockMvc;
 
   @Test
-  void itShouldGetUser() throws Exception {
+  void itShouldGetCurrentUser() throws Exception {
     // Given
     SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
     String id = userProfileDto.id();
@@ -49,7 +49,7 @@ class SuddenrunGetUserIntegrationTest {
     // When
     ResultActions getUserResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS_CURRENT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
     // Then
@@ -59,28 +59,6 @@ class SuddenrunGetUserIntegrationTest {
             MockMvcResultMatchers.content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
         .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
         .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(name));
-  }
-
-  @Test
-  void itShouldThrowSuddenrunUserIsNotRegisteredExceptionIfUserIsNotRegistered() throws Exception {
-    // Given
-    SpotifyUserProfileDto userProfileDto = SpotifyClientHelper.getUserProfileDto();
-
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(userProfileDto), HttpStatus.OK.value())));
-
-    // When
-    ResultActions getUserResultActions =
-        mockMvc.perform(
-            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-    // Then
-    getUserResultActions.andExpect(MockMvcResultMatchers.status().isNotFound());
   }
 
   @Test
@@ -94,7 +72,7 @@ class SuddenrunGetUserIntegrationTest {
     // When
     ResultActions getUserResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS_CURRENT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
@@ -112,7 +90,7 @@ class SuddenrunGetUserIntegrationTest {
     // When
     ResultActions userRegistrationResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS)
+            MockMvcRequestBuilders.get(SUDDENRUN_API_V1_USERS_CURRENT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 

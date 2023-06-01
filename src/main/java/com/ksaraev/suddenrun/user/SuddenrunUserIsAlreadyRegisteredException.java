@@ -6,6 +6,6 @@ import lombok.experimental.StandardException;
 public class SuddenrunUserIsAlreadyRegisteredException extends RuntimeException {
 
   public SuddenrunUserIsAlreadyRegisteredException(String userId) {
-    super("User with id" + " [" + userId + "] already registered");
+    super("User with id" + " [" + userId + "] is already registered in Suddenrun");
   }
 }
