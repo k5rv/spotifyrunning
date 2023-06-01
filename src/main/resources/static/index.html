@@ -210,8 +210,12 @@
     let embedState = "initial";
     show(spinner)
 
+
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        getPlaylist().then((playlist) => {
+        getCurrentUser().then((user) => {
+            if (!user.isRegistered) return null
+            return getUserPlaylist(user.id)
+        }).then((playlist) => {
             if (playlist !== null) {
                 embedOptions.uri = buildUri(playlist)
                 button.innerText = "Update playlist"

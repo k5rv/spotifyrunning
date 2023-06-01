@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class AppSecurityConfig {
 
   private static final String API_V1_USERS = "/api/v1/users/**";
+  //  private static final String API_V1_USERS_USER_PLAYLISTS = "/api/v1/users/**/playlists";
 
   private static final String API_V1_USERS_CURRENT = "/api/v1/users/current";
 
@@ -30,6 +31,10 @@ public class AppSecurityConfig {
         .authorizeHttpRequests(
             authorize -> authorize.requestMatchers(GET, ACTUATOR_HEALTH).permitAll())
         .authorizeHttpRequests(authorize -> authorize.requestMatchers(GET, "/*").authenticated())
+        //        .authorizeHttpRequests(
+        //            authorize ->
+        //                authorize.requestMatchers(GET,
+        // API_V1_USERS_USER_PLAYLISTS).authenticated())
         .authorizeHttpRequests(
             authorize -> authorize.requestMatchers(GET, API_V1_PLAYLISTS).authenticated())
         .authorizeHttpRequests(
@@ -38,6 +43,8 @@ public class AppSecurityConfig {
             authorize -> authorize.requestMatchers(PUT, API_V1_PLAYLISTS).authenticated())
         .authorizeHttpRequests(
             authorize -> authorize.requestMatchers(GET, API_V1_USERS_CURRENT).authenticated())
+        .authorizeHttpRequests(
+            authorize -> authorize.requestMatchers(GET, API_V1_USERS).authenticated())
         .authorizeHttpRequests(
             authorize -> authorize.requestMatchers(POST, API_V1_USERS).authenticated())
         .oauth2Login(Customizer.withDefaults())

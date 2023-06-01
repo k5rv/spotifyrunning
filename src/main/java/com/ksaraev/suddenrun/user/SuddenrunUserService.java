@@ -10,13 +10,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SuddenrunUserService implements AppUserService {
 
-
   private final SuddenrunUserRepository repository;
 
   @Override
   public boolean isUserRegistered(String userId) {
     try {
-      return repository.existsById(userId);
+      log.info("Getting user with id [" + userId + "] registrations status");
+      boolean existsById = repository.existsById(userId);
+      log.info("User with id [" + userId + "] registrations status is [" + existsById + "]");
+      return existsById;
     } catch (RuntimeException e) {
       throw new GetSuddenrunUserRegistrationStatusException(userId, e);
     }

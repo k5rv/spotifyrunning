@@ -1,4 +1,4 @@
-package com.ksaraev.suddenrun.playlist;
+package com.ksaraev.suddenrun.user;
 
 import lombok.Builder;
 

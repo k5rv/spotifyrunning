@@ -12,6 +12,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("api/v1/users")
@@ -86,20 +88,23 @@ public class SuddenrunUserController {
   }
 
   @GetMapping(path = "/{user_id}/playlists")
-  public AppPlaylist getUserPlaylists(@NotNull @PathVariable(value = "user_id") String userId) {
+  public GetUserPlaylistResponse getUserPlaylist(
+      @NotNull @PathVariable(value = "user_id") String userId) {
     try {
       AppUser appUser =
-              suddenrunUserService
-                      .getUser(userId)
-                      .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
-      return suddenrunPlaylistService
+          suddenrunUserService
+              .getUser(userId)
+              .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+      AppPlaylist appPlaylist =
+          suddenrunPlaylistService
               .getPlaylist(appUser)
               .orElseThrow(() -> new SuddenrunUserDoesNotHaveAnyPlaylistsException(userId));
+      String playlistId = appPlaylist.getId();
+      return GetUserPlaylistResponse.builder().id(playlistId).build();
     } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     }
   }
-
 }
