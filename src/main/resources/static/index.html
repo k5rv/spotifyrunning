@@ -255,7 +255,12 @@
                                     })
                                     break
                                 case "loaded":
-                                    updatePlaylist().then((playlist) => {
+                                    getCurrentUser().then((user) => {
+                                        if (!user.isRegistered) return null
+                                        return getUserPlaylist(user.id)
+                                    }).then((playlist) => {
+                                        return addTracks(playlist.id)
+                                    }).then((playlist) => {
                                         embedOptions.uri = buildUri(playlist)
                                         return waitCache(5000)
                                     }).then(() => {

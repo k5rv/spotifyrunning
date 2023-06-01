@@ -24,7 +24,7 @@ function sendRequest(method, url) {
 }
 
 function getCurrentUser() {
-    console.log("Getting user")
+    console.log("Getting current user")
     return sendRequest("GET", BASE_URL + API_V1_USERS + "/current").then((response) => {
         if (response.status >= 200 && response.status < 300) {
             let user = JSON.parse(response.message)
@@ -46,22 +46,6 @@ function registerUser(userId) {
             let user = JSON.parse(response.message)
             console.log("Registered user [" + user.id + "]")
             return user
-        }
-        throw new Error("Unexpected HTTP status [" + response.status + "]")
-    })
-}
-
-function getPlaylist() {
-    console.log("Getting playlist")
-    return sendRequest("GET", BASE_URL + API_V1_PLAYLISTS).then((response) => {
-        if (response.status === 404) {
-            console.log("Playlist doesn't exist")
-            return null
-        }
-        if (response.status >= 200 && response.status < 300) {
-            let playlist = JSON.parse(response.message)
-            console.log("Found playlist [" + playlist.id + "]")
-            return playlist
         }
         throw new Error("Unexpected HTTP status [" + response.status + "]")
     })
@@ -99,22 +83,6 @@ function createPlaylist(userId) {
     })
 }
 
-function updatePlaylist() {
-    console.log("Updating playlist")
-    return sendRequest("PUT", BASE_URL + API_V1_PLAYLISTS).then((response) => {
-        if (response.status === 404) {
-            console.log("Playlist doesn't exist")
-            return null
-        }
-        if (response.status >= 200 && response.status < 300) {
-            let playlist = JSON.parse(response.message)
-            console.log("Updated playlist [" + playlist.id + "]")
-            return playlist
-        }
-        throw new Error("Unexpected HTTP status [" + response.status + "]")
-    })
-}
-
 function addTracks(playlistId) {
     console.log("Adding tracks to playlist [" + playlistId + "]")
     return sendRequest("PUT", BASE_URL + API_V1_PLAYLISTS + "/" + playlistId + "/tracks").then((response) => {
@@ -124,7 +92,7 @@ function addTracks(playlistId) {
         }
         if (response.status >= 200 && response.status < 300) {
             let playlist = JSON.parse(response.message)
-            console.log("Updated playlist [" + playlist.id + "]")
+            console.log("Added tracks to playlist [" + playlist.id + "]")
             return playlist
         }
         throw new Error("Unexpected HTTP status [" + response.status + "]")

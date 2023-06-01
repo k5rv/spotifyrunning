@@ -8,11 +8,10 @@ import com.ksaraev.suddenrun.exception.SuddenrunAuthenticationException;
 import com.ksaraev.suddenrun.exception.SuddenrunSpotifyInteractionException;
 import com.ksaraev.suddenrun.playlist.*;
 import jakarta.validation.constraints.NotNull;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -32,10 +31,15 @@ public class SuddenrunUserController {
   public GetCurrentUserResponse getCurrentUser() {
     try {
       SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUserProfile();
-      String id = userProfileItem.getId();
-      String name = userProfileItem.getName();
-      boolean isRegistered = suddenrunUserService.isUserRegistered(id);
-      return GetCurrentUserResponse.builder().id(id).name(name).isRegistered(isRegistered).build();
+      String userId = userProfileItem.getId();
+      String userName = userProfileItem.getName();
+      Optional<AppUser> optionalUser = suddenrunUserService.getUser(userId);
+      boolean userPresent = optionalUser.isPresent();
+      return GetCurrentUserResponse.builder()
+          .id(userId)
+          .name(userName)
+          .isRegistered(userPresent)
+          .build();
     } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (SpotifyAccessTokenException e) {
@@ -48,12 +52,11 @@ public class SuddenrunUserController {
     try {
       SpotifyUserProfileItem userProfileItem = spotifyUserProfileService.getCurrentUserProfile();
       String spotifyUserId = userProfileItem.getId();
-      boolean isMatchAuthenticatedSpotifyUser = spotifyUserId.equals(userId);
-      if (!isMatchAuthenticatedSpotifyUser)
-        throw new SuddenrunUserDoesNotMatchAuthenticatedSpotifyUserException(userId);
       String spotifyUserName = userProfileItem.getName();
-      boolean isUserRegistered = suddenrunUserService.isUserRegistered(userId);
-      if (isUserRegistered) throw new SuddenrunUserIsAlreadyRegisteredException(userId);
+      boolean userIdsAreIdentical = spotifyUserId.equals(userId);
+      if (!userIdsAreIdentical) {
+        throw new SuddenrunUserDoesNotMatchCurrentSpotifyUserException(userId);
+      }
       AppUser appUser = suddenrunUserService.registerUser(spotifyUserId, spotifyUserName);
       return mapper.mapToDto(appUser);
     } catch (SpotifyServiceException e) {
@@ -67,10 +70,7 @@ public class SuddenrunUserController {
   public CreatePlaylistResponse createPlaylist(
       @NotNull @PathVariable(value = "user_id") String userId) {
     try {
-      AppUser appUser =
-          suddenrunUserService
-              .getUser(userId)
-              .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+      AppUser appUser = getUser(userId);
       suddenrunPlaylistService
           .getPlaylist(appUser)
           .ifPresent(
@@ -91,10 +91,7 @@ public class SuddenrunUserController {
   public GetUserPlaylistResponse getUserPlaylist(
       @NotNull @PathVariable(value = "user_id") String userId) {
     try {
-      AppUser appUser =
-          suddenrunUserService
-              .getUser(userId)
-              .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
+      AppUser appUser = getUser(userId);
       AppPlaylist appPlaylist =
           suddenrunPlaylistService
               .getPlaylist(appUser)
@@ -106,5 +103,11 @@ public class SuddenrunUserController {
     } catch (SpotifyAccessTokenException e) {
       throw new SuddenrunAuthenticationException(e);
     }
+  }
+
+  private AppUser getUser(String userId) {
+    return suddenrunUserService
+        .getUser(userId)
+        .orElseThrow(() -> new SuddenrunUserIsNotRegisteredException(userId));
   }
 }

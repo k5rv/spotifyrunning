@@ -13,18 +13,6 @@ public class SuddenrunUserService implements AppUserService {
   private final SuddenrunUserRepository repository;
 
   @Override
-  public boolean isUserRegistered(String userId) {
-    try {
-      log.info("Getting user with id [" + userId + "] registrations status");
-      boolean existsById = repository.existsById(userId);
-      log.info("User with id [" + userId + "] registrations status is [" + existsById + "]");
-      return existsById;
-    } catch (RuntimeException e) {
-      throw new GetSuddenrunUserRegistrationStatusException(userId, e);
-    }
-  }
-
-  @Override
   public Optional<AppUser> getUser(String userId) {
     try {
       log.info("Getting user with id [" + userId + "]");
@@ -42,6 +30,8 @@ public class SuddenrunUserService implements AppUserService {
 
   @Override
   public AppUser registerUser(String userId, String userName) {
+    Optional<AppUser> optionalUser = getUser(userId);
+    if (optionalUser.isPresent()) throw new SuddenrunUserIsAlreadyRegisteredException(userId);
     try {
       log.info("Registering user with id [" + userId + "] in Suddenrun");
       SuddenrunUser suddenrunUser = SuddenrunUser.builder().id(userId).name(userName).build();
