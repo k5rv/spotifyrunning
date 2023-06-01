@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.*;
 
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistAlreadyExistsException;
 import com.ksaraev.suddenrun.playlist.SuddenrunUserDoesNotHaveAnyPlaylistsException;
+import com.ksaraev.suddenrun.user.SuddenrunUserDoesNotMatchAuthenticatedSpotifyUserException;
 import com.ksaraev.suddenrun.user.SuddenrunUserIsAlreadyRegisteredException;
 import com.ksaraev.suddenrun.user.SuddenrunUserIsNotRegisteredException;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,16 @@ public class SuddenrunExceptionHandler {
     log.error(e.getMessage());
     int conflict = CONFLICT.value();
     String message = "Suddenrun user is already registered";
+    return ResponseEntity.status(CONFLICT).body(new SuddenrunError(conflict, message));
+  }
+
+
+  @ExceptionHandler(value = {SuddenrunUserDoesNotMatchAuthenticatedSpotifyUserException.class})
+  public ResponseEntity<SuddenrunError> handleSuddenrunUserDoesNotMatchAuthenticatedSpotifyUserException(
+          SuddenrunUserDoesNotMatchAuthenticatedSpotifyUserException e) {
+    log.error(e.getMessage());
+    int conflict = CONFLICT.value();
+    String message = "Suddenrun user doesn't match authenticated Spotify user";
     return ResponseEntity.status(CONFLICT).body(new SuddenrunError(conflict, message));
   }
 

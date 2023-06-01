@@ -6,6 +6,6 @@ import lombok.experimental.StandardException;
 public class SuddenrunUserDoesNotMatchAuthenticatedSpotifyUserException extends RuntimeException {
 
   public SuddenrunUserDoesNotMatchAuthenticatedSpotifyUserException(String userId) {
-    super("User with id" + " [" + userId + "] does not match authenticated spotify user");
+    super("User with id" + " [" + userId + "] does not match authenticated Spotify user");
   }
 }
