@@ -32,7 +32,7 @@ class GetPlaylistTest {
   @Test
   void itShouldDetectGetPlaylistMethodConstraintViolationWhenPlaylistIdIsNull() {
     // Given
-    String message = ".playlistId: must not be null";
+    String message = ".id: must not be null";
     // When
     Object[] parameterValues = {null};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =

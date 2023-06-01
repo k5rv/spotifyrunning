@@ -14,6 +14,8 @@ public interface AppPlaylistService {
 
   Optional<AppPlaylist> getPlaylist(@Valid @NotNull AppUser appUser);
 
+  Optional<AppPlaylist> getPlaylist(@NotNull String playlistId);
+
   AppPlaylist addTracks(
       @Valid @NotNull AppPlaylist appPlaylist, @NotEmpty List<AppTrack> appTracks);
 }

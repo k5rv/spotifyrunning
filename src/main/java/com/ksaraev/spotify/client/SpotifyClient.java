@@ -50,12 +50,12 @@ public interface SpotifyClient {
   @NotNull
   SpotifyPlaylistDto getPlaylist(@NotNull @PathVariable(value = "playlist_id") String playlistId);
 
-  @PostMapping(path = "users/{userId}/playlists")
+  @PostMapping(path = "users/{user_id}/playlists")
   @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
   @Valid
   @NotNull
   SpotifyPlaylistDto createPlaylist(
-      @NotNull @PathVariable(value = "userId") String userId,
+      @NotNull @PathVariable(value = "user_id") String userId,
       @Valid @NotNull @RequestBody SpotifyPlaylistDetailsDto playlistItemDetails);
 
   @PostMapping(path = "playlists/{playlist_id}/tracks")

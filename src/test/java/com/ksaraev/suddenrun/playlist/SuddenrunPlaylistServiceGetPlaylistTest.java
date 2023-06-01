@@ -253,7 +253,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     // Then
     assertThatThrownBy(() -> underTest.getPlaylist(appUser))
-        .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
+        .isExactlyInstanceOf(GetSuddenrunUserPlaylistException.class)
         .hasMessageContaining(message);
   }
 
@@ -270,7 +270,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     // Then
     assertThatThrownBy(() -> underTest.getPlaylist(appUser))
-        .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
+        .isExactlyInstanceOf(GetSuddenrunUserPlaylistException.class)
         .hasMessageContaining(message);
   }
 
@@ -284,7 +284,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     // Then
     assertThatThrownBy(() -> underTest.getPlaylist(appUser))
-        .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
+        .isExactlyInstanceOf(GetSuddenrunUserPlaylistException.class)
         .hasMessageContaining(message);
   }
 }

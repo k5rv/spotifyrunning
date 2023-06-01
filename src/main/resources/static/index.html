@@ -208,11 +208,9 @@
         height: 352
     };
     let embedState = "initial";
-
     show(spinner)
 
     window.onSpotifyIframeApiReady = (IFrameAPI) => {
-        // console.log("Spotify IFrameAPI is ready")
         getPlaylist().then((playlist) => {
             if (playlist !== null) {
                 embedOptions.uri = buildUri(playlist)
@@ -234,10 +232,12 @@
                             show(spinner)
                             switch (embedState) {
                                 case "initial":
-                                    getUser().then((user) => {
-                                        if (user === null) return registerUser()
-                                    }).then(() => {
-                                        return createPlaylist()
+                                    getCurrentUser().then((user) => {
+                                        if (user.isRegistered === false) return registerUser(user.id)
+                                    }).then((user) => {
+                                        return createPlaylist(user.id)
+                                    }).then((playlist) => {
+                                        return addTracks(playlist.id)
                                     }).then((playlist) => {
                                         embedOptions.uri = buildUri(playlist)
                                         return waitCache(5000)

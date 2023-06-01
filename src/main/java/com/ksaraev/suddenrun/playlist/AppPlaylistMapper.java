@@ -3,17 +3,16 @@ package com.ksaraev.suddenrun.playlist;
 import static com.ksaraev.spotify.model.SpotifyItemType.*;
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
-import com.ksaraev.suddenrun.track.AppTrackMapper;
-import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylist;
 import com.ksaraev.spotify.model.playlist.SpotifyPlaylistItem;
+import com.ksaraev.suddenrun.track.AppTrackMapper;
+import com.ksaraev.suddenrun.user.AppUserMapper;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.URI;
 import java.util.List;
-
 import org.mapstruct.*;
 
 @Mapper(

@@ -25,6 +25,8 @@ public interface AppUserMapper {
     return SpotifyUserProfile.builder().id(id).name(name).uri(uri).build();
   }
 
+  GetUserResponse mapToDto(AppUser appUser);
+
   @ObjectFactory
   default SpotifyUserProfileItem createItem() {
     return SpotifyUserProfile.builder().build();

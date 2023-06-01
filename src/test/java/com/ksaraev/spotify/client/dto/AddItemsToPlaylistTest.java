@@ -34,7 +34,7 @@ class AddItemsToPlaylistTest {
   @Test
   void itShouldDetectAddItemsToPlaylistMethodConstraintViolationWhenPlaylistIdIsNull() {
     // Given
-    String message = ".playlistId: must not be null";
+    String message = ".id: must not be null";
     URI trackUri = URI.create("spotify:track:1234567890AaBbCcDdEeFfG");
     List<URI> uris = List.of(trackUri);
     AddPlaylistItemsRequest updateItemsRequest =

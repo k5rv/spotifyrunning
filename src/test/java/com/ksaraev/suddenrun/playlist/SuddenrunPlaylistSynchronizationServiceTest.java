@@ -90,7 +90,7 @@ class SuddenrunPlaylistSynchronizationServiceTest {
     AppPlaylist result = underTest.updateFromSource(targetPlaylist, sourcePlaylist);
 
     // Then
-//    assertThat(result.getId()).isEqualTo(playlistId);
+//    assertThat(result.getId()).isEqualTo(id);
 //    assertThat(result.getSnapshotId()).isEqualTo(snapshotId);
 //    assertThat(result.getUser()).usingRecursiveComparison().isEqualTo(user);
 //    assertThat(result.getTracks()).isEqualTo(tracks);

@@ -15,8 +15,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @Profile(value = {"development", "production", "docker", "kube"})
 public class AppSecurityConfig {
 
-  private static final String API_V1_USERS = "/api/v1/users";
-  private static final String API_V1_PLAYLISTS = "/api/v1/playlists";
+  private static final String API_V1_USERS = "/api/v1/users/**";
+
+  private static final String API_V1_USERS_CURRENT = "/api/v1/users/current";
+
+  private static final String API_V1_PLAYLISTS = "/api/v1/playlists/**";
+
   private static final String ACTUATOR_HEALTH = "/actuator/health";
 
   @Bean
@@ -33,7 +37,7 @@ public class AppSecurityConfig {
         .authorizeHttpRequests(
             authorize -> authorize.requestMatchers(PUT, API_V1_PLAYLISTS).authenticated())
         .authorizeHttpRequests(
-            authorize -> authorize.requestMatchers(GET, API_V1_USERS).authenticated())
+            authorize -> authorize.requestMatchers(GET, API_V1_USERS_CURRENT).authenticated())
         .authorizeHttpRequests(
             authorize -> authorize.requestMatchers(POST, API_V1_USERS).authenticated())
         .oauth2Login(Customizer.withDefaults())

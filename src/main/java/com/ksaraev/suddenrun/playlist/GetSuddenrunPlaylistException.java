@@ -7,13 +7,9 @@ public class GetSuddenrunPlaylistException extends RuntimeException {
 
   private static final String ERROR_WHILE_GETTING_PLAYLIST = "Error while getting playlist";
 
-  public GetSuddenrunPlaylistException(String appUserId, Throwable cause) {
+  public GetSuddenrunPlaylistException(String playlistId, Throwable cause) {
     super(
-        ERROR_WHILE_GETTING_PLAYLIST
-            + " for user with id ["
-            + appUserId
-            + "]: "
-            + cause.getMessage(),
+        ERROR_WHILE_GETTING_PLAYLIST + " with id [" + playlistId + "]: " + cause.getMessage(),
         cause);
   }
 }

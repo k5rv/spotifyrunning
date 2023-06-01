@@ -14,9 +14,8 @@ import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.AppUserMapper;
-import java.util.*;
-
 import jakarta.validation.constraints.NotNull;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,7 +44,7 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
   private final AppUserMapper userMapper;
 
   @Override
-  public AppPlaylist createPlaylist(AppUser appUser) {
+  public AppPlaylist createPlaylist(@NotNull AppUser appUser) {
     String appUserId = appUser.getId();
     try {
       log.info("Creating playlist for user id with [" + appUserId + "]");
@@ -166,9 +165,93 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
     } catch (SpotifyServiceException e) {
       throw new SuddenrunSpotifyInteractionException(e);
     } catch (RuntimeException e) {
-      throw new GetSuddenrunPlaylistException(userId, e);
+      throw new GetSuddenrunUserPlaylistException(userId, e);
     }
   }
+
+
+  @Override
+  public Optional<AppPlaylist> getPlaylist(@NotNull String playlistId) {
+    try {
+      log.info("Getting playlist with id [" + playlistId + "]");
+      Optional<SuddenrunPlaylist> optionalAppPlaylist = repository.findById(playlistId);
+      if (optionalAppPlaylist.isEmpty()) {
+        log.info(
+                "Playlist with id ["
+                        + playlistId
+                        + "] doesn't exist in Suddenrun. Returning empty result.");
+        return Optional.empty();
+      }
+
+      AppPlaylist targetAppPlaylist = optionalAppPlaylist.get();
+      AppUser appUser = targetAppPlaylist.getUser();
+      SpotifyUserProfileItem spotifyUserProfile = userMapper.mapToItem(appUser);
+      List<SpotifyPlaylistItem> spotifyUserPlaylists =
+              spotifyPlaylistService.getUserPlaylists(spotifyUserProfile);
+
+      Optional<SpotifyPlaylistItem> optionalSpotifyPlaylist =
+              spotifyUserPlaylists.stream()
+                      .filter(spotifyPlaylist -> spotifyPlaylist.getId().equals(playlistId))
+                      .findFirst();
+
+      if (optionalSpotifyPlaylist.isEmpty()) {
+        log.info(
+                PLAYLIST_WITH_ID
+                        + " ["
+                        + playlistId
+                        + "] not found in Spotify. Deleting Suddenrun playlist and returning empty result.");
+        appUser.removePlaylist(targetAppPlaylist);
+        repository.deleteById(playlistId);
+        return Optional.empty();
+      }
+
+      SpotifyPlaylistItem sourceSpotifyPlaylist = spotifyPlaylistService.getPlaylist(playlistId);
+      String sourceSpotifyPlaylistSnapshotId = sourceSpotifyPlaylist.getSnapshotId();
+      String targetAppPlaylistSnapshotId = targetAppPlaylist.getSnapshotId();
+      boolean snapshotsAreIdentical =
+              sourceSpotifyPlaylistSnapshotId.equals(targetAppPlaylistSnapshotId);
+
+      if (snapshotsAreIdentical) {
+        log.info(
+                PLAYLIST_WITH_ID
+                        + " ["
+                        + playlistId
+                        + "] has the exact same snapshot id ["
+                        + targetAppPlaylistSnapshotId
+                        + "] in Suddenrun and Spotify. Returning playlist.");
+        return Optional.of(targetAppPlaylist);
+      }
+
+      log.info(
+              PLAYLIST_WITH_ID
+                      + " ["
+                      + playlistId
+                      + "] found in Suddenrun and Spotify with the different snapshot ids ["
+                      + targetAppPlaylistSnapshotId
+                      + "] and ["
+                      + sourceSpotifyPlaylistSnapshotId
+                      + "] respectively. Updating Suddenrun playlist from Spotify.");
+
+      AppPlaylist sourceAppPlaylist = playlistMapper.mapToEntity(sourceSpotifyPlaylist);
+      targetAppPlaylist =
+              synchronizationService.updateFromSource(targetAppPlaylist, sourceAppPlaylist);
+      targetAppPlaylist = repository.save((SuddenrunPlaylist) targetAppPlaylist);
+      log.info(
+              "Updated playlist with id ["
+                      + playlistId
+                      + AND_SNAPSHOT_ID
+                      + targetAppPlaylist.getSnapshotId()
+                      + "] from Spotify. Returning playlist.");
+      return Optional.of(targetAppPlaylist);
+    } catch (SpotifyAccessTokenException e) {
+      throw new SuddenrunAuthenticationException(e);
+    } catch (SpotifyServiceException e) {
+      throw new SuddenrunSpotifyInteractionException(e);
+    } catch (RuntimeException e) {
+      throw new GetSuddenrunPlaylistException(playlistId, e);
+    }
+  }
+
 
   @Override
   public AppPlaylist addTracks(@NotNull AppPlaylist appPlaylist, List<AppTrack> appTracks) {
@@ -216,7 +299,8 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
       if (!appTrackAdditions.isEmpty()) {
         targetAppTracks.addAll(appTrackAdditions);
         List<SpotifyTrackItem> spotifyTrackAdditions = trackMapper.mapToDtos(appTrackAdditions);
-        String snapshotId = spotifyPlaylistService.addTracks(spotifyPlaylist, spotifyTrackAdditions);
+        String snapshotId =
+            spotifyPlaylistService.addTracks(spotifyPlaylist, spotifyTrackAdditions);
         log.info(
             "Added ["
                 + appTrackAdditions.size()
