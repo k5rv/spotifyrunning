@@ -2,9 +2,8 @@ package com.ksaraev.spotify.model.track;
 
 import com.ksaraev.spotify.client.dto.SpotifyPlaylistTrackDto;
 import com.ksaraev.spotify.client.dto.SpotifyTrackDto;
-import com.ksaraev.spotify.model.artist.SpotifyArtistMapper;
 import com.ksaraev.spotify.model.SpotifyMapper;
-
+import com.ksaraev.spotify.model.artist.SpotifyArtistMapper;
 import java.util.List;
 import java.util.Objects;
 import org.mapstruct.Mapper;

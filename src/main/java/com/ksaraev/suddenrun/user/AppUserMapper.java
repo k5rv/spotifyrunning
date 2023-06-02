@@ -2,11 +2,10 @@ package com.ksaraev.suddenrun.user;
 
 import static org.mapstruct.MappingConstants.ComponentModel.SPRING;
 
+import com.ksaraev.spotify.model.SpotifyItemType;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfile;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import java.net.URI;
-
-import com.ksaraev.spotify.model.SpotifyItemType;
 import org.mapstruct.*;
 
 @Mapper(componentModel = SPRING)

@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ksaraev.suddenrun.playlist.AppPlaylist;
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylist;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.jetbrains.annotations.NotNull;

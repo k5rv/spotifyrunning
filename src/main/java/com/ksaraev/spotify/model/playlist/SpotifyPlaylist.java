@@ -1,7 +1,7 @@
 package com.ksaraev.spotify.model.playlist;
 
-import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
+import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;

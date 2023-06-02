@@ -11,7 +11,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.net.URI;
 import java.util.List;
-
 import org.mapstruct.*;
 
 @Mapper(componentModel = SPRING)

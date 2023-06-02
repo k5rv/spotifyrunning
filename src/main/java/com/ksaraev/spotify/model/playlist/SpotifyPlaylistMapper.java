@@ -3,9 +3,8 @@ package com.ksaraev.spotify.model.playlist;
 import com.ksaraev.spotify.client.dto.SpotifyPlaylistDetailsDto;
 import com.ksaraev.spotify.client.dto.SpotifyPlaylistDto;
 import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
-import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileMapper;
 import com.ksaraev.spotify.model.track.SpotifyTrackMapper;
-
+import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileMapper;
 import java.util.List;
 import java.util.Objects;
 import org.mapstruct.Mapper;

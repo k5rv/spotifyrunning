@@ -8,7 +8,6 @@ import com.ksaraev.spotify.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotify.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
 import jakarta.validation.*;
-
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;

@@ -10,9 +10,9 @@ spring:
   application:
     name: suddenrun
   datasource:
-    url: [url]
-    username: [username]
-    password: [password]
+    url: [ url ]
+    username: [ username ]
+    password: [ password ]
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -39,8 +39,8 @@ spring:
         registration:
           spotify:
             client-name: spotify
-            client-id: [id]
-            client-secret: [secret]
+            client-id: [ id ]
+            client-secret: [ secret ]
             provider: spotify
             client-authentication-method: client_secret_basic
             authorization-grant-type: authorization_code

@@ -1,13 +1,11 @@
 package com.ksaraev.utils.helpers;
 
-import com.ksaraev.suddenrun.playlist.AppPlaylist;
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylist;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.SuddenrunTrack;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class SuddenrunHelper {

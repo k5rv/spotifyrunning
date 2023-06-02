@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.spotify.client.dto.SpotifyArtistDto;
 import jakarta.validation.*;
-
 import java.net.URI;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;

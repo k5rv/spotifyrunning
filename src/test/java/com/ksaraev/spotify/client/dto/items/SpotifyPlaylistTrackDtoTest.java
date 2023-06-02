@@ -7,7 +7,6 @@ import com.ksaraev.spotify.client.dto.SpotifyPlaylistTrackDto;
 import com.ksaraev.spotify.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotify.client.dto.SpotifyUserProfileDto;
 import jakarta.validation.*;
-
 import java.net.URI;
 import java.util.List;
 import java.util.Set;

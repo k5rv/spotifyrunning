@@ -43,15 +43,10 @@ class SuddenrunUserServiceCreatePlaylistIntegrationTest {
   private static final String SPOTIFY_API_V1_PLAYLISTS_PLAYLIST_ID = "/v1/playlists/%s";
 
   private static final String SPOTIFY_API_V1_USERS_USER_ID_PLAYLISTS = "/v1/users/%s/playlists";
-
-  @Autowired private SpotifyPlaylistItemConfig spotifyPlaylistConfig;
-
   @Autowired AppUserService appUserService;
-
   @Autowired SuddenrunUserRepository userRepository;
-
   @Autowired SuddenrunPlaylistRepository playlistRepository;
-
+  @Autowired private SpotifyPlaylistItemConfig spotifyPlaylistConfig;
   @Autowired private MockMvc mockMvc;
 
   @Test

@@ -21,7 +21,6 @@ import com.ksaraev.spotify.service.SpotifyPlaylistService;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.*;
-import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.List;

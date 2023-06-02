@@ -3,7 +3,6 @@ package com.ksaraev.spotify.client.dto;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import jakarta.validation.*;
-
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;

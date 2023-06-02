@@ -1,7 +1,7 @@
 package com.ksaraev.spotify.service;
 
-import com.ksaraev.spotify.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotify.client.SpotifyClient;
+import com.ksaraev.spotify.client.dto.SpotifyUserProfileDto;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotify.exception.GetSpotifyUserProfileException;
 import com.ksaraev.spotify.exception.SpotifyAccessTokenException;

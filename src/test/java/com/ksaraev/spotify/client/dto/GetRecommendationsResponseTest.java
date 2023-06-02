@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
 import jakarta.validation.*;
-
 import java.net.URI;
 import java.util.List;
 import java.util.Set;

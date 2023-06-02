@@ -2,16 +2,14 @@ package com.ksaraev.suddenrun.playlist;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ksaraev.suddenrun.track.AppTrack;
-import com.ksaraev.suddenrun.track.SuddenrunTrack;
 import com.ksaraev.suddenrun.user.AppUser;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import jakarta.validation.Valid;
 import lombok.*;
 import org.hibernate.Hibernate;
 import org.hibernate.annotations.Type;

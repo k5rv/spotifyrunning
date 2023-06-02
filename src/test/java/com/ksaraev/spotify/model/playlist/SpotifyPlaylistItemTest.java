@@ -5,10 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.ksaraev.spotify.model.userprofile.SpotifyUserProfileItem;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.*;
-
 import java.net.URI;
 import java.util.Set;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

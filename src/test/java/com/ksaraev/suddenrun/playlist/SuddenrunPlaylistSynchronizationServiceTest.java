@@ -3,19 +3,15 @@ package com.ksaraev.suddenrun.playlist;
 import static org.assertj.core.api.Assertions.*;
 
 import com.ksaraev.suddenrun.track.AppTrack;
-import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 class SuddenrunPlaylistSynchronizationServiceTest {

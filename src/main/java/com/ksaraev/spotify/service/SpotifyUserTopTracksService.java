@@ -1,13 +1,13 @@
 package com.ksaraev.spotify.service;
 
-import com.ksaraev.spotify.client.dto.GetUserTopTracksResponse;
 import com.ksaraev.spotify.client.SpotifyClient;
 import com.ksaraev.spotify.client.dto.GetUserTopTracksRequest;
+import com.ksaraev.spotify.client.dto.GetUserTopTracksResponse;
 import com.ksaraev.spotify.client.dto.SpotifyTrackDto;
 import com.ksaraev.spotify.client.feign.exception.SpotifyUnauthorizedException;
 import com.ksaraev.spotify.config.GetSpotifyUserTopTrackRequestConfig;
-import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.exception.GetSpotifyUserTopTracksException;
+import com.ksaraev.spotify.exception.SpotifyAccessTokenException;
 import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.model.track.SpotifyTrackMapper;
 import java.util.List;

@@ -5,7 +5,6 @@ import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.user.AppUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 
 @JsonDeserialize(as = SuddenrunPlaylist.class)

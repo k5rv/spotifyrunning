@@ -18,9 +18,8 @@ import org.springframework.test.context.ActiveProfiles;
 @DataJpaTest()
 class SuddenrunPlaylistRepositoryTest {
 
-  @Autowired private SuddenrunPlaylistRepository underTest;
-
   @Autowired EntityManager entityManager;
+  @Autowired private SuddenrunPlaylistRepository underTest;
 
   @Test
   void itShouldSavePlaylist() {
