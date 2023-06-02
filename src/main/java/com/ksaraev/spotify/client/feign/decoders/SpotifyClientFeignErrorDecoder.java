@@ -1,7 +1,5 @@
 package com.ksaraev.spotify.client.feign.decoders;
 
-import static com.ksaraev.spotify.client.exception.SpotifyClientDecodingErrorResponseIsNullException.*;
-
 import com.ksaraev.spotify.client.exception.SpotifyClientDecodingErrorResponseIsNullException;
 import com.ksaraev.spotify.client.feign.exception.FeignExceptionHandler;
 import com.ksaraev.spotify.client.feign.exception.HandleFeignException;
@@ -35,7 +33,7 @@ public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
   @Override
   public Exception decode(String methodKey, Response response) {
     if (response == null) {
-      throw new SpotifyClientDecodingErrorResponseIsNullException(/*DECODING_ERROR_RESPONSE_IS_NULL*/);
+      throw new SpotifyClientDecodingErrorResponseIsNullException();
     }
     FeignExceptionHandler handler = feignExceptionHandlers.get(methodKey);
     if (handler == null) return defaultErrorDecoder.decode(methodKey, response);
