@@ -18,10 +18,10 @@ public class SuddenrunUserService implements AppUserService {
       log.info("Getting user with id [" + userId + "]");
       Optional<SuddenrunUser> optionalUser = repository.findById(userId);
       if (optionalUser.isEmpty()) {
-        log.info("User with id [" + userId + "] not found in Suddenrun. Returning empty result.");
+        log.info("User with id [" + userId + "] not found in Suddenrun. Returning empty result");
         return Optional.empty();
       }
-      log.info("Found user with id [" + userId + "] in Suddenrun. Returning user.");
+      log.info("Found user with id [" + userId + "] in Suddenrun. Returning user");
       return optionalUser.map(AppUser.class::cast);
     } catch (RuntimeException e) {
       throw new GetSuddenrunUserException(userId, e);
