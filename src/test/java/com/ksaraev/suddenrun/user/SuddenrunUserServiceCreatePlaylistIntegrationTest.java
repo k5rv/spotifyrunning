@@ -11,6 +11,7 @@ import com.ksaraev.suddenrun.playlist.SuddenrunPlaylist;
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistRepository;
 import com.ksaraev.utils.helpers.JsonHelper;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
+import com.ksaraev.utils.helpers.SpotifyResourceHelper;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -190,7 +191,7 @@ class SuddenrunUserServiceCreatePlaylistIntegrationTest {
   }
 
   @Test
-  void itShouldReturnAuthenticationErrorWhenSpotifyAuthorizationFailed() throws Exception {
+  void itShouldReturnHttp401WhenSpotifyAuthorizationFailed() throws Exception {
     // Given
     SuddenrunUser appUser = SuddenrunHelper.getUser();
     String userId = appUser.getId();
@@ -218,5 +219,32 @@ class SuddenrunUserServiceCreatePlaylistIntegrationTest {
         JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunError.class);
     assertThat(error).isNotNull();
     assertThat(error.status()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
+  }
+
+  @Test
+  void itShouldReturnHttp404WhenUserIsNotRegistered() throws Exception {
+    // Given
+    String userId = SpotifyResourceHelper.getRandomId();
+    Exception exception = new SuddenrunUserIsNotRegisteredException(userId);
+
+    // When
+    ResultActions createPlaylistResultActions =
+        mockMvc.perform(
+            MockMvcRequestBuilders.post(SUDDENRUN_API_V1_USERS_USER_ID_PLAYLISTS.formatted(userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+    // Then
+    MvcResult result =
+        createPlaylistResultActions
+            .andExpect(MockMvcResultMatchers.status().isNotFound())
+            .andReturn();
+
+    SuddenrunError error =
+        JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunError.class);
+
+    assertThat(error).isNotNull();
+    assertThat(error.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    assertThat(error.message()).isEqualTo(exception.getMessage());
   }
 }

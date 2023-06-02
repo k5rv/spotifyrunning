@@ -1,5 +1,7 @@
 package com.ksaraev.suddenrun.playlist;
 
+import static org.assertj.core.api.Assertions.*;
+
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.ksaraev.spotify.client.dto.*;
 import com.ksaraev.spotify.config.GetSpotifyRecommendationRequestConfig;
@@ -18,7 +20,6 @@ import com.ksaraev.utils.helpers.SpotifyResourceHelper;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.util.ArrayList;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,15 +35,14 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.assertj.core.api.Assertions.*;
-
 @ActiveProfiles(value = "test")
 @AutoConfigureWireMock(port = 0)
 @AutoConfigureMockMvc(addFilters = false)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
+class SuddenrunPlaylistServiceAddTracksIntegrationTest {
 
-  private static final String SUDDENRUN_API_V1_PLAYLISTS = "/api/v1/playlists";
+  private static final String SUDDENRUN_API_V1_PLAYLISTS_PLAYLIST_ID_TRACKS =
+      "/api/v1/playlists/%s/tracks";
 
   private static final String SPOTIFY_API_V1_ME = "/v1/me";
 
@@ -67,149 +67,11 @@ class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
   @Autowired private GetSpotifyUserTopTrackRequestConfig userTopTrackRequestConfig;
 
   @Autowired private GetSpotifyRecommendationRequestConfig recommendationRequestConfig;
-  
+
   @Autowired private MockMvc mockMvc;
 
-
-  /*
-
   @Test
-  void itShouldCreatePlaylist() throws Exception {
-    // Given
-    SpotifyUserProfileDto spotifyUserDto = SpotifyClientHelper.getUserProfileDto();
-    String spotifyUserId = spotifyUserDto.id();
-    String spotifyUserName = spotifyUserDto.displayName();
-
-    userRepository.save(SuddenrunUser.builder().id(spotifyUserId).name(spotifyUserName).build());
-
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(spotifyUserDto), HttpStatus.OK.value())));
-
-    SpotifyPlaylistItemDetails spotifyPlaylistDetails = spotifyPlaylistConfig.getDetails();
-    String playlistName = spotifyPlaylistDetails.getName();
-    String playlistDescription = spotifyPlaylistDetails.getDescription();
-    boolean playlistIsPublic = spotifyPlaylistDetails.getIsPublic();
-
-    SpotifyPlaylistDto spotifyPlaylistDto =
-        SpotifyClientHelper.getPlaylistDto(
-            spotifyUserDto, playlistName, playlistDescription, playlistIsPublic);
-
-    String playlistId = spotifyPlaylistDto.id();
-
-    WireMock.stubFor(
-        WireMock.post(
-                WireMock.urlEqualTo(
-                    SPOTIFY_API_V1_USERS_USER_ID_PLAYLISTS.formatted(spotifyUserId)))
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(spotifyPlaylistDto), HttpStatus.CREATED.value())));
-
-    WireMock.stubFor(
-        WireMock.get(
-                WireMock.urlEqualTo(SPOTIFY_API_V1_PLAYLISTS_PLAYLIST_ID.formatted(playlistId)))
-            .inScenario("Get created playlist")
-            .willSetStateTo("Got tracks")
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(spotifyPlaylistDto), HttpStatus.OK.value())));
-
-    int userTopTracksLimit = userTopTrackRequestConfig.getLimit();
-    List<SpotifyTrackDto> spotifyUserTopTracks =
-        SpotifyClientHelper.getTrackDtos(userTopTracksLimit);
-    GetUserTopTracksResponse getUserTopTracksResponse =
-        SpotifyClientHelper.createGetUserTopTracksResponse(spotifyUserTopTracks);
-
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo(SPOTIFY_API_V1_ME_TOP_TRACKS))
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(getUserTopTracksResponse), HttpStatus.OK.value())));
-
-    List<SpotifyTrackDto> spotifyPlaylistTracks = new ArrayList<>();
-    int recommendationsLimit = recommendationRequestConfig.getLimit();
-    spotifyUserTopTracks.forEach(
-        track -> {
-          List<SpotifyTrackDto> recommendations =
-              SpotifyClientHelper.getTrackDtos(recommendationsLimit);
-          spotifyPlaylistTracks.addAll(recommendations);
-          GetRecommendationsResponse getRecommendationsResponse =
-              SpotifyClientHelper.createGetRecommendationsResponse(recommendations);
-          WireMock.stubFor(
-              WireMock.get(
-                      WireMock.urlEqualTo(
-                          SPOTIFY_API_V1_RECOMMENDATIONS
-                              + "?"
-                              + "min_tempo=120&seed_tracks="
-                              + track.id()
-                              + "&limit="
-                              + recommendationsLimit
-                              + "&min_energy=0.65&max_tempo=140"))
-                  .willReturn(
-                      WireMock.jsonResponse(
-                          JsonHelper.objectToJson(getRecommendationsResponse),
-                          HttpStatus.OK.value())));
-        });
-
-    AddPlaylistItemsResponse addPlaylistItemsResponse =
-        SpotifyClientHelper.createAddPlaylistItemsResponse();
-
-    WireMock.stubFor(
-        WireMock.post(
-                WireMock.urlPathEqualTo(
-                    SPOTIFY_V1_PLAYLISTS_PLAYLIST_ID_TRACKS.formatted(playlistId)))
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(addPlaylistItemsResponse),
-                    HttpStatus.CREATED.value())));
-
-    spotifyPlaylistDto =
-        SpotifyClientHelper.getPlaylistDto(
-            spotifyUserDto,
-            playlistId,
-            playlistName,
-            playlistDescription,
-            playlistIsPublic,
-            spotifyPlaylistTracks);
-
-    WireMock.stubFor(
-        WireMock.get(
-                WireMock.urlEqualTo(SPOTIFY_API_V1_PLAYLISTS_PLAYLIST_ID.formatted(playlistId)))
-            .inScenario("Get created playlist")
-            .whenScenarioStateIs("Got tracks")
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(spotifyPlaylistDto), HttpStatus.OK.value())));
-
-    // When
-    ResultActions createPlaylistResultActions =
-        mockMvc.perform(
-            MockMvcRequestBuilders.post(
-                    SUDDENRUN_API_V1_USERS_USER_ID_PLAYLISTS.formatted(spotifyUserId))
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(SecurityMockMvcRequestPostProcessors.csrf()));
-
-    // Then
-    MvcResult result =
-        createPlaylistResultActions
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(
-                MockMvcResultMatchers.content()
-                    .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-            .andReturn();
-
-    CreatePlaylistResponse createPlaylistResponse =
-        JsonHelper.jsonToObject(result.getResponse().getContentAsString(), CreatePlaylistResponse.class);
-
-    assertThat(createPlaylistResponse).isNotNull();
-    assertThat(createPlaylistResponse.id()).isEqualTo(playlistId);
-  }
-   */
-
-  @Test
-  void itShouldUpdatePlaylist() throws Exception {
+  void itShouldAddTracks() throws Exception {
     // Given
     SpotifyUserProfileDto spotifyUserDto = SpotifyClientHelper.getUserProfileDto();
     String spotifyUserId = spotifyUserDto.id();
@@ -367,7 +229,8 @@ class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
     // When
     ResultActions updatePLaylistResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.put(SUDDENRUN_API_V1_PLAYLISTS)
+            MockMvcRequestBuilders.put(
+                    SUDDENRUN_API_V1_PLAYLISTS_PLAYLIST_ID_TRACKS.formatted(playlistId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
@@ -380,22 +243,14 @@ class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
                     .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andReturn();
 
-    AppPlaylist appPlaylist =
-        JsonHelper.jsonToObject(result.getResponse().getContentAsString(), AppPlaylist.class);
+    AddPlaylistTracksResponse addPlaylistTracksResponse =
+        JsonHelper.jsonToObject(
+            result.getResponse().getContentAsString(), AddPlaylistTracksResponse.class);
 
-    assertThat(appPlaylist).isNotNull();
-    assertThat(appPlaylist.getId()).isEqualTo(playlistId);
-    assertThat(appPlaylist.getSnapshotId()).isEqualTo(spotifyPlaylistDto.snapshotId());
-    assertThat(appPlaylist.getTracks())
-        .containsAll(
-            spotifyPlaylistTrackUpdates.stream()
-                .map(
-                    spotifyTrack ->
-                        SuddenrunTrack.builder()
-                            .id(spotifyTrack.id())
-                            .name(spotifyTrack.name())
-                            .build())
-                .toList());
+    assertThat(addPlaylistTracksResponse).isNotNull();
+    assertThat(addPlaylistTracksResponse.id()).isEqualTo(playlistId);
+    assertThat(addPlaylistTracksResponse.trackIds())
+        .containsAll(spotifyPlaylistTrackUpdates.stream().map(SpotifyTrackDto::id).toList());
   }
 
   @Test
@@ -430,12 +285,6 @@ class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
     playlist.setId(spotifyPlaylistDto.id());
     userRepository.save(appUser);
 
-    WireMock.stubFor(
-        WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
-            .willReturn(
-                WireMock.jsonResponse(
-                    JsonHelper.objectToJson(spotifyUserDto), HttpStatus.OK.value())));
-
     GetUserPlaylistsResponse getUserPlaylistsResponse =
         SpotifyClientHelper.createGetUserPlaylistResponse(List.of(spotifyPlaylistDto));
 
@@ -450,7 +299,8 @@ class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
     // When
     ResultActions updatePLaylistResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.put(SUDDENRUN_API_V1_PLAYLISTS)
+            MockMvcRequestBuilders.put(
+                    SUDDENRUN_API_V1_PLAYLISTS_PLAYLIST_ID_TRACKS.formatted(playlistId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
@@ -468,32 +318,68 @@ class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
 
     assertThat(error).isNotNull();
     assertThat(error.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    assertThat(error.message()).contains(spotifyUserId);
+    assertThat(error.message()).contains(playlistId);
   }
 
   @Test
-  void itShouldReturnAuthenticationErrorWhenSpotifyAuthorizationFailed() throws Exception {
+  void itShouldReturn401WhenSpotifyAuthorizationFailed() throws Exception {
     // Given
+    SpotifyUserProfileDto spotifyUserDto = SpotifyClientHelper.getUserProfileDto();
+    String spotifyUserId = spotifyUserDto.id();
+    String spotifyUserName = spotifyUserDto.displayName();
+
+    SuddenrunUser appUser = SuddenrunUser.builder().id(spotifyUserId).name(spotifyUserName).build();
+
+    SpotifyPlaylistItemDetails spotifyPlaylistDetails = spotifyPlaylistConfig.getDetails();
+    String playlistName = spotifyPlaylistDetails.getName();
+    String playlistDescription = spotifyPlaylistDetails.getDescription();
+    boolean playlistIsPublic = spotifyPlaylistDetails.getIsPublic();
+
+    List<SpotifyTrackDto> spotifyPlaylistTracks = SpotifyClientHelper.getTrackDtos(50);
+
+    String playlistId = SpotifyResourceHelper.getRandomId();
+
+    SpotifyPlaylistDto spotifyPlaylistDto =
+        SpotifyClientHelper.getPlaylistDto(
+            spotifyUserDto,
+            playlistId,
+            playlistName,
+            playlistDescription,
+            playlistIsPublic,
+            spotifyPlaylistTracks);
+
+    SuddenrunPlaylist playlist = SuddenrunHelper.getSuddenrunPlaylist(appUser);
+    playlist.setSnapshotId(spotifyPlaylistDto.snapshotId());
+    playlist.setId(spotifyPlaylistDto.id());
+    userRepository.save(appUser);
+    playlistRepository.save(playlist);
+
     WireMock.stubFor(
-        WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
+        WireMock.get(
+                WireMock.urlEqualTo(
+                    SPOTIFY_API_V1_USERS_USER_ID_PLAYLISTS.formatted(spotifyUserId)))
             .willReturn(
                 WireMock.jsonResponse(HttpStatus.UNAUTHORIZED, HttpStatus.UNAUTHORIZED.value())));
-
     // When
-    ResultActions updatePlaylistResultActions =
+    ResultActions updatePLaylistResultActions =
         mockMvc.perform(
-            MockMvcRequestBuilders.put(SUDDENRUN_API_V1_PLAYLISTS)
+            MockMvcRequestBuilders.put(
+                    SUDDENRUN_API_V1_PLAYLISTS_PLAYLIST_ID_TRACKS.formatted(playlistId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(SecurityMockMvcRequestPostProcessors.csrf()));
 
     // Then
     MvcResult result =
-        updatePlaylistResultActions
+        updatePLaylistResultActions
             .andExpect(MockMvcResultMatchers.status().isUnauthorized())
+            .andExpect(
+                MockMvcResultMatchers.content()
+                    .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
             .andReturn();
 
     SuddenrunError error =
         JsonHelper.jsonToObject(result.getResponse().getContentAsString(), SuddenrunError.class);
+
     assertThat(error).isNotNull();
     assertThat(error.status()).isEqualTo(HttpStatus.UNAUTHORIZED.value());
   }

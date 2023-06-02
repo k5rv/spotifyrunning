@@ -64,34 +64,38 @@ class SpotifyUserProfileServiceTest {
   @Test
   void itShouldThrowGetSpotifyUserProfileExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "message";
-    given(client.getCurrentUserProfile()).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(client.getCurrentUserProfile()).willThrow(runtimeException);
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isExactlyInstanceOf(GetSpotifyUserProfileException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyUserProfileException(runtimeException).getMessage());
   }
 
   @Test
   void
       itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
-    String message = "message";
-    given(client.getCurrentUserProfile()).willThrow(new SpotifyUnauthorizedException(message));
+    SpotifyUnauthorizedException spotifyUnauthorizedException =
+        new SpotifyUnauthorizedException("message");
+    given(client.getCurrentUserProfile()).willThrow(spotifyUnauthorizedException);
+
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isExactlyInstanceOf(SpotifyAccessTokenException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new SpotifyAccessTokenException(spotifyUnauthorizedException).getMessage());
   }
 
   @Test
-  void itShouldThrowGetSpotifyUserProfileExceptionWhenSpotifyUserProfileMapperThrowsRuntimeException() {
+  void
+      itShouldThrowGetSpotifyUserProfileExceptionWhenSpotifyUserProfileMapperThrowsRuntimeException() {
     // Given
-    String message = "message";
-    given(mapper.mapToModel(any())).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(mapper.mapToModel(any())).willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.getCurrentUserProfile())
         .isExactlyInstanceOf(GetSpotifyUserProfileException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyUserProfileException(runtimeException).getMessage());
   }
 }

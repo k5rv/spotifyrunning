@@ -1,6 +1,5 @@
 package com.ksaraev.spotify.client.feign.encoders;
 
-import static com.ksaraev.spotify.client.exception.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
 import static org.mockito.BDDMockito.*;
 
 import com.ksaraev.spotify.client.exception.SpotifyClientRequestEncodingException;
@@ -83,18 +82,19 @@ class SpotifyClientFeignQueryMapEncoderTest {
     String message = "message";
     String fieldValue = "fieldValue";
     ClassToEncode classToEncode = new ClassToEncode(fieldValue);
+    IllegalAccessException illegalAccessException = new IllegalAccessException(message);
     given(
             fieldNameToValue.put(
                 ArgumentMatchers.any(String.class), ArgumentMatchers.any(Object.class)))
         .willAnswer(
             invocation -> {
-              throw new IllegalAccessException(message);
+              throw illegalAccessException;
             });
     // Then
     Assertions.assertThatThrownBy(() -> underTest.encode(classToEncode, fieldNameToValue))
         .isExactlyInstanceOf(SpotifyClientRequestEncodingException.class)
         .hasCauseExactlyInstanceOf(IllegalAccessException.class)
-        .hasMessage(UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP + message);
+        .hasMessage(new SpotifyClientRequestEncodingException(illegalAccessException).getMessage());
   }
 
   @Test
@@ -103,14 +103,15 @@ class SpotifyClientFeignQueryMapEncoderTest {
     String message = "message";
     String fieldValue = "fieldValue";
     ClassToEncode classToEncode = new ClassToEncode(fieldValue);
+    RuntimeException runtimeException = new RuntimeException(message);
     given(
             fieldNameToValue.put(
                 ArgumentMatchers.any(String.class), ArgumentMatchers.any(Object.class)))
-        .willThrow(new RuntimeException(message));
+        .willThrow(runtimeException);
     Assertions.assertThatThrownBy(() -> underTest.encode(classToEncode, fieldNameToValue))
         .isExactlyInstanceOf(SpotifyClientRequestEncodingException.class)
         .hasCauseExactlyInstanceOf(RuntimeException.class)
-        .hasMessage(UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP + message);
+        .hasMessage(new SpotifyClientRequestEncodingException(runtimeException).getMessage());
   }
 
   private record ClassToEncode(String fieldNameToEncode) {}

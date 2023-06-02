@@ -1,6 +1,12 @@
 package com.ksaraev.spotify.exception;
 
-import lombok.experimental.StandardException;
+public class SpotifyServiceException extends RuntimeException {
 
-@StandardException
-public class SpotifyServiceException extends RuntimeException{}
+  public SpotifyServiceException(String message, Throwable cause) {
+    super(message, cause);
+  }
+
+  public SpotifyServiceException(String message) {
+    super(message);
+  }
+}

@@ -25,6 +25,7 @@ import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -40,8 +41,8 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
 
   private static final String CREATE_PLAYLIST = "createPlaylist";
 
-  private static final ExecutableValidator executableValidator =
-      Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
+  private static final ValidatorFactory validatorFactory =
+      Validation.buildDefaultValidatorFactory();
 
   @Mock private SpotifyClient client;
 
@@ -57,12 +58,15 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
 
   @Captor private ArgumentCaptor<SpotifyPlaylistDetailsDto> playlistDetailsDtoArgumentCaptor;
 
+  private ExecutableValidator executableValidator;
+
   private AutoCloseable closeable;
 
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
   void setUp() {
+    executableValidator = validatorFactory.getValidator().forExecutables();
     closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
   }
@@ -111,17 +115,17 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
   @Test
   void itShouldThrowCreatePlaylistExceptionWhenPlaylistMapperThrowsRuntimeException() {
     // Given
-    String message = "message";
     SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile();
     String userId = spotifyUser.getId();
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
+    RuntimeException runtimeException = new RuntimeException("message");
     given(mapper.mapToPlaylistDetailsDto(any(SpotifyPlaylistItemDetails.class)))
-        .willThrow(new RuntimeException(message));
+        .willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
         .isExactlyInstanceOf(CreateSpotifyPlaylistException.class)
-        .hasMessageContaining(userId)
-        .hasMessageContaining(message);
+        .hasMessage(new CreateSpotifyPlaylistException(userId, runtimeException).getMessage());
   }
 
   @Test
@@ -129,12 +133,14 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
       itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
     SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile();
-    String userId = spotifyUser.getId();
     SpotifyPlaylistItemDetails spotifyPlaylistDetails = SpotifyServiceHelper.getPlaylistDetails();
-    given(client.createPlaylist(any(), any())).willThrow(new SpotifyUnauthorizedException());
+    SpotifyUnauthorizedException spotifyUnauthorizedException = new SpotifyUnauthorizedException();
+    given(client.createPlaylist(any(), any())).willThrow(spotifyUnauthorizedException);
+
     // Then
     assertThatThrownBy(() -> underTest.createPlaylist(spotifyUser, spotifyPlaylistDetails))
-        .isExactlyInstanceOf(SpotifyAccessTokenException.class);
+        .isExactlyInstanceOf(SpotifyAccessTokenException.class)
+        .hasMessage(new SpotifyAccessTokenException(spotifyUnauthorizedException).getMessage());
   }
 
   @Test
@@ -146,9 +152,11 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
         SpotifyPlaylistService.class.getMethod(
             CREATE_PLAYLIST, SpotifyUserProfileItem.class, SpotifyPlaylistItemDetails.class);
     Object[] parameterValues = {null, playlistDetails};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -164,9 +172,11 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
         SpotifyPlaylistService.class.getMethod(
             CREATE_PLAYLIST, SpotifyUserProfileItem.class, SpotifyPlaylistItemDetails.class);
     Object[] parameterValues = {userProfile, null};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -184,9 +194,11 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
             CREATE_PLAYLIST, SpotifyUserProfileItem.class, SpotifyPlaylistItemDetails.class);
     SpotifyPlaylistItemDetails playlistDetails = SpotifyServiceHelper.getPlaylistDetails();
     Object[] parameterValues = {user, playlistDetails};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -204,9 +216,11 @@ class SpotifyPlaylistServiceCreatePlaylistTest {
         SpotifyPlaylistService.class.getMethod(
             CREATE_PLAYLIST, SpotifyUserProfileItem.class, SpotifyPlaylistItemDetails.class);
     Object[] parameterValues = {user, playlistDetails};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

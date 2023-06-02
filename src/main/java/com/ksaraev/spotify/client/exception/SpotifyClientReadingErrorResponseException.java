@@ -1,9 +1,9 @@
 package com.ksaraev.spotify.client.exception;
 
-import lombok.experimental.StandardException;
 
-@StandardException
 public class SpotifyClientReadingErrorResponseException extends SpotifyClientException {
-  public static final String UNABLE_TO_READ_ERROR_RESPONSE =
-          "Unable to read Spotify API error: ";
+
+  public SpotifyClientReadingErrorResponseException(Throwable e) {
+    super("Unable to read Spotify API error: " + e.getMessage(), e);
+  }
 }

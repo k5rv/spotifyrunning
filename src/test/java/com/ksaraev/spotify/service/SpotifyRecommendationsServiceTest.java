@@ -23,9 +23,7 @@ import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackFeaturesMapper;
 import com.ksaraev.spotify.model.trackfeatures.SpotifyTrackItemFeatures;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
+import jakarta.validation.*;
 import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -42,16 +40,26 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 class SpotifyRecommendationsServiceTest {
+
   private static final String GET_RECOMMENDATIONS = "getRecommendations";
-  private static final ExecutableValidator executableValidator =
-      Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
+
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
   @Mock private SpotifyClient client;
+
   @Mock private GetSpotifyRecommendationRequestConfig requestConfig;
+
   @Mock private SpotifyTrackMapper trackMapper;
+
   @Mock private SpotifyTrackFeaturesMapper featuresMapper;
+
   @Captor private ArgumentCaptor<List<SpotifyTrackDto>> dtosArgumentCapture;
+
   @Captor private ArgumentCaptor<SpotifyTrackFeatures> featuresArgumentCaptor;
+
   @Captor private ArgumentCaptor<GetRecommendationsRequest> requestArgumentCaptor;
+
+  private ExecutableValidator executableValidator;
 
   private AutoCloseable closeable;
 
@@ -59,6 +67,7 @@ class SpotifyRecommendationsServiceTest {
 
   @BeforeEach
   void setUp() {
+    executableValidator = factory.getValidator().forExecutables();
     closeable = MockitoAnnotations.openMocks(this);
     underTest =
         new SpotifyRecommendationsService(client, requestConfig, trackMapper, featuresMapper);
@@ -223,7 +232,6 @@ class SpotifyRecommendationsServiceTest {
   @Test
   void itShouldThrowGetSpotifyRecommendationsExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "message";
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
 
@@ -234,56 +242,59 @@ class SpotifyRecommendationsServiceTest {
     given(featuresMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
         .willReturn(requestTrackFeatures);
     given(requestConfig.getLimit()).willReturn(limit);
+    RuntimeException runtimeException = new RuntimeException("message");
     given(client.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willThrow(new RuntimeException(message));
+        .willThrow(runtimeException);
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(trackItems, features))
         .isExactlyInstanceOf(GetSpotifyRecommendationsException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyRecommendationsException(runtimeException).getMessage());
   }
 
   @Test
-  void itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
+  void
+      itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
-    String message = "message";
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
 
     GetRecommendationsRequest.TrackFeatures requestTrackFeatures =
-            SpotifyClientHelper.getRecommendationRequestTrackFeatures();
+        SpotifyClientHelper.getRecommendationRequestTrackFeatures();
     Integer limit = 10;
 
     given(featuresMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
-            .willReturn(requestTrackFeatures);
+        .willReturn(requestTrackFeatures);
     given(requestConfig.getLimit()).willReturn(limit);
+    SpotifyUnauthorizedException spotifyUnauthorizedException =
+        new SpotifyUnauthorizedException("message");
     given(client.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willThrow(new SpotifyUnauthorizedException(message));
+        .willThrow(spotifyUnauthorizedException);
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(trackItems, features))
-            .isExactlyInstanceOf(SpotifyAccessTokenException.class)
-            .hasMessageContaining(message);
+        .isExactlyInstanceOf(SpotifyAccessTokenException.class)
+        .hasMessage(new SpotifyAccessTokenException(spotifyUnauthorizedException).getMessage());
   }
 
   @Test
   void
       itShouldThrowGetSpotifyRecommendationsExceptionWhenMapToRequestFeaturesThrowsRuntimeException() {
     // Given
-    String message = "message";
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
+    RuntimeException runtimeException = new RuntimeException("message");
     given(featuresMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
-        .willThrow(new RuntimeException(message));
+        .willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(trackItems, features))
         .isExactlyInstanceOf(GetSpotifyRecommendationsException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyRecommendationsException(runtimeException).getMessage());
   }
 
   @Test
   void
       itShouldThrowGetSpotifyRecommendationsExceptionWhenSpotifyTrackMapperThrowsRuntimeException() {
     // Given
-    String message = "message";
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
     SpotifyTrackItemFeatures features = SpotifyServiceHelper.getSpotifyTrackFeatures();
     List<SpotifyTrackDto> trackDtos = SpotifyClientHelper.getTrackDtos(2);
@@ -298,12 +309,13 @@ class SpotifyRecommendationsServiceTest {
         .willReturn(requestFeatures);
     given(requestConfig.getLimit()).willReturn(limit);
     given(client.getRecommendations(any(GetRecommendationsRequest.class))).willReturn(response);
-    given(trackMapper.mapDtosToModels(anyList())).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(trackMapper.mapDtosToModels(anyList())).willThrow(runtimeException);
 
     // Then
     assertThatThrownBy(() -> underTest.getRecommendations(trackItems, features))
         .isExactlyInstanceOf(GetSpotifyRecommendationsException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyRecommendationsException(runtimeException).getMessage());
   }
 
   @Test
@@ -323,8 +335,8 @@ class SpotifyRecommendationsServiceTest {
     given(featuresMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
         .willReturn(requestFeatures);
     given(requestConfig.getLimit()).willReturn(limit);
-    given(client.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willReturn(response);
+    given(client.getRecommendations(any(GetRecommendationsRequest.class))).willReturn(response);
+
     // Then
     assertThat(underTest.getRecommendations(trackItems, features)).isEmpty();
     then(trackMapper).should(never()).mapDtosToModels(dtosArgumentCapture.capture());
@@ -350,8 +362,7 @@ class SpotifyRecommendationsServiceTest {
     given(featuresMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
         .willReturn(requestFeatures);
     given(requestConfig.getLimit()).willReturn(limit);
-    given(client.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willReturn(response);
+    given(client.getRecommendations(any(GetRecommendationsRequest.class))).willReturn(response);
     // Then
     assertThat(underTest.getRecommendations(trackItems, features)).isEmpty();
     then(trackMapper).should(never()).mapDtosToModels(dtosArgumentCapture.capture());
@@ -380,10 +391,11 @@ class SpotifyRecommendationsServiceTest {
     given(featuresMapper.mapToRequestFeatures(any(SpotifyTrackFeatures.class)))
         .willReturn(requestFeatures);
     given(requestConfig.getLimit()).willReturn(limit);
-    given(client.getRecommendations(any(GetRecommendationsRequest.class)))
-        .willReturn(response);
+    given(client.getRecommendations(any(GetRecommendationsRequest.class))).willReturn(response);
+
     // When
     underTest.getRecommendations(trackItems, features);
+
     // Then
     then(trackMapper).should().mapDtosToModels(dtosArgumentCapture.capture());
     assertThat(dtosArgumentCapture.getValue()).containsExactly(trackDto);

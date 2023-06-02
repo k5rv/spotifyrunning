@@ -1,6 +1,9 @@
 package com.ksaraev.spotify.client.feign.exception;
 
-import lombok.experimental.StandardException;
 
-@StandardException
-public class SpotifyBadGatewayException extends SpotifyWebApiException {}
+public class SpotifyBadGatewayException extends SpotifyWebApiException {
+
+    public SpotifyBadGatewayException(String message) {
+        super(message);
+    }
+}

@@ -16,7 +16,7 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
   @Override
   public Exception handle(Response response) {
     if (response == null) {
-      throw new SpotifyClientReadingErrorResponseIsNullException(SpotifyClientReadingErrorResponseIsNullException.READING_ERROR_RESPONSE_IS_NULL);
+      throw new SpotifyClientReadingErrorResponseIsNullException();
     }
     try {
       String message =
@@ -57,8 +57,7 @@ public class SpotifyClientFeignExceptionHandler implements FeignExceptionHandler
         }
       }
     } catch (IOException | RuntimeException e) {
-      throw new SpotifyClientReadingErrorResponseException(
-          SpotifyClientReadingErrorResponseException.UNABLE_TO_READ_ERROR_RESPONSE + e.getMessage(), e);
+      throw new SpotifyClientReadingErrorResponseException(e);
     }
   }
 }

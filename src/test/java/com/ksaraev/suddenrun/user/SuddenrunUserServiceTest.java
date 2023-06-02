@@ -68,16 +68,17 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldThrowGetSuddenrunUserExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
-    String message = "message";
+    RuntimeException runtimeException = new RuntimeException("message");
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
-    given(repository.findById(id)).willThrow(new RuntimeException(message));
+    GetSuddenrunUserException getSuddenrunUserException =
+        new GetSuddenrunUserException(id, runtimeException);
+    given(repository.findById(id)).willThrow(runtimeException);
 
     // Then
     assertThatThrownBy(() -> underTest.getUser(id))
         .isExactlyInstanceOf(GetSuddenrunUserException.class)
-        .hasMessageContaining(id)
-        .hasMessageContaining(message);
+        .hasMessage(getSuddenrunUserException.getMessage());
   }
 
   @Test
@@ -99,16 +100,17 @@ class SuddenrunUserServiceTest {
   @Test
   void itShouldThrowRegisterSuddenrunUserExceptionIfUserRepositoryThrowsRuntimeException() {
     // Given
-    String message = "message";
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String id = suddenrunUser.getId();
     String name = suddenrunUser.getName();
-    given(repository.save(suddenrunUser)).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(repository.save(suddenrunUser)).willThrow(runtimeException);
+    RegisterSuddenrunUserException registerSuddenrunUserException =
+        new RegisterSuddenrunUserException(id, runtimeException);
 
     // Then
     assertThatThrownBy(() -> underTest.registerUser(id, name))
         .isExactlyInstanceOf(RegisterSuddenrunUserException.class)
-        .hasMessageContaining(id)
-        .hasMessageContaining(message);
+        .hasMessage(registerSuddenrunUserException.getMessage());
   }
 }

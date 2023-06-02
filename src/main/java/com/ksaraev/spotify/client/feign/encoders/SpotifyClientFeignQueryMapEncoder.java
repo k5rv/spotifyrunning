@@ -1,7 +1,5 @@
 package com.ksaraev.spotify.client.feign.encoders;
 
-import static com.ksaraev.spotify.client.exception.SpotifyClientRequestEncodingException.UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP;
-
 import com.google.common.base.CaseFormat;
 import com.google.common.collect.Maps;
 import com.ksaraev.spotify.client.exception.SpotifyClientRequestEncodingException;
@@ -55,8 +53,7 @@ public class SpotifyClientFeignQueryMapEncoder implements QueryMapEncoder {
       return fieldNameToValue;
 
     } catch (IllegalAccessException | RuntimeException e) {
-      throw new SpotifyClientRequestEncodingException(
-          UNABLE_TO_ENCODE_OBJECT_INTO_QUERY_MAP + e.getMessage(), e);
+      throw new SpotifyClientRequestEncodingException(e);
     }
   }
 

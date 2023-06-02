@@ -21,9 +21,7 @@ import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.spotify.service.SpotifyPlaylistService;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
+import jakarta.validation.*;
 import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -38,8 +36,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 class SpotifyPlaylistServiceGetUserPlaylistsTest {
-  private static final ExecutableValidator executableValidator =
-      Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
   @Mock private SpotifyClient client;
 
@@ -53,12 +50,15 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
 
   @Captor private ArgumentCaptor<List<SpotifyPlaylistDto>> playlistDtosArgumentCaptor;
 
+  private ExecutableValidator executableValidator;
+
   private AutoCloseable closeable;
 
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
   void setUp() {
+    executableValidator = factory.getValidator().forExecutables();
     closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
   }
@@ -163,37 +163,37 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
   }
 
   @Test
-  void
-      itShouldThrowGetSpotifyUserPlaylistsExceptionWhenSpotifyClientThrowsRuntimeException() {
+  void itShouldThrowGetSpotifyUserPlaylistsExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "message";
     SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
     String userId = userProfile.getId();
-    given(client.getPlaylists(any(), any())).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(client.getPlaylists(any(), any())).willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.getUserPlaylists(userProfile))
         .isExactlyInstanceOf(GetSpotifyUserPlaylistsException.class)
         .hasMessageContaining(userId)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyUserPlaylistsException(userId, runtimeException).getMessage());
   }
 
   @Test
   void
       itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
-    String message = "message";
     SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
-    String userId = userProfile.getId();
-    given(client.getPlaylists(any(), any())).willThrow(new SpotifyUnauthorizedException(message));
+    SpotifyUnauthorizedException spotifyUnauthorizedException =
+        new SpotifyUnauthorizedException("message");
+    given(client.getPlaylists(any(), any())).willThrow(spotifyUnauthorizedException);
+
     // Then
     assertThatThrownBy(() -> underTest.getUserPlaylists(userProfile))
         .isExactlyInstanceOf(SpotifyAccessTokenException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new SpotifyAccessTokenException(spotifyUnauthorizedException).getMessage());
   }
 
   @Test
-  void
-      itShouldThrowGetSpotifyUserPlaylistsExceptionWhenPlaylistMapperThrowsRuntimeException() {
+  void itShouldThrowGetSpotifyUserPlaylistsExceptionWhenPlaylistMapperThrowsRuntimeException() {
     // Given
     String message = "message";
     SpotifyUserProfileItem userProfile = SpotifyServiceHelper.getUserProfile();
@@ -202,12 +202,13 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     GetUserPlaylistsResponse response =
         SpotifyClientHelper.createGetUserPlaylistResponse(playlistDtos);
     given(client.getPlaylists(any(), any())).willReturn(response);
-    given(mapper.mapDtosToModels(any())).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException(message);
+    given(mapper.mapDtosToModels(any())).willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.getUserPlaylists(userProfile))
         .isExactlyInstanceOf(GetSpotifyUserPlaylistsException.class)
-        .hasMessageContaining(userId)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyUserPlaylistsException(userId, runtimeException).getMessage());
   }
 
   @Test
@@ -217,9 +218,11 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     Method method =
         SpotifyPlaylistService.class.getMethod("getUserPlaylists", SpotifyUserProfileItem.class);
     Object[] parameterValues = {null};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -235,9 +238,11 @@ class SpotifyPlaylistServiceGetUserPlaylistsTest {
     Method method =
         SpotifyPlaylistService.class.getMethod("getUserPlaylists", SpotifyUserProfileItem.class);
     Object[] parameterValues = {userProfileItem};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

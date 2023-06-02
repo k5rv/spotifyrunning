@@ -12,6 +12,7 @@ import com.ksaraev.spotify.model.playlistdetails.SpotifyPlaylistItemDetails;
 import com.ksaraev.suddenrun.exception.SuddenrunError;
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylist;
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistRepository;
+import com.ksaraev.suddenrun.playlist.SuddenrunUserDoesNotHaveAnyPlaylistsException;
 import com.ksaraev.suddenrun.track.AppTrack;
 import com.ksaraev.suddenrun.track.SuddenrunTrack;
 import com.ksaraev.utils.helpers.JsonHelper;
@@ -145,6 +146,8 @@ class SuddenrunUserServiceGetUserPlaylistIntegrationTest {
     SuddenrunUser appUser = SuddenrunHelper.getUser();
     String userId = appUser.getId();
     userRepository.save(appUser);
+    SuddenrunUserDoesNotHaveAnyPlaylistsException exception =
+        new SuddenrunUserDoesNotHaveAnyPlaylistsException(userId);
 
     // When
     ResultActions getUserPlaylistResultActions =
@@ -164,6 +167,6 @@ class SuddenrunUserServiceGetUserPlaylistIntegrationTest {
 
     assertThat(error).isNotNull();
     assertThat(error.status()).isEqualTo(HttpStatus.NOT_FOUND.value());
-    assertThat(error.message()).contains(userId);
+    assertThat(error.message()).isEqualTo(exception.getMessage());
   }
 }

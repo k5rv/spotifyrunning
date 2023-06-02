@@ -1,6 +1,9 @@
 package com.ksaraev.spotify.client.feign.exception;
 
-import lombok.experimental.StandardException;
+public class SpotifyNotModifiedException extends SpotifyWebApiException {
 
-@StandardException
-public class SpotifyNotModifiedException extends SpotifyWebApiException {}
+    public SpotifyNotModifiedException(String message) {
+        super(message);
+    }
+
+}

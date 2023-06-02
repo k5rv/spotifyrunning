@@ -91,13 +91,13 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
   public Optional<AppPlaylist> getPlaylist(@NotNull AppUser appUser) {
     String userId = appUser.getId();
     try {
-      log.info("Getting playlist for user with id [" + userId + "]");
+      log.info("Getting Suddenrun playlist for user with id [" + userId + "]");
       Optional<SuddenrunPlaylist> optionalAppPlaylist = repository.findByUserId(userId);
       if (optionalAppPlaylist.isEmpty()) {
         log.info(
-            "User with id ["
+            "Suddenrun user with id ["
                 + userId
-                + "] doesn't have any playlists in Suddenrun. Returning empty result.");
+                + "] doesn't have any playlists. Returning empty result.");
         return Optional.empty();
       }
       AppPlaylist appPlaylist = optionalAppPlaylist.get();
@@ -114,13 +114,13 @@ public class SuddenrunPlaylistService implements AppPlaylistService {
   @Override
   public Optional<AppPlaylist> getPlaylist(@NotNull String playlistId) {
     try {
-      log.info("Getting playlist with id [" + playlistId + "]");
+      log.info("Getting Suddenrun playlist with id [" + playlistId + "]");
       Optional<SuddenrunPlaylist> optionalAppPlaylist = repository.findById(playlistId);
       if (optionalAppPlaylist.isEmpty()) {
         log.info(
-            "Playlist with id ["
+            "Suddenrun playlist with id ["
                 + playlistId
-                + "] doesn't exist in Suddenrun. Returning empty result.");
+                + "] doesn't exist. Returning empty result.");
         return Optional.empty();
       }
 

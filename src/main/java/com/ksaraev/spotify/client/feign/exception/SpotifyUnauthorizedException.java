@@ -1,6 +1,12 @@
 package com.ksaraev.spotify.client.feign.exception;
 
-import lombok.experimental.StandardException;
 
-@StandardException
-public class SpotifyUnauthorizedException extends SpotifyWebApiException {}
+public class SpotifyUnauthorizedException extends SpotifyWebApiException {
+    public SpotifyUnauthorizedException(String message) {
+        super(message);
+    }
+
+    public SpotifyUnauthorizedException() {
+        super();
+    }
+}

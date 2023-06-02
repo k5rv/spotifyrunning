@@ -1,6 +1,5 @@
 package com.ksaraev.spotify.model.playlist;
 
-import static com.ksaraev.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 
 import com.ksaraev.spotify.client.dto.*;
 import com.ksaraev.spotify.model.MappingSourceIsNullException;
@@ -240,7 +239,7 @@ class SpotifyPlaylistItemMapperTest {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.mapToModel(null))
         .isExactlyInstanceOf(MappingSourceIsNullException.class)
-        .hasMessage(MAPPING_SOURCE_IS_NULL);
+        .hasMessage(new MappingSourceIsNullException().getMessage());
   }
 
   @Test
@@ -248,6 +247,6 @@ class SpotifyPlaylistItemMapperTest {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.mapToPlaylistDetailsDto(null))
         .isExactlyInstanceOf(MappingSourceIsNullException.class)
-        .hasMessage(MAPPING_SOURCE_IS_NULL);
+        .hasMessage(new MappingSourceIsNullException().getMessage());
   }
 }

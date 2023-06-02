@@ -115,13 +115,14 @@ class SpotifyClientFeignExceptionHandlerTest {
   void itShouldThrowSpotifyClientExceptionWhenResponseBodyCantBeRead() {
     // Given
     String message = "message";
+    IOException ioException = new IOException(message);
     Response response =
         Response.builder()
             .body(
                 new InputStream() {
                   @Override
                   public int read() throws IOException {
-                    throw new IOException(message);
+                    throw ioException;
                   }
                 },
                 1)
@@ -138,7 +139,7 @@ class SpotifyClientFeignExceptionHandlerTest {
     Assertions.assertThatThrownBy(() -> underTest.handle(response))
         .isExactlyInstanceOf(SpotifyClientReadingErrorResponseException.class)
         .hasMessage(
-            SpotifyClientReadingErrorResponseException.UNABLE_TO_READ_ERROR_RESPONSE + message);
+            new SpotifyClientReadingErrorResponseException(ioException).getMessage());
   }
 
   @Test
@@ -169,6 +170,6 @@ class SpotifyClientFeignExceptionHandlerTest {
     // Then
     Assertions.assertThatThrownBy(() -> underTest.handle(null))
         .isExactlyInstanceOf(SpotifyClientReadingErrorResponseIsNullException.class)
-        .hasMessage(SpotifyClientReadingErrorResponseIsNullException.READING_ERROR_RESPONSE_IS_NULL);
+        .hasMessage(new SpotifyClientReadingErrorResponseIsNullException().getMessage());
   }
 }

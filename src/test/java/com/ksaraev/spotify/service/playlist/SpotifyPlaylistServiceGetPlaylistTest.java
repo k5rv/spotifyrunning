@@ -21,6 +21,7 @@ import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -33,8 +34,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 class SpotifyPlaylistServiceGetPlaylistTest {
-  private static final ExecutableValidator executableValidator =
-      Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
+
+  private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
   @Mock private SpotifyClient client;
 
@@ -48,10 +49,13 @@ class SpotifyPlaylistServiceGetPlaylistTest {
 
   private AutoCloseable closeable;
 
+  private ExecutableValidator executableValidator;
+
   private SpotifyPlaylistItemService underTest;
 
   @BeforeEach
   void setUp() {
+    executableValidator = factory.getValidator().forExecutables();
     closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
   }
@@ -83,43 +87,45 @@ class SpotifyPlaylistServiceGetPlaylistTest {
   @Test
   void itShouldThrowGetSpotifyPlaylistExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "message";
     String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    given(client.getPlaylist(playlistId)).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(client.getPlaylist(playlistId)).willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
         .isExactlyInstanceOf(GetSpotifyPlaylistException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyPlaylistException(playlistId, runtimeException).getMessage());
   }
 
   @Test
   void
       itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
-    String message = "message";
     String playlistId = "0S4WIUelgktE36rVcG7ZRy";
-    given(client.getPlaylist(playlistId)).willThrow(new SpotifyUnauthorizedException(message));
+    SpotifyUnauthorizedException spotifyUnauthorizedException =
+        new SpotifyUnauthorizedException("message");
+    given(client.getPlaylist(playlistId)).willThrow(spotifyUnauthorizedException);
+
     // Then
     assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
         .isExactlyInstanceOf(SpotifyAccessTokenException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new SpotifyAccessTokenException(spotifyUnauthorizedException).getMessage());
   }
 
   @Test
   void itShouldThrowGetSpotifyPlaylistExceptionWhenPlaylistMapperThrowsRuntimeException() {
     // Given
-    String message = "message";
     SpotifyPlaylist playlist = (SpotifyPlaylist) SpotifyServiceHelper.getPlaylist();
     String playlistId = playlist.getId();
     SpotifyPlaylistDto playlistDto = SpotifyClientHelper.getPlaylistDto(playlistId);
     given(client.getPlaylist(any())).willReturn(playlistDto);
-    given(mapper.mapToModel(any(SpotifyPlaylistDto.class)))
-        .willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(mapper.mapToModel(any(SpotifyPlaylistDto.class))).willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
         .isExactlyInstanceOf(GetSpotifyPlaylistException.class)
-        .hasMessageContaining(playlistId)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyPlaylistException(playlistId, runtimeException).getMessage());
   }
 
   @Test
@@ -127,9 +133,11 @@ class SpotifyPlaylistServiceGetPlaylistTest {
     // Given
     Method method = SpotifyPlaylistService.class.getMethod("getPlaylist", String.class);
     Object[] parameterValues = {null};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

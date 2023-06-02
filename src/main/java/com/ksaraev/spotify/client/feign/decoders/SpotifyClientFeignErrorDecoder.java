@@ -35,7 +35,7 @@ public class SpotifyClientFeignErrorDecoder implements ErrorDecoder {
   @Override
   public Exception decode(String methodKey, Response response) {
     if (response == null) {
-      throw new SpotifyClientDecodingErrorResponseIsNullException(DECODING_ERROR_RESPONSE_IS_NULL);
+      throw new SpotifyClientDecodingErrorResponseIsNullException(/*DECODING_ERROR_RESPONSE_IS_NULL*/);
     }
     FeignExceptionHandler handler = feignExceptionHandlers.get(methodKey);
     if (handler == null) return defaultErrorDecoder.decode(methodKey, response);

@@ -3,6 +3,7 @@ package com.ksaraev.suddenrun.exception;
 import static org.springframework.http.HttpStatus.*;
 
 import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistAlreadyExistsException;
+import com.ksaraev.suddenrun.playlist.SuddenrunPlaylistDoesNotExistException;
 import com.ksaraev.suddenrun.playlist.SuddenrunUserDoesNotHaveAnyPlaylistsException;
 import com.ksaraev.suddenrun.user.SuddenrunUserDoesNotMatchCurrentSpotifyUserException;
 import com.ksaraev.suddenrun.user.SuddenrunUserIsAlreadyRegisteredException;
@@ -28,33 +29,42 @@ public class SuddenrunExceptionHandler {
   @ExceptionHandler(value = {SuddenrunUserIsNotRegisteredException.class})
   public ResponseEntity<SuddenrunError> handleSuddenrunUserIsNotRegisteredException(
       SuddenrunUserIsNotRegisteredException e) {
-    log.error(e.getMessage());
+    String message = e.getMessage();
+    log.error(message);
     int notFound = NOT_FOUND.value();
-    String message = "Suddenrun user is not registered";
     return ResponseEntity.status(NOT_FOUND).body(new SuddenrunError(notFound, message));
   }
 
   @ExceptionHandler(value = {SuddenrunUserIsAlreadyRegisteredException.class})
   public ResponseEntity<SuddenrunError> handleSuddenrunUserIsAlreadyRegisteredException(
       SuddenrunUserIsAlreadyRegisteredException e) {
-    log.error(e.getMessage());
+    String message = e.getMessage();
+    log.error(message);
     int conflict = CONFLICT.value();
-    String message = "Suddenrun user is already registered";
     return ResponseEntity.status(CONFLICT).body(new SuddenrunError(conflict, message));
   }
 
   @ExceptionHandler(value = {SuddenrunUserDoesNotMatchCurrentSpotifyUserException.class})
   public ResponseEntity<SuddenrunError> handleSuddenrunUserDoesNotMatchCurrentSpotifyUserException(
       SuddenrunUserDoesNotMatchCurrentSpotifyUserException e) {
-    log.error(e.getMessage());
+    String message = e.getMessage();
+    log.error(message);
     int conflict = CONFLICT.value();
-    String message = "Suddenrun user doesn't match Spotify user";
     return ResponseEntity.status(CONFLICT).body(new SuddenrunError(conflict, message));
   }
 
   @ExceptionHandler(value = {SuddenrunUserDoesNotHaveAnyPlaylistsException.class})
-  public ResponseEntity<SuddenrunError> handleAppPlaylistNotFoundException(
+  public ResponseEntity<SuddenrunError> handleSuddenrunUserDoesNotHaveAnyPlaylistsException(
       SuddenrunUserDoesNotHaveAnyPlaylistsException e) {
+    String message = e.getMessage();
+    log.error(message);
+    int notFound = NOT_FOUND.value();
+    return ResponseEntity.status(NOT_FOUND).body(new SuddenrunError(notFound, message));
+  }
+
+  @ExceptionHandler(value = {SuddenrunPlaylistDoesNotExistException.class})
+  public ResponseEntity<SuddenrunError> handleSuddenrunPlaylistDoesNotExistException(
+      SuddenrunPlaylistDoesNotExistException e) {
     String message = e.getMessage();
     log.error(message);
     int notFound = NOT_FOUND.value();

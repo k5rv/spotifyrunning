@@ -19,11 +19,11 @@ import com.ksaraev.spotify.model.track.SpotifyTrackItem;
 import com.ksaraev.spotify.service.SpotifyPlaylistItemService;
 import com.ksaraev.spotify.service.SpotifyPlaylistService;
 import com.ksaraev.utils.helpers.SpotifyClientHelper;
-import com.ksaraev.utils.helpers.SpotifyResourceHelper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 import jakarta.validation.executable.ExecutableValidator;
 import java.lang.reflect.Method;
 import java.net.URI;
@@ -40,8 +40,10 @@ import org.mockito.MockitoAnnotations;
 class SpotifyPlaylistServiceAddTracksTest {
 
   private static final String ADD_TRACKS = "addTracks";
-  private static final ExecutableValidator executableValidator =
-      Validation.buildDefaultValidatorFactory().getValidator().forExecutables();
+
+  private static final ValidatorFactory validatorFactory =
+      Validation.buildDefaultValidatorFactory();
+
   @Mock private SpotifyClient client;
   @Mock private SpotifyPlaylistMapper mapper;
 
@@ -49,18 +51,17 @@ class SpotifyPlaylistServiceAddTracksTest {
 
   @Captor private ArgumentCaptor<String> playlistIdArgumentCaptor;
 
-  @Captor private ArgumentCaptor<SpotifyPlaylistItem> spotifyPlaylistArgumentCaptor;
-
   @Captor private ArgumentCaptor<AddPlaylistItemsRequest> requestArgumentCaptor;
+
+  private ExecutableValidator executableValidator;
 
   private AutoCloseable closeable;
 
   private SpotifyPlaylistItemService underTest;
 
-
-
   @BeforeEach
   void setUp() {
+    executableValidator = validatorFactory.getValidator().forExecutables();
     closeable = MockitoAnnotations.openMocks(this);
     underTest = new SpotifyPlaylistService(client, requestConfig, mapper);
   }
@@ -96,16 +97,16 @@ class SpotifyPlaylistServiceAddTracksTest {
   @Test
   void itShouldThrowAddTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "message";
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     String playlistId = playlist.getId();
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
-    given(client.addPlaylistItems(any(), any())).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(client.addPlaylistItems(any(), any())).willThrow(runtimeException);
     // Then
     assertThatThrownBy(() -> underTest.addTracks(playlist, trackItems))
         .isExactlyInstanceOf(AddSpotifyPlaylistTracksExceptions.class)
-        .hasMessageContaining(playlistId)
-        .hasMessageContaining(message);
+        .hasMessage(
+            new AddSpotifyPlaylistTracksExceptions(playlistId, runtimeException).getMessage());
   }
 
   @Test
@@ -113,12 +114,15 @@ class SpotifyPlaylistServiceAddTracksTest {
       itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
-    String playlistId = playlist.getId();
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
-    given(client.addPlaylistItems(any(), any())).willThrow(new SpotifyUnauthorizedException());
+    SpotifyUnauthorizedException spotifyUnauthorizedException =
+        new SpotifyUnauthorizedException("message");
+    given(client.addPlaylistItems(any(), any())).willThrow(spotifyUnauthorizedException);
+
     // Then
     assertThatThrownBy(() -> underTest.addTracks(playlist, trackItems))
-        .isExactlyInstanceOf(SpotifyAccessTokenException.class);
+        .isExactlyInstanceOf(SpotifyAccessTokenException.class)
+        .hasMessage(new SpotifyAccessTokenException(spotifyUnauthorizedException).getMessage());
   }
 
   @Test
@@ -126,11 +130,14 @@ class SpotifyPlaylistServiceAddTracksTest {
       throws Exception {
     // Given
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
-    Method method = SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+    Method method =
+        SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
     Object[] parameterValues = {null, trackItems};
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -143,10 +150,13 @@ class SpotifyPlaylistServiceAddTracksTest {
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     List<SpotifyTrackItem> tracks = List.of();
     Object[] parameterValues = {playlist, tracks};
-    Method method = SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+    Method method =
+        SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -159,10 +169,13 @@ class SpotifyPlaylistServiceAddTracksTest {
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(101);
     Object[] parameterValues = {playlist, tracks};
-    Method method = SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+    Method method =
+        SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -179,10 +192,13 @@ class SpotifyPlaylistServiceAddTracksTest {
     List<SpotifyTrackItem> tracks = SpotifyServiceHelper.getTracks(1);
     tracks.add(1, track);
     Object[] parameterValues = {playlist, tracks};
-    Method method = SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+    Method method =
+        SpotifyPlaylistService.class.getMethod(ADD_TRACKS, SpotifyPlaylistItem.class, List.class);
+
     // When
     Set<ConstraintViolation<SpotifyPlaylistItemService>> constraintViolations =
         executableValidator.validateParameters(underTest, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

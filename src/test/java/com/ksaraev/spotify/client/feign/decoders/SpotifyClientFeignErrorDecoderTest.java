@@ -120,7 +120,7 @@ class SpotifyClientFeignErrorDecoderTest {
     // Then
     assertThatThrownBy(() -> underTest.decode("SpotifyClient#getSomething()", null))
         .isExactlyInstanceOf(SpotifyClientDecodingErrorResponseIsNullException.class)
-        .hasMessage(SpotifyClientDecodingErrorResponseIsNullException.DECODING_ERROR_RESPONSE_IS_NULL);
+        .hasMessage(new SpotifyClientDecodingErrorResponseIsNullException().getMessage());
   }
 
   @Test

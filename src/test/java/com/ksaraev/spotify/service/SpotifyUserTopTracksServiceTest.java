@@ -95,45 +95,44 @@ class SpotifyUserTopTracksServiceTest {
   @Test
   void itShouldThrowGetSpotifyUserTopTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "message";
     given(config.getTimeRange()).willReturn("MEDIUM_TERM");
-    given(client.getUserTopTracks(any())).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(client.getUserTopTracks(any())).willThrow(runtimeException);
     // Then
     assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isExactlyInstanceOf(GetSpotifyUserTopTracksException.class)
-        .hasMessageContaining(message);
+        .hasMessageContaining(new GetSpotifyUserTopTracksException(runtimeException).getMessage());
   }
 
   @Test
   void itShouldThrowGetSpotifyUserTopTracksExceptionWhenSpotifyTrackMapperThrowsRuntimeException() {
     // Given
-    String message = "message";
     List<SpotifyTrackDto> trackDtos = getTrackDtos(1);
     String timeRangeName = GetUserTopTracksRequest.TimeRange.SHORT_TERM.name();
     GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackDtos);
     given(config.getTimeRange()).willReturn(timeRangeName);
     given(client.getUserTopTracks(any())).willReturn(getUserTopTracksResponse);
-    given(mapper.mapDtosToModels(trackDtos)).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(mapper.mapDtosToModels(trackDtos)).willThrow(runtimeException);
     // Then
     assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isExactlyInstanceOf(GetSpotifyUserTopTracksException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new GetSpotifyUserTopTracksException(runtimeException).getMessage());
   }
 
   @Test
   void
       itShouldThrowSpotifyAccessTokenExceptionWhenSpotifyClientThrowsSpotifyUnauthorizedException() {
     // Given
-    String message = "message";
-    List<SpotifyTrackDto> trackDtos = getTrackDtos(1);
     String timeRangeName = GetUserTopTracksRequest.TimeRange.SHORT_TERM.name();
-    GetUserTopTracksResponse getUserTopTracksResponse = createGetUserTopTracksResponse(trackDtos);
     given(config.getTimeRange()).willReturn(timeRangeName);
-    given(client.getUserTopTracks(any())).willThrow(new SpotifyUnauthorizedException(message));
+    SpotifyUnauthorizedException spotifyUnauthorizedException =
+        new SpotifyUnauthorizedException("message");
+    given(client.getUserTopTracks(any())).willThrow(spotifyUnauthorizedException);
     // Then
     assertThatThrownBy(() -> underTest.getUserTopTracks())
         .isExactlyInstanceOf(SpotifyAccessTokenException.class)
-        .hasMessageContaining(message);
+        .hasMessage(new SpotifyAccessTokenException(spotifyUnauthorizedException).getMessage());
   }
 
   @Test

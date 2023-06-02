@@ -1,6 +1,5 @@
 package com.ksaraev.spotify.model.trackfeatures;
 
-import static com.ksaraev.spotify.model.MappingSourceIsNullException.MAPPING_SOURCE_IS_NULL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -17,8 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(classes = {SpotifyTrackFeaturesMapperImpl.class})
 class TrackFeaturesMapperTest {
 
-  @Autowired
-  SpotifyTrackFeaturesMapper underTest;
+  @Autowired SpotifyTrackFeaturesMapper underTest;
 
   @Test
   void itShouldMapSpotifyTrackFeaturesToGetRecommendationsRequestTrackFeatures() {
@@ -167,6 +165,6 @@ class TrackFeaturesMapperTest {
     // Then
     assertThatThrownBy(() -> underTest.mapToRequestFeatures(null))
         .isExactlyInstanceOf(MappingSourceIsNullException.class)
-        .hasMessage(MAPPING_SOURCE_IS_NULL);
+        .hasMessage(new MappingSourceIsNullException().getMessage());
   }
 }

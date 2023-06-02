@@ -37,10 +37,13 @@ import org.mockito.MockitoAnnotations;
 class SpotifyPlaylistServiceRemoveTracksTest {
 
   private static final String REMOVE_TRACKS = "removeTracks";
+
   private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 
   private Validator validator;
+
   @Mock private SpotifyClient client;
+
   @Mock private SpotifyPlaylistMapper mapper;
 
   @Mock private UpdateSpotifyPlaylistItemsRequestConfig requestConfig;
@@ -77,8 +80,10 @@ class SpotifyPlaylistServiceRemoveTracksTest {
         RemovePlaylistItemsRequest.builder().uris(uris).snapshotId(snapshotId).build();
     RemovePlaylistItemsResponse response = SpotifyClientHelper.createRemovePlaylistItemsResponse();
     given(client.removePlaylistItems(any(), any())).willReturn(response);
+
     // When
     underTest.removeTracks(spotifyPlaylistItem, trackItems);
+
     // Then
     then(client)
         .should()
@@ -90,16 +95,17 @@ class SpotifyPlaylistServiceRemoveTracksTest {
   @Test
   void itShouldThrowAddTracksExceptionWhenSpotifyClientThrowsRuntimeException() {
     // Given
-    String message = "message";
     SpotifyPlaylistItem playlist = SpotifyServiceHelper.getPlaylist();
     String playlistId = playlist.getId();
     List<SpotifyTrackItem> trackItems = SpotifyServiceHelper.getTracks(2);
-    given(client.removePlaylistItems(any(), any())).willThrow(new RuntimeException(message));
+    RuntimeException runtimeException = new RuntimeException("message");
+    given(client.removePlaylistItems(any(), any())).willThrow(runtimeException);
+
     // Then
     assertThatThrownBy(() -> underTest.removeTracks(playlist, trackItems))
         .isExactlyInstanceOf(RemoveSpotifyPlaylistTracksException.class)
-        .hasMessageContaining(playlistId)
-        .hasMessageContaining(message);
+        .hasMessage(
+            new RemoveSpotifyPlaylistTracksException(playlistId, runtimeException).getMessage());
   }
 
   @Test
