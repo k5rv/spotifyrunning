@@ -70,6 +70,144 @@ class SuddenrunPlaylistServiceUpdatePlaylistIntegrationTest {
   
   @Autowired private MockMvc mockMvc;
 
+
+  /*
+
+  @Test
+  void itShouldCreatePlaylist() throws Exception {
+    // Given
+    SpotifyUserProfileDto spotifyUserDto = SpotifyClientHelper.getUserProfileDto();
+    String spotifyUserId = spotifyUserDto.id();
+    String spotifyUserName = spotifyUserDto.displayName();
+
+    userRepository.save(SuddenrunUser.builder().id(spotifyUserId).name(spotifyUserName).build());
+
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlEqualTo(SPOTIFY_API_V1_ME))
+            .willReturn(
+                WireMock.jsonResponse(
+                    JsonHelper.objectToJson(spotifyUserDto), HttpStatus.OK.value())));
+
+    SpotifyPlaylistItemDetails spotifyPlaylistDetails = spotifyPlaylistConfig.getDetails();
+    String playlistName = spotifyPlaylistDetails.getName();
+    String playlistDescription = spotifyPlaylistDetails.getDescription();
+    boolean playlistIsPublic = spotifyPlaylistDetails.getIsPublic();
+
+    SpotifyPlaylistDto spotifyPlaylistDto =
+        SpotifyClientHelper.getPlaylistDto(
+            spotifyUserDto, playlistName, playlistDescription, playlistIsPublic);
+
+    String playlistId = spotifyPlaylistDto.id();
+
+    WireMock.stubFor(
+        WireMock.post(
+                WireMock.urlEqualTo(
+                    SPOTIFY_API_V1_USERS_USER_ID_PLAYLISTS.formatted(spotifyUserId)))
+            .willReturn(
+                WireMock.jsonResponse(
+                    JsonHelper.objectToJson(spotifyPlaylistDto), HttpStatus.CREATED.value())));
+
+    WireMock.stubFor(
+        WireMock.get(
+                WireMock.urlEqualTo(SPOTIFY_API_V1_PLAYLISTS_PLAYLIST_ID.formatted(playlistId)))
+            .inScenario("Get created playlist")
+            .willSetStateTo("Got tracks")
+            .willReturn(
+                WireMock.jsonResponse(
+                    JsonHelper.objectToJson(spotifyPlaylistDto), HttpStatus.OK.value())));
+
+    int userTopTracksLimit = userTopTrackRequestConfig.getLimit();
+    List<SpotifyTrackDto> spotifyUserTopTracks =
+        SpotifyClientHelper.getTrackDtos(userTopTracksLimit);
+    GetUserTopTracksResponse getUserTopTracksResponse =
+        SpotifyClientHelper.createGetUserTopTracksResponse(spotifyUserTopTracks);
+
+    WireMock.stubFor(
+        WireMock.get(WireMock.urlPathEqualTo(SPOTIFY_API_V1_ME_TOP_TRACKS))
+            .willReturn(
+                WireMock.jsonResponse(
+                    JsonHelper.objectToJson(getUserTopTracksResponse), HttpStatus.OK.value())));
+
+    List<SpotifyTrackDto> spotifyPlaylistTracks = new ArrayList<>();
+    int recommendationsLimit = recommendationRequestConfig.getLimit();
+    spotifyUserTopTracks.forEach(
+        track -> {
+          List<SpotifyTrackDto> recommendations =
+              SpotifyClientHelper.getTrackDtos(recommendationsLimit);
+          spotifyPlaylistTracks.addAll(recommendations);
+          GetRecommendationsResponse getRecommendationsResponse =
+              SpotifyClientHelper.createGetRecommendationsResponse(recommendations);
+          WireMock.stubFor(
+              WireMock.get(
+                      WireMock.urlEqualTo(
+                          SPOTIFY_API_V1_RECOMMENDATIONS
+                              + "?"
+                              + "min_tempo=120&seed_tracks="
+                              + track.id()
+                              + "&limit="
+                              + recommendationsLimit
+                              + "&min_energy=0.65&max_tempo=140"))
+                  .willReturn(
+                      WireMock.jsonResponse(
+                          JsonHelper.objectToJson(getRecommendationsResponse),
+                          HttpStatus.OK.value())));
+        });
+
+    AddPlaylistItemsResponse addPlaylistItemsResponse =
+        SpotifyClientHelper.createAddPlaylistItemsResponse();
+
+    WireMock.stubFor(
+        WireMock.post(
+                WireMock.urlPathEqualTo(
+                    SPOTIFY_V1_PLAYLISTS_PLAYLIST_ID_TRACKS.formatted(playlistId)))
+            .willReturn(
+                WireMock.jsonResponse(
+                    JsonHelper.objectToJson(addPlaylistItemsResponse),
+                    HttpStatus.CREATED.value())));
+
+    spotifyPlaylistDto =
+        SpotifyClientHelper.getPlaylistDto(
+            spotifyUserDto,
+            playlistId,
+            playlistName,
+            playlistDescription,
+            playlistIsPublic,
+            spotifyPlaylistTracks);
+
+    WireMock.stubFor(
+        WireMock.get(
+                WireMock.urlEqualTo(SPOTIFY_API_V1_PLAYLISTS_PLAYLIST_ID.formatted(playlistId)))
+            .inScenario("Get created playlist")
+            .whenScenarioStateIs("Got tracks")
+            .willReturn(
+                WireMock.jsonResponse(
+                    JsonHelper.objectToJson(spotifyPlaylistDto), HttpStatus.OK.value())));
+
+    // When
+    ResultActions createPlaylistResultActions =
+        mockMvc.perform(
+            MockMvcRequestBuilders.post(
+                    SUDDENRUN_API_V1_USERS_USER_ID_PLAYLISTS.formatted(spotifyUserId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .with(SecurityMockMvcRequestPostProcessors.csrf()));
+
+    // Then
+    MvcResult result =
+        createPlaylistResultActions
+            .andExpect(MockMvcResultMatchers.status().isOk())
+            .andExpect(
+                MockMvcResultMatchers.content()
+                    .contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andReturn();
+
+    CreatePlaylistResponse createPlaylistResponse =
+        JsonHelper.jsonToObject(result.getResponse().getContentAsString(), CreatePlaylistResponse.class);
+
+    assertThat(createPlaylistResponse).isNotNull();
+    assertThat(createPlaylistResponse.id()).isEqualTo(playlistId);
+  }
+   */
+
   @Test
   void itShouldUpdatePlaylist() throws Exception {
     // Given

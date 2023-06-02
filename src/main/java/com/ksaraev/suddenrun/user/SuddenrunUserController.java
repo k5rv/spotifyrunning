@@ -69,40 +69,28 @@ public class SuddenrunUserController {
   @PostMapping(path = "/{user_id}/playlists")
   public CreatePlaylistResponse createPlaylist(
       @NotNull @PathVariable(value = "user_id") String userId) {
-    try {
-      AppUser appUser = getUser(userId);
-      suddenrunPlaylistService
-          .getPlaylist(appUser)
-          .ifPresent(
-              playlist -> {
-                throw new SuddenrunPlaylistAlreadyExistsException(playlist.getId());
-              });
-      AppPlaylist appPlaylist = suddenrunPlaylistService.createPlaylist(appUser);
-      String playlistId = appPlaylist.getId();
-      return CreatePlaylistResponse.builder().id(playlistId).build();
-    } catch (SpotifyServiceException e) {
-      throw new SuddenrunSpotifyInteractionException(e);
-    } catch (SpotifyAccessTokenException e) {
-      throw new SuddenrunAuthenticationException(e);
-    }
+    AppUser appUser = getUser(userId);
+    suddenrunPlaylistService
+        .getPlaylist(appUser)
+        .ifPresent(
+            playlist -> {
+              throw new SuddenrunPlaylistAlreadyExistsException(playlist.getId());
+            });
+    AppPlaylist appPlaylist = suddenrunPlaylistService.createPlaylist(appUser);
+    String playlistId = appPlaylist.getId();
+    return CreatePlaylistResponse.builder().id(playlistId).build();
   }
 
   @GetMapping(path = "/{user_id}/playlists")
   public GetUserPlaylistResponse getUserPlaylist(
       @NotNull @PathVariable(value = "user_id") String userId) {
-    try {
-      AppUser appUser = getUser(userId);
-      AppPlaylist appPlaylist =
-          suddenrunPlaylistService
-              .getPlaylist(appUser)
-              .orElseThrow(() -> new SuddenrunUserDoesNotHaveAnyPlaylistsException(userId));
-      String playlistId = appPlaylist.getId();
-      return GetUserPlaylistResponse.builder().id(playlistId).build();
-    } catch (SpotifyServiceException e) {
-      throw new SuddenrunSpotifyInteractionException(e);
-    } catch (SpotifyAccessTokenException e) {
-      throw new SuddenrunAuthenticationException(e);
-    }
+    AppUser appUser = getUser(userId);
+    AppPlaylist appPlaylist =
+        suddenrunPlaylistService
+            .getPlaylist(appUser)
+            .orElseThrow(() -> new SuddenrunUserDoesNotHaveAnyPlaylistsException(userId));
+    String playlistId = appPlaylist.getId();
+    return GetUserPlaylistResponse.builder().id(playlistId).build();
   }
 
   private AppUser getUser(String userId) {

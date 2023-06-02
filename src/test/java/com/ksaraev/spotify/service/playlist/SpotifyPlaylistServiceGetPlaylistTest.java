@@ -133,6 +133,6 @@ class SpotifyPlaylistServiceGetPlaylistTest {
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
-        .hasMessage("getPlaylist.id: must not be null");
+        .hasMessage("getPlaylist.playlistId: must not be null");
   }
 }

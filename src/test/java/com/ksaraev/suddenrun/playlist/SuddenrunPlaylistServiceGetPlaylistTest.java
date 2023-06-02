@@ -17,6 +17,7 @@ import com.ksaraev.suddenrun.track.AppTrackMapper;
 import com.ksaraev.suddenrun.track.SuddenrunTrack;
 import com.ksaraev.suddenrun.user.AppUserMapper;
 import com.ksaraev.suddenrun.user.SuddenrunUser;
+import com.ksaraev.utils.helpers.SpotifyResourceHelper;
 import com.ksaraev.utils.helpers.SpotifyServiceHelper;
 import com.ksaraev.utils.helpers.SuddenrunHelper;
 import java.util.List;
@@ -67,7 +68,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
   }
 
   @Test
-  void itShouldReturnEmptyOptionalIfSuddenrunPlaylistDoesNotExist() {
+  void itShouldReturnEmptyOptionalIfSuddenrunUserPlaylistDoesNotExist() {
     // Given
     SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
     String userId = suddenrunUser.getId();
@@ -75,6 +76,20 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     // When
     Optional<AppPlaylist> result = underTest.getPlaylist(suddenrunUser);
+
+    // Then
+    assertThat(result).isNotPresent();
+  }
+
+  @Test
+  void itShouldReturnEmptyOptionalIfSuddenrunPlaylistDoesNotExist() {
+    // Given
+    SuddenrunUser suddenrunUser = SuddenrunHelper.getUser();
+    String playlistId = SpotifyResourceHelper.getRandomId();
+    given(repository.findById(playlistId)).willReturn(Optional.empty());
+
+    // When
+    Optional<AppPlaylist> result = underTest.getPlaylist(playlistId);
 
     // Then
     assertThat(result).isNotPresent();
@@ -106,7 +121,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
   }
 
   @Test
-  void itShouldGetPlaylistIfSnapshotsInSuddenrunAndSpotifyAreEqual() {
+  void itShouldGetUserPlaylistIfSnapshotsInSuddenrunAndSpotifyAreEqual() {
     // Given
     SuddenrunUser appUser = SuddenrunHelper.getUser();
     String userId = appUser.getId();
@@ -130,6 +145,38 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
     // When
     Optional<AppPlaylist> result = underTest.getPlaylist(appUser);
+
+    // Then
+    assertThat(result)
+        .isPresent()
+        .hasValueSatisfying(playlist -> assertThat(playlist).isEqualTo(appPlaylist));
+  }
+
+  @Test
+  void itShouldGePlaylistIfSnapshotsInSuddenrunAndSpotifyAreEqual() {
+    // Given
+    SuddenrunUser appUser = SuddenrunHelper.getUser();
+    String userId = appUser.getId();
+    String userName = appUser.getName();
+    SuddenrunPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist(appUser);
+    String playlistId = appPlaylist.getId();
+    String playlistSnapshotId = appPlaylist.getSnapshotId();
+
+    Optional<SuddenrunPlaylist> optionalAppPlaylist = Optional.of(appPlaylist);
+    given(repository.findById(playlistId)).willReturn(optionalAppPlaylist);
+
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(appUser)).willReturn(spotifyUser);
+
+    SpotifyPlaylistItem spotifyPlaylist = SpotifyServiceHelper.getPlaylist(playlistId);
+    spotifyPlaylist.setSnapshotId(playlistSnapshotId);
+    spotifyPlaylist.setUser(spotifyUser);
+    List<SpotifyPlaylistItem> spotifyUserPlaylists = List.of(spotifyPlaylist);
+    given(spotifyPlaylistService.getUserPlaylists(spotifyUser)).willReturn(spotifyUserPlaylists);
+    given(spotifyPlaylistService.getPlaylist(playlistId)).willReturn(spotifyPlaylist);
+
+    // When
+    Optional<AppPlaylist> result = underTest.getPlaylist(playlistId);
 
     // Then
     assertThat(result)
@@ -192,7 +239,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
   @Test
   void
-      itShouldThrowSuddenrunAuthenticationExceptionIfSpotifyServiceThrowsSpotifyAccessTokenException() {
+      itShouldThrowSuddenrunAuthenticationExceptionIfSpotifyServiceThrowsSpotifyAccessTokenExceptionWhileGettingByAppUser() {
     // Given
     String message = "message";
     SuddenrunUser appUser = SuddenrunHelper.getUser();
@@ -214,7 +261,30 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
 
   @Test
   void
-      itShouldThrowSuddenrunSpotifyInteractionExceptionIfSpotifyServiceThrowsSpotifyServiceException() {
+  itShouldThrowSuddenrunAuthenticationExceptionIfSpotifyServiceThrowsSpotifyAccessTokenExceptionWhileGettingByPlaylistId() {
+    // Given
+    String message = "message";
+    SuddenrunUser appUser = SuddenrunHelper.getUser();
+    String userId = appUser.getId();
+    String userName = appUser.getName();
+    SuddenrunPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist(appUser);
+    String playlistId = appPlaylist.getId();
+    Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(appPlaylist);
+    given(repository.findById(playlistId)).willReturn(optionalOfPlaylist);
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(appUser)).willReturn(spotifyUser);
+    given(spotifyPlaylistService.getUserPlaylists(spotifyUser))
+            .willThrow(new SpotifyAccessTokenException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
+            .isExactlyInstanceOf(SuddenrunAuthenticationException.class)
+            .hasMessageContaining(message);
+  }
+
+  @Test
+  void
+      itShouldThrowSuddenrunSpotifyInteractionExceptionIfSpotifyServiceThrowsSpotifyServiceExceptionWhileGettingByAppUser() {
     // Given
     String message = "message";
     SuddenrunUser appUser = SuddenrunHelper.getUser();
@@ -234,6 +304,30 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     assertThatThrownBy(() -> underTest.getPlaylist(appUser))
         .isExactlyInstanceOf(SuddenrunSpotifyInteractionException.class)
         .hasMessageContaining(playlistId);
+  }
+
+  @Test
+  void
+  itShouldThrowSuddenrunSpotifyInteractionExceptionIfSpotifyServiceThrowsSpotifyServiceExceptionWhileGettingByPlaylistId() {
+    // Given
+    String message = "message";
+    SuddenrunUser appUser = SuddenrunHelper.getUser();
+    String userId = appUser.getId();
+    String userName = appUser.getName();
+    SuddenrunPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist(appUser);
+    String playlistId = appPlaylist.getId();
+    Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(appPlaylist);
+    given(repository.findById(playlistId)).willReturn(optionalOfPlaylist);
+    SpotifyUserProfileItem spotifyUser = SpotifyServiceHelper.getUserProfile(userId, userName);
+    given(userMapper.mapToItem(appUser)).willReturn(spotifyUser);
+    RuntimeException runtimeException = new RuntimeException(message);
+    given(spotifyPlaylistService.getUserPlaylists(spotifyUser))
+            .willThrow(new GetSpotifyPlaylistException(playlistId, runtimeException));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
+            .isExactlyInstanceOf(SuddenrunSpotifyInteractionException.class)
+            .hasMessageContaining(playlistId);
   }
 
   @Test
@@ -258,7 +352,7 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
   }
 
   @Test
-  void itShouldThrowGetSuddenrunPlaylistExceptionIfMapperThrowsRuntimeException() {
+  void itShouldThrowGetSuddenrunUserPlaylistExceptionIfMapperThrowsRuntimeException() {
     // Given
     String message = "message";
     SuddenrunUser appUser = SuddenrunHelper.getUser();
@@ -275,7 +369,24 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
   }
 
   @Test
-  void itShouldThrowGetSuddenrunPlaylistExceptionIfRepositoryThrowsRuntimeException() {
+  void itShouldThrowGetSuddenrunPlaylistExceptionIfMapperThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    SuddenrunUser appUser = SuddenrunHelper.getUser();
+    SuddenrunPlaylist appPlaylist = SuddenrunHelper.getSuddenrunPlaylist(appUser);
+    Optional<SuddenrunPlaylist> optionalOfPlaylist = Optional.of(appPlaylist);
+    String playlistId = appPlaylist.getId();
+    given(repository.findById(playlistId)).willReturn(optionalOfPlaylist);
+    given(userMapper.mapToItem(appUser)).willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
+            .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
+            .hasMessageContaining(message);
+  }
+
+  @Test
+  void itShouldThrowGetSuddenrunPlaylistExceptionIfFindByUserIdRepositoryThrowsRuntimeException() {
     // Given
     String message = "message";
     SuddenrunUser appUser = SuddenrunHelper.getUser();
@@ -285,6 +396,19 @@ class SuddenrunPlaylistServiceGetPlaylistTest {
     // Then
     assertThatThrownBy(() -> underTest.getPlaylist(appUser))
         .isExactlyInstanceOf(GetSuddenrunUserPlaylistException.class)
+        .hasMessageContaining(message);
+  }
+
+  @Test
+  void itShouldThrowGetSuddenrunPlaylistExceptionIfFindByIdRepositoryThrowsRuntimeException() {
+    // Given
+    String message = "message";
+    String playlistId = SpotifyResourceHelper.getRandomId();
+    given(repository.findById(playlistId)).willThrow(new RuntimeException(message));
+
+    // Then
+    assertThatThrownBy(() -> underTest.getPlaylist(playlistId))
+        .isExactlyInstanceOf(GetSuddenrunPlaylistException.class)
         .hasMessageContaining(message);
   }
 }
