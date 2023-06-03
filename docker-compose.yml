@@ -16,8 +16,8 @@ services:
     container_name: postgres
     image: postgres
     environment:
-      POSTGRES_USER: suddenrun
-      POSTGRES_PASSWORD: suddenrun
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres
