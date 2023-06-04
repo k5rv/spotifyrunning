@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@Profile(value = {"development", "production", "docker", "kube"})
+@Profile(value = {"development", "production", "kube", "eks"})
 public class AppSecurityConfig {
 
   private static final String API_V1_USERS = "/api/v1/users/**";

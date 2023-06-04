@@ -10,13 +10,13 @@ spring:
   application:
     name: suddenrun
   datasource:
-    url: [ url ]
-    username: [ username ]
-    password: [ password ]
+    url: jdbc:postgresql://[ ip ]:5432/suddenrun
+    username: user
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect

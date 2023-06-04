@@ -20,7 +20,7 @@ spec:
               containerPort: 8081
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: kube
+              value: eks
       restartPolicy: Always
   selector:
     matchLabels:

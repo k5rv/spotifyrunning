@@ -42,22 +42,22 @@
 
 <!-- ABOUT THE PROJECT -->
 
-## About The Project
+# About The Project
 
 Suddenrun uses Spotify Web API in order to create a playlist for your running workouts. It looks up for recommendations
 based on favorite tracks with an appropriate tempo for running.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Built With
+# Built With
 
 Major frameworks and tools used to bootstrap Suddenrun project.
 
 * [![Spring-boot][Spring.io]][Spring-url]
 * [![Postgresql][Postgresql.org]][Postgresql-url]
-* [![AWS][AWS.com]][AWS-url]
-* [![Kubernetes][Kubernetes.io]][Kubernetes-url]
 * [![Javascript][Javascript.com]][Javascript-url]
+* [![Kubernetes][Kubernetes.io]][Kubernetes-url]
+* [![AWS][AWS.com]][AWS-url]
 * [![Shellscript][Shellscript.sh]][Shellscript-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -66,32 +66,88 @@ Major frameworks and tools used to bootstrap Suddenrun project.
 
 <!-- GETTING STARTED -->
 
-## Getting Started
+# Getting Started
 
-### Prerequisites
+## Prerequisites
 
 To install and deploy Suddenrun you will need:
+* Spotify account
 * Java 17
 * Maven
-* Docker
-* Spotify account
-* AWS account (only for deployment)
+* Kubectl
+* Minikube (local deployment)
+* AWS account (cloud deployment)
 
-### Installation
+## Local installation
+Current section covers installation on your local machine. We're going to copy repo, update configuration, build image and deploy application to minikube. 
 
+### Postgresql deployment
+1. From project directory apply kubernetes resources
+   ```shell
+   kubectl apply -f k8s/minikube/bootstrap/postgres
+   ```
+   ```shell
+   configmap/postgres-config created
+   service/postgres created
+   statefulset.apps/postgres created
+   persistentvolume/postgres-pc-volume created
+   persistentvolumeclaim/postgres-pc-volume-claim created
+   ```
+2. Verify that pod is up and running
+   ```shell
+   kubectl get pod postgres-0
+   ```
+   ```shell
+   NAME         READY   STATUS    RESTARTS   AGE
+   postgres-0   1/1     Running   0          4m5s
+   ```
+3. Describe created service
+   ```shell
+   kubectl describe svc postgres
+   ```
+   Remember `Endpoints` IP value, we will need it later in order to configure application datasource
+   ```shell
+    Name:              postgres
+    Namespace:         default
+    Labels:            <none>
+    Annotations:       <none>
+    Selector:          app=postgres
+    Type:              ClusterIP
+    IP Family Policy:  SingleStack
+    IP Families:       IPv4
+    IP:                10.108.40.239
+    IPs:               10.108.40.239
+    Port:              <unset>  5432/TCP
+    TargetPort:        5432/TCP
+    Endpoints:         172.17.0.2:5432
+    Session Affinity:  None
+    Events:            <none>
+   ```
+4. Connect to the postgresql instance inside pod using plsql
+   ```shell
+   kubectl exec -it postgres-0 -- psql -d postgres -U user
+   ```
+   Create Suddenrun database
+      ```shell
+   postgres=# CREATE DATABASE SUDDENRUN;
+   ```
 
+### Spotify application configuration
 1. Create Spotify app [https://developer.spotify.com](https://developer.spotify.com/documentation/web-api/concepts/apps)
 
-2. Clone the repo
+2. Remember `Client ID` and `Client secret` values
+
+3. Update Spotify app `Redirect URIs` with `http://localhost:8081/login/oauth2/code/spotify`
+
+### Suddenrun configuration
+1. Clone the repo
    ```sh
    git clone https://github.com/k5rv/suddenrun
    ```
 
-3. Get client_id/client_secret from Spotify app
+2. Copy and save file `suddenrun/src/main/resources/application-template.yaml` as `application-kube.yaml` in the same directory
 
-4. Copy `application-production.yaml` as `application-docker.yaml`
-
-5. Remove placeholders `[ id ]` `[ secret ]` and enter your client_id/client_secret from Spotify app in **_spotify_** section
+3. In `application-kube.yaml` remove placeholders `[ id ]` `[ secret ]` and enter previously saved `Client ID` and `Client secret` values in **_spotify_** section
    ```yaml
    security:
      oauth2:
@@ -103,13 +159,100 @@ To install and deploy Suddenrun you will need:
              client-secret: [ secret ]
    ```
 
-6. Remove placeholders `[ url ]` `[ username ]` `[ password ]` and enter the following url/username/password values in **_datasource_** section
+4. In `application-kube.yaml` remove placeholders `[ ip ]` and enter previously saved `Endpoints` IP value in **_datasource_** section
    ```yaml
    datasource:
-     url: jdbc:postgresql://localhost:5432/suddenrun
+     url: jdbc:postgresql://[ ip ]:5432/suddenrun
      username: user
      password: password
-   ```   
+   ```
+
+5. In `suddenrun/src/main/resources/static/suddenrun-rest-api-client.js` update **_BASE_URL_** as shown below
+   ```javascript
+   //const BASE_URL = "https://suddenrun.com"
+   const BASE_URL = "http://localhost:8082"
+   ```
+
+6. In `suddenrun/pom.xml` update **_image_** property value `k5rv` with your Docker Hub username
+   ```xml
+   <properties>
+        <java.version>17</java.version>
+        <spring.cloud-version>2022.0.1</spring.cloud-version>
+        <spring.boot.maven.plugin.version>3.0.1</spring.boot.maven.plugin.version>
+        <spring.boot.dependencies.version>3.0.1</spring.boot.dependencies.version>
+        <image>k5rv/${project.artifactId}:${project.version}</image>
+    </properties>
+   ```
+ 
+7. In `suddenrun/k8s/minikube/services/suddenrun/deployment.yml` update section **_spec_** **_image_** property value `k5rv` with your Docker Hub username
+   ```yaml
+   spec:
+     containers:
+       - name: suddenrun
+         image: k5rv/suddenrun:latest
+   ```
+
+### Build image 
+1. From project directory run following Maven commands
+   ```shell
+   mvn clean
+   ```
+   ```shell
+   mvn package -P build-docker-image
+   ```
+   After last command you will receive the following output
+   ```shell
+   [INFO] Built and pushed image as k5rv/suddenrun:0.0.1-SNAPSHOT, k5rv/suddenrun
+   [INFO] Executing tasks:
+   [INFO] [============================  ] 91.7% complete
+   [INFO] > launching layer pushers
+   [INFO] > launching layer pushers
+   [INFO]
+   [INFO] ------------------------------------------------------------------------
+   [INFO] BUILD SUCCESS
+   [INFO] ------------------------------------------------------------------------
+   [INFO] Total time:  19.957 s
+   [INFO] Finished at: 2023-06-03T19:16:57+03:00
+   [INFO] ------------------------------------------------------------------------
+   ```
+   Please check that image was pushed to your Docker Hub account
+
+### Suddenrun deployment
+1. From project directory apply kubernetes resources
+   ```shell
+   kubectl apply -f k8s/minikube/services/suddenrun
+   ```
+   ```shell
+   deployment.apps/suddenrun created
+   service/suddenrun created
+   ```
+2. Verify that pod is up and running
+   ```shell
+   kubectl get pod suddenrun-6c9bc46d95-47tts 
+   ```
+   ```shell
+   NAME                         READY   STATUS    RESTARTS   AGE
+   suddenrun-6c9bc46d95-47tts   1/1     Running   0          92s
+   ```
+3. Verify that Suddenrun up and running
+   ```shell
+   kubectl logs suddenrun-6c9bc46d95-47tts -f 
+   ```
+   ```shell
+   2023-06-03T16:41:58.781Z  INFO 1 --- [main] com.ksaraev.SuddenrunApplication: 
+   Started SuddenrunApplication in 3.906 seconds (process running for 4.13)
+   ```
+4. Now we need to expose Suddenrun because the local deployment doesn't have ingress and its controller as well.
+   ```shell
+   kubectl port-forward svc/suddenrun 8081:80
+   ```
+   ```shell
+   Forwarding from 127.0.0.1:8081 -> 8081
+   Forwarding from [::1]:8081 -> 8081
+   ```
+5. Open link http://localhost:8081 in Web browser
+   ![suddenrun_homepage](./static/suddenrun_homepage.png)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
