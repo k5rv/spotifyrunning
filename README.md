@@ -71,17 +71,22 @@ Major frameworks and tools used to bootstrap Suddenrun project.
 ## Prerequisites
 
 To install and deploy Suddenrun you will need:
+
 * Spotify account
 * Java 17
 * Maven
 * Kubectl
 * Minikube (local deployment)
+* eksctl (cloud deployment)
 * AWS account (cloud deployment)
 
 ## Local installation
-Current section covers installation on your local machine. We're going to copy repo, update configuration, build image and deploy application to minikube. 
+
+Current section covers installation on the local machine: copying repo, updating configuration, building image
+and deploying application to minikube.
 
 ### Postgresql deployment
+
 1. From project directory apply kubernetes resources
    ```shell
    kubectl apply -f k8s/minikube/bootstrap/postgres
@@ -133,6 +138,7 @@ Current section covers installation on your local machine. We're going to copy r
    ```
 
 ### Spotify application configuration
+
 1. Create Spotify app [https://developer.spotify.com](https://developer.spotify.com/documentation/web-api/concepts/apps)
 
 2. Remember `Client ID` and `Client secret` values
@@ -140,14 +146,17 @@ Current section covers installation on your local machine. We're going to copy r
 3. Update Spotify app `Redirect URIs` with `http://localhost:8081/login/oauth2/code/spotify`
 
 ### Suddenrun configuration
+
 1. Clone the repo
    ```sh
    git clone https://github.com/k5rv/suddenrun
    ```
 
-2. Copy and save file `suddenrun/src/main/resources/application-template.yaml` as `application-kube.yaml` in the same directory
+2. Copy and save file `suddenrun/src/main/resources/application-template.yaml` as `application-kube.yaml` in the same
+   directory
 
-3. In `application-kube.yaml` remove placeholders `[ id ]` `[ secret ]` and enter previously saved `Client ID` and `Client secret` values in **_spotify_** section
+3. Remove `application-kube.yaml` placeholders `[ id ]` `[ secret ]` and enter previously saved `Client ID`
+   and `Client secret` values in **_spotify_** section
    ```yaml
    security:
      oauth2:
@@ -159,7 +168,8 @@ Current section covers installation on your local machine. We're going to copy r
              client-secret: [ secret ]
    ```
 
-4. In `application-kube.yaml` remove placeholders `[ ip ]` and enter previously saved `Endpoints` IP value in **_datasource_** section
+4. Remove `application-kube.yaml` placeholder `[ ip ]` and enter previously saved `Endpoints` IP value in **_datasource_
+   ** section
    ```yaml
    datasource:
      url: jdbc:postgresql://[ ip ]:5432/suddenrun
@@ -167,13 +177,15 @@ Current section covers installation on your local machine. We're going to copy r
      password: password
    ```
 
-5. In `suddenrun/src/main/resources/static/suddenrun-rest-api-client.js` update **_BASE_URL_** as shown below
+5. Update `suddenrun/src/main/resources/static/suddenrun-rest-api-client.js` **_BASE_URL_** as shown below in order to
+   send JS client requests to the local deployment
    ```javascript
    //const BASE_URL = "https://suddenrun.com"
    const BASE_URL = "http://localhost:8082"
    ```
 
-6. In `suddenrun/pom.xml` update **_image_** property value `k5rv` with your Docker Hub username
+6. Update `suddenrun/pom.xml` **_image_** property value `k5rv` with your Docker Hub username. We need this to push
+   docker image.
    ```xml
    <properties>
         <java.version>17</java.version>
@@ -183,8 +195,9 @@ Current section covers installation on your local machine. We're going to copy r
         <image>k5rv/${project.artifactId}:${project.version}</image>
     </properties>
    ```
- 
-7. In `suddenrun/k8s/minikube/services/suddenrun/deployment.yml` update section **_spec_** **_image_** property value `k5rv` with your Docker Hub username
+
+7. Update `suddenrun/k8s/minikube/services/suddenrun/deployment.yml` section **_spec_** **_image_** property
+   value `k5rv` with your Docker Hub username. We need this to pull docker image.
    ```yaml
    spec:
      containers:
@@ -192,7 +205,8 @@ Current section covers installation on your local machine. We're going to copy r
          image: k5rv/suddenrun:latest
    ```
 
-### Build image 
+### Build image
+
 1. From project directory run following Maven commands
    ```shell
    mvn clean
@@ -200,7 +214,8 @@ Current section covers installation on your local machine. We're going to copy r
    ```shell
    mvn package -P build-docker-image
    ```
-   After last command you will receive the following output
+   After last command you will receive the following output, it means the image was built and pushed
+   successfully. `k5rv` will be substituted with your Docker Hub username.
    ```shell
    [INFO] Built and pushed image as k5rv/suddenrun:0.0.1-SNAPSHOT, k5rv/suddenrun
    [INFO] Executing tasks:
@@ -215,9 +230,9 @@ Current section covers installation on your local machine. We're going to copy r
    [INFO] Finished at: 2023-06-03T19:16:57+03:00
    [INFO] ------------------------------------------------------------------------
    ```
-   Please check that image was pushed to your Docker Hub account
 
 ### Suddenrun deployment
+
 1. From project directory apply kubernetes resources
    ```shell
    kubectl apply -f k8s/minikube/services/suddenrun
@@ -250,13 +265,142 @@ Current section covers installation on your local machine. We're going to copy r
    Forwarding from 127.0.0.1:8081 -> 8081
    Forwarding from [::1]:8081 -> 8081
    ```
-5. Open link http://localhost:8081 in Web browser
+5. Open link http://localhost:8081 in Web browser and login into your Spotify account, then you will be redirected to
+   Suddenrun homepage.
    ![suddenrun_homepage](./static/suddenrun_homepage.png)
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Cloud deployment
 
+Current section covers Suddenrun deployment into AWS: configuring VPC, installing RDS and deploying application. <mark>
+IMPORTANT!</mark> In order to perform actions listed above, AWS account is required as well as a public DNS record from
+Amazon Route 53 and public certificate issued by AWS certificate manager. Whether DNS record from Amazon Route 53 and
+certificate issued by AWS certificate manager is in place or not it is recommended to check scripts in aws directory and
+update `eu-north-1` region related variables with any region value that is closer to actual location. If public DNS
+record or certificate doesn't exist, please perform actions listed below
+
+1. Remove `suddenrun/k8s/eks/services/suddenrun/ingress.yaml` section **_annotations_**
+   properties `alb.ingress.kubernetes.io/listen-ports`, `alb.ingress.kubernetes.io/certificate-arn`, `alb.ingress.kubernetes.io/actions.ssl-redirect`
+   ```yaml
+   annotations:
+     alb.ingress.kubernetes.io/load-balancer-name: suddenrun-alb
+     kubernetes.io/ingress.class: alb
+     alb.ingress.kubernetes.io/target-type: instance
+     alb.ingress.kubernetes.io/scheme: internet-facing
+     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+     alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+     alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+     alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+     alb.ingress.kubernetes.io/success-codes: '200'
+     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '10'
+     alb.ingress.kubernetes.io/healthcheck-interval-seconds: '300'
+     #alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+     #alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:eu-north-1:690837617850:certificate/324f360e-89a1-424e-b03e-ee61b206c02e
+     #alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+   ```
+
+2. execute the following list of commands only (make sure you changed directory
+   to `suddenrun/aws`).
+
+   ```shell
+   sh ./vpc.sh -c
+   ```
+
+   ```shell
+   sh ./rds.sh -c
+   ```
+
+   ```shell
+   sh ./eks.sh -c
+   ```
+
+   ```shell
+   sh ./lb-controller.sh -c
+   ```
+
+   ```shell
+   kubectl apply -f "../k8s/eks/services/suddenrun/" 
+   ```
+
+   ```shell
+   sh ./alb.sh -w 
+   ```
+
+### AWS deployment
+
+From `suddenrun/aws` directory run command
+
+   ```shell
+   sh ./create_deployment.sh
+   ```
+
+Command will perform the following actions
+
+#### Create VPC
+
+   ```shell
+   sh ./vpc.sh -c
+   ```
+
+1. Create VPC
+2. Create Internet Gateway
+3. Attach VPC to Internet Gateway
+4. Allocate 2 Elastic IPs
+5. Create 2 NAT Gateways
+6. Associate elastic IPs and NAT Gateways
+7. Create 2 public and 2 private subnets
+8. Create 1 route from public subnets to Internet Gateway
+9. Create 2 routes from private subnets to NAT Gateways
+10. Create security group
+
+#### Create RDS
+
+   ```shell
+   sh ./rds.sh -c
+   ```
+
+1. Create RDS instance subnet group
+2. Create RDS in private subnet
+
+#### Create EKS cluster
+
+eksctl should be installed and configured in order to perform this step
+
+   ```shell
+   sh ./eks.sh -c
+   ```
+
+1. Create EKS cluster in the private subnet
+
+#### Install AWS Load Balancer Controller add-on
+
+This step should be performed so Ingress resource will be supported with Application Load Balancer.
+
+   ```shell
+   sh ./lb-controller.sh -c
+   ```
+
+#### Suddenrun deployment
+
+Apply kubernetes resources. At this stage you might want to copy and save
+file `suddenrun/src/main/resources/application-template.yaml` as `application-eks.yaml` in the same
+directory and then update `[ id ]` `[ secret ]` as well as datasource `[ url ]` with corresponding RDS property. Also
+update Spotify application `Redirect URIs` with `https://[ dns record ]/login/oauth2/code/spotify` and build new
+docker-image
+
+   ```shell
+   kubectl apply -f k8s/eks/services/suddenrun
+   ```
+
+#### Attach DNS record to Application Load Balancer
+
+   ```shell
+   sh ./dns_record_alias.sh -c
+   ```
+
+Open link https://[ dns record ] in Web browser and login into your Spotify account, then you will be redirected to
+Suddenrun homepage.
 
 <!-- USAGE EXAMPLES -->
 
