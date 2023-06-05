@@ -152,7 +152,8 @@
             </button>
         </li>
         <li>
-            <button aria-pressed="true" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
+            <button aria-pressed="true" class="dropdown-item d-flex align-items-center active"
+                    data-bs-theme-value="auto"
                     type="button">
                 <svg class="bi me-2 opacity-50 theme-icon" height="1em" width="1em">
                     <use href="#circle-half"></use>
@@ -237,7 +238,10 @@
                             switch (embedState) {
                                 case "initial":
                                     getCurrentUser().then((user) => {
-                                        if (user.isRegistered === false) return registerUser(user.id)
+                                        if(!user.isRegistered) {
+                                            return registerUser(user.id)
+                                        }
+                                        return user
                                     }).then((user) => {
                                         return createPlaylist(user.id)
                                     }).then((playlist) => {
