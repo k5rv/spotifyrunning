@@ -273,12 +273,14 @@ and deploying application to minikube.
 
 ## Cloud deployment
 
-Current section covers Suddenrun deployment into AWS: configuring VPC, installing RDS and deploying application. <mark>
-IMPORTANT!</mark> In order to perform actions listed above, AWS account is required as well as a public DNS record from
-Amazon Route 53 and public certificate issued by AWS certificate manager. Whether DNS record from Amazon Route 53 and
-certificate issued by AWS certificate manager is in place or not it is recommended to check scripts in aws directory and
-update `eu-north-1` region related variables with any region value that is closer to actual location. If public DNS
-record or certificate doesn't exist, please perform actions listed below
+![aws](./static/aws.png)
+
+Current section covers Suddenrun deployment into AWS. IMPORTANT! In order to perform this action, AWS account is
+required as well as a public DNS record from Amazon Route 53 and public certificate issued by AWS certificate manager.
+Whether DNS record from Amazon Route 53 and a certificate issued by AWS certificate manager is in place or not, it is
+recommended to check scripts in aws directory and update `eu-north-1` region related variables with any region value
+that is closer to the actual location. If public DNS record or certificate doesn't exist, please perform actions listed
+below
 
 1. Remove `suddenrun/k8s/eks/services/suddenrun/ingress.yaml` section **_annotations_**
    properties `alb.ingress.kubernetes.io/listen-ports`, `alb.ingress.kubernetes.io/certificate-arn`, `alb.ingress.kubernetes.io/actions.ssl-redirect`
