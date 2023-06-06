@@ -437,7 +437,8 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 
 ## Acknowledgments
 
-* [Spotify for developers](https://developer.spotify.com/)
+* [Spotify Web Api](https://developer.spotify.com/documentation/web-api)
+* [Spotify Embeds](https://developer.spotify.com/documentation/embeds)
 * [Spring Boot](https://spring.io/projects/spring-boot)
 * [AWS documentation](https://docs.aws.amazon.com/)
 * [eksctl](https://eksctl.io/)
