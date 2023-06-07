@@ -32,11 +32,13 @@ build/
 ### VS Code ###
 .vscode/
 
+### Docker ###
+/docker-compose.yml
+
 ### Spring Boot Profiles ###
 /src/main/resources/application-development.yml
 /src/main/resources/application-kube.yml
 /src/main/resources/application-eks.yml
-
 
 ### AWS Scripts Output ###
 /aws/cluster.yaml
@@ -51,4 +53,3 @@ build/
 /.jpb/jpb-settings.xml
 .DS_Store
 
-/docker-compose.yml
