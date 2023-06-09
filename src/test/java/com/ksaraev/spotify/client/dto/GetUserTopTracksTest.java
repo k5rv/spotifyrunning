@@ -34,10 +34,12 @@ class GetUserTopTracksTest {
   void itShouldDetectGetUserTopTracksMethodConstraintViolationWhenGetUserTopTracksRequestIsNull() {
     // Given
     String message = ".request: must not be null";
+
     // When
     Object[] parameterValues = {null};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -50,10 +52,12 @@ class GetUserTopTracksTest {
     // Given
     GetUserTopTracksRequest getUserTopTracksRequest =
         GetUserTopTracksRequest.builder().limit(51).offset(0).build();
+
     // When
     Object[] parameterValues = {getUserTopTracksRequest};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -64,9 +68,11 @@ class GetUserTopTracksTest {
   void itShouldDetectGetUserTopTracksMethodConstraintViolationWhenReturnValueIsNull() {
     // Given
     String message = ".<return value>: must not be null";
+
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, null);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

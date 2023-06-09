@@ -35,12 +35,14 @@ class CreatePlaylistTest {
   void itShouldDetectCreatePlaylistMethodConstraintViolationWhenUserIdIsNull() {
     // Given
     String message = ".userId: must not be null";
+
     // When
     SpotifyPlaylistDetailsDto playlistItemDetails =
         SpotifyPlaylistDetailsDto.builder().name("name").build();
     Object[] parameterValues = {null, playlistItemDetails};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -52,10 +54,12 @@ class CreatePlaylistTest {
     // Given
     String message = ".playlistItemDetails: must not be null";
     String userId = "12122604372";
+
     // When
     Object[] parameterValues = {userId, null};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -70,10 +74,12 @@ class CreatePlaylistTest {
     String userId = "12122604372";
     SpotifyPlaylistDetailsDto playlistItemDetails =
         SpotifyPlaylistDetailsDto.builder().name(null).build();
+
     // When
     Object[] parameterValues = {userId, playlistItemDetails};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -96,9 +102,11 @@ class CreatePlaylistTest {
             .userProfileDto(userProfileDto)
             .snapshotId("MywyM2Y2Zjg5YTdlNGQ3MmI2OGFiN2NiZmQ4NTNlZDdlMjE2OTFjODM4")
             .build();
+
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, playlistItem);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -109,9 +117,11 @@ class CreatePlaylistTest {
   void itShouldDetectCreatePlaylistMethodConstraintViolationWhenReturnValueIsNull() {
     // Given
     String message = ".<return value>: must not be null";
+
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, null);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

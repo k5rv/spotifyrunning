@@ -39,9 +39,11 @@ class GetRecommendationsResponseTest {
 
     GetRecommendationsResponse getRecommendationsResponse =
         GetRecommendationsResponse.builder().trackDtos(trackItems).build();
+
     // When
     Set<ConstraintViolation<GetRecommendationsResponse>> constraintViolations =
         validator.validate(getRecommendationsResponse);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

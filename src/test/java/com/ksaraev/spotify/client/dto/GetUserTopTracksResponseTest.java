@@ -54,9 +54,11 @@ class GetUserTopTracksResponseTest {
 
     GetUserTopTracksResponse getUserTopTracksResponse =
         GetUserTopTracksResponse.builder().trackDtos(trackItems).build();
+
     // When
     Set<ConstraintViolation<GetUserTopTracksResponse>> constraintViolations =
         validator.validate(getUserTopTracksResponse);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations)).hasMessage(message);

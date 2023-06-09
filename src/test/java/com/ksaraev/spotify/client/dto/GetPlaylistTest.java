@@ -33,10 +33,12 @@ class GetPlaylistTest {
   void itShouldDetectGetPlaylistMethodConstraintViolationWhenPlaylistIdIsNull() {
     // Given
     String message = ".playlistId: must not be null";
+
     // When
     Object[] parameterValues = {null};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

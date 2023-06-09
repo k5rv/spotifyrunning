@@ -35,10 +35,12 @@ class GetRecommendationsTest {
       itShouldDetectGetRecommendationsMethodConstraintViolationWhenGetRecommendationsRequestIsNull() {
     // Given
     String message = ".request: must not be null";
+
     // When
     Object[] parameterValues = {null};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

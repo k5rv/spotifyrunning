@@ -31,9 +31,11 @@ class GetCurrentUserProfileTest {
   @Test
   void itShouldDetectGetCurrentUserProfileMethodConstraintViolationWhenReturnValueIsNull() {
     String message = ".<return value>: must not be null";
+
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, null);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -51,9 +53,11 @@ class GetCurrentUserProfileTest {
             .email("email@gmail.com")
             .uri(URI.create("spotify:user:12122604372"))
             .build();
+
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, userProfileItem);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
