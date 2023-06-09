@@ -23,9 +23,11 @@ class AddPlaylistItemsResponseTest {
     // Given
     AddPlaylistItemsResponse updatePlaylistItemsResponse =
         AddPlaylistItemsResponse.builder().snapshotId(null).build();
+
     // When
     Set<ConstraintViolation<AddPlaylistItemsResponse>> constraintViolations =
         validator.validate(updatePlaylistItemsResponse);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

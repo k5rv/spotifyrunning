@@ -39,10 +39,12 @@ class AddItemsToPlaylistTest {
     List<URI> uris = List.of(trackUri);
     AddPlaylistItemsRequest updateItemsRequest =
         AddPlaylistItemsRequest.builder().uris(uris).build();
+
     // When
     Object[] parameterValues = {null, updateItemsRequest};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -54,10 +56,12 @@ class AddItemsToPlaylistTest {
     // Given
     String message = ".request: must not be null";
     String playlistId = "0moWPCTPTShumonjlsDgLe";
+
     // When
     Object[] parameterValues = {playlistId, null};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -73,10 +77,12 @@ class AddItemsToPlaylistTest {
     List<URI> uris = List.of();
     AddPlaylistItemsRequest updateItemsRequest =
         AddPlaylistItemsRequest.builder().uris(uris).build();
+
     // When
     Object[] parameterValues = {playlistId, updateItemsRequest};
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateParameters(object, method, parameterValues);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -90,9 +96,11 @@ class AddItemsToPlaylistTest {
     String message = ".<return value>.snapshotId: must not be empty";
     AddPlaylistItemsResponse updatePlaylistItemsResponse =
         AddPlaylistItemsResponse.builder().snapshotId(null).build();
+
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, updatePlaylistItemsResponse);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -103,9 +111,11 @@ class AddItemsToPlaylistTest {
   void itShouldDetectAddItemsToPlaylistMethodConstraintViolationWhenReturnValueIsNull() {
     // Given
     String message = ".<return value>: must not be null";
+
     // When
     Set<ConstraintViolation<SpotifyClient>> constraintViolations =
         executableValidator.validateReturnValue(object, method, null);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))

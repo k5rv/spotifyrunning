@@ -28,9 +28,11 @@ class AddPlaylistItemsRequestTest {
     List<URI> uris = List.of();
     AddPlaylistItemsRequest updateItemsRequest =
         AddPlaylistItemsRequest.builder().uris(uris).build();
+
     // When
     Set<ConstraintViolation<AddPlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -45,9 +47,11 @@ class AddPlaylistItemsRequestTest {
     IntStream.rangeClosed(0,100).forEach(index -> uris.add(index, uri));
     AddPlaylistItemsRequest updateItemsRequest =
         AddPlaylistItemsRequest.builder().uris(uris).build();
+
     // When
     Set<ConstraintViolation<AddPlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
@@ -65,9 +69,11 @@ class AddPlaylistItemsRequestTest {
     uris.add(uriC);
     AddPlaylistItemsRequest updateItemsRequest =
         AddPlaylistItemsRequest.builder().uris(uris).build();
+
     // When
     Set<ConstraintViolation<AddPlaylistItemsRequest>> constraintViolations =
         validator.validate(updateItemsRequest);
+
     // Then
     assertThat(constraintViolations).hasSize(1);
     assertThat(new ConstraintViolationException(constraintViolations))
