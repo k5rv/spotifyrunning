@@ -32,9 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-### Docker ###
-/docker-compose.yml
-
 ### Spring Boot Profiles ###
 /src/main/resources/application-development.yml
 /src/main/resources/application-kube.yml
