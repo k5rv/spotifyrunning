@@ -9,7 +9,7 @@ spring:
   application:
     name: suddenrun
   datasource:
-    url: jdbc:postgresql://172.17.0.4:5432/suddenrun
+    url: jdbc:postgresql://[host]:5432/suddenrun
     username: user
     password: password
     driver-class-name: org.postgresql.Driver
