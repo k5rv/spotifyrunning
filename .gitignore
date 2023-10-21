@@ -32,10 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-### Spring Boot Profiles ###
-/src/main/resources/application-kube.yml
-/src/main/resources/application-eks.yml
-
 ### AWS Scripts Output ###
 /aws/cluster.yaml
 /aws/route53-create-record.json
