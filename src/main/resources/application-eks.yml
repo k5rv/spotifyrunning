@@ -1,4 +1,3 @@
-# data in [] should be updated with real values, square brackets must be removed
 server:
   port: 8081
   error:
@@ -10,13 +9,13 @@ spring:
   application:
     name: suddenrun
   datasource:
-    url: jdbc:postgresql://[ ip ]:5432/suddenrun
-    username: user
-    password: password
+    url: jdbc:postgresql://[host].[region].rds.amazonaws.com:5432/suddenrun
+    username: suddenrun
+    password: suddenrun
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -33,16 +32,16 @@ spring:
       oauth2:
         enabled: true
         clientRegistrationId: spotify
+
   security:
     oauth2:
       client:
         registration:
           spotify:
             client-name: spotify
-            client-id: [ id ]
-            client-secret: [ secret ]
+            client-id: [id]
             provider: spotify
-            client-authentication-method: client_secret_basic
+            client-authentication-method: none
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             scope: user-read-email, user-top-read, playlist-modify-public, playlist-modify-private
@@ -64,7 +63,12 @@ spotify:
     music-features:
       min-tempo: "120"
       max-tempo: "140"
-      min-energy: "0.65"
+      min-energy: "0.4"
+      max-energy: ""
+      min-valence: "0.5"
+      max-valence: ""
+      min-danceability: "0.5"
+      max-danceability: ""
       min-popularity: ""
   client:
     requests:

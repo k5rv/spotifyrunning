@@ -169,11 +169,11 @@ class SuddenrunPlaylistServiceAddTracksIntegrationTest {
                       WireMock.urlEqualTo(
                           SPOTIFY_API_V1_RECOMMENDATIONS
                               + "?"
-                              + "min_tempo=120&seed_tracks="
+                              + "min_valence=0.5&min_tempo=120&min_danceability=0.5&seed_tracks="
                               + track.id()
                               + "&limit="
                               + recommendationsLimit
-                              + "&min_energy=0.65&max_tempo=140"))
+                              + "&min_energy=0.4&max_tempo=140"))
                   .willReturn(
                       WireMock.jsonResponse(
                           JsonHelper.objectToJson(getRecommendationsResponse),

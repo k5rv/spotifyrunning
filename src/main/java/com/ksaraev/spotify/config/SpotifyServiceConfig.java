@@ -49,6 +49,31 @@ public class SpotifyServiceConfig {
   @DecimalMax("1.0")
   private BigDecimal minEnergy;
 
+  @Value("${spotify.service.music-features.max-energy}")
+  @DecimalMin("0.1")
+  @DecimalMax("1.0")
+  private BigDecimal maxEnergy;
+
+  @Value("${spotify.service.music-features.min-danceability}")
+  @DecimalMin("0.1")
+  @DecimalMax("1.0")
+  private BigDecimal minDanceability;
+
+  @Value("${spotify.service.music-features.max-danceability}")
+  @DecimalMin("0.1")
+  @DecimalMax("1.0")
+  private BigDecimal maxDanceability;
+
+  @Value("${spotify.service.music-features.min-valence}")
+  @DecimalMin("0.1")
+  @DecimalMax("1.0")
+  private BigDecimal minValence;
+
+  @Value("${spotify.service.music-features.max-valence}")
+  @DecimalMin("0.1")
+  @DecimalMax("1.0")
+  private BigDecimal maxValence;
+
   @Value("${spotify.service.music-features.min-popularity}")
   @DecimalMin("0.1")
   @DecimalMax("1.0")
@@ -75,6 +100,11 @@ public class SpotifyServiceConfig {
             .minTempo(this.minTempo)
             .maxTempo(this.maxTempo)
             .minEnergy(this.minEnergy)
+            .maxEnergy(this.maxEnergy)
+            .minDanceability(this.minDanceability)
+            .maxDanceability(this.maxDanceability)
+            .minValence(this.minValence)
+            .maxValence(this.maxValence)
             .minPopularity(this.minPopularity)
             .build();
 
