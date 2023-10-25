@@ -89,7 +89,7 @@ spotify:
 logging:
   level:
     com.ksaraev.suddenrun: INFO
-    com.ksaraev.spotify.client.SpotifyClient: DEBUG
+    com.ksaraev.spotify.client.SpotifyClient: ERROR
     org.springframework.security: ERROR
     org.springframework.web: ERROR
     org.hibernate: ERROR
