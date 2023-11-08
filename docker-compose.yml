@@ -16,6 +16,17 @@ services:
       - postgres
     restart: unless-stopped
 
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - redis:/data/redis
+    ports:
+      - "6379:6379"
+    networks:
+      - redis
+
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
@@ -44,6 +55,9 @@ services:
 networks:
   postgres:
     driver: bridge
+  redis:
+    driver: bridge
 
 volumes:
   postgres:
+  redis:
