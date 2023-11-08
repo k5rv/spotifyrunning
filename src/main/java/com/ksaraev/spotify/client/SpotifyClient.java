@@ -73,4 +73,10 @@ public interface SpotifyClient {
   RemovePlaylistItemsResponse removePlaylistItems(
       @NotNull @PathVariable(value = "playlist_id") String playlistId,
       @Valid @NotNull @RequestBody RemovePlaylistItemsRequest request);
+
+  @GetMapping(path = "audio-analysis/{track_id}")
+  @HandleFeignException(SpotifyClientFeignExceptionHandler.class)
+  @Valid
+  @NotNull
+  String getTrackAudioAnalysis(@NotNull @PathVariable(value = "track_id") String trackId);
 }
