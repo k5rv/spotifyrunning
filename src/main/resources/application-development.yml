@@ -56,7 +56,8 @@ spring:
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
-      group-id: "spotify"
+      group-id: "suddenrun"
+
 spotify:
   service:
     playlist:
@@ -91,5 +92,6 @@ logging:
     com.ksaraev.suddenrun: INFO
     com.ksaraev.spotify.client.SpotifyClient: ERROR
     org.springframework.security: ERROR
+    org.springframework.kafka: ERROR
     org.springframework.web: ERROR
     org.hibernate: ERROR

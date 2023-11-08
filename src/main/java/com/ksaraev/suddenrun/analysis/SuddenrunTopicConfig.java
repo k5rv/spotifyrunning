@@ -1,4 +1,4 @@
-package com.ksaraev.suddenrun.track;
+package com.ksaraev.suddenrun.analysis;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +8,7 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class SuddenrunTopicConfig {
   @Bean
-  public NewTopic spotifyTopic() {
-    return TopicBuilder.name("spotify-recommendations-seeds").build();
+  public NewTopic suddenrunPlaylistsTopic() {
+    return TopicBuilder.name("suddenrun-playlists").build();
   }
 }

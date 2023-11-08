@@ -1,7 +1,9 @@
-package com.ksaraev.suddenrun.track;
+package com.ksaraev.suddenrun.analysis;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.ksaraev.suddenrun.playlist.SuddenrunPlaylist;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +15,7 @@ import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
 @Configuration
-public class SuddenrunGetRecommendationsProducerConfig {
+public class SuddenrunPlaylistProducerConfig {
   @Value("${spring.kafka.bootstrap-servers}")
   private String bootstrapServers;
 
@@ -26,13 +28,13 @@ public class SuddenrunGetRecommendationsProducerConfig {
   }
 
   @Bean
-  public ProducerFactory<String, SuddenrunGetRecommendationsMessage> producerFactory() {
+  public ProducerFactory<String, SuddenrunPlaylist> producerFactory() {
     return new DefaultKafkaProducerFactory<>(producerConfig());
   }
 
   @Bean
-  public KafkaTemplate<String, SuddenrunGetRecommendationsMessage> kafkaTemplate(
-      ProducerFactory<String, SuddenrunGetRecommendationsMessage> producerFactory) {
+  public KafkaTemplate<String, SuddenrunPlaylist> kafkaTemplate(
+      ProducerFactory<String, SuddenrunPlaylist> producerFactory) {
     return new KafkaTemplate<>(producerFactory);
   }
 }
